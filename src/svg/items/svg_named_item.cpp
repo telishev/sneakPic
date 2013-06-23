@@ -37,19 +37,15 @@ void svg_named_item::set_name (const QString &name)
 }
 
 
-void svg_named_item::post_read ()
+void svg_named_item::process_attribute (abstract_attribute *attribute)
 {
-  abstract_svg_item::post_read ();
+  if (attribute->type () != svg_attribute_type::ID)
+    return;
 
-  for (abstract_attribute *attribute : m_attributes)
-    {
-      if (attribute->type () != attribute_type::ID)
-        continue;
+  m_id = static_cast<svg_attribute_id *> (attribute);
+  add_to_container ();
 
-      m_id = static_cast<svg_attribute_id *> (attribute);
-      add_to_container ();
-      break;
-    }
+  return abstract_svg_item::process_attribute (attribute);
 }
 
 void svg_named_item::add_to_container ()

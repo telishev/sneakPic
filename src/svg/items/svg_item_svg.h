@@ -6,19 +6,23 @@
 
 #include <QString>
 
+class svg_attribute_version;
+class svg_attribute_width;
+class svg_attribute_height;
+
 class svg_item_svg : public svg_named_item
 {
-  SVG_ITEM
+  SVG_ITEM ("svg", svg_item_type::SVG, svg_namespaces_t::SVG)
+
+  svg_attribute_version *version;
+  svg_attribute_width   *width;
+  svg_attribute_height  *height;
 public:
   svg_item_svg (svg_document *document);
   virtual ~svg_item_svg () override;
-  virtual item_type type () const override { return item_type::SVG; }
-  static QString static_name () { return "svg"; }
-
-  static svg_namespaces_t static_ns_type () { return svg_namespaces_t::SVG; }
 
 protected:
-  virtual void post_read () override;
+  virtual void process_attribute (abstract_attribute *attribute) override;
 
   
 

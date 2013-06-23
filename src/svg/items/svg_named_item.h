@@ -19,7 +19,7 @@ public:
   void set_name (const QString &name);
 
 protected:
-  virtual void post_read () override;
+  virtual void process_attribute (abstract_attribute *attribute) override;
 
 private:
   void add_to_container ();

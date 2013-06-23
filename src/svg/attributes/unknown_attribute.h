@@ -22,13 +22,13 @@ public:
 
   ~unknown_attribute () {};
 
-  virtual void read (const QDomAttr &item) override;
-  virtual void write (QDomAttr &item) const override;
+  virtual bool read (const QString &data) override { m_value = data; return true; }
+  virtual bool write (QString &data) const override { data = m_value; return true; }
 
   virtual QString name () const override { return m_name;}
   virtual QString namespace_uri () const override { return m_namespace_uri; }
 
-  virtual attribute_type type () const override { return attribute_type::UNKNOWN; }
+  virtual svg_attribute_type type () const override { return svg_attribute_type::UNKNOWN; }
 
   virtual QString namespace_name () const override { return m_namespace_name; }
   virtual svg_namespaces_t namespace_type () const override { return svg_namespaces_t::UNKNOWN; }

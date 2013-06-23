@@ -4,6 +4,18 @@
 #include <unordered_set>
 #include <QString>
 
+#include "svg/items/svg_item_type.h"
+
+#define SVG_ITEM(NAME,TYPE,NS_TYPE)                                                     \
+public:                                                                                 \
+virtual svg_item_type type () const override { return TYPE; }                           \
+static QString static_name () { return NAME; }                                          \
+static svg_namespaces_t static_ns_type () { return NS_TYPE; }                           \
+static QString static_ns_URI () { return svg_namespaces::uri (static_ns_type ()); }     \
+virtual QString name () const override { return static_name (); }                       \
+virtual svg_namespaces_t namespace_type () const { return static_ns_type (); }          \
+private:                                                                                \
+
 class QDomElement;
 
 class abstract_attribute;
@@ -11,20 +23,6 @@ class QDomDocument;
 class svg_document;
 
 enum class svg_namespaces_t;
-
-enum class item_type
-{
-  UNKNOWN,
-  SVG,
-};
-
-#define SVG_ITEM                                                                        \
-public:                                                                                 \
-static QString static_ns_URI () { return svg_namespaces::uri (static_ns_type ()); }     \
-                                                                                        \
-virtual QString name () const override { return static_name (); }                       \
-virtual svg_namespaces_t namespace_type () const { return static_ns_type (); }          \
-private:                                                                                \
 
 class abstract_svg_item
 {
@@ -37,14 +35,13 @@ class abstract_svg_item
   abstract_svg_item *m_first_child;
   abstract_svg_item *m_last_child;
 
-protected:
   std::unordered_set<abstract_attribute *> m_attributes;
 
 public:
   abstract_svg_item (svg_document *document);
   virtual ~abstract_svg_item ();
 
-  virtual item_type type () const = 0;
+  virtual svg_item_type type () const = 0;
   virtual svg_namespaces_t namespace_type () const = 0;
   virtual QString name () const = 0;
 
@@ -70,7 +67,7 @@ public:
   void write (QDomElement &item, QDomDocument &doc) const;
 
 protected:
-  virtual void post_read () {}
+  virtual void process_attribute (abstract_attribute * /*attribute*/) {}
 
   void set_parent (abstract_svg_item *parent) { m_parent = parent; }
   void set_next_sibling (abstract_svg_item *next) { m_next_sibling = next; }

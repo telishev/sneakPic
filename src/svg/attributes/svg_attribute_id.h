@@ -8,19 +8,14 @@
 
 class svg_attribute_id : public abstract_attribute
 {
-  SVG_ATTRIBUTE
+  SVG_ATTRIBUTE ("id", svg_attribute_type::ID, svg_namespaces_t::EMPTY)
   QString m_id;
 public:
-  svg_attribute_id ();
-  virtual ~svg_attribute_id ();
+  svg_attribute_id () {}
+  virtual ~svg_attribute_id () {}
 
-  virtual void read (const QDomAttr &item) override;
-  virtual void write (QDomAttr &item) const override;
-
-  static QString static_name () { return "id"; }
-  static svg_namespaces_t static_ns_type () { return svg_namespaces_t::EMPTY; }
-
-  virtual attribute_type type () const override { return attribute_type::ID; }
+  virtual bool read (const QString &data) override { m_id = data; return true; }
+  virtual bool write (QString &data) const override { data = m_id; return true; }
 
   QString id () const { return m_id; }
   void set_id (const QString &id) { m_id = id; } 

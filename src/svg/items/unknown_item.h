@@ -12,7 +12,7 @@ public:
   unknown_item (svg_document *document, const QString &name, const QString &namespace_uri, const QString &prefix)
     : abstract_svg_item (document) { m_name = name; m_namespace_uri = namespace_uri; m_namespace_name = prefix; }
   virtual ~unknown_item () override {}
-  virtual item_type type () const override { return item_type::UNKNOWN; }
+  virtual svg_item_type type () const override { return svg_item_type::UNKNOWN; }
 
   virtual QString name () const override { return m_name; }
   virtual QString namespace_uri () const override { return m_namespace_uri; }

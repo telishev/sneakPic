@@ -61,11 +61,12 @@ void abstract_svg_item::read (const QDomElement &item)
 
       QDomAttr attr_item = item.toAttr ();
       abstract_attribute *attribute = attribute_factory->create_attribute (attr_item.localName (), attr_item.namespaceURI (), attr_item.prefix ());
-      attribute->read (attr_item);
+      attribute->read (attr_item.value ());
       add_attribute (attribute);
+      process_attribute (attribute);
     }
 
-  post_read ();
+  
 }
 
 void abstract_svg_item::write (QDomElement &item, QDomDocument &doc) const 
@@ -81,7 +82,9 @@ void abstract_svg_item::write (QDomElement &item, QDomDocument &doc) const
     {
       QDomAttr dom_attribute = doc.createAttributeNS (attribute->namespace_uri (), full_name (attribute->namespace_name (), attribute->name ()));
 
-      attribute->write (dom_attribute);
+      QString value;
+      attribute->write (value);
+      dom_attribute.setValue (value);
       item.setAttributeNode (dom_attribute);
     }
 }

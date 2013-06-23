@@ -1,9 +1,12 @@
 #include "svg/attributes/svg_attribute_factory.h"
 
-#include <QString>
-
 #include "svg/attributes/unknown_attribute.h"
 #include "svg/attributes/svg_attribute_id.h"
+#include "svg/attributes/svg_attribute_version.h"
+#include "svg/attributes/svg_attribute_width.h"
+#include "svg/attributes/svg_attribute_height.h"
+
+#include <QString>
 
 template<typename T>
 void svg_attribute_factory::support_attribute ()
@@ -17,6 +20,9 @@ svg_attribute_factory::svg_attribute_factory (svg_document *document)
   m_document = document;
 
   support_attribute<svg_attribute_id> ();
+  support_attribute<svg_attribute_version> ();
+  support_attribute<svg_attribute_width> ();
+  support_attribute<svg_attribute_height> ();
 }
 
 svg_attribute_factory::~svg_attribute_factory ()
@@ -38,3 +44,4 @@ QString svg_attribute_factory::create_unique_attribute_name (const QString &loca
 {
   return namespaceURI + ":" + localName;
 }
+
