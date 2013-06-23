@@ -1,0 +1,3 @@
+THIS_DIR = $$PROJ_DIR/src/ui
+
+FORMS += $$THIS_DIR/*.ui

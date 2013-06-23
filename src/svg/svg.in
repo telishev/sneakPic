@@ -1,0 +1,7 @@
+THIS_DIR = $$PROJ_DIR/src/svg
+
+SOURCES += $$THIS_DIR/*.cpp
+HEADERS += $$THIS_DIR/*.h
+
+include ($$PROJ_DIR/src/svg/items/items.in)
+include ($$PROJ_DIR/src/svg/attributes/attributes.in)
