@@ -5,6 +5,7 @@
 #include <QString>
 
 #include "svg/items/svg_item_type.h"
+#include "svg/svg_namespaces.h"
 
 #define SVG_ITEM(NAME,TYPE,NS_TYPE)                                                     \
 public:                                                                                 \
@@ -21,6 +22,8 @@ class QDomElement;
 class abstract_attribute;
 class QDomDocument;
 class svg_document;
+
+class QPainter;
 
 enum class svg_namespaces_t;
 
@@ -47,6 +50,8 @@ public:
 
   virtual QString namespace_uri () const;
   virtual QString namespace_name () const;
+
+  virtual void draw (QPainter &/*painter*/) {};
 
   svg_document *document () const { return m_document; }
 

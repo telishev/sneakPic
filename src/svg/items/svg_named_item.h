@@ -14,9 +14,9 @@ public:
   svg_named_item (svg_document *document);
   ~svg_named_item ();
 
-  bool has_name () const { return m_id != nullptr; }
-  QString name () const;
-  void set_name (const QString &name);
+  bool has_id () const { return m_id != nullptr; }
+  QString id () const;
+  void set_id (const QString &id);
 
 protected:
   virtual void process_attribute (abstract_attribute *attribute) override;

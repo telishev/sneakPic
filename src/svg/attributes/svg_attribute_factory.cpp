@@ -5,6 +5,8 @@
 #include "svg/attributes/svg_attribute_version.h"
 #include "svg/attributes/svg_attribute_width.h"
 #include "svg/attributes/svg_attribute_height.h"
+#include "svg/attributes/svg_attribute_path_data.h"
+#include "svg/attributes/svg_attribute_style.h"
 
 #include <QString>
 
@@ -23,6 +25,9 @@ svg_attribute_factory::svg_attribute_factory (svg_document *document)
   support_attribute<svg_attribute_version> ();
   support_attribute<svg_attribute_width> ();
   support_attribute<svg_attribute_height> ();
+  support_attribute<svg_attribute_path_data> ();
+  support_attribute<svg_attribute_style> ();
+
 }
 
 svg_attribute_factory::~svg_attribute_factory ()

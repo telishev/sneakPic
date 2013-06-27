@@ -9,5 +9,7 @@ enum class svg_attribute_type
   VERSION,
   WIDTH,
   HEIGHT,
+  D,
+  STYLE,
 };
 #endif // ATTRIBUTE_TYPE_H

@@ -5,3 +5,4 @@ HEADERS += $$THIS_DIR/*.h
 
 include ($$PROJ_DIR/src/svg/items/items.in)
 include ($$PROJ_DIR/src/svg/attributes/attributes.in)
+include ($$PROJ_DIR/src/svg/shape/shape.in)

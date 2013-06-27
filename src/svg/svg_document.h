@@ -6,9 +6,11 @@ class svg_attribute_factory;
 class svg_named_items_container;
 
 class abstract_svg_item;
+class svg_item_svg;
 
 class QString;
 class QDomDocument;
+class QPainter;
 
 class svg_document
 {
@@ -17,6 +19,7 @@ class svg_document
   svg_named_items_container *m_item_container;
 
   abstract_svg_item *m_root;
+  svg_item_svg *item_svg;
 public:
   svg_document ();
   ~svg_document ();
@@ -26,8 +29,12 @@ public:
   svg_named_items_container *item_container () const { return m_item_container; }
   abstract_svg_item *root () const { return m_root; }
 
+  bool get_doc_dimensions (double &width, double &height);
+
   bool read_file (const QString &filename);
   bool write_file (const QString &filename);
+
+  void draw (QPainter &painter);
 };
 
 #endif // SVG_DOCUMENT_H

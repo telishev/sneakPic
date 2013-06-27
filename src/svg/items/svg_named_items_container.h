@@ -18,8 +18,8 @@ public:
   void add_item (svg_named_item *item);
   void remove_item (svg_named_item *item);
 
-  svg_named_item *get_item (const QString &name) const;
-  bool contains (const QString &name) const;
+  svg_named_item *get_item (const QString &id) const;
+  bool contains (const QString &id) const;
 };
 
 

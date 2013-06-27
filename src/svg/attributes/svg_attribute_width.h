@@ -7,13 +7,15 @@ class svg_attribute_width : public abstract_attribute
 {
   SVG_ATTRIBUTE ("width", svg_attribute_type::WIDTH, svg_namespaces_t::EMPTY)
 
-  double width;
+  double m_width;
 public:
-  svg_attribute_width () { width = 0; }
+  svg_attribute_width () { m_width = 0; }
   virtual ~svg_attribute_width () {}
 
-  virtual bool read (const QString &data) override { bool ok; width = data.toDouble (&ok); return ok; }
-  virtual bool write (QString &data) const override { data = QString::number (width) ; return true; }
+  double width () const { return m_width; }
+
+  virtual bool read (const QString &data) override { bool ok; m_width = data.toDouble (&ok); return ok; }
+  virtual bool write (QString &data) const override { data = QString::number (m_width) ; return true; }
 };
 
 

@@ -2,6 +2,8 @@
 
 #include "svg/items/svg_item_svg.h"
 #include "svg/items/unknown_item.h"
+#include "svg/items/svg_item_path.h"
+#include "svg/items/svg_item_group.h"
 
 template<typename T>
 void svg_item_factory::support_item ()
@@ -15,6 +17,8 @@ svg_item_factory::svg_item_factory (svg_document *document)
   m_document = document;
 
   support_item<svg_item_svg> ();
+  support_item<svg_item_group> ();
+  support_item<svg_item_path> ();
 }
 
 svg_item_factory::~svg_item_factory ()
@@ -36,3 +40,4 @@ QString svg_item_factory::create_unique_item_name (const QString &localName, con
 {
   return namespaceURI + ":" + localName;
 }
+

@@ -5,6 +5,8 @@ enum class svg_item_type
 {
   UNKNOWN,
   SVG,
+  G,
+  PATH,
 };
 
 
