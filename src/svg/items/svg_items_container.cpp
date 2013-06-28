@@ -35,7 +35,7 @@ abstract_svg_item *svg_items_container::get_item (const QString &id) const
 {
   auto it = m_map.find (id);
   if (it == m_map.end ())
-    return 0;
+    return nullptr;
 
   return it->second;
 }

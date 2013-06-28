@@ -39,7 +39,7 @@ main_window::~main_window ()
 
 void main_window::init_clear ()
 {
-  doc = 0;
+  doc = nullptr;
 }
 
 void main_window::open_file_clicked ()
@@ -81,12 +81,12 @@ QString main_window::get_last_file_open_dir () const
     return QString ();
 
   QFileInfo last_file (last_filename);
-  return last_file.dir ().dirName ();
+  return last_file.dir ().path ();
 }
 
 void main_window::open_file (const QString &filename)
 {
-  renderer->set_document (0);
+  renderer->set_document (nullptr);
   FREE (doc);
   
   doc = new svg_document;

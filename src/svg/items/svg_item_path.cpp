@@ -13,8 +13,8 @@
 svg_item_path::svg_item_path (svg_document *document)
   : abstract_svg_item (document)
 {
-  m_path_data = 0;
-  m_path_style = 0;
+  m_path_data = nullptr;
+  m_path_style = nullptr;
 }
 
 svg_item_path::~svg_item_path ()

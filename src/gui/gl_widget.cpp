@@ -14,7 +14,7 @@
 gl_widget::gl_widget (QWidget *parent)
   : QGLWidget (QGLFormat(QGL::SampleBuffers | QGL::AlphaChannel), parent)
 {
-  m_cur_painter = 0;
+  m_cur_painter = nullptr;
   setAutoFillBackground (false);
 
   m_mouse_filter_object = new mouse_filter (this);

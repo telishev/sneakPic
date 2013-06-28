@@ -83,6 +83,8 @@ public:
 
   abstract_attribute *get_attribute (const QString &data) const;
 
+  bool is_xml_class (const QString &class_name) const;
+
 protected:
   virtual void process_attribute (abstract_attribute *attribute);
 

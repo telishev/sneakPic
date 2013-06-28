@@ -25,6 +25,8 @@ abstract_svg_item::abstract_svg_item (svg_document *document)
 
   m_first_child = nullptr;
   m_last_child = nullptr;
+  m_id = nullptr;
+  m_class = nullptr;
 }
 
 abstract_svg_item::~abstract_svg_item ()
@@ -33,7 +35,7 @@ abstract_svg_item::~abstract_svg_item ()
   for (auto &attribute : m_attributes)
     delete attribute.second;
 
-  abstract_svg_item *cur = m_first_child, *next = 0;
+  abstract_svg_item *cur = m_first_child, *next = nullptr;
   while (cur)
     {
       next = cur->next_sibling ();
@@ -55,11 +57,11 @@ void abstract_svg_item::read (const QDomElement &item)
       QDomElement child_element = child.toElement ();
       abstract_svg_item *child_item = item_factory->create_item (child_element.localName (), child_element.namespaceURI (), child_element.prefix ());
       child_item->read (child_element);
-      insert_child (0, child_item);
+      insert_child (nullptr, child_item);
     }
 
   QDomNamedNodeMap attributes = item.attributes();
-  for (int i = 0; i < attributes.count (); i++)
+  for (int i = 0; i < attributes.count (); i++)\
     {
       QDomNode item = attributes.item (i);
       if (!item.isAttr ())
@@ -224,7 +226,15 @@ abstract_attribute *abstract_svg_item::get_attribute (const QString &data) const
 {
   auto it = m_attributes.find (data.toStdString ());
   if (it == m_attributes.end ())
-    return 0;
+    return nullptr;
 
   return it->second;
+}
+
+bool abstract_svg_item::is_xml_class (const QString &class_name) const
+{
+  if (!m_class)
+    return false;
+
+  return m_class->is_class (class_name);
 }

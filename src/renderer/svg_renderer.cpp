@@ -10,7 +10,7 @@
 svg_renderer::svg_renderer (gl_widget *glwidget, const mouse_filter *mouse_filter_object)
   : abstract_painter (glwidget, mouse_filter_object)
 {
-  m_document = 0;
+  m_document = nullptr;
   drag_started = false;
 }
 

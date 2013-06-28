@@ -8,9 +8,9 @@
 svg_item_svg::svg_item_svg (svg_document *document)
   : abstract_svg_item (document)
 {
-  m_version = 0;
-  m_width = 0;
-  m_height = 0;
+  m_version = nullptr;
+  m_width = nullptr;
+  m_height = nullptr;
 }
 
 svg_item_svg::~svg_item_svg ()
