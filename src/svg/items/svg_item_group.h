@@ -1,11 +1,11 @@
 #ifndef SVG_ITEM_GROUP_H
 #define SVG_ITEM_GROUP_H
 
-#include "svg/items/svg_named_item.h"
+#include "svg/items/abstract_svg_item.h"
 
-class svg_item_group : public svg_named_item
+class svg_item_group : public abstract_svg_item
 {
-  SVG_ITEM ("g", svg_item_type::G, svg_namespaces_t::SVG)
+  SVG_ITEM
 public:
   svg_item_group (svg_document *document);
   virtual ~svg_item_group () override;

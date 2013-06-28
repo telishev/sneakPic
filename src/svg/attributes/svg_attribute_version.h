@@ -5,7 +5,7 @@
 
 class svg_attribute_version : public abstract_attribute
 {
-  SVG_ATTRIBUTE ("version", svg_attribute_type::VERSION, svg_namespaces_t::EMPTY)
+  SVG_ATTRIBUTE
 
   QString version;
 public:

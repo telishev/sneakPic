@@ -6,17 +6,17 @@
 #include "svg/svg_namespaces.h"
 #include "svg/attributes/attribute_type.h"
 
-#define SVG_ATTRIBUTE(NAME,TYPE,NS_TYPE)                                                                      \
-public:                                                                                                       \
-  static QString static_name () { return NAME; }                                                              \
-  static svg_namespaces_t static_ns_type () { return NS_TYPE; }                                               \
-  virtual svg_attribute_type type () const override { return TYPE; }                                          \
-  static QString static_ns_URI () { return svg_namespaces::uri (static_ns_type ()); }                         \
-  virtual svg_namespaces_t namespace_type () const override { return static_ns_type (); }                     \
-  virtual QString namespace_uri () const override { return svg_namespaces::uri (namespace_type ()); }         \
-  virtual QString namespace_name () const override { return svg_namespaces::name (namespace_type ()); }       \
-  virtual QString name () const override { return static_name (); }                                           \
-private:                                                                                                      \
+#define SVG_ATTRIBUTE                                           \
+public:                                                         \
+  static QString static_name ();                                \
+  static svg_namespaces_t static_ns_type ();                    \
+  virtual svg_attribute_type type () const override;            \
+  static QString static_ns_URI ();                              \
+  virtual svg_namespaces_t namespace_type () const override;    \
+  virtual QString namespace_uri () const override;              \
+  virtual QString namespace_name () const override;             \
+  virtual QString name () const override;                       \
+private:                                                        \
 
 class abstract_attribute
 {

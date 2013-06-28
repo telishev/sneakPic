@@ -1,7 +1,7 @@
 #include "svg/items/svg_item_group.h"
 
 svg_item_group::svg_item_group (svg_document *document)
-  : svg_named_item (document)
+  : abstract_svg_item (document)
 {
 
 }

@@ -7,7 +7,7 @@
 #include "common/memory_deallocation.h"
 
 #include "svg/items/svg_item_factory.h"
-#include "svg/items/svg_named_items_container.h"
+#include "svg/items/svg_items_container.h"
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_item_svg.h"
 #include "svg/svg_namespaces.h"
@@ -20,7 +20,7 @@ svg_document::svg_document ()
 {
   m_item_factory = new svg_item_factory (this);
   m_attribute_factory = new svg_attribute_factory (this);
-  m_item_container = new svg_named_items_container;
+  m_item_container = new svg_items_container;
   m_root = 0;
   item_svg = 0;
 }

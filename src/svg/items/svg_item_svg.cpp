@@ -6,7 +6,7 @@
 #include "svg/attributes/svg_attribute_height.h"
 
 svg_item_svg::svg_item_svg (svg_document *document)
-  : svg_named_item (document)
+  : abstract_svg_item (document)
 {
   m_version = 0;
   m_width = 0;
@@ -35,7 +35,7 @@ void svg_item_svg::process_attribute (abstract_attribute *attribute)
       break;
     }
 
-  return svg_named_item::process_attribute (attribute);
+  return abstract_svg_item::process_attribute (attribute);
 }
 
 double svg_item_svg::width () const

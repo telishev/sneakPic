@@ -10,7 +10,7 @@ class point_2d;
 
 class svg_attribute_path_data : public abstract_attribute
 {
-  SVG_ATTRIBUTE ("d", svg_attribute_type::D, svg_namespaces_t::EMPTY)
+  SVG_ATTRIBUTE
 
   std::vector<svg_subpath *> m_subpaths;
 public:

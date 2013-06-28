@@ -5,7 +5,7 @@
 
 class svg_attribute_height : public abstract_attribute
 {
-  SVG_ATTRIBUTE ("height", svg_attribute_type::HEIGHT, svg_namespaces_t::EMPTY)
+  SVG_ATTRIBUTE
 
   double m_height;
 public:

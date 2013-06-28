@@ -11,7 +11,7 @@
 #include <QPainter>
 
 svg_item_path::svg_item_path (svg_document *document)
-  : svg_named_item (document)
+  : abstract_svg_item (document)
 {
   m_path_data = 0;
   m_path_style = 0;
@@ -36,7 +36,7 @@ void svg_item_path::process_attribute (abstract_attribute *attribute)
       break;
     }
 
-  return svg_named_item::process_attribute (attribute);
+  return abstract_svg_item::process_attribute (attribute);
 }
 
 void svg_item_path::draw (QPainter &painter)

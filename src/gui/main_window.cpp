@@ -44,7 +44,7 @@ void main_window::init_clear ()
 
 void main_window::open_file_clicked ()
 {
-  QString filename = QFileDialog::getOpenFileName (this, "Open File", "C:/Users/alex/svg/test/", "*.svg");
+  QString filename = QFileDialog::getOpenFileName (this, "Open File", get_last_file_open_dir (), "*.svg");
   if (filename.isEmpty ())
     return;
 

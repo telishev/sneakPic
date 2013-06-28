@@ -1,14 +1,14 @@
 #ifndef SVG_ITEM_PATH_H
 #define SVG_ITEM_PATH_H
 
-#include "svg/items/svg_named_item.h"
+#include "svg/items/abstract_svg_item.h"
 
 class svg_attribute_path_data;
 class svg_attribute_style;
 
-class svg_item_path : public svg_named_item
+class svg_item_path : public abstract_svg_item
 {
-  SVG_ITEM ("path", svg_item_type::PATH, svg_namespaces_t::SVG)
+  SVG_ITEM
 
   svg_attribute_path_data *m_path_data;
   svg_attribute_style     *m_path_style;

@@ -1,7 +1,7 @@
 #ifndef SVG_ITEM_SVG_H
 #define SVG_ITEM_SVG_H
 
-#include "svg/items/svg_named_item.h"
+#include "svg/items/abstract_svg_item.h"
 #include "svg/svg_namespaces.h"
 
 #include <QString>
@@ -10,9 +10,9 @@ class svg_attribute_version;
 class svg_attribute_width;
 class svg_attribute_height;
 
-class svg_item_svg : public svg_named_item
+class svg_item_svg : public abstract_svg_item
 {
-  SVG_ITEM ("svg", svg_item_type::SVG, svg_namespaces_t::SVG)
+  SVG_ITEM
 
   svg_attribute_version *m_version;
   svg_attribute_width   *m_width;

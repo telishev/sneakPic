@@ -2,13 +2,18 @@
 
 #include <QDomElement>
 
+#include "common/debug_utils.h"
+
 #include "svg/attributes/abstract_attribute.h"
-#include "svg/items/svg_item_factory.h"
+#include "svg/attributes/svg_attribute_id.h"
 #include "svg/attributes/svg_attribute_factory.h"
+
+#include "svg/items/svg_item_factory.h"
+#include "svg/items/svg_items_container.h"
+
 #include "svg/svg_document.h"
 #include "svg/svg_namespaces.h"
-
-#include "common/debug_utils.h"
+#include "../attributes/svg_attribute_class.h"
 
 
 abstract_svg_item::abstract_svg_item (svg_document *document)
@@ -24,8 +29,9 @@ abstract_svg_item::abstract_svg_item (svg_document *document)
 
 abstract_svg_item::~abstract_svg_item ()
 {
-  for (abstract_attribute *attribute : m_attributes)
-    delete attribute;
+  remove_from_container ();
+  for (auto &attribute : m_attributes)
+    delete attribute.second;
 
   abstract_svg_item *cur = m_first_child, *next = 0;
   while (cur)
@@ -78,8 +84,9 @@ void abstract_svg_item::write (QDomElement &item, QDomDocument &doc) const
       item.appendChild (child_element);
     }
 
-  for (const abstract_attribute *attribute : m_attributes)
+  for (auto &attribute_pair : m_attributes)
     {
+      abstract_attribute *attribute = attribute_pair.second;
       QDomAttr dom_attribute = doc.createAttributeNS (attribute->namespace_uri (), full_name (attribute->namespace_name (), attribute->name ()));
 
       QString value;
@@ -91,12 +98,12 @@ void abstract_svg_item::write (QDomElement &item, QDomDocument &doc) const
 
 void abstract_svg_item::add_attribute (abstract_attribute *attribute)
 {
-  m_attributes.insert (attribute);
+  m_attributes.insert (std::make_pair (attribute->name ().toStdString (), attribute));
 }
 
 void abstract_svg_item::remove_attribute (abstract_attribute *attribute)
 {
-  m_attributes.erase (attribute);
+  m_attributes.erase (attribute->name ().toStdString ());
 }
 
 QString abstract_svg_item::namespace_uri () const 
@@ -161,4 +168,63 @@ void abstract_svg_item::remove_child (abstract_svg_item *child)
   child->set_parent (nullptr);
   child->set_next_sibling (nullptr);
   child->set_prev_sibling (nullptr);
+}
+
+void abstract_svg_item::process_attribute (abstract_attribute *attribute)
+{
+  switch (attribute->type ())
+    {
+    case svg_attribute_type::ID:
+      m_id = static_cast<svg_attribute_id *> (attribute);
+      add_to_container ();
+      break;
+    case svg_attribute_type::CLASS:
+      m_class = static_cast<svg_attribute_class *> (attribute);
+      break;
+    default:
+      break;
+    }
+
+}
+
+QString abstract_svg_item::id () const
+{
+  if (!has_id ())
+    return QString ();
+
+  return m_id->id ();
+}
+
+void abstract_svg_item::set_id (const QString &id)
+{
+  remove_from_container ();
+  if (!m_id)
+    {
+      m_id = new svg_attribute_id;
+      add_attribute (m_id);
+    }
+
+  m_id->set_id (id);
+  add_to_container ();
+}
+
+void abstract_svg_item::add_to_container ()
+{
+  if (has_id ())
+    document ()->item_container ()->add_item (this);
+}
+
+void abstract_svg_item::remove_from_container ()
+{
+  if (has_id ())
+    document ()->item_container ()->remove_item (this);
+}
+
+abstract_attribute *abstract_svg_item::get_attribute (const QString &data) const
+{
+  auto it = m_attributes.find (data.toStdString ());
+  if (it == m_attributes.end ())
+    return 0;
+
+  return it->second;
 }

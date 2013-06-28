@@ -8,7 +8,7 @@
 
 class svg_attribute_id : public abstract_attribute
 {
-  SVG_ATTRIBUTE ("id", svg_attribute_type::ID, svg_namespaces_t::EMPTY)
+  SVG_ATTRIBUTE
   QString m_id;
 public:
   svg_attribute_id () {}

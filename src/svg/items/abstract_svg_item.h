@@ -1,29 +1,32 @@
 #ifndef BASE_SVG_ITEM_H
 #define BASE_SVG_ITEM_H
 
-#include <unordered_set>
+#include <unordered_map>
 #include <QString>
 
 #include "svg/items/svg_item_type.h"
 #include "svg/svg_namespaces.h"
 
-#define SVG_ITEM(NAME,TYPE,NS_TYPE)                                                     \
-public:                                                                                 \
-virtual svg_item_type type () const override { return TYPE; }                           \
-static QString static_name () { return NAME; }                                          \
-static svg_namespaces_t static_ns_type () { return NS_TYPE; }                           \
-static QString static_ns_URI () { return svg_namespaces::uri (static_ns_type ()); }     \
-virtual QString name () const override { return static_name (); }                       \
-virtual svg_namespaces_t namespace_type () const { return static_ns_type (); }          \
-private:                                                                                \
+#define SVG_ITEM                                   \
+public:                                            \
+virtual svg_item_type type () const override;      \
+static QString static_name ();                     \
+static svg_namespaces_t static_ns_type ();         \
+static QString static_ns_URI ();                   \
+virtual QString name () const override;            \
+virtual svg_namespaces_t namespace_type () const;  \
+private:                                           \
 
 class QDomElement;
+class QDomDocument;
+class QPainter;
 
 class abstract_attribute;
-class QDomDocument;
 class svg_document;
+class svg_attribute_id;
+class svg_attribute_class;
 
-class QPainter;
+
 
 enum class svg_namespaces_t;
 
@@ -38,7 +41,10 @@ class abstract_svg_item
   abstract_svg_item *m_first_child;
   abstract_svg_item *m_last_child;
 
-  std::unordered_set<abstract_attribute *> m_attributes;
+  std::unordered_map<std::string, abstract_attribute *> m_attributes;
+
+  svg_attribute_id *m_id;
+  svg_attribute_class *m_class;
 
 public:
   abstract_svg_item (svg_document *document);
@@ -71,13 +77,22 @@ public:
   void read (const QDomElement &item);
   void write (QDomElement &item, QDomDocument &doc) const;
 
+  bool has_id () const { return m_id != nullptr; }
+  QString id () const;
+  void set_id (const QString &id);
+
+  abstract_attribute *get_attribute (const QString &data) const;
+
 protected:
-  virtual void process_attribute (abstract_attribute * /*attribute*/) {}
+  virtual void process_attribute (abstract_attribute *attribute);
 
   void set_parent (abstract_svg_item *parent) { m_parent = parent; }
   void set_next_sibling (abstract_svg_item *next) { m_next_sibling = next; }
   void set_prev_sibling (abstract_svg_item *prev) { m_prev_sibling = prev; }
   QString full_name (const QString &namespace_name, const QString &local_name) const;
+
+  void add_to_container ();
+  void remove_from_container ();
 };
 
 #endif // BASE_SVG_ITEM_H

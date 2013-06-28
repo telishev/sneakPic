@@ -5,7 +5,7 @@
 
 class svg_attribute_style : public abstract_attribute
 {
-  SVG_ATTRIBUTE ("style", svg_attribute_type::STYLE, svg_namespaces_t::EMPTY)
+  SVG_ATTRIBUTE
 
 public:
   svg_attribute_style ();

@@ -7,8 +7,22 @@
 #include "svg/attributes/svg_attribute_height.h"
 #include "svg/attributes/svg_attribute_path_data.h"
 #include "svg/attributes/svg_attribute_style.h"
+#include "svg/attributes/svg_attribute_class.h"
 
 #include <QString>
+
+#define DECLARE_ATTRIBUTE(ENUM,NAME,NAMESPACE,CLASS)                                           \
+  QString CLASS::static_name () { return NAME; }                                               \
+  svg_namespaces_t CLASS::static_ns_type () { return svg_namespaces_t::NAMESPACE; }            \
+  svg_attribute_type CLASS::type () const { return svg_attribute_type::ENUM; }                 \
+  QString CLASS::static_ns_URI () { return svg_namespaces::uri (static_ns_type ()); }          \
+  svg_namespaces_t CLASS::namespace_type () const { return static_ns_type (); }                \
+  QString CLASS::namespace_uri () const { return svg_namespaces::uri (namespace_type ()); }    \
+  QString CLASS::namespace_name () const { return svg_namespaces::name (namespace_type ()); }  \
+  QString CLASS::name () const { return static_name (); }                                      \
+
+  DECLARE_SVG_ATTRIBUTES
+#undef DECLARE_ATTRIBUTE
 
 template<typename T>
 void svg_attribute_factory::support_attribute ()
@@ -21,13 +35,10 @@ svg_attribute_factory::svg_attribute_factory (svg_document *document)
 {
   m_document = document;
 
-  support_attribute<svg_attribute_id> ();
-  support_attribute<svg_attribute_version> ();
-  support_attribute<svg_attribute_width> ();
-  support_attribute<svg_attribute_height> ();
-  support_attribute<svg_attribute_path_data> ();
-  support_attribute<svg_attribute_style> ();
+#define DECLARE_ATTRIBUTE(ENUM,NAME,NAMESPACE,CLASS) support_attribute<CLASS> ();
 
+  DECLARE_SVG_ATTRIBUTES
+#undef DECLARE_ATTRIBUTE
 }
 
 svg_attribute_factory::~svg_attribute_factory ()

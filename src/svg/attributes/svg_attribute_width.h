@@ -5,7 +5,7 @@
 
 class svg_attribute_width : public abstract_attribute
 {
-  SVG_ATTRIBUTE ("width", svg_attribute_type::WIDTH, svg_namespaces_t::EMPTY)
+  SVG_ATTRIBUTE
 
   double m_width;
 public:
