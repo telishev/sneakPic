@@ -5,6 +5,7 @@
 #include "svg/items/svg_item_path.h"
 #include "svg/items/svg_item_group.h"
 #include "svg/items/svg_item_style.h"
+#include "svg/items/svg_item_defs.h"
 
 #define DECLARE_ITEM(ENUM,NAME,NAMESPACE,CLASS)                                         \
 svg_item_type CLASS::type () const { return svg_item_type::ENUM; }                      \

@@ -271,6 +271,9 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const 
   /// 3. search in sibling <defs> items
   for (abstract_svg_item *child = parent ()->first_child (); child; child = child->next_sibling ())
     {
+      if (child->type () != svg_item_type::DEFS)
+        continue;
+
       attribute = child->find_attribute_in_style_item (data, item);
       if (attribute)
         return attribute;

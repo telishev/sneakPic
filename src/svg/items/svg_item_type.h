@@ -8,6 +8,7 @@ DECLARE_ITEM(SVG   , "svg"   , SVG         , svg_item_svg     )   \
 DECLARE_ITEM(G     , "g"     , SVG         , svg_item_group   )   \
 DECLARE_ITEM(PATH  , "path"  , SVG         , svg_item_path    )   \
 DECLARE_ITEM(STYLE , "style" , SVG         , svg_item_style   )   \
+DECLARE_ITEM(DEFS  , "defs"  , SVG         , svg_item_defs    )   \
 
 enum class svg_item_type
 {
