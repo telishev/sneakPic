@@ -11,11 +11,11 @@ class svg_attribute_id : public abstract_attribute
   SVG_ATTRIBUTE
   QString m_id;
 public:
-  svg_attribute_id () {}
+  svg_attribute_id (abstract_svg_item *item) : abstract_attribute (item) {}
   virtual ~svg_attribute_id () {}
 
-  virtual bool read (const QString &data) override { m_id = data; return true; }
-  virtual bool write (QString &data) const override { data = m_id; return true; }
+  virtual bool read (const QString &data, bool /*from_css*/ = false) override { m_id = data; return true; }
+  virtual bool write (QString &data, bool /*to_css*/ = false) const override { data = m_id; return true; }
 
   QString id () const { return m_id; }
   void set_id (const QString &id) { m_id = id; } 

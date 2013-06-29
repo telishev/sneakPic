@@ -23,10 +23,6 @@ class QPainter;
 
 class abstract_attribute;
 class svg_document;
-class svg_attribute_id;
-class svg_attribute_class;
-
-
 
 enum class svg_namespaces_t;
 
@@ -42,9 +38,6 @@ class abstract_svg_item
   abstract_svg_item *m_last_child;
 
   std::unordered_map<std::string, abstract_attribute *> m_attributes;
-
-  svg_attribute_id *m_id;
-  svg_attribute_class *m_class;
 
 public:
   abstract_svg_item (svg_document *document);
@@ -77,16 +70,32 @@ public:
   void read (const QDomElement &item);
   void write (QDomElement &item, QDomDocument &doc) const;
 
-  bool has_id () const { return m_id != nullptr; }
+  bool has_id () const;
   QString id () const;
-  void set_id (const QString &id);
-
-  abstract_attribute *get_attribute (const QString &data) const;
 
   bool is_xml_class (const QString &class_name) const;
 
+  /// returns attribute for the current item
+  template <typename T>
+  T *get_attribute () const
+  {
+    return static_cast< T *> (get_attribute (T::static_name ()));
+  }
+
+  /// returns attribute with respect to styling and css
+  template <typename T>
+  const T *get_computed_attribute () const
+  {
+    const abstract_attribute *attribute = get_computed_attribute (T::static_name (), T::static_is_styleable ());
+    /// if not found, return default value
+    if (!attribute)
+      attribute = T::default_value ();
+
+    return static_cast<const T *>(attribute);
+  }
+
 protected:
-  virtual void process_attribute (abstract_attribute *attribute);
+  virtual bool read_item (const QString &/*data*/) { return true; }
 
   void set_parent (abstract_svg_item *parent) { m_parent = parent; }
   void set_next_sibling (abstract_svg_item *next) { m_next_sibling = next; }
@@ -95,6 +104,11 @@ protected:
 
   void add_to_container ();
   void remove_from_container ();
+  abstract_attribute *get_attribute (const QString &data) const;
+  const abstract_attribute *get_computed_attribute (const QString &data, bool is_styleable) const;
+  const abstract_attribute *find_attribute_in_selectors (const QString &data, const abstract_svg_item *item) const;
+  const abstract_attribute *find_attribute_in_style_item (const QString &data, const abstract_svg_item *item) const;
+  const abstract_svg_item *find_child (const QString &name) const;
 };
 
 #endif // BASE_SVG_ITEM_H

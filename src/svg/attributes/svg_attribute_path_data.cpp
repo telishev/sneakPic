@@ -11,7 +11,8 @@
 
 #include <functional>
 
-svg_attribute_path_data::svg_attribute_path_data ()
+svg_attribute_path_data::svg_attribute_path_data (abstract_svg_item *item)
+  : abstract_attribute (item)
 {
 
 }
@@ -21,14 +22,15 @@ svg_attribute_path_data::~svg_attribute_path_data ()
   clear ();
 }
 
-bool svg_attribute_path_data::read (const QString &data)
+bool svg_attribute_path_data::read (const QString &data, bool /*from_css*/)
 {
   return read_data (data.toUtf8 ().constData ());
 
 }
 
-bool svg_attribute_path_data::write (QString &/*data*/) const 
+bool svg_attribute_path_data::write (QString &/*data*/, bool /*to_css*/) const 
 {
+  /// TODO: support
   return true;
 }
 

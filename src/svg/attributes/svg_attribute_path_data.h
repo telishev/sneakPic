@@ -14,11 +14,11 @@ class svg_attribute_path_data : public abstract_attribute
 
   std::vector<svg_subpath *> m_subpaths;
 public:
-  svg_attribute_path_data ();
+  svg_attribute_path_data (abstract_svg_item *item);
   virtual ~svg_attribute_path_data ();
 
-  virtual bool read (const QString &data) override;
-  virtual bool write (QString &data) const override;
+  virtual bool read (const QString &data, bool from_css = false) override;
+  virtual bool write (QString &data, bool to_css = false) const override;
 
   const std::vector<svg_subpath *> &subpath () const { return m_subpaths; }
 

@@ -3,7 +3,8 @@
 
 
 
-svg_attribute_class::svg_attribute_class ()
+svg_attribute_class::svg_attribute_class (abstract_svg_item *item)
+  : abstract_attribute (item)
 {
 
 }
@@ -13,13 +14,13 @@ svg_attribute_class::~svg_attribute_class ()
 
 }
 
-bool svg_attribute_class::read (const QString &data)
+bool svg_attribute_class::read (const QString &data, bool /*from_css*/)
 {
   m_class_names = data.split ("\0x20""\0x9""0xD""0xA");
   return m_class_names.size () != 0;
 }
 
-bool svg_attribute_class::write (QString &data) const 
+bool svg_attribute_class::write (QString &data, bool /*from_css*/) const 
 {
   if (m_class_names.size () == 0)
     return false;

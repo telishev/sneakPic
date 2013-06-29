@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "common/common_utils.h"
+
 static const int issseparator_array[256] =
 {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 1 /*\t*/, 1 /*\n*/, 1 /*\v*/, 1 /*\f*/, 1 /*\r*/, 0, 0,
@@ -65,6 +67,16 @@ static inline void trim_whitespace_left (const char *&str)
     str++;
 }
 
+/// returns last non-whitespace character before str_end
+static inline const char *trim_whitespace_right (const char *str_begin, const char *str_end)
+{
+  str_end--;
+  while (str_end > str_begin && is_space (*str_end))
+    str_end--;
+
+  return str_end + 1;
+}
+
 static const int isalpha_array[256] =
 {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -90,6 +102,33 @@ static inline int is_alpha (const unsigned char c)
 {
   return isalpha_array[c];
 }
+
+static const int isnum_array[256] =
+{
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, //< Digits
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //< Uppercase letters
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //< Lowercase letters
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+
+/// Analog of isalnum function from ctype.h (for default locale)
+static inline int is_num (const unsigned char c)
+{
+  return isnum_array [c];
+}
+
 
 static const int isalnum_array[256] =
 {
@@ -127,6 +166,146 @@ static std::string get_next_identifier (const char *&str)
     str++;
 
   return std::string (begin, str);
+}
+
+
+
+///  finds end of comment
+static inline bool goto_comment_end (const char *&str)
+{
+  if (!*str)
+    return true;
+
+  str++;
+  while (*str)
+    {
+      if (*(str - 1) == '*' && *str == '/')
+        return true;
+
+      str++;
+    }
+
+  return true;
+}
+
+/// skips comments and whitespaces, sets str to the first non-space and comment symbol or to string end
+static inline bool skip_comments_and_whitespaces (const char *&str)
+{
+  for (; *str; str++)
+    {
+      trim_whitespace_left (str);
+      if (*str == '/' && *(str + 1) == '*')
+        {
+          str += 2;
+          if (!goto_comment_end (str))
+            return false;
+        }
+      else
+        return true;
+    }
+
+  return true;
+}
+
+/// find a char or end of string in string, considering escape chars, strings etc
+/// sets str to that symbol's address or to string end
+static inline bool goto_next_char (const char *&str, char to_find)
+{
+  char cur_char;
+  for (; *str; str++)
+    {
+      cur_char = *str;
+      if (cur_char == to_find)
+        return true;
+
+      /// skip everything right after slash
+      if (cur_char == '\\')
+        {
+          str++;
+          continue;
+        }
+
+      /// if found ' or ", skip to the next ' or "
+      if (cur_char == '\'' || cur_char == '\"')
+        {
+          str++;
+          if (!goto_next_char (str, cur_char))
+            return false;
+        }
+
+      /// if found comment, skip to the its end
+      if (cur_char == '/')
+        {
+          if (*(str + 1) == '*')
+            {
+              str += 2;
+              if (!goto_comment_end (str))
+                return false;
+            }
+        }
+    }
+
+  return true;
+}
+
+/// returns string where escape characters are replaced
+static inline std::string from_escaped_string (const std::string &str)
+{
+  std::string result;
+  result.reserve (str.length () + 1);
+  
+  for (const char *str_char = str.c_str (); *str_char; str_char++)
+    {
+      if (*str_char != '\\')
+        result.push_back (*str_char);
+      else /// simply remove '\\'
+        {
+          /// TODO: support escaped numbers
+          str_char++;
+        }
+    }
+
+  return result;
+}
+
+static inline bool need_to_escape (char c)
+{
+  return (   c == '\\' || c ==';' || c == ':' || c == '\''
+          || c == '\"' || c == '{' || c == '}');
+}
+
+/// returns string with special symbols escaped
+static inline std::string to_escaped_string (const std::string &str)
+{
+  std::string result;
+  result.reserve (str.length () * 2);
+  
+  for (const char *str_char = str.c_str (); *str_char; str_char++)
+    {
+      if (need_to_escape (*str_char))
+        result.push_back ('\\');
+      
+      result.push_back (*str_char);
+    }
+
+  return result;
+}
+
+static inline bool extract_chunk (char chunk_end, const char *&data, std::string &result)
+{
+  const char *data_start = data;
+  CHECK (goto_next_char (data, chunk_end));
+
+  const char *data_end = trim_whitespace_right (data_start, data);
+  result = std::string (data_start, data_end);
+
+  if (*data)
+    {
+      data++;
+      CHECK (skip_comments_and_whitespaces (data));
+    }
+
+  return true;
 }
 
 /**

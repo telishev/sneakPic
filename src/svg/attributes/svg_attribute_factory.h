@@ -3,6 +3,7 @@
 
 class abstract_attribute;
 class svg_document;
+class abstract_svg_item;
 
 class QString;
 
@@ -13,12 +14,12 @@ class QString;
 class svg_attribute_factory
 {
   svg_document *m_document;
-  std::unordered_map<std::string, std::function<abstract_attribute * ()>> m_map;
+  std::unordered_map<std::string, std::function<abstract_attribute * (abstract_svg_item *)>> m_map;
 public:
   svg_attribute_factory (svg_document *document);
   ~svg_attribute_factory ();
 
-  abstract_attribute *create_attribute (const QString &localName, const QString &namespaceURI, const QString &prefix) const;
+  abstract_attribute *create_attribute (abstract_svg_item *item, const QString &localName, const QString &namespaceURI, const QString &prefix) const;
 
 private:
   template<typename T>

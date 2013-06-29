@@ -1,20 +1,24 @@
 #include "svg_item_path.h"
 
+#include <QPainterPath>
+#include <QPainter>
+
 #include "svg/attributes/abstract_attribute.h"
 #include "svg/attributes/svg_attribute_path_data.h"
 #include "svg/attributes/svg_attribute_style.h"
+#include "svg/attributes/svg_attribute_fill.h"
+#include "svg/attributes/svg_attribute_stroke_width.h"
+#include "svg/attributes/svg_attribute_stroke.h"
 
 #include "svg/shape/abstract_svg_shape.h"
 #include "svg/shape/svg_subpath.h"
 
-#include <QPainterPath>
-#include <QPainter>
+
+
 
 svg_item_path::svg_item_path (svg_document *document)
   : abstract_svg_item (document)
 {
-  m_path_data = nullptr;
-  m_path_style = nullptr;
 }
 
 svg_item_path::~svg_item_path ()
@@ -22,26 +26,13 @@ svg_item_path::~svg_item_path ()
 
 }
 
-void svg_item_path::process_attribute (abstract_attribute *attribute)
-{
-  switch (attribute->type ())
-    {
-    case svg_attribute_type::STYLE:
-      m_path_style = static_cast<svg_attribute_style *> (attribute);
-      break;
-    case svg_attribute_type::D:
-      m_path_data = static_cast<svg_attribute_path_data *> (attribute);
-      break;
-    default:
-      break;
-    }
-
-  return abstract_svg_item::process_attribute (attribute);
-}
-
 void svg_item_path::draw (QPainter &painter)
 {
-  const std::vector<svg_subpath *> &subpath = m_path_data->subpath ();
+  const svg_attribute_path_data *path_data = get_attribute<svg_attribute_path_data> ();
+  if (!path_data)
+    return;
+
+  const std::vector<svg_subpath *> &subpath = path_data->subpath ();
   QPainterPath painter_path;
   for (svg_subpath *path : subpath)
     {
@@ -56,5 +47,22 @@ void svg_item_path::draw (QPainter &painter)
         }
     }
 
-  painter.drawPath (painter_path);
+  draw_path (painter, painter_path);
+}
+
+void svg_item_path::draw_path (QPainter &painter, QPainterPath &painter_path)
+{
+  const svg_attribute_fill *fill = get_computed_attribute<svg_attribute_fill> ();
+  const svg_attribute_stroke *stroke = get_computed_attribute<svg_attribute_stroke> ();
+  const svg_attribute_stroke_width *stroke_width = get_computed_attribute<svg_attribute_stroke_width> ();
+
+  QPen pen;
+  pen.setWidthF (stroke_width->get_stroke_width ());
+  pen.setColor (stroke->get_color ());
+  QBrush brush (fill->get_color ());
+  if (fill->is_applied ())
+    painter.fillPath (painter_path, brush);
+
+  if (stroke->is_applied ())
+    painter.strokePath (painter_path, pen);
 }

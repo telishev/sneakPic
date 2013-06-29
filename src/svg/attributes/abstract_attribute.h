@@ -16,15 +16,23 @@ public:                                                         \
   virtual QString namespace_uri () const override;              \
   virtual QString namespace_name () const override;             \
   virtual QString name () const override;                       \
+  virtual bool is_styleable () const override;                  \
+  static bool static_is_styleable ();                           \
+  static const abstract_attribute *default_value ();            \
 private:                                                        \
+
+class svg_document;
+class abstract_svg_item;
 
 class abstract_attribute
 {
+  abstract_svg_item *m_item;
 public:
+  abstract_attribute (abstract_svg_item *item) { m_item = item; }
   virtual ~abstract_attribute () {}
 
-  virtual bool read (const QString &data) = 0;
-  virtual bool write (QString &data) const = 0;
+  virtual bool read (const QString &data, bool from_css = false) = 0;
+  virtual bool write (QString &data, bool to_css = false) const = 0;
 
   virtual QString name () const = 0;
   virtual QString namespace_uri () const = 0;
@@ -32,6 +40,9 @@ public:
   virtual svg_namespaces_t namespace_type () const = 0;
 
   virtual svg_attribute_type type () const = 0;
+  virtual bool is_styleable () const = 0;
+
+  abstract_svg_item *item () const { return m_item; }
 };
 
 #endif // ABSTRACT_ATTRIBUTE_H

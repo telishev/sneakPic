@@ -13,7 +13,9 @@
 
 #include "svg/svg_document.h"
 #include "svg/svg_namespaces.h"
-#include "../attributes/svg_attribute_class.h"
+#include "svg/attributes/svg_attribute_class.h"
+#include "svg/attributes/svg_attribute_style.h"
+#include "svg_item_style.h"
 
 
 abstract_svg_item::abstract_svg_item (svg_document *document)
@@ -25,8 +27,6 @@ abstract_svg_item::abstract_svg_item (svg_document *document)
 
   m_first_child = nullptr;
   m_last_child = nullptr;
-  m_id = nullptr;
-  m_class = nullptr;
 }
 
 abstract_svg_item::~abstract_svg_item ()
@@ -48,6 +48,22 @@ void abstract_svg_item::read (const QDomElement &item)
 {
   svg_item_factory *item_factory = m_document->item_factory ();
   svg_attribute_factory *attribute_factory = m_document->attribute_factory ();
+  read_item (item.text ());
+
+  QDomNamedNodeMap attributes = item.attributes();
+  for (int i = 0; i < attributes.count (); i++)
+    {
+      QDomNode item = attributes.item (i);
+      if (!item.isAttr ())
+        continue;
+
+      QDomAttr attr_item = item.toAttr ();
+      abstract_attribute *attribute = attribute_factory->create_attribute (this, attr_item.localName (), attr_item.namespaceURI (), attr_item.prefix ());
+      attribute->read (attr_item.value ());
+      add_attribute (attribute);
+    }
+
+  add_to_container ();
 
   for (QDomNode child = item.firstChild(); !child.isNull(); child = child.nextSibling())
     {
@@ -59,21 +75,6 @@ void abstract_svg_item::read (const QDomElement &item)
       child_item->read (child_element);
       insert_child (nullptr, child_item);
     }
-
-  QDomNamedNodeMap attributes = item.attributes();
-  for (int i = 0; i < attributes.count (); i++)\
-    {
-      QDomNode item = attributes.item (i);
-      if (!item.isAttr ())
-        continue;
-
-      QDomAttr attr_item = item.toAttr ();
-      abstract_attribute *attribute = attribute_factory->create_attribute (attr_item.localName (), attr_item.namespaceURI (), attr_item.prefix ());
-      attribute->read (attr_item.value ());
-      add_attribute (attribute);
-      process_attribute (attribute);
-    }
-
   
 }
 
@@ -172,42 +173,18 @@ void abstract_svg_item::remove_child (abstract_svg_item *child)
   child->set_prev_sibling (nullptr);
 }
 
-void abstract_svg_item::process_attribute (abstract_attribute *attribute)
+bool abstract_svg_item::has_id () const
 {
-  switch (attribute->type ())
-    {
-    case svg_attribute_type::ID:
-      m_id = static_cast<svg_attribute_id *> (attribute);
-      add_to_container ();
-      break;
-    case svg_attribute_type::CLASS:
-      m_class = static_cast<svg_attribute_class *> (attribute);
-      break;
-    default:
-      break;
-    }
-
+  return get_attribute<svg_attribute_id> () != nullptr;
 }
 
 QString abstract_svg_item::id () const
 {
-  if (!has_id ())
+  const svg_attribute_id *attribute_id = get_attribute<svg_attribute_id> ();
+  if (!attribute_id)
     return QString ();
 
-  return m_id->id ();
-}
-
-void abstract_svg_item::set_id (const QString &id)
-{
-  remove_from_container ();
-  if (!m_id)
-    {
-      m_id = new svg_attribute_id;
-      add_attribute (m_id);
-    }
-
-  m_id->set_id (id);
-  add_to_container ();
+  return attribute_id->id ();
 }
 
 void abstract_svg_item::add_to_container ()
@@ -222,19 +199,104 @@ void abstract_svg_item::remove_from_container ()
     document ()->item_container ()->remove_item (this);
 }
 
-abstract_attribute *abstract_svg_item::get_attribute (const QString &data) const
+const abstract_attribute *abstract_svg_item::get_computed_attribute (const QString &data, bool is_stylable) const
 {
+  /// 1. search in own attributes
   auto it = m_attributes.find (data.toStdString ());
-  if (it == m_attributes.end ())
+  if (it != m_attributes.end ())
+    return it->second;
+
+  if (!is_stylable)
     return nullptr;
 
-  return it->second;
+  /// 2. Search in "style" attribute
+  const svg_attribute_style *style = get_attribute<svg_attribute_style> ();
+  const abstract_attribute *attribute = 0;
+  if (style)
+    attribute = style->get_attribute (data.toStdString ());
+  if (attribute)
+    return attribute;
+
+  /// 3. Search in selectors
+  attribute = find_attribute_in_selectors (data, this);
+  if (attribute)
+    return attribute;
+
+  /// 4. Inherit from parent
+  if (m_parent)
+    {
+      attribute = m_parent->get_computed_attribute (data, is_stylable);
+      if (attribute)
+        return attribute;
+    }
+
+  /// 5. If still not found, return nullptr
+  return nullptr;
 }
 
 bool abstract_svg_item::is_xml_class (const QString &class_name) const
 {
-  if (!m_class)
+  const svg_attribute_class *attribute_class = get_attribute<svg_attribute_class> ();
+  if (!attribute_class)
     return false;
 
-  return m_class->is_class (class_name);
+  return attribute_class->is_class (class_name);
+}
+
+abstract_attribute *abstract_svg_item::get_attribute (const QString &data) const
+{
+  auto it = m_attributes.find (data.toStdString ());
+  if (it != m_attributes.end ())
+    return it->second;
+
+  return nullptr;
+}
+
+const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const QString &data, const abstract_svg_item *item) const
+{
+  const abstract_attribute *attribute = nullptr;
+  /// 1. search in <style> child
+  attribute = find_attribute_in_style_item (data, item);
+  if (attribute)
+    return attribute;
+
+  /// 2. search in parent selectors
+  if (!m_parent)
+    return nullptr;
+
+  attribute = m_parent->find_attribute_in_selectors (data, item);
+  if (attribute)
+    return attribute;
+
+  /// 3. search in sibling <defs> items
+  for (abstract_svg_item *child = parent ()->first_child (); child; child = child->next_sibling ())
+    {
+      attribute = child->find_attribute_in_style_item (data, item);
+      if (attribute)
+        return attribute;
+    }
+
+  /// 4. If not found return nullptr
+  return nullptr;
+}
+
+const abstract_svg_item *abstract_svg_item::find_child (const QString &name) const
+{
+  for (abstract_svg_item *child = m_first_child; child; child = child->m_next_sibling)
+    {
+      if (child->name () == name)
+        return child;
+    }
+
+  return nullptr;
+}
+
+const abstract_attribute *abstract_svg_item::find_attribute_in_style_item (const QString &data, const abstract_svg_item *item) const
+{
+  const abstract_attribute *attribute = nullptr;
+  const svg_item_style *style_item = static_cast <const svg_item_style *>(find_child (svg_item_style::static_name ()));
+  if (style_item)
+    attribute = style_item->get_attribute (data.toStdString (), item);
+
+  return attribute;
 }

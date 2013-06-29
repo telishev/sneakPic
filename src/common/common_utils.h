@@ -19,7 +19,8 @@ public:
 #define DO_ON_EXIT(FUNC) \
   scope_guard CONCATENATE(__do_on_exit_,__LINE__) (FUNC)
 
-#define CHECK(RESULT) if (!RESULT) return false;
+#define CHECK_RET(RESULT,RET) if (!RESULT) return RET;
+#define CHECK(RESULT) CHECK_RET (RESULT, false)
 
 /// \file common/common_defines.h
 

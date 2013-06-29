@@ -11,11 +11,11 @@ class svg_attribute_class : public abstract_attribute
   SVG_ATTRIBUTE
   QStringList m_class_names;
 public:
-  svg_attribute_class ();
+  svg_attribute_class (abstract_svg_item *item);
   virtual ~svg_attribute_class ();
 
-  virtual bool read (const QString &data) override;
-  virtual bool write (QString &data) const override;
+  virtual bool read (const QString &data, bool from_css = false) override;
+  virtual bool write (QString &data, bool to_css = false) const override;
 
   bool is_class (const QString &class_name) const;
 };
