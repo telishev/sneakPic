@@ -8,7 +8,7 @@
 class mouse_filter;
 class abstract_painter;
 
-class gl_widget : public QGLWidget, protected QGLFunctions
+class gl_widget : public QWidget, protected QGLFunctions
 {
   Q_OBJECT
 

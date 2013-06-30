@@ -12,7 +12,8 @@
 
 
 gl_widget::gl_widget (QWidget *parent)
-  : QGLWidget (QGLFormat(QGL::SampleBuffers | QGL::AlphaChannel), parent)
+  //: QGLWidget (QGLFormat(QGL::SampleBuffers | QGL::AlphaChannel), parent)
+  : QWidget (parent)
 {
   m_cur_painter = nullptr;
   setAutoFillBackground (false);
