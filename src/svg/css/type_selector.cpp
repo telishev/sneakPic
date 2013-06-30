@@ -14,5 +14,5 @@ type_selector::~type_selector ()
 
 bool type_selector::is_matched (const abstract_svg_item *item) const 
 {
-  return item->name ().toStdString () == m_type;
+  return item->name () == m_type;
 }

@@ -16,6 +16,7 @@
 #include "svg/attributes/svg_attribute_class.h"
 #include "svg/attributes/svg_attribute_style.h"
 #include "svg_item_style.h"
+#include "svg_item_defs.h"
 
 
 abstract_svg_item::abstract_svg_item (svg_document *document)
@@ -101,20 +102,20 @@ void abstract_svg_item::write (QDomElement &item, QDomDocument &doc) const
 
 void abstract_svg_item::add_attribute (abstract_attribute *attribute)
 {
-  m_attributes.insert (std::make_pair (attribute->name ().toStdString (), attribute));
+  m_attributes.insert (std::make_pair (attribute->name (), attribute));
 }
 
 void abstract_svg_item::remove_attribute (abstract_attribute *attribute)
 {
-  m_attributes.erase (attribute->name ().toStdString ());
+  m_attributes.erase (attribute->name ());
 }
 
-QString abstract_svg_item::namespace_uri () const 
+const char *abstract_svg_item::namespace_uri () const 
 {
   return svg_namespaces::uri (namespace_type ());
 }
 
-QString abstract_svg_item::namespace_name () const 
+const char * abstract_svg_item::namespace_name () const 
 {
   return svg_namespaces::name (namespace_type ());
 }
@@ -148,6 +149,8 @@ void abstract_svg_item::insert_child (abstract_svg_item *position, abstract_svg_
 
   if (prev == m_last_child)
     m_last_child = new_child;
+
+  m_child_map.insert (std::make_pair (new_child->name (), new_child));
 }
 
 void abstract_svg_item::remove_child (abstract_svg_item *child)
@@ -171,6 +174,7 @@ void abstract_svg_item::remove_child (abstract_svg_item *child)
   child->set_parent (nullptr);
   child->set_next_sibling (nullptr);
   child->set_prev_sibling (nullptr);
+  m_child_map.erase (child->name ());
 }
 
 bool abstract_svg_item::has_id () const
@@ -199,10 +203,10 @@ void abstract_svg_item::remove_from_container ()
     document ()->item_container ()->remove_item (this);
 }
 
-const abstract_attribute *abstract_svg_item::get_computed_attribute (const QString &data, bool is_stylable) const
+const abstract_attribute *abstract_svg_item::get_computed_attribute (const char *data, bool is_stylable) const
 {
   /// 1. search in own attributes
-  auto it = m_attributes.find (data.toStdString ());
+  auto it = m_attributes.find (data);
   if (it != m_attributes.end ())
     return it->second;
 
@@ -213,7 +217,7 @@ const abstract_attribute *abstract_svg_item::get_computed_attribute (const QStri
   const svg_attribute_style *style = get_attribute<svg_attribute_style> ();
   const abstract_attribute *attribute = 0;
   if (style)
-    attribute = style->get_attribute (data.toStdString ());
+    attribute = style->get_attribute (data);
   if (attribute)
     return attribute;
 
@@ -243,16 +247,16 @@ bool abstract_svg_item::is_xml_class (const QString &class_name) const
   return attribute_class->is_class (class_name);
 }
 
-abstract_attribute *abstract_svg_item::get_attribute (const QString &data) const
+abstract_attribute *abstract_svg_item::get_attribute (const char *data) const
 {
-  auto it = m_attributes.find (data.toStdString ());
+  auto it = m_attributes.find (data);
   if (it != m_attributes.end ())
     return it->second;
 
   return nullptr;
 }
 
-const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const QString &data, const abstract_svg_item *item) const
+const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const char *data, const abstract_svg_item *item) const
 {
   const abstract_attribute *attribute = nullptr;
   /// 1. search in <style> child
@@ -269,11 +273,10 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const 
     return attribute;
 
   /// 3. search in sibling <defs> items
-  for (abstract_svg_item *child = parent ()->first_child (); child; child = child->next_sibling ())
+  auto range = m_child_map.equal_range (svg_item_defs::static_name ());
+  for (auto it = range.first; it != range.second; it++)
     {
-      if (child->type () != svg_item_type::DEFS)
-        continue;
-
+      const abstract_svg_item *child = it->second;
       attribute = child->find_attribute_in_style_item (data, item);
       if (attribute)
         return attribute;
@@ -283,23 +286,17 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const 
   return nullptr;
 }
 
-const abstract_svg_item *abstract_svg_item::find_child (const QString &name) const
-{
-  for (abstract_svg_item *child = m_first_child; child; child = child->m_next_sibling)
-    {
-      if (child->name () == name)
-        return child;
-    }
-
-  return nullptr;
-}
-
-const abstract_attribute *abstract_svg_item::find_attribute_in_style_item (const QString &data, const abstract_svg_item *item) const
+const abstract_attribute *abstract_svg_item::find_attribute_in_style_item (const char *data, const abstract_svg_item *item) const
 {
   const abstract_attribute *attribute = nullptr;
-  const svg_item_style *style_item = static_cast <const svg_item_style *>(find_child (svg_item_style::static_name ()));
-  if (style_item)
-    attribute = style_item->get_attribute (data.toStdString (), item);
+  auto range = m_child_map.equal_range (svg_item_style::static_name ());
+  for (auto it = range.first; it != range.second; it++)
+    {
+      const svg_item_style *style = static_cast <const svg_item_style *> (it->second);
+      attribute = style->get_attribute (data, item);
+      if (attribute)
+        return attribute;
+    }
 
   return attribute;
 }

@@ -14,20 +14,20 @@
 
 #include <QString>
 
-#define DECLARE_ATTRIBUTE(ENUM,NAME,NAMESPACE,CLASS,STYLABLE)                                  \
-  QString CLASS::static_name () { return NAME; }                                               \
-  svg_namespaces_t CLASS::static_ns_type () { return svg_namespaces_t::NAMESPACE; }            \
-  svg_attribute_type CLASS::type () const { return svg_attribute_type::ENUM; }                 \
-  QString CLASS::static_ns_URI () { return svg_namespaces::uri (static_ns_type ()); }          \
-  svg_namespaces_t CLASS::namespace_type () const { return static_ns_type (); }                \
-  QString CLASS::namespace_uri () const { return svg_namespaces::uri (namespace_type ()); }    \
-  QString CLASS::namespace_name () const { return svg_namespaces::name (namespace_type ()); }  \
-  QString CLASS::name () const { return static_name (); }                                      \
-  bool CLASS::is_styleable () const { return static_is_styleable (); }                         \
-  bool CLASS::static_is_styleable () { return STYLABLE; }                                      \
-  const abstract_attribute *CLASS::default_value ()                                            \
- { static const CLASS def_value (nullptr); return &def_value; }                                \
-
+#define DECLARE_ATTRIBUTE(ENUM,NAME,NAMESPACE,CLASS,STYLABLE)                                     \
+  const char * CLASS::static_name () { return NAME; }                                             \
+  svg_namespaces_t CLASS::static_ns_type () { return svg_namespaces_t::NAMESPACE; }               \
+  svg_attribute_type CLASS::type () const { return svg_attribute_type::ENUM; }                    \
+  const char * CLASS::static_ns_URI () { return svg_namespaces::uri (static_ns_type ()); }        \
+  svg_namespaces_t CLASS::namespace_type () const { return static_ns_type (); }                   \
+  const char *CLASS::namespace_uri () const { return svg_namespaces::uri (namespace_type ()); }   \
+  const char *CLASS::namespace_name () const { return svg_namespaces::name (namespace_type ()); } \
+  const char *CLASS::name () const { return static_name (); }                                     \
+  bool CLASS::is_styleable () const { return static_is_styleable (); }                            \
+  bool CLASS::static_is_styleable () { return STYLABLE; }                                         \
+  const abstract_attribute *CLASS::default_value ()                                               \
+ { static const CLASS def_value (nullptr); return &def_value; }                                   \
+                                                                                                  
   DECLARE_SVG_ATTRIBUTES
 #undef DECLARE_ATTRIBUTE
 

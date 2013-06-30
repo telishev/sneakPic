@@ -9,10 +9,10 @@
 
 #define DECLARE_ITEM(ENUM,NAME,NAMESPACE,CLASS)                                         \
 svg_item_type CLASS::type () const { return svg_item_type::ENUM; }                      \
-QString CLASS::static_name () { return NAME; }                                          \
+const char *CLASS::static_name () { return NAME; }                                      \
 svg_namespaces_t CLASS::static_ns_type () { return svg_namespaces_t::NAMESPACE; }       \
-QString CLASS::static_ns_URI () { return svg_namespaces::uri (static_ns_type ()); }     \
-QString CLASS::name () const { return static_name (); }                                 \
+const char *CLASS::static_ns_URI () { return svg_namespaces::uri (static_ns_type ()); } \
+const char *CLASS::name () const { return static_name (); }                             \
 svg_namespaces_t CLASS::namespace_type () const { return static_ns_type (); }
 
   DECLARE_SVG_ITEM

@@ -2,6 +2,7 @@
 #define BASE_SVG_ITEM_H
 
 #include <unordered_map>
+#include <map>
 #include <QString>
 
 #include "svg/items/svg_item_type.h"
@@ -10,10 +11,10 @@
 #define SVG_ITEM                                   \
 public:                                            \
 virtual svg_item_type type () const override;      \
-static QString static_name ();                     \
+static const char *static_name ();                 \
 static svg_namespaces_t static_ns_type ();         \
-static QString static_ns_URI ();                   \
-virtual QString name () const override;            \
+static const char *static_ns_URI ();               \
+virtual const char *name () const override;        \
 virtual svg_namespaces_t namespace_type () const;  \
 private:                                           \
 
@@ -23,6 +24,7 @@ class QPainter;
 
 class abstract_attribute;
 class svg_document;
+class svg_item_defs;
 
 enum class svg_namespaces_t;
 
@@ -39,16 +41,18 @@ class abstract_svg_item
 
   std::unordered_map<std::string, abstract_attribute *> m_attributes;
 
+  std::multimap<std::string, const abstract_svg_item *> m_child_map;
+
 public:
   abstract_svg_item (svg_document *document);
   virtual ~abstract_svg_item ();
 
   virtual svg_item_type type () const = 0;
   virtual svg_namespaces_t namespace_type () const = 0;
-  virtual QString name () const = 0;
+  virtual const char *name () const = 0;
 
-  virtual QString namespace_uri () const;
-  virtual QString namespace_name () const;
+  virtual const char *namespace_uri () const;
+  virtual const char *namespace_name () const;
 
   virtual void draw (QPainter &/*painter*/) {};
 
@@ -104,11 +108,10 @@ protected:
 
   void add_to_container ();
   void remove_from_container ();
-  abstract_attribute *get_attribute (const QString &data) const;
-  const abstract_attribute *get_computed_attribute (const QString &data, bool is_styleable) const;
-  const abstract_attribute *find_attribute_in_selectors (const QString &data, const abstract_svg_item *item) const;
-  const abstract_attribute *find_attribute_in_style_item (const QString &data, const abstract_svg_item *item) const;
-  const abstract_svg_item *find_child (const QString &name) const;
+  abstract_attribute *get_attribute (const char *data) const;
+  const abstract_attribute *get_computed_attribute (const char *data, bool is_styleable) const;
+  const abstract_attribute *find_attribute_in_selectors (const char *data, const abstract_svg_item *item) const;
+  const abstract_attribute *find_attribute_in_style_item (const char *data, const abstract_svg_item *item) const;
 };
 
 #endif // BASE_SVG_ITEM_H

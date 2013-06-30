@@ -83,7 +83,7 @@ std::string css_declaration::to_string () const
       first = false;
       QString value;
       attribute->write (value, true);
-      result += QString (attribute->name () + ":" + value).toStdString ();
+      result += QString (QString (attribute->name ()) + ":" + value).toStdString ();
     }
 
   return result;
