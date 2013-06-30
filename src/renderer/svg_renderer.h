@@ -32,6 +32,10 @@ public:
   virtual void leaveEvent (QEvent *qevent) override;
   virtual void resizeGL (int width, int height) override;
   virtual bool event (QEvent * /*qevent*/) override { return false; }
+  virtual bool keyReleaseEvent (QKeyEvent *qevent) override;
+
+private:
+  void reset_transform ();
 };
 
 #endif // SVG_RENDERER_H

@@ -32,6 +32,7 @@ gl_widget::gl_widget (QWidget *parent)
             this, SLOT (mouse_released (mouse_filter::mouse_button, const QPoint &, const Qt::KeyboardModifiers &)));
 
    setMouseTracking (true);
+   grabKeyboard ();
 }
 
 gl_widget::~gl_widget ()
@@ -121,3 +122,11 @@ void gl_widget::leaveEvent (QEvent *qevent)
   qevent->accept ();
 }
 
+void gl_widget::keyReleaseEvent(QKeyEvent * qevent)
+{
+  if (m_cur_painter)
+  {
+    if (!m_cur_painter->keyReleaseEvent (qevent))
+      QWidget::keyReleaseEvent (qevent);
+  }
+}
