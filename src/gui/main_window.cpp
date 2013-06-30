@@ -13,6 +13,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QFileInfo>
+#include <QMessageBox>
 
 
 
@@ -90,7 +91,11 @@ void main_window::open_file (const QString &filename)
   FREE (doc);
   
   doc = new svg_document;
-  doc->read_file (filename);
+  if (!doc->read_file (filename))
+    {
+      QMessageBox::warning (this, "Warning", "Cannot open document");
+      return;
+    }
   renderer->set_document (doc);
   ui->glwidget->repaint ();
 }
