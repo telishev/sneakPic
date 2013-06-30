@@ -11,6 +11,9 @@ public:
   virtual ~svg_item_group () override;
 
   virtual void draw (QPainter &painter) override;
+
+protected:
+  virtual bool check_item () override { return true; }
 };
 
 

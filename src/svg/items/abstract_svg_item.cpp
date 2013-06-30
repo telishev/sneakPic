@@ -3,20 +3,23 @@
 #include <QDomElement>
 
 #include "common/debug_utils.h"
+#include "common/memory_deallocation.h"
+#include "common/common_utils.h"
 
 #include "svg/attributes/abstract_attribute.h"
 #include "svg/attributes/svg_attribute_id.h"
 #include "svg/attributes/svg_attribute_factory.h"
+#include "svg/attributes/svg_attribute_class.h"
+#include "svg/attributes/svg_attribute_style.h"
 
 #include "svg/items/svg_item_factory.h"
 #include "svg/items/svg_items_container.h"
+#include "svg/items/svg_item_style.h"
+#include "svg/items/svg_item_defs.h"
 
 #include "svg/svg_document.h"
 #include "svg/svg_namespaces.h"
-#include "svg/attributes/svg_attribute_class.h"
-#include "svg/attributes/svg_attribute_style.h"
-#include "svg_item_style.h"
-#include "svg_item_defs.h"
+
 
 
 abstract_svg_item::abstract_svg_item (svg_document *document)
@@ -60,11 +63,11 @@ void abstract_svg_item::read (const QDomElement &item)
 
       QDomAttr attr_item = item.toAttr ();
       abstract_attribute *attribute = attribute_factory->create_attribute (this, attr_item.localName (), attr_item.namespaceURI (), attr_item.prefix ());
-      attribute->read (attr_item.value ());
-      add_attribute (attribute);
+      if (attribute->read (attr_item.value ()))
+        add_attribute (attribute);
+      else
+        FREE (attribute);
     }
-
-  add_to_container ();
 
   for (QDomNode child = item.firstChild(); !child.isNull(); child = child.nextSibling())
     {
@@ -76,7 +79,6 @@ void abstract_svg_item::read (const QDomElement &item)
       child_item->read (child_element);
       insert_child (nullptr, child_item);
     }
-  
 }
 
 void abstract_svg_item::write (QDomElement &item, QDomDocument &doc) const 
@@ -191,10 +193,38 @@ QString abstract_svg_item::id () const
   return attribute_id->id ();
 }
 
+
+bool abstract_svg_item::check ()
+{
+  if (!check_item ())
+    return false;
+
+  add_to_container ();
+
+  for (abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
+    CHECK (child->check ());
+
+  return true;
+}
+
+
 void abstract_svg_item::add_to_container ()
 {
-  if (has_id ())
-    document ()->item_container ()->add_item (this);
+  svg_items_container *container = document ()->item_container ();
+  if (!has_id () || container->contains (id ()))
+    {
+      QString new_name = container->create_unique_name (name ());
+      svg_attribute_id *attribute_id = get_attribute<svg_attribute_id> ();
+      if (!attribute_id)
+        {
+          attribute_id = new svg_attribute_id (this);
+          add_attribute (attribute_id);
+        }
+
+      attribute_id->set_id (new_name);
+    }
+
+  container->add_item (this);
 }
 
 void abstract_svg_item::remove_from_container ()
@@ -300,3 +330,4 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_style_item (const
 
   return attribute;
 }
+

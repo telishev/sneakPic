@@ -21,6 +21,9 @@ public:
   double height () const;
 
   virtual void draw (QPainter &painter) override;
+
+protected:
+  virtual bool check_item () override { return true; }
 };
 
 #endif // SVG_ITEM_SVG_H

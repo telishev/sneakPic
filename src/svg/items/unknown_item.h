@@ -3,6 +3,9 @@
 
 #include "svg/items/abstract_svg_item.h"
 
+#include "svg/items/svg_item_type.h"
+#include "svg/svg_namespaces.h"
+
 class unknown_item : public abstract_svg_item
 {
   std::string m_name;
@@ -24,6 +27,9 @@ public:
   virtual const char *namespace_uri () const override { return m_namespace_uri.c_str (); }
   virtual const char *namespace_name () const override { return m_namespace_name.c_str (); }
   virtual svg_namespaces_t namespace_type () const override { return svg_namespaces_t::UNKNOWN; }
+
+protected:
+  virtual bool check_item () override { return true; }
 };
 
 

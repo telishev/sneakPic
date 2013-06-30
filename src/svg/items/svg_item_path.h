@@ -15,6 +15,9 @@ public:
 
   virtual void draw (QPainter &painter) override;
 
+protected:
+  virtual bool check_item () override;
+
 private:
   void draw_path (QPainter &painter, QPainterPath &painter_path);
 

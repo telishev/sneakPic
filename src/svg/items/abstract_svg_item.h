@@ -5,9 +5,6 @@
 #include <map>
 #include <QString>
 
-#include "svg/items/svg_item_type.h"
-#include "svg/svg_namespaces.h"
-
 #define SVG_ITEM                                   \
 public:                                            \
 virtual svg_item_type type () const override;      \
@@ -27,6 +24,7 @@ class svg_document;
 class svg_item_defs;
 
 enum class svg_namespaces_t;
+enum class svg_item_type;
 
 class abstract_svg_item
 {
@@ -98,14 +96,18 @@ public:
     return static_cast<const T *>(attribute);
   }
 
+  /// checks for correctness
+  bool check ();
+
 protected:
   virtual bool read_item (const QString &/*data*/) { return true; }
+  virtual bool check_item () = 0;
 
+private:
   void set_parent (abstract_svg_item *parent) { m_parent = parent; }
   void set_next_sibling (abstract_svg_item *next) { m_next_sibling = next; }
   void set_prev_sibling (abstract_svg_item *prev) { m_prev_sibling = prev; }
   QString full_name (const QString &namespace_name, const QString &local_name) const;
-
   void add_to_container ();
   void remove_from_container ();
   abstract_attribute *get_attribute (const char *data) const;

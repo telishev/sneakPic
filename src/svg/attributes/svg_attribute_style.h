@@ -3,6 +3,8 @@
 
 #include "svg/attributes/abstract_attribute.h"
 
+#include <string>
+
 class css_declaration;
 
 class svg_attribute_style : public abstract_attribute

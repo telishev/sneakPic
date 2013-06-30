@@ -10,11 +10,14 @@
 #include "svg/items/svg_items_container.h"
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_item_svg.h"
+#include "svg/items/abstract_svg_item.h"
+#include "svg/items/svg_item_type.h"
+
 #include "svg/svg_namespaces.h"
 
 #include "svg/attributes/svg_attribute_factory.h"
 
-#include "svg/items/abstract_svg_item.h"
+
 
 svg_document::svg_document ()
 {
@@ -52,7 +55,7 @@ bool svg_document::read_file (const QString &filename)
   else
     return false;
 
-  return true;
+  return item_svg->check ();
 }
 
 bool svg_document::write_file (const QString &filename)

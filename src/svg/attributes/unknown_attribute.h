@@ -1,10 +1,9 @@
-#include "abstract_attribute.h"
 #ifndef UNKNOWN_ATTRIBUTE_H
 #define UNKNOWN_ATTRIBUTE_H
 
 #include "svg/attributes/abstract_attribute.h"
-
-#include <QString>
+#include "svg/svg_namespaces.h"
+#include "svg/attributes/attribute_type.h"
 
 class unknown_attribute : public abstract_attribute
 {

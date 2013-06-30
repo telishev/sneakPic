@@ -66,3 +66,12 @@ void svg_item_path::draw_path (QPainter &painter, QPainterPath &painter_path)
   if (stroke->is_applied ())
     painter.strokePath (painter_path, pen);
 }
+
+bool svg_item_path::check_item ()
+{
+  const svg_attribute_path_data *path_data = get_attribute<svg_attribute_path_data> ();
+  if (!path_data)
+    return false;
+
+  return true;
+}

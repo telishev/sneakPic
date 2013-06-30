@@ -10,6 +10,7 @@
 #include "svg/shape/svg_subpath.h"
 
 #include <functional>
+#include <QString>
 
 svg_attribute_path_data::svg_attribute_path_data (abstract_svg_item *item)
   : abstract_attribute (item)

@@ -1,11 +1,6 @@
 #ifndef ABSTRACT_ATTRIBUTE_H
 #define ABSTRACT_ATTRIBUTE_H
 
-#include <QString>
-
-#include "svg/svg_namespaces.h"
-#include "svg/attributes/attribute_type.h"
-
 #define SVG_ATTRIBUTE                                           \
 public:                                                         \
   static const char *static_name ();                            \
@@ -23,6 +18,11 @@ private:                                                        \
 
 class svg_document;
 class abstract_svg_item;
+
+class QString;
+
+enum class svg_namespaces_t;
+enum class svg_attribute_type;
 
 class abstract_attribute
 {

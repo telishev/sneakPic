@@ -1,5 +1,7 @@
 #include "svg/attributes/svg_attribute_height.h"
 
+#include <QString>
+
 svg_attribute_height::svg_attribute_height (abstract_svg_item *item)
   : abstract_attribute (item)
 {

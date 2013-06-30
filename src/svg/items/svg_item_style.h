@@ -21,6 +21,9 @@ public:
   const abstract_attribute *get_attribute (const std::string &str, const abstract_svg_item *item_to_match) const;
 
 protected:
+  virtual bool check_item () override { return true; }
+
+protected:
   virtual bool read_item (const QString &data) override;
 
 private:
