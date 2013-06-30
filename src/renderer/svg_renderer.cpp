@@ -127,8 +127,10 @@ void svg_renderer::leaveEvent (QEvent *qevent)
 
 bool svg_renderer::keyReleaseEvent (QKeyEvent * qevent)
 {
-  if (qevent->key () == Qt::Key_1)
+  if (qevent->key () == Qt::Key_1 && qevent->modifiers () == Qt::NoModifier)
   {
+    if (!m_document)
+      return true;
     reset_transform ();
     glwidget ()->repaint ();
     qevent->accept ();
