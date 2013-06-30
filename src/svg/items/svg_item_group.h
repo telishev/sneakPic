@@ -10,7 +10,7 @@ public:
   svg_item_group (svg_document *document);
   virtual ~svg_item_group () override;
 
-  virtual void draw (QPainter &painter) override;
+  virtual bool render_children () const { return true; }
 
 protected:
   virtual bool check_item () override { return true; }

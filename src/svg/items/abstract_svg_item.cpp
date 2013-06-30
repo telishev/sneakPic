@@ -25,12 +25,6 @@
 abstract_svg_item::abstract_svg_item (svg_document *document)
 {
   m_document = document;
-  m_parent = nullptr;
-  m_next_sibling = nullptr;
-  m_prev_sibling = nullptr;
-
-  m_first_child = nullptr;
-  m_last_child = nullptr;
 }
 
 abstract_svg_item::~abstract_svg_item ()
@@ -38,14 +32,6 @@ abstract_svg_item::~abstract_svg_item ()
   remove_from_container ();
   for (auto &attribute : m_attributes)
     delete attribute.second;
-
-  abstract_svg_item *cur = m_first_child, *next = nullptr;
-  while (cur)
-    {
-      next = cur->next_sibling ();
-      delete cur;
-      cur = next;
-    }
 }
 
 void abstract_svg_item::read (const QDomElement &item)
@@ -130,55 +116,6 @@ QString abstract_svg_item::full_name (const QString &namespace_name, const QStri
   return namespace_name + ":" + local_name;
 }
 
-void abstract_svg_item::insert_child (abstract_svg_item *position, abstract_svg_item *new_child)
-{
-  DEBUG_ASSERT (new_child && new_child->parent () == nullptr);
-  abstract_svg_item *prev = position ? position->prev_sibling () : m_last_child;
-  abstract_svg_item *next = position;
-
-  new_child->set_next_sibling (next);
-  new_child->set_prev_sibling (prev);
-  new_child->set_parent (this);
-
-  if (prev)
-    prev->set_next_sibling (new_child);
-
-  if (next)
-    next->set_prev_sibling (new_child);
-
-  if (next == m_first_child)
-    m_first_child = new_child;
-
-  if (prev == m_last_child)
-    m_last_child = new_child;
-
-  m_child_map.insert (std::make_pair (new_child->name (), new_child));
-}
-
-void abstract_svg_item::remove_child (abstract_svg_item *child)
-{
-  DEBUG_ASSERT (child && child->parent () == this);
-  abstract_svg_item *prev = child->prev_sibling ();
-  abstract_svg_item *next = child->next_sibling ();
-
-  if (prev)
-    prev->set_next_sibling (next);
-
-  if (next)
-    next->set_prev_sibling (prev);
-
-  if (child == m_first_child)
-    m_first_child = next;
-
-  if (child == m_last_child)
-    m_last_child = prev;
-
-  child->set_parent (nullptr);
-  child->set_next_sibling (nullptr);
-  child->set_prev_sibling (nullptr);
-  m_child_map.erase (child->name ());
-}
-
 bool abstract_svg_item::has_id () const
 {
   return get_attribute<svg_attribute_id> () != nullptr;
@@ -193,7 +130,6 @@ QString abstract_svg_item::id () const
   return attribute_id->id ();
 }
 
-
 bool abstract_svg_item::check ()
 {
   if (!check_item ())
@@ -206,7 +142,6 @@ bool abstract_svg_item::check ()
 
   return true;
 }
-
 
 void abstract_svg_item::add_to_container ()
 {
@@ -257,9 +192,9 @@ const abstract_attribute *abstract_svg_item::get_computed_attribute (const char 
     return attribute;
 
   /// 4. Inherit from parent
-  if (m_parent)
+  if (parent ())
     {
-      attribute = m_parent->get_computed_attribute (data, is_stylable);
+      attribute = parent ()->get_computed_attribute (data, is_stylable);
       if (attribute)
         return attribute;
     }
@@ -295,15 +230,15 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const 
     return attribute;
 
   /// 2. search in parent selectors
-  if (!m_parent)
+  if (!parent ())
     return nullptr;
 
-  attribute = m_parent->find_attribute_in_selectors (data, item);
+  attribute = parent ()->find_attribute_in_selectors (data, item);
   if (attribute)
     return attribute;
 
   /// 3. search in sibling <defs> items
-  auto range = m_child_map.equal_range (svg_item_defs::static_name ());
+  auto range = get_childs_by_name (svg_item_defs::static_name ());
   for (auto it = range.first; it != range.second; it++)
     {
       const abstract_svg_item *child = it->second;
@@ -319,7 +254,7 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const 
 const abstract_attribute *abstract_svg_item::find_attribute_in_style_item (const char *data, const abstract_svg_item *item) const
 {
   const abstract_attribute *attribute = nullptr;
-  auto range = m_child_map.equal_range (svg_item_style::static_name ());
+  auto range = get_childs_by_name (svg_item_style::static_name ());
   for (auto it = range.first; it != range.second; it++)
     {
       const svg_item_style *style = static_cast <const svg_item_style *> (it->second);

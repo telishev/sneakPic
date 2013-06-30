@@ -7,7 +7,7 @@ class abstract_svg_item;
 #include <QString>
 
 class svg_items_container
-{
+ {
   typedef std::map<QString, abstract_svg_item *> map_type;
 
   map_type m_map;
@@ -24,6 +24,8 @@ public:
 
   /// creates unique name in a form "item_id"number
   QString create_unique_name (const char *item_id);
+
+  const map_type &get_items () const { return m_map; }
 
 private:
   /// tries to get some number from a string and update max_id with it to prevent id collisions

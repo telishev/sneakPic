@@ -13,6 +13,7 @@ class QEvent;
 enum configure_type
 {
   CONFIGURE_TYPE__REDRAW,
+  CONFIGURE_TYPE__ITEMS_CHANGED,
 
   CONFIGURE_TYPE__COUNT,
 };

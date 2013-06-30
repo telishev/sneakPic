@@ -89,7 +89,13 @@ bool svg_document::get_doc_dimensions (double &width, double &height)
   return true;
 }
 
-void svg_document::draw (QPainter &painter)
+void svg_document::update_items ()
 {
-  m_root->draw (painter);
+  /// TODO: update only changed items
+  auto items = m_item_container->get_items ();
+  for (auto &item_pair : items)
+    {
+      abstract_svg_item *svg_item = item_pair.second;
+      svg_item->update_renderer_item ();
+    }
 }

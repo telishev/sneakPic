@@ -2,8 +2,9 @@
 #define BASE_SVG_ITEM_H
 
 #include <unordered_map>
-#include <map>
 #include <QString>
+
+#include "common/tree_structure.h"
 
 #define SVG_ITEM                                   \
 public:                                            \
@@ -17,29 +18,19 @@ private:                                           \
 
 class QDomElement;
 class QDomDocument;
-class QPainter;
 
 class abstract_attribute;
 class svg_document;
 class svg_item_defs;
+class abstract_renderer_item;
 
 enum class svg_namespaces_t;
 enum class svg_item_type;
 
-class abstract_svg_item
+class abstract_svg_item : public tree_structure<abstract_svg_item>
 {
   svg_document *m_document;
-
-  abstract_svg_item *m_parent;
-  abstract_svg_item *m_next_sibling;
-  abstract_svg_item *m_prev_sibling;
-
-  abstract_svg_item *m_first_child;
-  abstract_svg_item *m_last_child;
-
   std::unordered_map<std::string, abstract_attribute *> m_attributes;
-
-  std::multimap<std::string, const abstract_svg_item *> m_child_map;
 
 public:
   abstract_svg_item (svg_document *document);
@@ -52,22 +43,16 @@ public:
   virtual const char *namespace_uri () const;
   virtual const char *namespace_name () const;
 
-  virtual void draw (QPainter &/*painter*/) {};
+  virtual void update_renderer_item () {};
+  virtual const abstract_renderer_item *get_renderer_item () const { return nullptr; }
+
+  /// return true if there is a need to render children of this item
+  virtual bool render_children () const { return 0; }
 
   svg_document *document () const { return m_document; }
 
   void add_attribute (abstract_attribute *attribute);
   void remove_attribute (abstract_attribute *attribute);
-
-  abstract_svg_item *parent () const { return m_parent; }
-  abstract_svg_item *next_sibling () const { return m_next_sibling; }
-  abstract_svg_item *prev_sibling () const { return m_prev_sibling; }
-
-  abstract_svg_item *first_child () const { return m_first_child; }
-  abstract_svg_item *last_child () const { return m_last_child; }
-
-  void insert_child (abstract_svg_item *position, abstract_svg_item *new_child);
-  void remove_child (abstract_svg_item *child);
 
   void read (const QDomElement &item);
   void write (QDomElement &item, QDomDocument &doc) const;
@@ -104,9 +89,6 @@ protected:
   virtual bool check_item () = 0;
 
 private:
-  void set_parent (abstract_svg_item *parent) { m_parent = parent; }
-  void set_next_sibling (abstract_svg_item *next) { m_next_sibling = next; }
-  void set_prev_sibling (abstract_svg_item *prev) { m_prev_sibling = prev; }
   QString full_name (const QString &namespace_name, const QString &local_name) const;
   void add_to_container ();
   void remove_from_container ();

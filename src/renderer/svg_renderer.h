@@ -6,6 +6,7 @@
 #include <QTransform>
 
 class svg_document;
+class abstract_svg_item;
 
 class svg_renderer : public abstract_painter
 {
@@ -36,6 +37,7 @@ public:
 
 private:
   void reset_transform ();
+  void draw_item (const abstract_svg_item *item, QPainter &painter);
 };
 
 #endif // SVG_RENDERER_H

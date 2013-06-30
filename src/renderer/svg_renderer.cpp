@@ -4,7 +4,10 @@
 
 #include "gui/gl_widget.h"
 
+#include "renderer/abstract_renderer_item.h"
+
 #include "svg/svg_document.h"
+#include "svg/items/abstract_svg_item.h"
 
 svg_renderer::svg_renderer (gl_widget *glwidget, const mouse_filter *mouse_filter_object)
   : abstract_painter (glwidget, mouse_filter_object)
@@ -31,6 +34,7 @@ void svg_renderer::set_document (svg_document *document)
   if (!m_document)
     return;
 
+  set_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED, 1);
   reset_transform ();
 }
 
@@ -88,18 +92,25 @@ void svg_renderer::draw ()
   if (!m_document)
     return;
 
-  QPen pen (Qt::black);
-  pen.setWidth (4);
-  painter.setPen (pen);
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setRenderHint(QPainter::HighQualityAntialiasing);
   painter.setTransform (m_cur_transform);
-  m_document->draw (painter);
+  draw_item (m_document->root (), painter);
   painter.end ();
 }
 
 void svg_renderer::configure ()
 {
+  if (!m_document)
+    return;
+
+  if (get_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED))
+    {
+      set_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED, 0);
+      m_document->update_items ();
+    }
+
+
   return;
 }
 
@@ -143,3 +154,17 @@ void svg_renderer::resizeGL (int width, int height)
 {
   FIX_UNUSED (width, height);
 }
+
+void svg_renderer::draw_item (const abstract_svg_item *item, QPainter &painter)
+{
+  const abstract_renderer_item *renderer_item = item->get_renderer_item ();
+  if (renderer_item)
+    renderer_item->draw (painter);
+
+  if (!item->render_children ())
+    return;
+
+  for (const abstract_svg_item *child = item->first_child (); child; child = child->next_sibling ())
+    draw_item (child, painter);
+}
+

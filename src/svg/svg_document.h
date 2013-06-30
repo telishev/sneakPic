@@ -10,7 +10,7 @@ class svg_item_svg;
 
 class QString;
 class QDomDocument;
-class QPainter;
+
 
 class svg_document
 {
@@ -34,7 +34,7 @@ public:
   bool read_file (const QString &filename);
   bool write_file (const QString &filename);
 
-  void draw (QPainter &painter);
+  void update_items ();
 };
 
 #endif // SVG_DOCUMENT_H
