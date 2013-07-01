@@ -21,8 +21,11 @@ DECLARE_ATTRIBUTE(X2           , "x2"           , EMPTY      , svg_attribute_x2 
 DECLARE_ATTRIBUTE(Y2           , "y2"           , EMPTY      , svg_attribute_y2             , NONE         )   \
 DECLARE_ATTRIBUTE(X            , "x"            , EMPTY      , svg_attribute_x              , NONE         )   \
 DECLARE_ATTRIBUTE(Y            , "y"            , EMPTY      , svg_attribute_y              , NONE         )   \
+DECLARE_ATTRIBUTE(R            , "r"            , EMPTY      , svg_attribute_r             , NONE         )   \
 DECLARE_ATTRIBUTE(RX           , "rx"           , EMPTY      , svg_attribute_rx             , NONE         )   \
-DECLARE_ATTRIBUTE(Ry           , "ry"           , EMPTY      , svg_attribute_ry             , NONE         )   \
+DECLARE_ATTRIBUTE(RY           , "ry"           , EMPTY      , svg_attribute_ry             , NONE         )   \
+DECLARE_ATTRIBUTE(CX           , "cx"           , EMPTY      , svg_attribute_cx             , NONE         )   \
+DECLARE_ATTRIBUTE(CY           , "cy"           , EMPTY      , svg_attribute_cy             , NONE         )   \
 
 enum class svg_attribute_type
 {

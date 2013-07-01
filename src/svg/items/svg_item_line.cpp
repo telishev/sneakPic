@@ -4,8 +4,6 @@
 
 #include "svg/attributes/svg_attributes_length_type.h"
 
-
-
 svg_item_line::svg_item_line (svg_document *document)
   : svg_base_shape_item (document)
 {

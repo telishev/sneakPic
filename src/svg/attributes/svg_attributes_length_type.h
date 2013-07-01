@@ -80,6 +80,14 @@ public:
   svg_attribute_y (abstract_svg_item *item) : svg_base_attribute_length (item) {}
 };
 
+class svg_attribute_r : public svg_base_attribute_length
+{
+  SVG_ATTRIBUTE
+
+public:
+  svg_attribute_r (abstract_svg_item *item) : svg_base_attribute_length (item) {}
+};
+
 class svg_attribute_rx : public svg_base_attribute_length
 {
   SVG_ATTRIBUTE
@@ -96,6 +104,21 @@ public:
   svg_attribute_ry (abstract_svg_item *item) : svg_base_attribute_length (item) {}
 };
 
+class svg_attribute_cx : public svg_base_attribute_length
+{
+  SVG_ATTRIBUTE
+
+public:
+  svg_attribute_cx (abstract_svg_item *item) : svg_base_attribute_length (item) {}
+};
+
+class svg_attribute_cy : public svg_base_attribute_length
+{
+  SVG_ATTRIBUTE
+
+public:
+  svg_attribute_cy (abstract_svg_item *item) : svg_base_attribute_length (item) {}
+};
 
 
 
