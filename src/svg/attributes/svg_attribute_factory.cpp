@@ -11,6 +11,7 @@
 #include "svg/attributes/svg_attribute_stroke_width.h"
 #include "svg/attributes/svg_attribute_stroke.h"
 #include "svg/attributes/svg_attribute_fill.h"
+#include "svg/attributes/svg_attribute_transform.h"
 
 #include <QString>
 

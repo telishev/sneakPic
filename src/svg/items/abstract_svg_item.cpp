@@ -175,21 +175,21 @@ const abstract_attribute *abstract_svg_item::get_computed_attribute (const char 
   if (it != m_attributes.end ())
     return it->second;
 
-  if (!is_stylable)
-    return nullptr;
-
-  /// 2. Search in "style" attribute
-  const svg_attribute_style *style = get_attribute<svg_attribute_style> ();
   const abstract_attribute *attribute = 0;
-  if (style)
-    attribute = style->get_attribute (data);
-  if (attribute)
-    return attribute;
+  if (is_stylable)
+    {
+      /// 2. Search in "style" attribute
+      const svg_attribute_style *style = get_attribute<svg_attribute_style> ();
+      if (style)
+        attribute = style->get_attribute (data);
+      if (attribute)
+        return attribute;
 
-  /// 3. Search in selectors
-  attribute = find_attribute_in_selectors (data, this);
-  if (attribute)
-    return attribute;
+      /// 3. Search in selectors
+      attribute = find_attribute_in_selectors (data, this);
+      if (attribute)
+        return attribute;
+    }
 
   /// 4. Inherit from parent
   if (parent ())

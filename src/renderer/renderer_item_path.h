@@ -6,12 +6,14 @@
 #include <QPainterPath>
 #include <QPen>
 #include <QBrush>
+#include <QTransform>
 
 class renderer_item_path : public abstract_renderer_item
 {
   QPainterPath m_path;
   QPen m_pen;
   QBrush m_brush;
+  QTransform m_transform;
 
 public:
   renderer_item_path ();
@@ -26,6 +28,7 @@ public:
   void set_fill_color (const QColor &color);
   void set_show_fill (bool show);
   void set_painter_path (const QPainterPath &path);
+  void set_transform (const QTransform &transform);
 };
 
 

@@ -14,6 +14,7 @@ DECLARE_ATTRIBUTE(CLASS        , "class"        , EMPTY      , svg_attribute_cla
 DECLARE_ATTRIBUTE(FILL         , "fill"         , EMPTY      , svg_attribute_fill           , true         )   \
 DECLARE_ATTRIBUTE(STROKE       , "stroke"       , EMPTY      , svg_attribute_stroke         , true         )   \
 DECLARE_ATTRIBUTE(STROKE_WIDTH , "stroke-width" , EMPTY      , svg_attribute_stroke_width   , true         )   \
+DECLARE_ATTRIBUTE(TRANSFORM    , "transform"    , EMPTY      , svg_attribute_transform      , false        )   \
 
 
 enum class svg_attribute_type

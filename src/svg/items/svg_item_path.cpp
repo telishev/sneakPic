@@ -10,9 +10,11 @@
 #include "svg/attributes/svg_attribute_fill.h"
 #include "svg/attributes/svg_attribute_stroke_width.h"
 #include "svg/attributes/svg_attribute_stroke.h"
+#include "svg/attributes/svg_attribute_transform.h"
 
 #include "svg/shape/abstract_svg_shape.h"
 #include "svg/shape/svg_subpath.h"
+
 
 
 svg_item_path::svg_item_path (svg_document *document)
@@ -41,6 +43,7 @@ void svg_item_path::update_renderer_item ()
   const svg_attribute_fill *fill = get_computed_attribute<svg_attribute_fill> ();
   const svg_attribute_stroke *stroke = get_computed_attribute<svg_attribute_stroke> ();
   const svg_attribute_stroke_width *stroke_width = get_computed_attribute<svg_attribute_stroke_width> ();
+  const svg_attribute_transform *transform = get_computed_attribute<svg_attribute_transform> ();
 
   if (!path_data)
     return;
@@ -69,9 +72,11 @@ void svg_item_path::update_renderer_item ()
   m_render_item->set_stroke_width (stroke_width->get_stroke_width ());
   m_render_item->set_show_stroke (stroke->is_applied ());
   m_render_item->set_stroke_color (stroke->get_color ());
+  m_render_item->set_transform (transform->computed_transform ());
 }
 
 const abstract_renderer_item *svg_item_path::get_renderer_item () const
 {
   return m_render_item;
 }
+
