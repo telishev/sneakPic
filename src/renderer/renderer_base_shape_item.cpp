@@ -1,8 +1,6 @@
 #include "renderer/renderer_base_shape_item.h"
 
-
 #include <QPainter>
-
 
 renderer_base_shape_item::renderer_base_shape_item ()
 {
@@ -10,7 +8,11 @@ renderer_base_shape_item::renderer_base_shape_item ()
 
 renderer_base_shape_item::~renderer_base_shape_item ()
 {
+}
 
+void renderer_base_shape_item::set_stroke_linecap (Qt::PenCapStyle linecap)
+{
+  m_pen.setCapStyle (linecap);
 }
 
 void renderer_base_shape_item::set_stroke_width (double width)
@@ -50,5 +52,3 @@ void renderer_base_shape_item::adjust_bbox (QRectF &bbox) const
   double adjust_value = m_pen.widthF ();
   bbox.adjust (-adjust_value, -adjust_value, adjust_value, adjust_value);
 }
-
-
