@@ -5,7 +5,7 @@
 svg_attribute_height::svg_attribute_height (abstract_svg_item *item)
   : abstract_attribute (item)
 {
-  m_height = 0;
+  m_height.set_value (297, svg_length_units::MM); /// A4
 }
 
 svg_attribute_height::~svg_attribute_height ()
@@ -13,14 +13,20 @@ svg_attribute_height::~svg_attribute_height ()
 
 }
 
-bool svg_attribute_height::read (const QString &data, bool /*from_css*/)
+bool svg_attribute_height::read (const QString &data, bool from_css)
 {
-  bool ok; m_height = data.toDouble (&ok); return ok;
+  return m_height.read (data.toUtf8 ().constData (), from_css);
 }
 
-bool svg_attribute_height::write (QString &data, bool /*to_css*/) const 
+bool svg_attribute_height::write (QString &data, bool from_css) const 
 {
-  data = QString::number (m_height) ; return true;
+  data = m_height.write (from_css);
+  return true;
+}
+
+double svg_attribute_height::height () const
+{
+  return m_height.value ();
 }
 
 

@@ -2,20 +2,21 @@
 #define SVG_ATTRIBUTE_WIDTH_H
 
 #include "svg/attributes/abstract_attribute.h"
+#include "svg/data_types/svg_data_type_length.h"
 
 class svg_attribute_width : public abstract_attribute
 {
   SVG_ATTRIBUTE
 
-  double m_width;
+  svg_data_type_length m_width;
 public:
-  svg_attribute_width (abstract_svg_item *item) : abstract_attribute (item) { m_width = 0; }
-  virtual ~svg_attribute_width () {}
+  svg_attribute_width (abstract_svg_item *item);
+  virtual ~svg_attribute_width ();
 
-  double width () const { return m_width; }
+  double width () const;
 
-  virtual bool read (const QString &data, bool /*from_css*/ = false) override { bool ok; m_width = data.toDouble (&ok); return ok; }
-  virtual bool write (QString &data, bool /*from_css*/ = false) const override { data = QString::number (m_width) ; return true; }
+  virtual bool read (const QString &data, bool from_css = false) override;
+  virtual bool write (QString &data, bool from_css = false) const override;
 };
 
 
