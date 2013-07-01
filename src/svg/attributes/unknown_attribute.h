@@ -33,7 +33,7 @@ public:
   virtual const char *namespace_name () const override { return m_namespace_name.c_str (); }
   virtual svg_namespaces_t namespace_type () const override { return svg_namespaces_t::UNKNOWN; }
 
-  virtual bool is_styleable () const override { return false; }
+  virtual svg_inherit_type inherit_type () const override { return svg_inherit_type::NONE; }
 
 };
 

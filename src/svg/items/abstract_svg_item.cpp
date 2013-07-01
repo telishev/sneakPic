@@ -11,6 +11,7 @@
 #include "svg/attributes/svg_attribute_factory.h"
 #include "svg/attributes/svg_attribute_class.h"
 #include "svg/attributes/svg_attribute_style.h"
+#include "svg/attributes/attribute_type.h"
 
 #include "svg/items/svg_item_factory.h"
 #include "svg/items/svg_items_container.h"
@@ -19,6 +20,7 @@
 
 #include "svg/svg_document.h"
 #include "svg/svg_namespaces.h"
+
 
 
 
@@ -168,15 +170,18 @@ void abstract_svg_item::remove_from_container ()
     document ()->item_container ()->remove_item (this);
 }
 
-const abstract_attribute *abstract_svg_item::get_computed_attribute (const char *data, bool is_stylable) const
+const abstract_attribute *abstract_svg_item::get_computed_attribute (const char *data, svg_inherit_type inherit_type) const
 {
   /// 1. search in own attributes
   auto it = m_attributes.find (data);
   if (it != m_attributes.end ())
     return it->second;
 
+  if (inherit_type == svg_inherit_type::NONE)
+    return nullptr;
+
   const abstract_attribute *attribute = 0;
-  if (is_stylable)
+  if (inherit_type == svg_inherit_type::STYLE)
     {
       /// 2. Search in "style" attribute
       const svg_attribute_style *style = get_attribute<svg_attribute_style> ();
@@ -194,7 +199,7 @@ const abstract_attribute *abstract_svg_item::get_computed_attribute (const char 
   /// 4. Inherit from parent
   if (parent ())
     {
-      attribute = parent ()->get_computed_attribute (data, is_stylable);
+      attribute = parent ()->get_computed_attribute (data, inherit_type);
       if (attribute)
         return attribute;
     }

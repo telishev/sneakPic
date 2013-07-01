@@ -1,34 +1,23 @@
 #ifndef RENDERER_ITEM_PATH_H
 #define RENDERER_ITEM_PATH_H
 
-#include "renderer/abstract_renderer_item.h"
+#include "renderer/renderer_base_shape_item.h"
 
 #include <QPainterPath>
-#include <QPen>
-#include <QBrush>
-#include <QTransform>
 
-class renderer_item_path : public abstract_renderer_item
+class renderer_item_path : public renderer_base_shape_item
 {
   QPainterPath m_path;
-  QPen m_pen;
-  QBrush m_brush;
-  QTransform m_transform;
+  QRectF m_bbox;
 
 public:
   renderer_item_path ();
   ~renderer_item_path ();
 
   virtual void draw (QPainter &painter) const override;
+  virtual QRectF bounding_box () const override { return m_bbox; }
 
-  void set_stroke_width (double width);
-  void set_stroke_color (const QColor &color);
-  void set_show_stroke (bool show);
-
-  void set_fill_color (const QColor &color);
-  void set_show_fill (bool show);
   void set_painter_path (const QPainterPath &path);
-  void set_transform (const QTransform &transform);
 };
 
 

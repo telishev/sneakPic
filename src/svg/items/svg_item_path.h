@@ -1,11 +1,11 @@
 #ifndef SVG_ITEM_PATH_H
 #define SVG_ITEM_PATH_H
 
-#include "svg/items/abstract_svg_item.h"
+#include "svg/items/svg_base_shape_item.h"
 
 class renderer_item_path;
 
-class svg_item_path : public abstract_svg_item
+class svg_item_path : public svg_base_shape_item
 {
   SVG_ITEM
 
@@ -16,7 +16,7 @@ public:
 
   virtual void update_renderer_item ();
   virtual const abstract_renderer_item *get_renderer_item () const;
-  virtual bool render_children () const { return true; }
+  virtual bool render_children () const { return false; }
 
 protected:
   virtual bool check_item () override;

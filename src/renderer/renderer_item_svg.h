@@ -12,6 +12,7 @@ public:
   ~renderer_item_svg ();
 
   virtual void draw (QPainter &painter) const override;
+  virtual QRectF bounding_box () const override { return QRectF (0.0, 0.0, m_width, m_height); }
 
   void set_height (double height);
   void set_width (double width);

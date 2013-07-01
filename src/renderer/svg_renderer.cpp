@@ -42,15 +42,15 @@ unsigned int svg_renderer::mouse_moved (const unsigned char *dragging_buttons, c
 {
   FIX_UNUSED (dragging_buttons, pos, modifiers);
   if (drag_started)
-  {
-    QTransform last_inverted = m_last_transform.inverted ();
-    QPointF last_pos_local = last_inverted.map (QPointF (m_drag_start_pos));
-    QPointF cur_pos_local = last_inverted.map (QPointF (pos));
-    QPointF diff = cur_pos_local - last_pos_local;
+    {
+      QTransform last_inverted = m_last_transform.inverted ();
+      QPointF last_pos_local = last_inverted.map (QPointF (m_drag_start_pos));
+      QPointF cur_pos_local = last_inverted.map (QPointF (pos));
+      QPointF diff = cur_pos_local - last_pos_local;
 
-    m_cur_transform = QTransform (m_last_transform).translate (diff.x (), diff.y ());
-    glwidget ()->repaint ();
-  }
+      m_cur_transform = QTransform (m_last_transform).translate (diff.x (), diff.y ());
+      glwidget ()->repaint ();
+    }
 
   return 0;
 }
@@ -95,7 +95,7 @@ void svg_renderer::draw ()
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setRenderHint(QPainter::HighQualityAntialiasing);
   painter.setTransform (m_cur_transform);
-  draw_item (m_document->root (), painter);
+  draw_items (m_document->root (), painter, glwidget ()->rect ());
   painter.end ();
 }
 
@@ -117,18 +117,18 @@ void svg_renderer::configure ()
 void svg_renderer::wheelEvent (QWheelEvent *qevent)
 {
   if (qevent->orientation () == Qt::Vertical)
-  {
-    double scale = pow (1.2, qevent->delta() / 240.0);
-    FIX_UNUSED (scale);
-    QPointF event_pos_local_before = m_cur_transform.inverted ().map (QPointF (qevent->pos ()));
-    m_cur_transform.scale (scale, scale);
-    QPointF event_pos_local_after = m_cur_transform.inverted ().map (QPointF (qevent->pos ()));
-    QPointF vector = event_pos_local_after - event_pos_local_before;
-    m_cur_transform.translate (vector.x (), vector.y ());
+    {
+      double scale = pow (1.2, qevent->delta() / 240.0);
+      FIX_UNUSED (scale);
+      QPointF event_pos_local_before = m_cur_transform.inverted ().map (QPointF (qevent->pos ()));
+      m_cur_transform.scale (scale, scale);
+      QPointF event_pos_local_after = m_cur_transform.inverted ().map (QPointF (qevent->pos ()));
+      QPointF vector = event_pos_local_after - event_pos_local_before;
+      m_cur_transform.translate (vector.x (), vector.y ());
 
-    glwidget ()->repaint ();
-    qevent->accept ();
-  }
+      glwidget ()->repaint ();
+      qevent->accept ();
+    }
 }
 
 void svg_renderer::leaveEvent (QEvent *qevent)
@@ -155,16 +155,27 @@ void svg_renderer::resizeGL (int width, int height)
   FIX_UNUSED (width, height);
 }
 
-void svg_renderer::draw_item (const abstract_svg_item *item, QPainter &painter)
+void svg_renderer::draw_items (const abstract_svg_item *item, QPainter &painter, const QRectF &rect_to_draw)
 {
   const abstract_renderer_item *renderer_item = item->get_renderer_item ();
   if (renderer_item)
-    renderer_item->draw (painter);
+    draw_single_item (renderer_item, painter, rect_to_draw);
 
   if (!item->render_children ())
     return;
 
   for (const abstract_svg_item *child = item->first_child (); child; child = child->next_sibling ())
-    draw_item (child, painter);
+    draw_items (child, painter, rect_to_draw);
+}
+
+void svg_renderer::draw_single_item (const abstract_renderer_item *item, QPainter &painter, const QRectF &rect_to_draw)
+{
+  QTransform item_transform = item->transform () * m_cur_transform;
+  QRectF transformed_rect = item_transform.mapRect (item->bounding_box ());
+  if (!rect_to_draw.intersects (transformed_rect))
+    return;
+
+  painter.setTransform (item_transform);
+  item->draw (painter);
 }
 

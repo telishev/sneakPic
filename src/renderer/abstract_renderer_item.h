@@ -4,12 +4,20 @@
 class QPainter;
 class renderer_model;
 
+#include <QRectF>
+#include <QTransform>
+
 class abstract_renderer_item
 {
+  QTransform m_transform;
 public:
   virtual ~abstract_renderer_item () {};
 
   virtual void draw (QPainter &painter) const = 0;
+
+  virtual QRectF bounding_box () const = 0;
+  QTransform transform () const { return m_transform; }
+  void set_transform (const QTransform &transform) { m_transform = transform; }
 };
 
 #endif // ABSTRACT_RENDERER_ITEM_H

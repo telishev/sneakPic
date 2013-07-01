@@ -26,6 +26,7 @@ class abstract_renderer_item;
 
 enum class svg_namespaces_t;
 enum class svg_item_type;
+enum class svg_inherit_type;
 
 class abstract_svg_item : public tree_structure<abstract_svg_item>
 {
@@ -73,7 +74,7 @@ public:
   template <typename T>
   const T *get_computed_attribute () const
   {
-    const abstract_attribute *attribute = get_computed_attribute (T::static_name (), T::static_is_styleable ());
+    const abstract_attribute *attribute = get_computed_attribute (T::static_name (), T::static_inherit_type ());
     /// if not found, return default value
     if (!attribute)
       attribute = T::default_value ();
@@ -93,7 +94,7 @@ private:
   void add_to_container ();
   void remove_from_container ();
   abstract_attribute *get_attribute (const char *data) const;
-  const abstract_attribute *get_computed_attribute (const char *data, bool is_styleable) const;
+  const abstract_attribute *get_computed_attribute (const char *data, svg_inherit_type inherit_type) const;
   const abstract_attribute *find_attribute_in_selectors (const char *data, const abstract_svg_item *item) const;
   const abstract_attribute *find_attribute_in_style_item (const char *data, const abstract_svg_item *item) const;
 };

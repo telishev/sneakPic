@@ -11,8 +11,8 @@ public:                                                         \
   virtual const char *namespace_uri () const override;          \
   virtual const char *namespace_name () const override;         \
   virtual const char *name () const override;                   \
-  virtual bool is_styleable () const override;                  \
-  static bool static_is_styleable ();                           \
+  virtual svg_inherit_type inherit_type () const override;      \
+  static svg_inherit_type static_inherit_type ();               \
   static const abstract_attribute *default_value ();            \
 private:                                                        \
 
@@ -23,6 +23,7 @@ class QString;
 
 enum class svg_namespaces_t;
 enum class svg_attribute_type;
+enum class svg_inherit_type;
 
 class abstract_attribute
 {
@@ -40,7 +41,7 @@ public:
   virtual svg_namespaces_t namespace_type () const = 0;
 
   virtual svg_attribute_type type () const = 0;
-  virtual bool is_styleable () const = 0;
+  virtual svg_inherit_type inherit_type () const = 0;
 
   abstract_svg_item *item () const { return m_item; }
 };

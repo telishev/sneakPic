@@ -7,6 +7,7 @@
 
 class svg_document;
 class abstract_svg_item;
+class abstract_renderer_item;
 
 class svg_renderer : public abstract_painter
 {
@@ -37,7 +38,8 @@ public:
 
 private:
   void reset_transform ();
-  void draw_item (const abstract_svg_item *item, QPainter &painter);
+  void draw_items (const abstract_svg_item *item, QPainter &painter, const QRectF &rect_to_draw);
+  void draw_single_item (const abstract_renderer_item *item, QPainter &painter, const QRectF &rect_to_draw);
 };
 
 #endif // SVG_RENDERER_H
