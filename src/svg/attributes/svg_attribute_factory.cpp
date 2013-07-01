@@ -7,6 +7,8 @@
 #include "svg/attributes/svg_attribute_style.h"
 #include "svg/attributes/svg_attribute_class.h"
 #include "svg/attributes/svg_attribute_stroke_linecap.h"
+#include "svg/attributes/svg_attribute_stroke_linejoin.h"
+#include "svg/attributes/svg_attribute_stroke_miterlimit.h"
 #include "svg/attributes/svg_attribute_stroke_width.h"
 #include "svg/attributes/svg_attribute_stroke.h"
 #include "svg/attributes/svg_attribute_fill.h"

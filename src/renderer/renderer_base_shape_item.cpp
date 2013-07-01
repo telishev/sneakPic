@@ -15,6 +15,16 @@ void renderer_base_shape_item::set_stroke_linecap (Qt::PenCapStyle linecap)
   m_pen.setCapStyle (linecap);
 }
 
+void renderer_base_shape_item::set_stroke_linejoin (Qt::PenJoinStyle linejoin)
+{
+  m_pen.setJoinStyle (linejoin);
+}
+
+void renderer_base_shape_item::set_stroke_miterlimit (double miterlimit)
+{
+  m_pen.setMiterLimit (miterlimit);
+}
+
 void renderer_base_shape_item::set_stroke_width (double width)
 {
   m_pen.setWidthF (width);

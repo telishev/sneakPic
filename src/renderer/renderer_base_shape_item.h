@@ -17,6 +17,8 @@ public:
   ~renderer_base_shape_item ();
 
   void set_stroke_linecap (Qt::PenCapStyle linecap);
+  void set_stroke_linejoin (Qt::PenJoinStyle linejoin);
+  void set_stroke_miterlimit (double miterlimit);
   void set_stroke_width (double width);
   void set_stroke_color (const QColor &color);
   void set_show_stroke (bool show);
