@@ -15,7 +15,14 @@ DECLARE_ATTRIBUTE(FILL         , "fill"         , EMPTY      , svg_attribute_fil
 DECLARE_ATTRIBUTE(STROKE       , "stroke"       , EMPTY      , svg_attribute_stroke         , STYLE        )   \
 DECLARE_ATTRIBUTE(STROKE_WIDTH , "stroke-width" , EMPTY      , svg_attribute_stroke_width   , STYLE        )   \
 DECLARE_ATTRIBUTE(TRANSFORM    , "transform"    , EMPTY      , svg_attribute_transform      , INHERIT      )   \
-
+DECLARE_ATTRIBUTE(X1           , "x1"           , EMPTY      , svg_attribute_x1             , NONE         )   \
+DECLARE_ATTRIBUTE(Y1           , "y1"           , EMPTY      , svg_attribute_y1             , NONE         )   \
+DECLARE_ATTRIBUTE(X2           , "x2"           , EMPTY      , svg_attribute_x2             , NONE         )   \
+DECLARE_ATTRIBUTE(Y2           , "y2"           , EMPTY      , svg_attribute_y2             , NONE         )   \
+DECLARE_ATTRIBUTE(X            , "x"            , EMPTY      , svg_attribute_x              , NONE         )   \
+DECLARE_ATTRIBUTE(Y            , "y"            , EMPTY      , svg_attribute_y              , NONE         )   \
+DECLARE_ATTRIBUTE(RX           , "rx"           , EMPTY      , svg_attribute_rx             , NONE         )   \
+DECLARE_ATTRIBUTE(Ry           , "ry"           , EMPTY      , svg_attribute_ry             , NONE         )   \
 
 enum class svg_attribute_type
 {
@@ -34,3 +41,4 @@ enum class svg_inherit_type
 };
 
 #endif // ATTRIBUTE_TYPE_H
+

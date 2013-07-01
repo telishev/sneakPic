@@ -25,6 +25,7 @@ public:
 
 protected:
   void configure_painter (QPainter &painter) const;
+  void adjust_bbox (QRectF &bbox) const;
   
 };
 

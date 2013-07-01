@@ -3,8 +3,7 @@
 #include "common/memory_deallocation.h"
 
 #include "svg/attributes/abstract_attribute.h"
-#include "svg/attributes/svg_attribute_width.h"
-#include "svg/attributes/svg_attribute_height.h"
+#include "svg/attributes/svg_attributes_length_type.h"
 
 #include "renderer/renderer_item_svg.h"
 
@@ -22,12 +21,14 @@ svg_item_svg::~svg_item_svg ()
 
 double svg_item_svg::width () const
 {
-  return get_computed_attribute<svg_attribute_width> ()->width ();
+  static const svg_attribute_width default_width (210, svg_length_units::MM); /// A4
+  return get_computed_attribute<svg_attribute_width> (&default_width)->value ();
 }
 
 double svg_item_svg::height () const
 {
-  return get_computed_attribute<svg_attribute_height> ()->height ();
+  static const svg_attribute_height default_height (297, svg_length_units::MM); /// A4
+  return get_computed_attribute<svg_attribute_height> (&default_height)->value ();
 }
 
 void svg_item_svg::update_renderer_item ()

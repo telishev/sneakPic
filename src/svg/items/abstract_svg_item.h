@@ -72,12 +72,12 @@ public:
 
   /// returns attribute with respect to styling and css
   template <typename T>
-  const T *get_computed_attribute () const
+  const T *get_computed_attribute (const T *default_val = static_cast<const T *> (T::default_value ())) const
   {
     const abstract_attribute *attribute = get_computed_attribute (T::static_name (), T::static_inherit_type ());
     /// if not found, return default value
     if (!attribute)
-      attribute = T::default_value ();
+      attribute = default_val;
 
     return static_cast<const T *>(attribute);
   }

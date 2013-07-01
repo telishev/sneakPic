@@ -7,6 +7,8 @@
 #include "svg/items/svg_item_style.h"
 #include "svg/items/svg_item_defs.h"
 #include "svg/items/svg_item_type.h"
+#include "svg/items/svg_item_line.h"
+#include "svg/items/svg_item_rect.h"
 
 #include "svg/svg_namespaces.h"
 

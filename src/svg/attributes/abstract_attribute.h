@@ -43,6 +43,8 @@ public:
   virtual svg_attribute_type type () const = 0;
   virtual svg_inherit_type inherit_type () const = 0;
 
+  bool is_empty () const { return m_item == nullptr; }
+
   abstract_svg_item *item () const { return m_item; }
 };
 
