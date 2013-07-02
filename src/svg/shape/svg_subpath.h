@@ -12,8 +12,8 @@ public:
   svg_subpath ();
   ~svg_subpath ();
 
-  abstract_svg_shape *front () const { return m_shapes.front (); }
-  abstract_svg_shape *back () const { return m_shapes.back (); }
+  abstract_svg_shape *front () const { return m_shapes.size () ? m_shapes.front () : 0; }
+  abstract_svg_shape *back () const { return m_shapes.size () ? m_shapes.back () : 0; }
   bool empty () const { return m_shapes.empty (); }
 
   void add_shape (abstract_svg_shape *shape);

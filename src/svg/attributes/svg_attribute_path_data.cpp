@@ -241,7 +241,9 @@ bool svg_attribute_path_data::read_curve_short (const char *&data, point_2d &/*s
       control2 += current_point;
     }
 
-  abstract_svg_shape *prev_shape = m_subpaths.back ()->back ();
+  abstract_svg_shape *prev_shape = 0;
+  if (m_subpaths.size ())
+    prev_shape = m_subpaths.back ()->back ();
   if (prev_shape)
     {
       /// TODO: do it without dyncast
