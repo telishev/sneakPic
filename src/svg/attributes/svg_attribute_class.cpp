@@ -16,7 +16,7 @@ svg_attribute_class::~svg_attribute_class ()
 
 bool svg_attribute_class::read (const QString &data, bool /*from_css*/)
 {
-  m_class_names = data.split ("\0x20""\0x9""0xD""0xA");
+  m_class_names = data.split ("\020""\09""\0D""\0A", QString::SkipEmptyParts);
   return m_class_names.size () != 0;
 }
 
