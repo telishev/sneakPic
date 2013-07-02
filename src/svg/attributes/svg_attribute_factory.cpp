@@ -14,6 +14,7 @@
 #include "svg/attributes/svg_attribute_fill.h"
 #include "svg/attributes/svg_attribute_transform.h"
 #include "svg/attributes/svg_attributes_length_type.h"
+#include "svg/attributes/svg_attributes_number.h"
 
 #include <QString>
 

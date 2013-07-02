@@ -1,8 +1,8 @@
 #ifndef ATTRIBUTE_TYPE_H
 #define ATTRIBUTE_TYPE_H
 
-#define DECLARE_SVG_ATTRIBUTES                                                                                            \
-/*                                                                                                                    */  \
+#define DECLARE_SVG_ATTRIBUTES                                                                                    \
+/*                                                                                                            */  \
 /*                ENUM              |   NAME              |  NAMESPACE |         CLASS                    | INHERIT_TYPE */  \
 DECLARE_ATTRIBUTE(ID                , "id"                , EMPTY      , svg_attribute_id                 , NONE         )   \
 DECLARE_ATTRIBUTE(VERSION           , "version"           , EMPTY      , svg_attribute_version            , NONE         )   \
@@ -29,6 +29,9 @@ DECLARE_ATTRIBUTE(RX                , "rx"                , EMPTY      , svg_att
 DECLARE_ATTRIBUTE(RY                , "ry"                , EMPTY      , svg_attribute_ry                 , NONE         )   \
 DECLARE_ATTRIBUTE(CX                , "cx"                , EMPTY      , svg_attribute_cx                 , NONE         )   \
 DECLARE_ATTRIBUTE(CY                , "cy"                , EMPTY      , svg_attribute_cy                 , NONE         )   \
+DECLARE_ATTRIBUTE(OPACITY           , "opacity"           , EMPTY      , svg_attribute_opacity            , INHERIT      )   \
+DECLARE_ATTRIBUTE(STROKE_OPACITY    , "stroke-opacity"    , EMPTY      , svg_attribute_stroke_opacity     , STYLE        )   \
+DECLARE_ATTRIBUTE(FIL_OPACITY       , "fill-opacity"      , EMPTY      , svg_attribute_fill_opacity       , STYLE        )   \
 
 enum class svg_attribute_type
 {

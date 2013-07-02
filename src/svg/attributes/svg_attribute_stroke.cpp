@@ -3,7 +3,7 @@
 svg_attribute_stroke::svg_attribute_stroke (abstract_svg_item *item)
   : abstract_attribute (item)
 {
-  m_applied = true;
+  m_applied = false;
 }
 
 svg_attribute_stroke::~svg_attribute_stroke ()

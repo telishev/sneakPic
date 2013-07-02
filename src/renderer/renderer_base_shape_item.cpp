@@ -4,6 +4,7 @@
 
 renderer_base_shape_item::renderer_base_shape_item ()
 {
+  m_opacity = 1.0;
 }
 
 renderer_base_shape_item::~renderer_base_shape_item ()
@@ -54,6 +55,7 @@ void renderer_base_shape_item::configure_painter (QPainter &painter) const
 {
   painter.setPen (m_pen);
   painter.setBrush (m_brush);
+  painter.setOpacity (m_opacity);
 }
 
 void renderer_base_shape_item::adjust_bbox (QRectF &bbox) const
@@ -61,4 +63,23 @@ void renderer_base_shape_item::adjust_bbox (QRectF &bbox) const
   /// add pen width to a bbox
   double adjust_value = m_pen.widthF ();
   bbox.adjust (-adjust_value, -adjust_value, adjust_value, adjust_value);
+}
+
+void renderer_base_shape_item::set_opacity (double opacity)
+{
+  m_opacity = opacity;
+}
+
+void renderer_base_shape_item::set_fill_opacity (double opacity)
+{
+  QColor new_color = m_brush.color ();
+  new_color.setAlphaF (opacity);
+  m_brush.setColor (new_color);
+}
+
+void renderer_base_shape_item::set_stroke_opacity (double opacity)
+{
+  QColor new_color = m_pen.color ();
+  new_color.setAlphaF (opacity);
+  m_pen.setColor (new_color);
 }

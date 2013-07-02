@@ -11,6 +11,7 @@ class renderer_base_shape_item : public abstract_renderer_item
 protected:
   QPen m_pen;
   QBrush m_brush;
+  double m_opacity;
 
 public:
   renderer_base_shape_item ();
@@ -25,6 +26,10 @@ public:
 
   void set_fill_color (const QColor &color);
   void set_show_fill (bool show);
+
+  void set_opacity (double opacity);
+  void set_fill_opacity (double opacity);
+  void set_stroke_opacity (double opacity);
 
 protected:
   void configure_painter (QPainter &painter) const;
