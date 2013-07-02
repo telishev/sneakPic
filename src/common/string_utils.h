@@ -575,8 +575,7 @@ double str_to_double (
 read_exp:
 
   p = pExp;
-  if (   (*p == 'E') || (*p == 'e')
-      || ((is_dec_point) && ((*p == '-') || (*p == '+'))))
+  if ((*p == 'E') || (*p == 'e'))
     {
       if (!(is_dec_point) || ((*p != '-') && (*p != '+')))
         p += 1;
