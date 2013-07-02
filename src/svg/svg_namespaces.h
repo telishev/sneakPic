@@ -10,6 +10,7 @@ enum class svg_namespaces_t
   CC,
   RDF,
   SVG,
+  XLINK,
   EMPTY,
 };
 
@@ -25,6 +26,7 @@ public:
       case svg_namespaces_t::CC : return cc_uri ();
       case svg_namespaces_t::RDF : return rdf_uri ();
       case svg_namespaces_t::SVG : return svg_uri ();
+      case svg_namespaces_t::XLINK: return xlink_uri ();
       case svg_namespaces_t::EMPTY: return "";
       default: return "";
       }
@@ -38,6 +40,7 @@ public:
     case svg_namespaces_t::CC : return cc_name ();
     case svg_namespaces_t::RDF : return rdf_name ();
     case svg_namespaces_t::SVG : return svg_name ();
+    case svg_namespaces_t::XLINK: return xlink_name ();
     case svg_namespaces_t::EMPTY: return "";
     default: return "";
     }
@@ -47,11 +50,13 @@ public:
   static const char *cc_uri () { return "http://creativecommons.org/ns#"; }
   static const char *rdf_uri () { return "http://www.w3.org/1999/02/22-rdf-syntax-ns#"; }
   static const char *svg_uri () { return "http://www.w3.org/2000/svg"; }
+  static const char *xlink_uri () { return "http://www.w3.org/1999/xlink"; }
 
   static const char *dc_name () { return "dc"; }
   static const char *cc_name () { return "cc"; }
   static const char *rdf_name () { return "rdf"; }
   static const char *svg_name () { return "svg"; }
+  static const char *xlink_name () { return "xlink"; }
 };
 
 #endif // SVG_NAMESPACES_H

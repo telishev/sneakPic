@@ -31,7 +31,8 @@ DECLARE_ATTRIBUTE(CX                , "cx"                , EMPTY      , svg_att
 DECLARE_ATTRIBUTE(CY                , "cy"                , EMPTY      , svg_attribute_cy                 , NONE         )   \
 DECLARE_ATTRIBUTE(OPACITY           , "opacity"           , EMPTY      , svg_attribute_opacity            , INHERIT      )   \
 DECLARE_ATTRIBUTE(STROKE_OPACITY    , "stroke-opacity"    , EMPTY      , svg_attribute_stroke_opacity     , STYLE        )   \
-DECLARE_ATTRIBUTE(FIL_OPACITY       , "fill-opacity"      , EMPTY      , svg_attribute_fill_opacity       , STYLE        )   \
+DECLARE_ATTRIBUTE(FILL_OPACITY      , "fill-opacity"      , EMPTY      , svg_attribute_fill_opacity       , STYLE        )   \
+DECLARE_ATTRIBUTE(HREF              , "href"              , XLINK      , svg_attribute_xlink_href         , NONE         )   \
 
 enum class svg_attribute_type
 {

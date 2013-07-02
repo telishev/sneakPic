@@ -71,6 +71,9 @@ void abstract_svg_item::read (const QDomElement &item)
 
 void abstract_svg_item::write (QDomElement &item, QDomDocument &doc) const 
 {
+  if (is_cloned ())
+    return;
+
   for (const abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
     {
       QDomElement child_element = doc.createElementNS (child->namespace_uri (), full_name (child->namespace_name (), child->name ()));
@@ -92,11 +95,21 @@ void abstract_svg_item::write (QDomElement &item, QDomDocument &doc) const
 
 void abstract_svg_item::add_attribute (abstract_attribute *attribute)
 {
+  if (is_cloned ())
+    {
+      DEBUG_PAUSE ("One does not simply add attributes to cloned items");
+      return;
+    }
   m_attributes.insert (std::make_pair (attribute->name (), attribute));
 }
 
 void abstract_svg_item::remove_attribute (abstract_attribute *attribute)
 {
+  if (is_cloned ())
+    {
+      DEBUG_PAUSE ("remove attribute is not allowed for cloned items");
+      return;
+    }
   m_attributes.erase (attribute->name ());
 }
 
@@ -120,16 +133,12 @@ QString abstract_svg_item::full_name (const QString &namespace_name, const QStri
 
 bool abstract_svg_item::has_id () const
 {
-  return get_attribute<svg_attribute_id> () != nullptr;
+  return !m_own_id.isEmpty ();
 }
 
 QString abstract_svg_item::id () const
 {
-  const svg_attribute_id *attribute_id = get_attribute<svg_attribute_id> ();
-  if (!attribute_id)
-    return QString ();
-
-  return attribute_id->id ();
+  return m_own_id;
 }
 
 bool abstract_svg_item::check ()
@@ -148,18 +157,7 @@ bool abstract_svg_item::check ()
 void abstract_svg_item::add_to_container ()
 {
   svg_items_container *container = document ()->item_container ();
-  if (!has_id () || container->contains (id ()))
-    {
-      QString new_name = container->create_unique_name (name ());
-      svg_attribute_id *attribute_id = get_attribute<svg_attribute_id> ();
-      if (!attribute_id)
-        {
-          attribute_id = new svg_attribute_id (this);
-          add_attribute (attribute_id);
-        }
-
-      attribute_id->set_id (new_name);
-    }
+  update_own_id ();
 
   container->add_item (this);
 }
@@ -173,25 +171,32 @@ void abstract_svg_item::remove_from_container ()
 const abstract_attribute *abstract_svg_item::get_computed_attribute (const char *data, svg_inherit_type inherit_type) const
 {
   /// 1. search in own attributes
-  auto it = m_attributes.find (data);
-  if (it != m_attributes.end ())
-    return it->second;
+  const abstract_attribute *attribute = get_attribute (data);
+  if (attribute)
+    return attribute;
 
   if (inherit_type == svg_inherit_type::NONE)
     return nullptr;
 
-  const abstract_attribute *attribute = 0;
   if (inherit_type == svg_inherit_type::STYLE)
     {
       /// 2. Search in "style" attribute
-      const svg_attribute_style *style = get_attribute<svg_attribute_style> ();
+      const svg_attribute_style *style = get_computed_attribute<svg_attribute_style> ();
       if (style)
         attribute = style->get_attribute (data);
       if (attribute)
         return attribute;
 
       /// 3. Search in selectors
-      attribute = find_attribute_in_selectors (data, this);
+      /// css selectors for cloned items works as they were applied to an original item
+      if (is_cloned ())
+        {
+          const abstract_svg_item *original_item = get_original_item ();
+          if (original_item)
+            attribute = original_item->find_attribute_in_selectors (data, original_item);
+        }
+      else
+        attribute = find_attribute_in_selectors (data, this);
       if (attribute)
         return attribute;
     }
@@ -210,18 +215,26 @@ const abstract_attribute *abstract_svg_item::get_computed_attribute (const char 
 
 bool abstract_svg_item::is_xml_class (const QString &class_name) const
 {
-  const svg_attribute_class *attribute_class = get_attribute<svg_attribute_class> ();
-  if (!attribute_class)
-    return false;
-
+  const svg_attribute_class *attribute_class = get_computed_attribute<svg_attribute_class> ();
   return attribute_class->is_class (class_name);
 }
 
 abstract_attribute *abstract_svg_item::get_attribute (const char *data) const
 {
+  /// search in original attributes for cloned items
+  if (is_cloned ())
+    {
+      const abstract_svg_item *original_item = get_original_item ();
+      if (original_item)
+        return original_item->get_attribute (data);
+
+      return nullptr;
+    }
+
   auto it = m_attributes.find (data);
   if (it != m_attributes.end ())
     return it->second;
+
 
   return nullptr;
 }
@@ -269,5 +282,61 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_style_item (const
     }
 
   return attribute;
+}
+
+bool abstract_svg_item::is_cloned () const
+{
+  return !m_original_id.isEmpty ();
+}
+
+abstract_svg_item *abstract_svg_item::create_clone ()
+{
+  abstract_svg_item *clone = m_document->item_factory ()->create_item (name (), namespace_uri (), namespace_name ());
+  /// leave m_attributes empty
+  clone->m_original_id = id ();
+  clone->m_own_id = m_document->item_container ()->create_unique_name (clone->name ());
+  
+  /// append cloned children to a clone
+  for (abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
+    {
+      abstract_svg_item *cloned_child = child->create_clone ();
+      clone->insert_child (nullptr, cloned_child);
+    }
+
+  return clone;
+}
+
+const abstract_svg_item *abstract_svg_item::get_original_item () const
+{
+  if (m_original_id.isEmpty ())
+    return nullptr;
+
+  return m_document->item_container ()->get_item (m_original_id);
+}
+
+void abstract_svg_item::update_own_id ()
+{
+  svg_items_container *container = document ()->item_container ();
+  if (m_own_id.isEmpty ())
+    m_own_id = get_computed_attribute<svg_attribute_id> ()->id ();
+
+  if (!has_id () || container->contains (id ()))
+    {
+      if (is_cloned ())
+        {
+          DEBUG_PAUSE ("cloned items shouldn't be here");
+          return;
+        }
+
+      m_own_id = container->create_unique_name (name ());
+      svg_attribute_id *attribute_id = get_attribute<svg_attribute_id> ();
+      if (!attribute_id)
+        {
+          attribute_id = new svg_attribute_id (this);
+          add_attribute (attribute_id);
+        }
+
+      attribute_id->set_id (m_own_id);
+    }
 }
 

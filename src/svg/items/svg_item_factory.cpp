@@ -11,6 +11,7 @@
 #include "svg/items/svg_item_rect.h"
 #include "svg/items/svg_item_circle.h"
 #include "svg/items/svg_item_ellipse.h"
+#include "svg/items/svg_item_use.h"
 
 #include "svg/svg_namespaces.h"
 

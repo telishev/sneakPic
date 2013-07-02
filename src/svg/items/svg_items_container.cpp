@@ -50,10 +50,6 @@ bool svg_items_container::contains (const QString &id) const
 
 QString svg_items_container::create_unique_name (const char *item_id)
 {
-  auto it = m_map.find (item_id);
-  if (it == m_map.end ())
-    return item_id;
-
   max_id++;
   return QString (item_id) + QString::number (max_id);
 }
