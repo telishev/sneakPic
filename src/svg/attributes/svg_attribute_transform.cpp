@@ -39,7 +39,12 @@ QTransform svg_attribute_transform::computed_transform () const
     return m_transform;
 
   const svg_attribute_transform *base_transform = parent->get_computed_attribute <svg_attribute_transform> ();
-  return m_transform * base_transform->computed_transform ();
+  return m_additional_transform * m_transform * base_transform->computed_transform ();
+}
+
+void svg_attribute_transform::set_additional_transform (const QTransform &additional_transform)
+{
+  m_additional_transform = additional_transform;
 }
 
 bool svg_attribute_transform::read (const char *data)
