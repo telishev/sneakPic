@@ -12,6 +12,9 @@
 #include "svg/items/svg_item_circle.h"
 #include "svg/items/svg_item_ellipse.h"
 #include "svg/items/svg_item_use.h"
+#include "svg/items/svg_item_stop.h"
+#include "svg/items/svg_item_linear_gradient.h"
+#include "svg/items/svg_item_radial_gradient.h"
 
 #include "svg/svg_namespaces.h"
 

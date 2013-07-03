@@ -4,7 +4,6 @@
 #include "svg/attributes/abstract_attribute.h"
 
 #include <QString>
-#include "svg/svg_namespaces.h"
 
 class svg_attribute_id : public abstract_attribute
 {

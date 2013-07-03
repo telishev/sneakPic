@@ -21,13 +21,13 @@ svg_item_svg::~svg_item_svg ()
 
 double svg_item_svg::width () const
 {
-  static const svg_attribute_width default_width (210, svg_length_units::MM); /// A4
+  static const svg_attribute_width default_width (nullptr, 210, svg_length_units::MM); /// A4
   return get_computed_attribute<svg_attribute_width> (&default_width)->value ();
 }
 
 double svg_item_svg::height () const
 {
-  static const svg_attribute_height default_height (297, svg_length_units::MM); /// A4
+  static const svg_attribute_height default_height (nullptr, 297, svg_length_units::MM); /// A4
   return get_computed_attribute<svg_attribute_height> (&default_height)->value ();
 }
 

@@ -6,7 +6,7 @@
 #include "svg/items/abstract_svg_item.h"
 
 svg_attribute_xlink_href::svg_attribute_xlink_href (abstract_svg_item *item)
-  : abstract_attribute (item)
+  : abstract_attribute (item), m_iri (item)
 {
 
 }
@@ -18,24 +18,15 @@ svg_attribute_xlink_href::~svg_attribute_xlink_href ()
 
 bool svg_attribute_xlink_href::read (const QString &data, bool /*from_css*/)
 {
-  /// For now we only support local references in a form  #<elementID>
-  if (!data.startsWith ("#"))
-    return false;
-
-  m_element_id = data.mid (1);
-  return true;
+  return m_iri.read (data);
 }
 
 bool svg_attribute_xlink_href::write (QString &data, bool /*to_css*/) const 
 {
-  data = QLatin1String ("#") + m_element_id;
-  return true;
+  return m_iri.write (data);
 }
 
 abstract_svg_item *svg_attribute_xlink_href::href () const
 {
-  if (!item ())
-    return nullptr;
-
-  return item ()->document ()->item_container ()->get_item (m_element_id);
+  return m_iri.href ();
 }

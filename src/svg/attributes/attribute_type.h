@@ -29,10 +29,18 @@ DECLARE_ATTRIBUTE(RX                , "rx"                , EMPTY      , svg_att
 DECLARE_ATTRIBUTE(RY                , "ry"                , EMPTY      , svg_attribute_ry                 , NONE         )   \
 DECLARE_ATTRIBUTE(CX                , "cx"                , EMPTY      , svg_attribute_cx                 , NONE         )   \
 DECLARE_ATTRIBUTE(CY                , "cy"                , EMPTY      , svg_attribute_cy                 , NONE         )   \
+DECLARE_ATTRIBUTE(FX                , "fx"                , EMPTY      , svg_attribute_fx                 , NONE         )   \
+DECLARE_ATTRIBUTE(FY                , "fy"                , EMPTY      , svg_attribute_fy                 , NONE         )   \
 DECLARE_ATTRIBUTE(OPACITY           , "opacity"           , EMPTY      , svg_attribute_opacity            , INHERIT      )   \
 DECLARE_ATTRIBUTE(STROKE_OPACITY    , "stroke-opacity"    , EMPTY      , svg_attribute_stroke_opacity     , STYLE        )   \
 DECLARE_ATTRIBUTE(FILL_OPACITY      , "fill-opacity"      , EMPTY      , svg_attribute_fill_opacity       , STYLE        )   \
 DECLARE_ATTRIBUTE(HREF              , "href"              , XLINK      , svg_attribute_xlink_href         , NONE         )   \
+DECLARE_ATTRIBUTE(GRADIENT_UNITS    , "gradientUnits"     , EMPTY      , svg_attribute_gradient_units     , NONE         )   \
+DECLARE_ATTRIBUTE(SPREAD_METHOD     , "spreadMethod"      , EMPTY      , svg_attribute_spread_method      , NONE         )   \
+DECLARE_ATTRIBUTE(GRADIENT_TRANSFORM, "gradientTransform" , EMPTY      , svg_attribute_gradient_transform , NONE         )   \
+DECLARE_ATTRIBUTE(OFFSET            , "offset"            , EMPTY      , svg_attribute_offset             , NONE         )   \
+DECLARE_ATTRIBUTE(STOP_COLOR        , "stop-color"        , EMPTY      , svg_attribute_stop_color         , STYLE        )   \
+DECLARE_ATTRIBUTE(STOP_OPACITY      , "stop-opacity"      , EMPTY      , svg_attribute_stop_opacity       , STYLE        )   \
 
 enum class svg_attribute_type
 {

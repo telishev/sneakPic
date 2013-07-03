@@ -10,12 +10,15 @@
 #include "svg/attributes/svg_attribute_stroke_linejoin.h"
 #include "svg/attributes/svg_attribute_stroke_miterlimit.h"
 #include "svg/attributes/svg_attribute_stroke_width.h"
-#include "svg/attributes/svg_attribute_stroke.h"
-#include "svg/attributes/svg_attribute_fill.h"
 #include "svg/attributes/svg_attribute_transform.h"
 #include "svg/attributes/svg_attributes_length_type.h"
 #include "svg/attributes/svg_attributes_number.h"
 #include "svg/attributes/svg_attribute_xlink_href.h"
+#include "svg/attributes/svg_attributes_enum.h"
+#include "svg/attributes/svg_attribute_gradient_transform.h"
+#include "svg/attributes/svg_attribute_stop_color.h"
+#include "svg/attributes/svg_attribute_offset.h"
+#include "svg/attributes/svg_attributes_fill_stroke.h"
 
 #include <QString>
 

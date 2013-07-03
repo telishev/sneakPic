@@ -3,15 +3,13 @@
 
 #include "svg/attributes/abstract_attribute.h"
 
-#include <QTransform>
-#include <vector>
-#include <string>
+#include "svg/data_types/svg_transform_list.h"
 
 class svg_attribute_transform : public abstract_attribute
 {
   SVG_ATTRIBUTE
 
-  QTransform m_transform;
+  svg_transform_list m_transform;
   /// TODO: remove this hack for "use" item
   QTransform m_additional_transform;
 public:
@@ -23,11 +21,6 @@ public:
 
   QTransform computed_transform () const;
   void set_additional_transform (const QTransform &additional_transform);
-
-private:
-  bool read (const char *data);
-  bool get_transfrom_data (const char *data, std::vector<double> &dest) const;
-  bool apply_transform (const std::string &name, std::vector<double> &data);
 };
 
 

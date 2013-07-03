@@ -39,6 +39,13 @@ public:
   svg_attribute_fill_opacity (abstract_svg_item *item) : svg_base_attribute_number (item) { m_value = 1.0; }
 };
 
+class svg_attribute_stop_opacity : public svg_base_attribute_number
+{
+  SVG_ATTRIBUTE
+public:
+  svg_attribute_stop_opacity (abstract_svg_item *item) : svg_base_attribute_number (item) { m_value = 1.0; }
+};
+
 
 
 #endif // SVG_ATTRIBUTES_NUMBER_H

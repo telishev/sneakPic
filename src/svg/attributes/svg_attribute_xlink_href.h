@@ -2,14 +2,14 @@
 #define SVG_ATTRIBUTE_XLINK_HREF_H
 
 #include "svg/attributes/abstract_attribute.h"
-#include <QString>
+#include "svg/data_types/data_type_iri.h"
 
 
 class svg_attribute_xlink_href : public abstract_attribute
 {
   SVG_ATTRIBUTE
 
-  QString m_element_id;
+  data_type_iri m_iri;
 public:
   svg_attribute_xlink_href (abstract_svg_item *item);
   virtual ~svg_attribute_xlink_href ();

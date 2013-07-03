@@ -14,8 +14,8 @@ public:
   svg_item_rect (svg_document *document);
   virtual ~svg_item_rect () override;
 
-  virtual void update_renderer_item ();
-  virtual const abstract_renderer_item *get_renderer_item () const;
+  virtual void update_renderer_item () override;
+  virtual const abstract_renderer_item *get_renderer_item () const override;
 
 protected:
   virtual bool check_item () override;

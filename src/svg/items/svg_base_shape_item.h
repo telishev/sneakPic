@@ -12,7 +12,7 @@ public:
   svg_base_shape_item (svg_document *document) : abstract_svg_item (document) {}
   virtual ~svg_base_shape_item () override {}
 
-  virtual bool render_children () const { return false; }
+  virtual bool render_children () const override { return false; }
 
 protected:
   void update_base_item (renderer_base_shape_item *item);
