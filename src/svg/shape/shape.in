@@ -1,4 +1,0 @@
-THIS_DIR = $$PROJ_DIR/src/svg/shape
-
-SOURCES += $$THIS_DIR/*.cpp
-HEADERS += $$THIS_DIR/*.h

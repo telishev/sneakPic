@@ -3,14 +3,14 @@
 #include "common/string_utils.h"
 #include "common/common_utils.h"
 
-#include "svg/shape/svg_shape_cubic.h"
-#include "svg/shape/svg_shape_elliptic_arc.h"
-#include "svg/shape/svg_shape_line.h"
-#include "svg/shape/svg_shape_quadratic.h"
-#include "svg/shape/svg_subpath.h"
+#include "svg/point_2d.h"
 
 #include <functional>
 #include <QString>
+#include <QPainterPath>
+#include "svg/svg_arc_data.h"
+
+
 
 svg_attribute_path_data::svg_attribute_path_data (abstract_svg_item *item)
   : abstract_attribute (item)
@@ -20,7 +20,6 @@ svg_attribute_path_data::svg_attribute_path_data (abstract_svg_item *item)
 
 svg_attribute_path_data::~svg_attribute_path_data ()
 {
-  clear ();
 }
 
 bool svg_attribute_path_data::read (const QString &data, bool /*from_css*/)
@@ -29,9 +28,16 @@ bool svg_attribute_path_data::read (const QString &data, bool /*from_css*/)
 
 }
 
-bool svg_attribute_path_data::write (QString &/*data*/, bool /*to_css*/) const 
+bool svg_attribute_path_data::write (QString &data, bool /*to_css*/) const 
 {
-  /// TODO: support
+  size_t data_offset = 0;
+  for (size_t i = 0; i < m_commands.size (); i++)
+    {
+      data += command_svg_name (m_commands[i]);
+      int data_count = command_data_count (m_commands[i]);
+      for (int j = 0; j < data_count; j++)
+        data += QString::number (m_path_data[data_offset++]) + " ";
+    }
   return true;
 }
 
@@ -56,8 +62,6 @@ bool svg_attribute_path_data::read_data (const char *data)
   commands['Q'] = &svg_attribute_path_data::read_quadratic;
   commands['T'] = &svg_attribute_path_data::read_quadratic_short;
   commands['A'] = &svg_attribute_path_data::read_arc;
-
-  m_subpaths.push_back (new svg_subpath);
 
   trim_separators_left (cur);
   while (*cur)
@@ -93,11 +97,6 @@ bool svg_attribute_path_data::read_data (const char *data)
       trim_separators_left (cur);
     }
 
-  if (m_subpaths.back ()->empty ())
-    {
-      delete m_subpaths.back ();
-      m_subpaths.pop_back ();
-    }
   return true;
 }
 
@@ -109,14 +108,6 @@ bool svg_attribute_path_data::is_upper (char v) const
 unsigned char svg_attribute_path_data::to_command (char v) const
 {
   return (unsigned char)QChar (v).toUpper ().toLatin1 ();
-}
-
-void svg_attribute_path_data::clear ()
-{
-  for (svg_subpath *subpath : m_subpaths)
-    delete subpath;
-
-  m_subpaths.clear ();
 }
 
 bool svg_attribute_path_data::read_move (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative)
@@ -131,21 +122,16 @@ bool svg_attribute_path_data::read_move (const char *&data, point_2d &subpath_st
 
   current_point = subpath_start_point = new_current_point;
 
-  /// create new path if previous is not empty
-  if (!m_subpaths.back ()->empty ())
-    m_subpaths.push_back (new svg_subpath);
+  m_path_data.push_back (new_current_point.x ());
+  m_path_data.push_back (new_current_point.y ());
+  m_commands.push_back (path_command::MOVE);
   return true;
 }
 
 bool svg_attribute_path_data::read_end_subpath (const char *&/*data*/, point_2d &subpath_start_point, point_2d &current_point, bool /*relative*/)
 {
   current_point = subpath_start_point;
-
-  /// create new path if previous is not empty
-  if (!m_subpaths.back ()->empty ())
-    m_subpaths.push_back (new svg_subpath);
-  else
-    return false;
+  m_commands.push_back (path_command::CLOSE_PATH);
 
   return true;
 }
@@ -160,8 +146,9 @@ bool svg_attribute_path_data::read_line (const char *&data, point_2d &/*subpath_
   if (relative)
     new_current_point += current_point;
 
-  svg_shape_line *new_line = new svg_shape_line (current_point, new_current_point);
-  m_subpaths.back ()->add_shape (new_line);
+  m_path_data.push_back (new_current_point.x ());
+  m_path_data.push_back (new_current_point.y ());
+  m_commands.push_back (path_command::LINE);
 
   current_point = new_current_point;
   return true;
@@ -174,8 +161,9 @@ bool svg_attribute_path_data::read_h_line (const char *&data, point_2d &/*subpat
 
   point_2d new_current_point (current_point.x (), relative ? current_point.y () + point_y : point_y);
 
-  svg_shape_line *new_line = new svg_shape_line (current_point, new_current_point);
-  m_subpaths.back ()->add_shape (new_line);
+  m_path_data.push_back (new_current_point.x ());
+  m_path_data.push_back (new_current_point.y ());
+  m_commands.push_back (path_command::LINE);
 
   current_point = new_current_point;
   return true;
@@ -188,8 +176,9 @@ bool svg_attribute_path_data::read_v_line (const char *&data, point_2d &/*subpat
 
   point_2d new_current_point (relative ? current_point.x () + point_x : point_x, current_point.y ());
 
-  svg_shape_line *new_line = new svg_shape_line (current_point, new_current_point);
-  m_subpaths.back ()->add_shape (new_line);
+  m_path_data.push_back (new_current_point.x ());
+  m_path_data.push_back (new_current_point.y ());
+  m_commands.push_back (path_command::LINE);
 
   current_point = new_current_point;
   return true;
@@ -215,9 +204,13 @@ bool svg_attribute_path_data::read_curve (const char *&data, point_2d &/*subpath
       control1 += current_point;
       control2 += current_point;
     }
-
-  svg_shape_cubic *new_shape = new svg_shape_cubic (current_point, new_current_point, control1, control2);
-  m_subpaths.back ()->add_shape (new_shape);
+  m_path_data.push_back (control1.x ());
+  m_path_data.push_back (control1.y ());
+  m_path_data.push_back (control2.x ());
+  m_path_data.push_back (control2.y ());
+  m_path_data.push_back (new_current_point.x ());
+  m_path_data.push_back (new_current_point.y ());
+  m_commands.push_back (path_command::CURVE);
 
   current_point = new_current_point;
   return true;
@@ -241,43 +234,186 @@ bool svg_attribute_path_data::read_curve_short (const char *&data, point_2d &/*s
       control2 += current_point;
     }
 
-  abstract_svg_shape *prev_shape = 0;
-  if (m_subpaths.size ())
-    prev_shape = m_subpaths.back ()->back ();
-  if (prev_shape)
+  if (m_commands.size () < 6 || m_commands.back () != path_command::CURVE)
+    control1 = new_current_point;
+  else
     {
-      /// TODO: do it without dyncast
-      svg_shape_cubic *prev_cubic_shape = dynamic_cast<svg_shape_cubic *> (prev_shape);
-      if (prev_cubic_shape)
-        control1 = (current_point + (current_point - prev_cubic_shape->control2 ()));
+      point_2d prev_control_point = point_2d (m_path_data[m_path_data.size () - 4], m_path_data[m_path_data.size () - 3]);
+      control1 = (current_point + (current_point - prev_control_point));
     }
 
-  svg_shape_cubic *new_shape = new svg_shape_cubic (current_point, new_current_point, control1, control2);
-  m_subpaths.back ()->add_shape (new_shape);
+  m_path_data.push_back (control1.x ());
+  m_path_data.push_back (control1.y ());
+  m_path_data.push_back (control2.x ());
+  m_path_data.push_back (control2.y ());
+  m_path_data.push_back (new_current_point.x ());
+  m_path_data.push_back (new_current_point.y ());
+  m_commands.push_back (path_command::CURVE);
+
 
   current_point = new_current_point;
   return true;
 }
 
-bool svg_attribute_path_data::read_quadratic (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative)
+bool svg_attribute_path_data::read_quadratic (const char *&data, point_2d &/*subpath_start_point*/, point_2d &current_point, bool relative)
 {
-  FIX_UNUSED (data, subpath_start_point, current_point, relative);
-  /// TODO: support it
-  return false;
+  double x1, y1, x, y;
+  CHECK (str_to_double (data, x1));
+  CHECK (str_to_double (data, y1));
+  CHECK (str_to_double (data, x));
+  CHECK (str_to_double (data, y));
+
+  point_2d new_current_point (x, y);
+  point_2d control1 (x1, y1);
+
+  if (relative)
+    {
+      new_current_point += current_point;
+      control1 += current_point;
+    }
+  m_path_data.push_back (control1.x ());
+  m_path_data.push_back (control1.y ());
+  m_path_data.push_back (new_current_point.x ());
+  m_path_data.push_back (new_current_point.y ());
+  m_commands.push_back (path_command::QUAD);
+
+  current_point = new_current_point;
+  return true;
 }
 
-bool svg_attribute_path_data::read_quadratic_short (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative)
+bool svg_attribute_path_data::read_quadratic_short (const char *&data, point_2d &/*subpath_start_point*/, point_2d &current_point, bool relative)
 {
-  FIX_UNUSED (data, subpath_start_point, current_point, relative);
-  /// TODO: support it
-  return false;
+  double x, y;
+  CHECK (str_to_double (data, x));
+  CHECK (str_to_double (data, y));
+
+  point_2d new_current_point (x, y);
+  point_2d control1;
+
+  if (relative)
+    {
+      new_current_point += current_point;
+    }
+
+  if (m_commands.size () < 4 || m_commands.back () != path_command::QUAD)
+    control1 = new_current_point;
+  else
+    {
+      point_2d prev_control_point = point_2d (m_path_data[m_path_data.size () - 4], m_path_data[m_path_data.size () - 3]);
+      control1 = (current_point + (current_point - prev_control_point));
+    }
+
+  m_path_data.push_back (control1.x ());
+  m_path_data.push_back (control1.y ());
+  m_path_data.push_back (new_current_point.x ());
+  m_path_data.push_back (new_current_point.y ());
+  m_commands.push_back (path_command::CURVE);
+
+  current_point = new_current_point;
+  return true;
 }
 
-bool svg_attribute_path_data::read_arc (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative)
+bool svg_attribute_path_data::read_arc (const char *&data, point_2d &/*subpath_start_point*/, point_2d &current_point, bool relative)
 {
-  FIX_UNUSED (data, subpath_start_point, current_point, relative);
-  /// TODO: support it
-  return false;
+  double rx, ry, xrot, large_arc, sweep_flag, x, y;
+  CHECK (str_to_double (data, rx));
+  CHECK (str_to_double (data, ry));
+  CHECK (str_to_double (data, xrot));
+  CHECK (str_to_double (data, large_arc));
+  CHECK (str_to_double (data, sweep_flag));
+  CHECK (str_to_double (data, x));
+  CHECK (str_to_double (data, y));
+
+  point_2d new_current_point (x, y);
+
+  if (relative)
+    {
+      new_current_point += current_point;
+    }
+  m_path_data.push_back (rx);
+  m_path_data.push_back (ry);
+  m_path_data.push_back (xrot);
+  m_path_data.push_back (large_arc);
+  m_path_data.push_back (sweep_flag);
+  m_path_data.push_back (new_current_point.x ());
+  m_path_data.push_back (new_current_point.y ());
+  m_commands.push_back (path_command::ARC);
+
+  current_point = new_current_point;
+  return true;
+}
+
+QPainterPath svg_attribute_path_data::create_painter_path () const
+{
+  QPainterPath path;
+  size_t data_offset = 0;
+  for (size_t i = 0; i < m_commands.size (); i++)
+    {
+      switch (m_commands[i])
+        {
+        case path_command::MOVE:
+          path.moveTo (m_path_data[data_offset], m_path_data[data_offset + 1]);
+          data_offset += 2;
+          break;
+        case path_command::CLOSE_PATH:
+          path.closeSubpath ();
+          break;
+        case path_command::LINE:
+          path.lineTo (m_path_data[data_offset], m_path_data[data_offset + 1]);
+          data_offset += 2;
+          break;
+        case path_command::CURVE:
+          path.cubicTo (m_path_data[data_offset + 0], m_path_data[data_offset + 1],
+                        m_path_data[data_offset + 2], m_path_data[data_offset + 3],
+                        m_path_data[data_offset + 4], m_path_data[data_offset + 5]);
+          data_offset += 6;
+          break;
+        case path_command::QUAD:
+          path.quadTo (m_path_data[data_offset + 0], m_path_data[data_offset + 1],
+                       m_path_data[data_offset + 2], m_path_data[data_offset + 3]);
+          data_offset += 4;
+          break;
+        case path_command::ARC:
+          arc_converter::pathArc (path, m_path_data[data_offset + 0], m_path_data[data_offset + 1],
+                                  m_path_data[data_offset + 2], m_path_data[data_offset + 3],
+                                  m_path_data[data_offset + 4], m_path_data[data_offset + 5], m_path_data[data_offset + 6],
+                                  path.currentPosition ().x (), path.currentPosition ().y ());
+          data_offset += 7;
+          break;
+        }
+    }
+
+  return path;
+}
+
+int svg_attribute_path_data::command_data_count (path_command command) const
+{
+  switch (command)
+    {
+    case path_command::MOVE: return 2;
+    case path_command::CLOSE_PATH:  return 0;
+    case path_command::LINE: return 2;
+    case path_command::CURVE: return 6;
+    case path_command::QUAD: return 4;
+    case path_command::ARC: return 7;
+    }
+
+  return 0;
+}
+
+const char *svg_attribute_path_data::command_svg_name (path_command command) const
+{
+  switch (command)
+    {
+    case path_command::MOVE: return "M";
+    case path_command::CLOSE_PATH:  return "Z";
+    case path_command::LINE: return "L";
+    case path_command::CURVE: return "C";
+    case path_command::QUAD: return "Q";
+    case path_command::ARC: return "A";
+    }
+
+  return "";
 }
 
 

@@ -5,14 +5,25 @@
 
 #include <vector>
 
-class svg_subpath;
 class point_2d;
+class QPainterPath;
+
+enum class path_command
+{
+  MOVE,
+  CLOSE_PATH,
+  LINE,
+  CURVE,
+  QUAD,
+  ARC,
+};
 
 class svg_attribute_path_data : public abstract_attribute
 {
   SVG_ATTRIBUTE
 
-  std::vector<svg_subpath *> m_subpaths;
+  std::vector<double> m_path_data;
+  std::vector<path_command> m_commands;
 public:
   svg_attribute_path_data (abstract_svg_item *item);
   virtual ~svg_attribute_path_data ();
@@ -20,14 +31,17 @@ public:
   virtual bool read (const QString &data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 
-  const std::vector<svg_subpath *> &subpath () const { return m_subpaths; }
+  QPainterPath create_painter_path () const;
 
 private:
   bool read_data (const char *data);
 
   bool is_upper (char v) const;
   unsigned char to_command (char v) const;
-  void clear ();
+
+  int command_data_count (path_command command) const;
+  const char *command_svg_name (path_command command) const;
+
   bool read_move (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
   bool read_end_subpath (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
   bool read_line (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);

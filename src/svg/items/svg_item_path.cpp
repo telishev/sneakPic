@@ -6,9 +6,6 @@
 
 #include "svg/attributes/svg_attribute_path_data.h"
 
-#include "svg/shape/abstract_svg_shape.h"
-#include "svg/shape/svg_subpath.h"
-
 
 svg_item_path::svg_item_path (svg_document *document)
   : svg_base_shape_item (document)
@@ -40,22 +37,7 @@ void svg_item_path::update_renderer_item ()
   if (!m_render_item)
     m_render_item = new renderer_item_path;
 
-  const std::vector<svg_subpath *> &subpath = path_data->subpath ();
-  QPainterPath painter_path;
-  for (svg_subpath *path : subpath)
-    {
-      const std::vector<abstract_svg_shape *> &shapes = path->shapes ();
-      if (shapes.size () == 0)
-        continue;
-
-      painter_path.moveTo (shapes[0]->start ().x (), shapes[0]->start ().y ());
-      for (abstract_svg_shape *shape : shapes)
-        {
-          shape->add_to_path (painter_path);
-        }
-    }
-
-  m_render_item->set_painter_path (painter_path);
+  m_render_item->set_painter_path (path_data->create_painter_path ());
 
   update_base_item (m_render_item);
 }
