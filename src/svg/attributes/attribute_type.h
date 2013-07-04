@@ -42,6 +42,8 @@ DECLARE_ATTRIBUTE(OFFSET            , "offset"            , EMPTY      , svg_att
 DECLARE_ATTRIBUTE(STOP_COLOR        , "stop-color"        , EMPTY      , svg_attribute_stop_color         , STYLE        )   \
 DECLARE_ATTRIBUTE(STOP_OPACITY      , "stop-opacity"      , EMPTY      , svg_attribute_stop_opacity       , STYLE        )   \
 DECLARE_ATTRIBUTE(CLIP_PATH         , "clip-path"         , EMPTY      , svg_attribute_clip_path          , NONE         )   \
+DECLARE_ATTRIBUTE(FILL_RULE         , "fill-rule"         , EMPTY      , svg_attribute_fill_rule          , STYLE        )   \
+DECLARE_ATTRIBUTE(CLIP_RULE         , "clip-rule"         , EMPTY      , svg_attribute_clip_rule          , STYLE        )   \
 
 enum class svg_attribute_type
 {

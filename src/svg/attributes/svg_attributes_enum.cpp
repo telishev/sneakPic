@@ -25,6 +25,18 @@ const char *enum_to_string (spread_method id)
   return "";
 }
 
+const char *enum_to_string (fill_rule id)
+{
+  switch (id)
+    {
+    case fill_rule::NON_ZERO: return "nonzero";
+    case fill_rule::EVEN_ODD: return "evenodd";
+    case fill_rule::INVALID: return "";
+    }
+
+  return "";
+}
+
 
 
 

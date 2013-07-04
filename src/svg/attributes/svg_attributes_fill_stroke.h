@@ -10,6 +10,8 @@ class renderer_paint_server;
 
 class svg_paint_server : public abstract_attribute
 {
+
+protected:
   enum class paint_server_type
   {
     NONE,
@@ -36,7 +38,11 @@ class svg_attribute_fill : public svg_paint_server
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_fill (abstract_svg_item *item) : svg_paint_server (item) {}
+  svg_attribute_fill (abstract_svg_item *item) : svg_paint_server (item)
+  {
+    m_color = Qt::black;
+    m_server_type = svg_paint_server::paint_server_type::COLOR;
+  }
 };
 
 class svg_attribute_stroke : public svg_paint_server

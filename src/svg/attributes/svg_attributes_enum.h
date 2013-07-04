@@ -70,5 +70,33 @@ public:
   { m_value = spread_method::PAD; }
 };
 
+enum class fill_rule
+{
+  NON_ZERO,
+  EVEN_ODD,
+  INVALID,
+};
+
+const char *enum_to_string (fill_rule id);
+static inline int enum_values_count (fill_rule) { return (int)fill_rule::INVALID; }
+
+class svg_attribute_fill_rule : public svg_base_attribute_enum<fill_rule>
+{
+  SVG_ATTRIBUTE
+public:
+  svg_attribute_fill_rule (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  { m_value = fill_rule::NON_ZERO; }
+};
+
+
+class svg_attribute_clip_rule : public svg_base_attribute_enum<fill_rule>
+{
+  SVG_ATTRIBUTE
+public:
+  svg_attribute_clip_rule (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  { m_value = fill_rule::NON_ZERO; }
+};
+
+
 
 #endif // SVG_ATTRIBUTES_ENUM_H
