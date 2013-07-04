@@ -3,21 +3,23 @@
 
 #include "svg/items/abstract_svg_item.h"
 
-class renderer_base_shape_item;
+class renderer_item_path;
 class QPainterPath;
 
 class svg_base_shape_item : public abstract_svg_item
 {
-
+  renderer_item_path *m_render_item;
 public:
-  svg_base_shape_item (svg_document *document) : abstract_svg_item (document) {}
-  virtual ~svg_base_shape_item () override {}
+  svg_base_shape_item (svg_document *document);
+  virtual ~svg_base_shape_item () override;
 
   virtual bool render_children () const override { return false; }
-  QPainterPath to_path () const;
+  QPainterPath get_path_for_clipping () const;
+  virtual void update_renderer_item () override;
+  virtual const abstract_renderer_item *get_renderer_item () const override;
 
 protected:
-  void update_base_item (renderer_base_shape_item *item);
+  void set_item_style (renderer_item_path *item);
   virtual QPainterPath get_path () const = 0;
 };
 

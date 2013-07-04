@@ -17,10 +17,20 @@
 
 #include <memory>
 #include <QPainterPath>
+#include "renderer/renderer_item_path.h"
 
+svg_base_shape_item::svg_base_shape_item (svg_document *document)
+   : abstract_svg_item (document)
+{
+  m_render_item = nullptr;
+}
 
+svg_base_shape_item::~svg_base_shape_item ()
+{
+  FREE (m_render_item);
+}
 
-void svg_base_shape_item::update_base_item (renderer_base_shape_item *item)
+void svg_base_shape_item::set_item_style (renderer_item_path *item)
 {
   std::unique_ptr<renderer_paint_server> fill (get_computed_attribute<svg_attribute_fill> ()->create_paint_server ());
   std::unique_ptr<renderer_paint_server> stroke (get_computed_attribute<svg_attribute_stroke> ()->create_paint_server ());
@@ -49,10 +59,25 @@ void svg_base_shape_item::update_base_item (renderer_base_shape_item *item)
     item->set_clip_path (clip_path->get_clip_path ());
 }
 
-QPainterPath svg_base_shape_item::to_path () const
+QPainterPath svg_base_shape_item::get_path_for_clipping () const
 {
   QPainterPath path = get_path ();
   const svg_attribute_transform *transform = get_computed_attribute<svg_attribute_transform> ();
   path = transform->computed_transform ().map (path);
   return path;
 }
+
+void svg_base_shape_item::update_renderer_item ()
+{
+  m_render_item = new renderer_item_path;
+
+  m_render_item->set_painter_path (get_path ());
+  set_item_style (m_render_item);
+}
+
+const abstract_renderer_item *svg_base_shape_item::get_renderer_item () const 
+{
+  return m_render_item;
+}
+
+

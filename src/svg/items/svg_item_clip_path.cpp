@@ -52,7 +52,7 @@ QPainterPath svg_item_clip_path::get_single_child_path (const abstract_svg_item 
   if (!base_shape)
     return QPainterPath ();
 
-  QPainterPath path = base_shape->to_path ();
+  QPainterPath path = base_shape->get_path_for_clipping ();
   const svg_attribute_clip_path *clip_path_attr = child->get_computed_attribute<svg_attribute_clip_path> ();
   const svg_item_clip_path *clip_path = clip_path_attr->clip_path ();
   if (clip_path)
