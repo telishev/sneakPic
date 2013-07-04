@@ -2,8 +2,10 @@
 #define STRING_UTILS_H
 
 #include <string>
+#include <QColor>
 
 #include "common/common_utils.h"
+#include "debug_utils.h"
 
 static const int issseparator_array[256] =
 {
@@ -680,6 +682,19 @@ bool str_to_double (const char *&string, double &data)
   bool ok = (string != endPtr);
   string = endPtr;
   return ok;
+}
+
+static inline QString hex_to_str (int value)
+{
+  DEBUG_ASSERT (value >= 0 && value < 256);
+  int first = value / 16;
+  int second = value % 16;
+  return QString::number (first, 16) + QString::number (second, 16);
+}
+
+static inline QString color_to_string (const QColor &color)
+{
+  return QString ("#%1%2%3").arg (hex_to_str (color.red ()), hex_to_str (color.green ()), hex_to_str (color.blue ()));
 }
 
 #endif // STRING_UTILS_H

@@ -9,6 +9,7 @@
 #define SVG_ITEM                                   \
 public:                                            \
 virtual svg_item_type type () const override;      \
+static svg_item_type static_type ();               \
 static const char *static_name ();                 \
 static svg_namespaces_t static_ns_type ();         \
 static const char *static_ns_URI ();               \
@@ -72,7 +73,10 @@ public:
   template <typename T>
   T *get_attribute () const
   {
-    return static_cast< T *> (get_attribute (T::static_name ()));
+    abstract_attribute *attribute = get_attribute (T::static_name ());
+    if (!attribute || attribute->type () != T::static_type ())
+      return nullptr;
+    return static_cast< T *> (attribute);
   }
 
   /// returns attribute with respect to styling and css
@@ -81,7 +85,7 @@ public:
   {
     const abstract_attribute *attribute = get_computed_attribute (T::static_name (), T::static_inherit_type ());
     /// if not found, return default value
-    if (!attribute)
+    if (!attribute || attribute->type () != T::static_type ())
       attribute = default_val;
 
     return static_cast<const T *>(attribute);
@@ -100,14 +104,16 @@ protected:
 
 private:
   QString full_name (const QString &namespace_name, const QString &local_name) const;
-  void add_to_container (bool force_name);
+  void add_to_container ();
   void remove_from_container ();
   abstract_attribute *get_attribute (const char *data) const;
   const abstract_attribute *get_computed_attribute (const char *data, svg_inherit_type inherit_type) const;
   const abstract_attribute *find_attribute_in_selectors (const char *data, const abstract_svg_item *item) const;
   const abstract_attribute *find_attribute_in_style_item (const char *data, const abstract_svg_item *item) const;
   const abstract_svg_item *get_original_item () const;
-  void update_own_id (bool force_name);
+  void create_id_by_attr ();
+  void create_unique_name ();
+
 };
 
 #endif // BASE_SVG_ITEM_H

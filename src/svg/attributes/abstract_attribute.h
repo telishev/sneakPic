@@ -6,6 +6,7 @@ public:                                                         \
   static const char *static_name ();                            \
   static svg_namespaces_t static_ns_type ();                    \
   virtual svg_attribute_type type () const override;            \
+  static svg_attribute_type static_type ();                     \
   static const char *static_ns_URI ();                          \
   virtual svg_namespaces_t namespace_type () const override;    \
   virtual const char *namespace_uri () const override;          \

@@ -3,7 +3,11 @@
 
 #include "svg/attributes/abstract_attribute.h"
 
+#include "common/string_utils.h"
+
 #include <QColor>
+
+
 
 class svg_attribute_stop_color : public abstract_attribute
 {
@@ -22,7 +26,7 @@ public:
 
   virtual bool write (QString &data, bool /*to_css*/ = false) const override
   {
-    data = data = QString ("#%1%2%3").arg (m_stop_color.red ()).arg (m_stop_color.green ()).arg (m_stop_color.blue ());
+    data = color_to_string (m_stop_color);
     return true;
   }
 

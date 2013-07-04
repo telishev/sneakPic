@@ -1,7 +1,12 @@
 #include "svg/attributes/svg_attributes_fill_stroke.h"
+
 #include "common/common_utils.h"
+#include "common/string_utils.h"
+
 #include "renderer/renderer_paint_server.h"
+
 #include "svg/items/svg_base_items_gradient.h"
+
 
 
 svg_paint_server::svg_paint_server (abstract_svg_item *item)
@@ -47,12 +52,12 @@ bool svg_paint_server::write (QString &data, bool /*to_css*/) const
     {
     case paint_server_type::NONE: data = "none"; return true;
     case paint_server_type::COLOR:
-      data = QString ("#%1%2%3").arg (m_color.red ()).arg (m_color.green ()).arg (m_color.blue ());
+      data = color_to_string (m_color);
       return true;
     case paint_server_type::IRI:
       {
         QString url;
-        CHECK (m_iri.write (data));
+        CHECK (m_iri.write (url));
         data = QString ("url(%1)").arg (url);
         return true;
       }

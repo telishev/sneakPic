@@ -20,6 +20,7 @@
 #include "svg/svg_namespaces.h"
 
 #define DECLARE_ITEM(ENUM,NAME,NAMESPACE,CLASS)                                         \
+svg_item_type CLASS::static_type () { return svg_item_type::ENUM; };                    \
 svg_item_type CLASS::type () const { return svg_item_type::ENUM; }                      \
 const char *CLASS::static_name () { return NAME; }                                      \
 svg_namespaces_t CLASS::static_ns_type () { return svg_namespaces_t::NAMESPACE; }       \

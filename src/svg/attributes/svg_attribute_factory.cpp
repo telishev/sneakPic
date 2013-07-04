@@ -26,6 +26,7 @@
 #define DECLARE_ATTRIBUTE(ENUM,NAME,NAMESPACE,CLASS,INHERIT_TYPE)                                  \
   const char * CLASS::static_name () { return NAME; }                                              \
   svg_namespaces_t CLASS::static_ns_type () { return svg_namespaces_t::NAMESPACE; }                \
+  svg_attribute_type CLASS::static_type () { return svg_attribute_type::ENUM; }                    \
   svg_attribute_type CLASS::type () const { return svg_attribute_type::ENUM; }                     \
   const char * CLASS::static_ns_URI () { return svg_namespaces::uri (static_ns_type ()); }         \
   svg_namespaces_t CLASS::namespace_type () const { return static_ns_type (); }                    \
