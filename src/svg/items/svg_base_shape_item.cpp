@@ -3,6 +3,7 @@
 #include "renderer/renderer_base_shape_item.h"
 #include "renderer/renderer_paint_server.h"
 
+#include "svg/attributes/svg_attributes_enum.h"
 #include "svg/attributes/svg_attribute_style.h"
 #include "svg/attributes/svg_attribute_stroke_linecap.h"
 #include "svg/attributes/svg_attribute_stroke_linejoin.h"
@@ -44,6 +45,7 @@ void svg_base_shape_item::set_item_style (renderer_item_path *item)
   const svg_attribute_stroke_opacity *stroke_opacity = get_computed_attribute<svg_attribute_stroke_opacity> ();
   const svg_attribute_fill_opacity *fill_opacity = get_computed_attribute<svg_attribute_fill_opacity> ();
   const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path ();
+  const svg_attribute_visibility *visibility = get_computed_attribute<svg_attribute_visibility> ();
 
   fill->set_opacity (fill_opacity->value ());
   stroke->set_opacity (stroke_opacity->value ());
@@ -51,6 +53,7 @@ void svg_base_shape_item::set_item_style (renderer_item_path *item)
   item->set_stroke_linecap (stroke_linecap->get_stroke_linecap ());
   item->set_stroke_linejoin (stroke_linejoin->get_stroke_linejoin ());
   item->set_stroke_miterlimit (stroke_miterlimit->get_stroke_miterlimit ());
+  item->set_stroke_visibility (visibility->value () == visibility::VISIBLE);
   item->set_stroke_width (stroke_width->get_stroke_width ());
   item->set_transform (transform->computed_transform ());
   item->set_opacity (opacity->computed_opacity ());

@@ -14,7 +14,9 @@ renderer_item_path::~renderer_item_path ()
 
 void renderer_item_path::draw (QPainter &painter) const
 {
-  configure_painter (painter);
+  if (!configure_painter (painter))
+    return;
+
   painter.drawPath (m_path);
 }
 

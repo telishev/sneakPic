@@ -7,6 +7,7 @@ renderer_base_shape_item::renderer_base_shape_item ()
 {
   m_opacity = 1.0;
   m_has_clip_path = false;
+  visible = true;
 }
 
 renderer_base_shape_item::~renderer_base_shape_item ()
@@ -23,6 +24,11 @@ void renderer_base_shape_item::set_stroke_linejoin (Qt::PenJoinStyle linejoin)
   m_pen.setJoinStyle (linejoin);
 }
 
+void renderer_base_shape_item::set_stroke_visibility (bool visible_arg)
+{
+  visible = visible_arg;
+}
+
 void renderer_base_shape_item::set_stroke_miterlimit (double miterlimit)
 {
   m_pen.setMiterLimit (miterlimit);
@@ -33,8 +39,11 @@ void renderer_base_shape_item::set_stroke_width (double width)
   m_pen.setWidthF (width);
 }
 
-void renderer_base_shape_item::configure_painter (QPainter &painter) const
+bool renderer_base_shape_item::configure_painter (QPainter &painter) const
 {
+  if (!visible)
+    return false;
+
   painter.setPen (m_pen);
   painter.setBrush (m_brush);
   painter.setOpacity (m_opacity);
@@ -42,6 +51,7 @@ void renderer_base_shape_item::configure_painter (QPainter &painter) const
     painter.setClipPath (m_clip_path);
   else
     painter.setClipping (false);
+  return true;
 }
 
 void renderer_base_shape_item::adjust_bbox (QRectF &bbox) const

@@ -25,6 +25,7 @@ const char *enum_to_string (spread_method id)
   return "";
 }
 
+<<<<<<< HEAD
 const char *enum_to_string (fill_rule id)
 {
   switch (id)
@@ -37,6 +38,17 @@ const char *enum_to_string (fill_rule id)
   return "";
 }
 
+=======
+const char *enum_to_string (visibility id)
+{
+  switch (id)
+    {
+    case visibility::VISIBLE: return "visible";
+    case visibility::HIDDEN: return "hidden";
+    case visibility::COLLAPSE: return "collapse";
+    case visibility::INVALID: return "";
+    }
+>>>>>>> Add visibility attribute.
 
-
-
+  return "";
+}

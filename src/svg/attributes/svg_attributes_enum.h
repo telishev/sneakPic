@@ -97,6 +97,24 @@ public:
   { m_value = fill_rule::NON_ZERO; }
 };
 
+enum class visibility
+{
+  VISIBLE,
+  HIDDEN,
+  COLLAPSE,
 
+  INVALID,
+};
+
+const char *enum_to_string (visibility id);
+static inline int enum_values_count (visibility) { return (int)visibility::INVALID; }
+
+class svg_attribute_visibility : public svg_base_attribute_enum<visibility>
+{
+  SVG_ATTRIBUTE
+public:
+  svg_attribute_visibility (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  { m_value = visibility::VISIBLE; }
+};
 
 #endif // SVG_ATTRIBUTES_ENUM_H
