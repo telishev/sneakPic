@@ -36,15 +36,12 @@ bool svg_transform_list::read (const char *data)
 
 bool svg_transform_list::get_transfrom_data (const char *data, std::vector<double> &dest) const
 {
-  QStringList splitted_data = QString (data).split (",\0x20\0x9\0xD\0xA");
-  dest.resize (splitted_data.size ());
-
-  for (int i = 0; i < splitted_data.size (); i++)
+  trim_separators_left (data);
+  while (*data)
     {
-      bool ok;
-      dest[i] = splitted_data[i].toDouble (&ok);
-      if (!ok)
-        return false;
+      double new_double = 0.0;
+      CHECK (str_to_double (data, new_double));
+      dest.push_back (new_double);
     }
 
   return true;
