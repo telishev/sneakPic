@@ -26,20 +26,23 @@ svg_document::svg_document ()
   m_item_container = new svg_items_container;
   m_root = 0;
   item_svg = 0;
+  filename = new QString ();
 }
 
 svg_document::~svg_document ()
 {
+  FREE (filename);
   FREE (m_root);
   FREE (m_item_factory);
   FREE (m_attribute_factory);
   FREE (m_item_container);
-
 }
 
-bool svg_document::read_file (const QString &filename)
+bool svg_document::read_file (const QString &filename_arg)
 {
-  QFile file (filename);
+  *filename = filename_arg;
+
+  QFile file (*filename);
   if (!file.open (QIODevice::ReadOnly))
     return false;
 
@@ -58,9 +61,15 @@ bool svg_document::read_file (const QString &filename)
   return item_svg->check ();
 }
 
-bool svg_document::write_file (const QString &filename)
+QString svg_document::get_filename ()
 {
-  QFile file (filename);
+  return *filename;
+}
+
+bool svg_document::write_file (const QString &filename_arg)
+{
+  *filename = filename_arg;
+  QFile file (*filename);
   if (!file.open (QIODevice::WriteOnly))
     return false;
 

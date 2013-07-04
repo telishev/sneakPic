@@ -25,9 +25,10 @@ main_window::main_window ()
   settings = new QSettings ("SneakPic");
   renderer = new svg_renderer (ui->glwidget, ui->glwidget->mouse_filter_object ());
   ui->glwidget->set_painter (renderer);
+  update_window_title ();
 
   connect (ui->openFileAct    , SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
-  connect (ui->saveFileAct    , SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
+  connect (ui->saveAsAct    , SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
   connect (ui->openLastFileAct, SIGNAL (triggered ()), this, SLOT (open_last_file_clicked ()));
 }
 
@@ -68,11 +69,12 @@ void main_window::save_file_clicked ()
   if (!doc)
     return;
 
-  QString filename = QFileDialog::getSaveFileName (this, "Open File", get_last_file_open_dir (), "*.svg");
+  QString filename = QFileDialog::getSaveFileName (this, "Save File", doc->get_filename (), "Scalable Vector Graphics (*.svg)");
   if (filename.isEmpty ())
     return;
 
   doc->write_file (filename);
+  update_window_title ();
 }
 
 QString main_window::get_last_file_open_dir () const
@@ -83,6 +85,11 @@ QString main_window::get_last_file_open_dir () const
 
   QFileInfo last_file (last_filename);
   return last_file.dir ().path ();
+}
+
+void main_window::update_window_title ()
+{
+  setWindowTitle (QString ("sneakPic%1").arg (doc ? QString (" - %1").arg (doc->get_filename ()) : ""));
 }
 
 void main_window::open_file (const QString &filename)
@@ -96,6 +103,8 @@ void main_window::open_file (const QString &filename)
       QMessageBox::warning (this, "Warning", "Cannot open document");
       return;
     }
+  
+  update_window_title ();
   renderer->set_document (doc);
   ui->glwidget->repaint ();
 }

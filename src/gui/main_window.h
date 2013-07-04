@@ -30,6 +30,7 @@ private slots:
   void save_file_clicked ();
 
 private:
+  void update_window_title ();
   void init_clear ();
   QString get_last_file_open_dir () const;
   void open_file (const QString &filename);
