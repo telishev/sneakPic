@@ -95,7 +95,7 @@ void svg_renderer::draw ()
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setRenderHint(QPainter::HighQualityAntialiasing);
   painter.setTransform (m_cur_transform);
-  draw_items (m_document->root (), painter, glwidget ()->rect ());
+  draw_items (m_document->root (), painter, glwidget ()->rect (), m_cur_transform);
   painter.end ();
 }
 
@@ -155,22 +155,22 @@ void svg_renderer::resizeGL (int width, int height)
   FIX_UNUSED (width, height);
 }
 
-void svg_renderer::draw_items (const abstract_svg_item *item, QPainter &painter, const QRectF &rect_to_draw)
+void svg_renderer::draw_items (const abstract_svg_item *item, QPainter &painter, const QRectF &rect_to_draw, QTransform transform)
 {
   const abstract_renderer_item *renderer_item = item->get_renderer_item ();
   if (renderer_item)
-    draw_single_item (renderer_item, painter, rect_to_draw);
+    draw_single_item (renderer_item, painter, rect_to_draw, transform);
 
   if (!item->render_children ())
     return;
 
   for (const abstract_svg_item *child = item->first_child (); child; child = child->next_sibling ())
-    draw_items (child, painter, rect_to_draw);
+    draw_items (child, painter, rect_to_draw, transform);
 }
 
-void svg_renderer::draw_single_item (const abstract_renderer_item *item, QPainter &painter, const QRectF &rect_to_draw)
+void svg_renderer::draw_single_item (const abstract_renderer_item *item, QPainter &painter, const QRectF &rect_to_draw, QTransform transform)
 {
-  QTransform item_transform = item->transform () * m_cur_transform;
+  QTransform item_transform = item->transform () * transform;
   QRectF transformed_rect = item_transform.mapRect (item->bounding_box ());
   if (!rect_to_draw.intersects (transformed_rect))
     return;

@@ -1,4 +1,5 @@
 
+include (console/console.in)
 include (gui/gui.in)
 include (ui/ui.in)
 include (svg/svg.in)
