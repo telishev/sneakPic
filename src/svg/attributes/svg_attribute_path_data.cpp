@@ -156,10 +156,10 @@ bool svg_attribute_path_data::read_line (const char *&data, point_2d &/*subpath_
 
 bool svg_attribute_path_data::read_h_line (const char *&data, point_2d &/*subpath_start_point*/, point_2d &current_point, bool relative)
 {
-  double point_y = 0;
-  CHECK (str_to_double (data, point_y));
+  double point_x = 0;
+  CHECK (str_to_double (data, point_x));
 
-  point_2d new_current_point (current_point.x (), relative ? current_point.y () + point_y : point_y);
+  point_2d new_current_point (relative ? current_point.x () + point_x : point_x, current_point.y ());
 
   m_path_data.push_back (new_current_point.x ());
   m_path_data.push_back (new_current_point.y ());
@@ -171,10 +171,10 @@ bool svg_attribute_path_data::read_h_line (const char *&data, point_2d &/*subpat
 
 bool svg_attribute_path_data::read_v_line (const char *&data, point_2d &/*subpath_start_point*/, point_2d &current_point, bool relative)
 {
-  double point_x = 0;
-  CHECK (str_to_double (data, point_x));
+  double point_y = 0;
+  CHECK (str_to_double (data, point_y));
 
-  point_2d new_current_point (relative ? current_point.x () + point_x : point_x, current_point.y ());
+  point_2d new_current_point (current_point.x (), relative ? current_point.y () + point_y : point_y);
 
   m_path_data.push_back (new_current_point.x ());
   m_path_data.push_back (new_current_point.y ());
