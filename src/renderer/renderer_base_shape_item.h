@@ -5,6 +5,7 @@
 
 #include <QPen>
 #include <QBrush>
+#include <QPainterPath>
 
 class renderer_paint_server;
 
@@ -14,6 +15,8 @@ protected:
   QPen m_pen;
   QBrush m_brush;
   double m_opacity;
+  QPainterPath m_clip_path;
+  bool m_has_clip_path;
 
 public:
   renderer_base_shape_item ();
@@ -27,6 +30,7 @@ public:
   void set_stroke_server (const renderer_paint_server *server);
   void set_fill_server (const renderer_paint_server *server);
   void set_opacity (double opacity);
+  void set_clip_path (const QPainterPath &path) { m_clip_path = path; m_has_clip_path = true; }
 
 protected:
   void configure_painter (QPainter &painter) const;

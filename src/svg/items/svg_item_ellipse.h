@@ -14,11 +14,12 @@ public:
   svg_item_ellipse (svg_document *document);
   virtual ~svg_item_ellipse () override;
 
-  virtual void update_renderer_item ();
-  virtual const abstract_renderer_item *get_renderer_item () const;
+  virtual void update_renderer_item () override;
+  virtual const abstract_renderer_item *get_renderer_item () const override;
 
 protected:
   virtual bool check_item () override;
+  virtual QPainterPath get_path () const override;
 
 };
 

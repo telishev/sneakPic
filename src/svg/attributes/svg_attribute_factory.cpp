@@ -19,6 +19,7 @@
 #include "svg/attributes/svg_attribute_stop_color.h"
 #include "svg/attributes/svg_attribute_offset.h"
 #include "svg/attributes/svg_attributes_fill_stroke.h"
+#include "svg/attributes/svg_attribute_clip_path.h"
 
 #include <QString>
 

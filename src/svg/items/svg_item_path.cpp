@@ -47,3 +47,12 @@ const abstract_renderer_item *svg_item_path::get_renderer_item () const
   return m_render_item;
 }
 
+QPainterPath svg_item_path::get_path () const 
+{
+  const svg_attribute_path_data *path_data = get_attribute<svg_attribute_path_data> ();
+
+  if (!path_data)
+    return QPainterPath ();
+
+  return path_data->create_painter_path ();
+}

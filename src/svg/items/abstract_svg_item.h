@@ -100,14 +100,14 @@ protected:
 
 private:
   QString full_name (const QString &namespace_name, const QString &local_name) const;
-  void add_to_container ();
+  void add_to_container (bool force_name);
   void remove_from_container ();
   abstract_attribute *get_attribute (const char *data) const;
   const abstract_attribute *get_computed_attribute (const char *data, svg_inherit_type inherit_type) const;
   const abstract_attribute *find_attribute_in_selectors (const char *data, const abstract_svg_item *item) const;
   const abstract_attribute *find_attribute_in_style_item (const char *data, const abstract_svg_item *item) const;
   const abstract_svg_item *get_original_item () const;
-  void update_own_id ();
+  void update_own_id (bool force_name);
 };
 
 #endif // BASE_SVG_ITEM_H

@@ -41,6 +41,7 @@ DECLARE_ATTRIBUTE(GRADIENT_TRANSFORM, "gradientTransform" , EMPTY      , svg_att
 DECLARE_ATTRIBUTE(OFFSET            , "offset"            , EMPTY      , svg_attribute_offset             , NONE         )   \
 DECLARE_ATTRIBUTE(STOP_COLOR        , "stop-color"        , EMPTY      , svg_attribute_stop_color         , STYLE        )   \
 DECLARE_ATTRIBUTE(STOP_OPACITY      , "stop-opacity"      , EMPTY      , svg_attribute_stop_opacity       , STYLE        )   \
+DECLARE_ATTRIBUTE(CLIP_PATH         , "clip-path"         , EMPTY      , svg_attribute_clip_path          , NONE         )   \
 
 enum class svg_attribute_type
 {

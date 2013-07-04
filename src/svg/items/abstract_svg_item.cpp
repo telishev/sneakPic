@@ -57,6 +57,11 @@ void abstract_svg_item::read (const QDomElement &item)
         FREE (attribute);
     }
 
+  /// if item has a name, add it to container before children
+  /// we cannot generate unique name right now for items that don't have it
+  /// because that name could be used by next items in file
+  add_to_container (false);
+
   for (QDomNode child = item.firstChild(); !child.isNull(); child = child.nextSibling())
     {
       if (!child.isElement ())
@@ -67,6 +72,7 @@ void abstract_svg_item::read (const QDomElement &item)
       child_item->read (child_element);
       insert_child (nullptr, child_item);
     }
+
 }
 
 void abstract_svg_item::write (QDomElement &item, QDomDocument &doc) const 
@@ -146,7 +152,8 @@ bool abstract_svg_item::check ()
   if (!check_item ())
     return false;
 
-  add_to_container ();
+  /// for items that don't have a name, generate it
+  add_to_container (true);
 
   for (abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
     CHECK (child->check ());
@@ -154,12 +161,13 @@ bool abstract_svg_item::check ()
   return true;
 }
 
-void abstract_svg_item::add_to_container ()
+void abstract_svg_item::add_to_container (bool force_name)
 {
   svg_items_container *container = document ()->item_container ();
-  update_own_id ();
+  update_own_id (force_name);
 
-  container->add_item (this);
+  if (has_id ())
+    container->add_item (this);
 }
 
 void abstract_svg_item::remove_from_container ()
@@ -314,11 +322,14 @@ const abstract_svg_item *abstract_svg_item::get_original_item () const
   return m_document->item_container ()->get_item (m_original_id);
 }
 
-void abstract_svg_item::update_own_id ()
+void abstract_svg_item::update_own_id (bool force_name)
 {
   svg_items_container *container = document ()->item_container ();
   if (m_own_id.isEmpty ())
     m_own_id = get_computed_attribute<svg_attribute_id> ()->id ();
+
+  if (!force_name)
+    return;
 
   if (!has_id () || container->contains (id ()))
     {

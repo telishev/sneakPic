@@ -6,6 +6,7 @@
 renderer_base_shape_item::renderer_base_shape_item ()
 {
   m_opacity = 1.0;
+  m_has_clip_path = false;
 }
 
 renderer_base_shape_item::~renderer_base_shape_item ()
@@ -37,6 +38,10 @@ void renderer_base_shape_item::configure_painter (QPainter &painter) const
   painter.setPen (m_pen);
   painter.setBrush (m_brush);
   painter.setOpacity (m_opacity);
+  if (m_has_clip_path)
+    painter.setClipPath (m_clip_path);
+  else
+    painter.setClipping (false);
 }
 
 void renderer_base_shape_item::adjust_bbox (QRectF &bbox) const

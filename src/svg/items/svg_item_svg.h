@@ -3,11 +3,6 @@
 
 #include "svg/items/abstract_svg_item.h"
 
-#include <QString>
-
-class svg_attribute_version;
-class svg_attribute_width;
-class svg_attribute_height;
 class renderer_item_svg;
 
 class svg_item_svg : public abstract_svg_item

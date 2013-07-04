@@ -11,8 +11,14 @@
 #include "svg/attributes/svg_attribute_transform.h"
 #include "svg/attributes/svg_attributes_number.h"
 #include "svg/attributes/svg_attributes_fill_stroke.h"
+#include "svg/attributes/svg_attribute_clip_path.h"
+
+#include "svg/items/svg_item_clip_path.h"
 
 #include <memory>
+#include <QPainterPath>
+
+
 
 void svg_base_shape_item::update_base_item (renderer_base_shape_item *item)
 {
@@ -26,6 +32,7 @@ void svg_base_shape_item::update_base_item (renderer_base_shape_item *item)
   const svg_attribute_opacity *opacity = get_computed_attribute<svg_attribute_opacity> ();
   const svg_attribute_stroke_opacity *stroke_opacity = get_computed_attribute<svg_attribute_stroke_opacity> ();
   const svg_attribute_fill_opacity *fill_opacity = get_computed_attribute<svg_attribute_fill_opacity> ();
+  const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path ();
 
   fill->set_opacity (fill_opacity->value ());
   stroke->set_opacity (stroke_opacity->value ());
@@ -38,4 +45,14 @@ void svg_base_shape_item::update_base_item (renderer_base_shape_item *item)
   item->set_opacity (opacity->computed_opacity ());
   item->set_fill_server (fill.get ());
   item->set_stroke_server (stroke.get ());
+  if (clip_path)
+    item->set_clip_path (clip_path->get_clip_path ());
+}
+
+QPainterPath svg_base_shape_item::to_path () const
+{
+  QPainterPath path = get_path ();
+  const svg_attribute_transform *transform = get_computed_attribute<svg_attribute_transform> ();
+  path = transform->computed_transform ().map (path);
+  return path;
 }

@@ -30,7 +30,6 @@ void svg_item_line::update_renderer_item ()
   if (!m_render_item)
     m_render_item = new renderer_item_line;
 
-
   m_render_item->set_line (x1->value (), y1->value (), x2->value (), y2->value ());
   update_base_item (m_render_item);
 }
@@ -40,6 +39,16 @@ const abstract_renderer_item *svg_item_line::get_renderer_item () const
   return m_render_item;
 }
 
+QPainterPath svg_item_line::get_path () const 
+{
+  const svg_attribute_x1 *x1 = get_computed_attribute<svg_attribute_x1> ();
+  const svg_attribute_x2 *x2 = get_computed_attribute<svg_attribute_x2> ();
+  const svg_attribute_y1 *y1 = get_computed_attribute<svg_attribute_y1> ();
+  const svg_attribute_y2 *y2 = get_computed_attribute<svg_attribute_y2> ();
 
-
+  QPainterPath path;
+  path.moveTo (x1->value (), y1->value ());
+  path.lineTo (x2->value (), y2->value ());
+  return path;
+}
 
