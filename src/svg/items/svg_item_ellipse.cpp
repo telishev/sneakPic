@@ -26,7 +26,7 @@ QPainterPath svg_item_ellipse::get_path () const
   const svg_attribute_ry *ry = get_computed_attribute<svg_attribute_ry> ();
 
   QPainterPath path;
-  path.addEllipse (cx->value (), cy->value (), rx->value (), ry->value ());
+  path.addEllipse (QPointF (cx->value (), cy->value ()), rx->value (), ry->value ());
   return path;
 }
 
