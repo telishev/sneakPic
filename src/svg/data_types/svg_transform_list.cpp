@@ -24,6 +24,7 @@ bool svg_transform_list::read (const char *data)
   std::vector<double> transform_data;
   while (*data)
     {
+      transform_data.clear ();
       std::string transform, transform_data_string;
       CHECK (extract_chunk ('(', data, transform));
       CHECK (extract_chunk (')', data, transform_data_string));
