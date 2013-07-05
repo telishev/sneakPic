@@ -1,3 +1,4 @@
+#include <QFileInfo>
 #include <QPainter>
 #include <QStringList>
 
@@ -16,7 +17,13 @@ int start_console_processing (QStringList arguments)
   svg_document *doc = new svg_document;
   QString input_file_name = arguments[1];
   QString output_file_name = input_file_name;
-  output_file_name.replace (".svg", ".png");
+  QString ext = QFileInfo (output_file_name).suffix ();
+  if (ext != "svg")
+    {
+      printf ("Error: wrong document type\n");
+      return 1;
+    }
+  output_file_name = output_file_name.left (output_file_name.length () - ext.length ()) + "png";
   if (!doc->read_file (input_file_name))
     {
       printf ("Error: document can't be processed\n");
@@ -24,11 +31,11 @@ int start_console_processing (QStringList arguments)
     }
   double width, height;
   doc->get_doc_dimensions (width, height);
-  QImage image_output ((int) width, (int) height, QImage::Format::Format_ARGB32);
+
+  QImage image_output (qRound (width), qRound (height), QImage::Format::Format_ARGB32);
   QPainter painter;
   painter.begin (&image_output);
   QRect rect = QRect (0, 0, width, height);
-  painter.fillRect (rect, Qt::white);
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setRenderHint(QPainter::HighQualityAntialiasing);
   painter.setTransform (QTransform ());

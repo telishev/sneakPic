@@ -98,6 +98,7 @@ void main_window::open_file (const QString &filename)
   FREE (doc);
   
   doc = new svg_document;
+  setWindowTitle ("Loading...");
   if (!doc->read_file (filename))
     {
       QMessageBox::warning (this, "Warning", "Cannot open document");

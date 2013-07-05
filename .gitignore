@@ -1,6 +1,8 @@
 /Makefile*
 /build
 /build.dbg
+/test/test_files/
+/test/*.txt
 build.bat
 
 Makefile
