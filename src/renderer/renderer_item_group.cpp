@@ -33,7 +33,7 @@ void renderer_item_group::draw (QPainter &painter, const renderer_state &state) 
 
   QPixmap pixmap (result_rect.width (), result_rect.height ());
   pixmap.fill (Qt::transparent);
-  QTransform pixmap_transform = QTransform::fromTranslate (-result_rect.x ()+ state.rect ().x (),-result_rect.y () +state.rect ().y ());
+  QTransform pixmap_transform = QTransform::fromTranslate (state.rect ().x () - result_rect.x (), state.rect ().y () - result_rect.y ());
 
   QPainter group_painter (&pixmap);
   group_painter.setRenderHint (QPainter::Antialiasing);

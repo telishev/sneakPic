@@ -6,7 +6,8 @@
 
 #include "common/memory_deallocation.h"
 
-#include "renderer/svg_renderer.h"
+#include "renderer/svg_painter.h"
+#include "renderer/rendered_items_cache.h"
 
 #include "svg/svg_document.h"
 
@@ -17,14 +18,16 @@
 
 
 
+
 main_window::main_window ()
 {
   init_clear ();
   ui = new Ui_main_window;
   ui->setupUi (this);
-  settings = new QSettings ("SneakPic");
-  renderer = new svg_renderer (ui->glwidget, ui->glwidget->mouse_filter_object ());
-  ui->glwidget->set_painter (renderer);
+  m_settings = new QSettings ("SneakPic");
+  m_cache = new rendered_items_cache;
+  m_renderer = new svg_painter (ui->glwidget, ui->glwidget->mouse_filter_object (), m_cache);
+  ui->glwidget->set_painter (m_renderer);
   update_window_title ();
 
   connect (ui->openFileAct    , SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
@@ -35,13 +38,15 @@ main_window::main_window ()
 main_window::~main_window ()
 {
   FREE (ui);
-  FREE (settings);
+  FREE (m_settings);
+  FREE (m_renderer);
+  FREE (m_cache);
   init_clear ();
 }
 
 void main_window::init_clear ()
 {
-  doc = nullptr;
+  m_doc = nullptr;
 }
 
 void main_window::open_file_clicked ()
@@ -50,13 +55,13 @@ void main_window::open_file_clicked ()
   if (filename.isEmpty ())
     return;
 
-  settings->setValue ("last_file", filename);
+  m_settings->setValue ("last_file", filename);
   open_file (filename);
 }
 
 void main_window::open_last_file_clicked ()
 {
-  QString last_file = settings->value ("last_file").toString ();
+  QString last_file = m_settings->value ("last_file").toString ();
   if (last_file.isEmpty ())
     return;
 
@@ -66,20 +71,20 @@ void main_window::open_last_file_clicked ()
 
 void main_window::save_file_clicked ()
 {
-  if (!doc)
+  if (!m_doc)
     return;
 
-  QString filename = QFileDialog::getSaveFileName (this, "Save File", doc->get_filename (), "Scalable Vector Graphics (*.svg)");
+  QString filename = QFileDialog::getSaveFileName (this, "Save File", m_doc->get_filename (), "Scalable Vector Graphics (*.svg)");
   if (filename.isEmpty ())
     return;
 
-  doc->write_file (filename);
+  m_doc->write_file (filename);
   update_window_title ();
 }
 
 QString main_window::get_last_file_open_dir () const
 {
-  QString last_filename = settings->value ("last_file").toString ();
+  QString last_filename = m_settings->value ("last_file").toString ();
   if (last_filename.isEmpty ())
     return QString ();
 
@@ -89,24 +94,24 @@ QString main_window::get_last_file_open_dir () const
 
 void main_window::update_window_title ()
 {
-  setWindowTitle (QString ("sneakPic%1").arg (doc ? QString (" - %1").arg (doc->get_filename ()) : ""));
+  setWindowTitle (QString ("sneakPic%1").arg (m_doc ? QString (" - %1").arg (m_doc->get_filename ()) : ""));
 }
 
 void main_window::open_file (const QString &filename)
 {
-  renderer->set_document (nullptr);
-  FREE (doc);
+  m_renderer->set_document (nullptr);
+  FREE (m_doc);
   
-  doc = new svg_document;
+  m_doc = new svg_document;
   setWindowTitle ("Loading...");
-  if (!doc->read_file (filename))
+  if (!m_doc->read_file (filename))
     {
       QMessageBox::warning (this, "Warning", "Cannot open document");
       return;
     }
   
   update_window_title ();
-  renderer->set_document (doc);
+  m_renderer->set_document (m_doc);
   ui->glwidget->repaint ();
 }
 

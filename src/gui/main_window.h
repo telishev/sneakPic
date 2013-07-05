@@ -9,16 +9,18 @@ class Ui_main_window;
 class QSettings;
 
 class svg_document;
-class svg_renderer;
+class svg_painter;
+class rendered_items_cache;
 
 class main_window : public QMainWindow
 {
   Q_OBJECT
 
   Ui_main_window *ui;
-  svg_document *doc;
-  QSettings *settings;
-  svg_renderer *renderer;
+  svg_document *m_doc;
+  QSettings *m_settings;
+  svg_painter *m_renderer;
+  rendered_items_cache *m_cache;
 
 public:
   main_window ();
