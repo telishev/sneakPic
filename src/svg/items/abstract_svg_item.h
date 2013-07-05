@@ -53,9 +53,6 @@ public:
   virtual void update_renderer_item () {};
   virtual const abstract_renderer_item *get_renderer_item () const { return nullptr; }
 
-  /// return true if there is a need to render children of this item
-  virtual bool render_children () const { return 0; }
-
   svg_document *document () const { return m_document; }
 
   void add_attribute (abstract_attribute *attribute);

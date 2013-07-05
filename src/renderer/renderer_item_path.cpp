@@ -2,6 +2,8 @@
 
 #include <QPainter>
 
+#include "renderer/renderer_state.h"
+
 
 renderer_item_path::renderer_item_path ()
 {
@@ -12,8 +14,14 @@ renderer_item_path::~renderer_item_path ()
 
 }
 
-void renderer_item_path::draw (QPainter &painter) const
+void renderer_item_path::draw (QPainter &painter, const renderer_state &state) const
 {
+  QTransform item_transform = transform () * state.transform ();
+  QRectF transformed_rect = state.transform ().mapRect (bounding_box ());
+  if (!state.rect ().intersects (transformed_rect.toRect ()))
+    return;
+
+  painter.setTransform (item_transform);
   if (!configure_painter (painter))
     return;
 

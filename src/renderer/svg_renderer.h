@@ -37,7 +37,6 @@ public:
   virtual bool keyReleaseEvent (QKeyEvent *qevent) override;
 
   static void draw_items (const abstract_svg_item *item, QPainter &painter, const QRectF &rect_to_draw, QTransform transform);
-  static void draw_single_item (const abstract_renderer_item *item, QPainter &painter, const QRectF &rect_to_draw, QTransform transform);
 
 private:
   void reset_transform ();

@@ -20,12 +20,5 @@ bool svg_base_attribute_number::write (QString &data, bool /*from_css*/ /*= fals
 
 double svg_attribute_opacity::computed_opacity () const
 {
-  /// TODO: this is totally wrong, opacity is not multiplied  by its parent value,
-  /// but instead the whole group is rendered first, and then is blended onto surface
-  const abstract_svg_item *parent = item () ? item ()->parent () : nullptr;
-  if (!parent)
-    return m_value;
-
-  const svg_attribute_opacity *base_opacity = parent->get_computed_attribute <svg_attribute_opacity> ();
-  return m_value * base_opacity->computed_opacity ();
+  return m_value;
 }

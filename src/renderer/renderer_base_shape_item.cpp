@@ -59,6 +59,7 @@ void renderer_base_shape_item::adjust_bbox (QRectF &bbox) const
   /// add pen width to a bbox
   double adjust_value = m_pen.widthF ();
   bbox.adjust (-adjust_value, -adjust_value, adjust_value, adjust_value);
+  bbox = transform ().mapRect (bbox);
 }
 
 void renderer_base_shape_item::set_stroke_server (const renderer_paint_server *server)

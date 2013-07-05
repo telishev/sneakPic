@@ -1,17 +1,19 @@
 #ifndef RENDERER_STATE_H
 #define RENDERER_STATE_H
 
-#include <QRectF>
+#include <QRect>
 #include <QTransform>
 
 class renderer_state
 {
-  QRectF m_rect_to_draw;
+  /// rect to draw in screen coordinates
+  QRect m_rect_to_draw;
+  /// current transform to screen coords
   QTransform m_transform; 
 public:
 
-  QRectF rect () const { return m_rect_to_draw; }
-  void set_rect (QRectF val) { m_rect_to_draw = val; }
+  QRect rect () const { return m_rect_to_draw; }
+  void set_rect (QRect val) { m_rect_to_draw = val; }
 
   QTransform transform () const { return m_transform; }
   void set_transform (QTransform val) { m_transform = val; }

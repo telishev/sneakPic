@@ -13,7 +13,6 @@ public:
   virtual ~svg_item_stop () override;
 
   virtual const abstract_renderer_item *get_renderer_item () const override { return nullptr; }
-  virtual bool render_children () const  override { return false; }
 
   double offset () const;
   QColor color () const;

@@ -311,7 +311,7 @@ abstract_svg_item *abstract_svg_item::create_clone ()
   /// leave m_attributes empty
   clone->m_original_id = id ();
   clone->m_own_id = m_document->item_container ()->create_unique_name (clone->name ());
-  add_to_container ();
+  clone->add_to_container ();
   
   /// append cloned children to a clone
   for (abstract_svg_item *child = first_child (); child; child = child->next_sibling ())

@@ -8,6 +8,7 @@
 
 #include "svg/svg_document.h"
 #include "svg/items/abstract_svg_item.h"
+#include "renderer_state.h"
 
 svg_renderer::svg_renderer (gl_widget *glwidget, const mouse_filter *mouse_filter_object)
   : abstract_painter (glwidget, mouse_filter_object)
@@ -158,24 +159,11 @@ void svg_renderer::resizeGL (int width, int height)
 void svg_renderer::draw_items (const abstract_svg_item *item, QPainter &painter, const QRectF &rect_to_draw, QTransform transform)
 {
   const abstract_renderer_item *renderer_item = item->get_renderer_item ();
-  if (renderer_item)
-    draw_single_item (renderer_item, painter, rect_to_draw, transform);
-
-  if (!item->render_children ())
+  if (!renderer_item)
     return;
 
-  for (const abstract_svg_item *child = item->first_child (); child; child = child->next_sibling ())
-    draw_items (child, painter, rect_to_draw, transform);
+  renderer_state state;
+  state.set_rect (rect_to_draw.toRect ());
+  state.set_transform (transform);
+  renderer_item->draw (painter, state);
 }
-
-void svg_renderer::draw_single_item (const abstract_renderer_item *item, QPainter &painter, const QRectF &rect_to_draw, QTransform transform)
-{
-  QTransform item_transform = item->transform () * transform;
-  QRectF transformed_rect = item_transform.mapRect (item->bounding_box ());
-  if (!rect_to_draw.intersects (transformed_rect))
-    return;
-
-  painter.setTransform (item_transform);
-  item->draw (painter);
-}
-

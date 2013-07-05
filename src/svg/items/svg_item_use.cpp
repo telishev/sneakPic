@@ -4,15 +4,17 @@
 #include "svg/attributes/svg_attributes_length_type.h"
 #include "svg/attributes/svg_attribute_transform.h"
 
-svg_item_use::svg_item_use (svg_document *document)
-  : abstract_svg_item (document)
-{
+#include "renderer/renderer_item_group.h"
 
+svg_item_use::svg_item_use (svg_document *document)
+  : svg_item_group_type (document)
+{
+  m_renderer_item = nullptr;
 }
 
 svg_item_use::~svg_item_use ()
 {
-
+  FREE (m_renderer_item);
 }
 
 bool svg_item_use::check_item ()
@@ -39,4 +41,17 @@ bool svg_item_use::update_children_tree ()
     insert_child (nullptr, item_ref->create_clone ());
 
   return true;
+}
+
+void svg_item_use::update_renderer_item ()
+{
+  if (!m_renderer_item)
+    m_renderer_item = new renderer_item_group (this);
+
+  update_group_item (m_renderer_item);
+}
+
+const abstract_renderer_item *svg_item_use::get_renderer_item () const 
+{
+  return m_renderer_item;
 }

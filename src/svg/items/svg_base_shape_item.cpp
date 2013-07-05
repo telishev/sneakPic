@@ -13,13 +13,16 @@
 #include "svg/attributes/svg_attributes_number.h"
 #include "svg/attributes/svg_attributes_fill_stroke.h"
 #include "svg/attributes/svg_attribute_clip_path.h"
+#include "svg/attributes/svg_attributes_enum.h"
 
 #include "svg/items/svg_item_clip_path.h"
 
+#include "renderer/renderer_item_path.h"
+
 #include <memory>
 #include <QPainterPath>
-#include "renderer/renderer_item_path.h"
-#include "svg/attributes/svg_attributes_enum.h"
+#include <QTransform>
+
 
 svg_base_shape_item::svg_base_shape_item (svg_document *document)
    : abstract_svg_item (document)
@@ -66,9 +69,8 @@ void svg_base_shape_item::set_item_style (renderer_item_path *item)
 QPainterPath svg_base_shape_item::get_path_for_clipping () const
 {
   QPainterPath path = get_path ();
-  const svg_attribute_transform *transform = get_computed_attribute<svg_attribute_transform> ();
   const svg_attribute_clip_rule *clip_rule = get_computed_attribute<svg_attribute_clip_rule> ();
-  path = transform->computed_transform ().map (path);
+  path = full_transform ().map (path);
   path.setFillRule (clip_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
   return path;
 }
@@ -78,15 +80,28 @@ void svg_base_shape_item::update_renderer_item ()
   m_render_item = new renderer_item_path;
 
   QPainterPath path = get_path ();
-  const svg_attribute_clip_rule *clip_rule = get_computed_attribute<svg_attribute_clip_rule> ();
-  path.setFillRule (clip_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
-  m_render_item->set_painter_path (path);
+  const svg_attribute_fill_rule *fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();
+  path.setFillRule (fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
   set_item_style (m_render_item);
+  /// must be last
+  m_render_item->set_painter_path (path);
 }
 
 const abstract_renderer_item *svg_base_shape_item::get_renderer_item () const 
 {
   return m_render_item;
+}
+
+QTransform svg_base_shape_item::full_transform () const
+{
+  QTransform total_transform;
+  for (const abstract_svg_item *cur_item = this; cur_item; cur_item = cur_item->parent ())
+    {
+      const svg_attribute_transform *base_transform = cur_item->get_computed_attribute <svg_attribute_transform> ();
+      total_transform = base_transform->computed_transform () * total_transform;
+    }
+
+  return total_transform;
 }
 
 
