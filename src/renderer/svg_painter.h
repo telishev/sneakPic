@@ -42,9 +42,6 @@ public:
   virtual bool keyReleaseEvent (QKeyEvent *qevent) override;
 
   void draw_items (const abstract_svg_item *item, QPainter &painter, const QRectF &rect_to_draw, QTransform transform);
-  void update_cache_items (const abstract_svg_item *item, const render_cache_id &first,
-                           const render_cache_id &last, QTransform transform);
-
 private:
   void reset_transform ();
 };

@@ -178,7 +178,7 @@ void svg_painter::draw_items (const abstract_svg_item *item, QPainter &painter, 
   render_cache_id id_last = render_cache_id::get_id_by_pos (mapped_rect.x () + mapped_rect.width (),
     mapped_rect.y () + mapped_rect.height (), transform);
 
-  update_cache_items (item, id_first, id_last, transform);
+  m_renderer->update_cache_items (item, id_first, id_last, transform);
   for (int x = id_first.x (); x <= id_last.x (); x++)
     for (int y = id_first.y (); y <= id_last.y (); y++)
       {
@@ -194,19 +194,5 @@ void svg_painter::draw_items (const abstract_svg_item *item, QPainter &painter, 
         pixel_rect.setHeight (block_size);
 
         painter.drawPixmap (pixel_rect, pixmap, pixmap.rect ());
-      }
-}
-
-void svg_painter::update_cache_items (const abstract_svg_item *item, const render_cache_id &first,
-                                       const render_cache_id &last, QTransform transform)
-{
-  for (int x = first.x (); x <= last.x (); x++)
-    for (int y = first.y (); y <= last.y (); y++)
-      {
-        render_cache_id id (x, y);
-        if (m_cache->is_cached (id))
-          continue;
-
-        m_renderer->update_cache_item (item, id, transform);
       }
 }
