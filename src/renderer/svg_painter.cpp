@@ -173,6 +173,10 @@ void svg_painter::draw_items (const abstract_svg_item *item, QPainter &painter, 
   if (!renderer_item)
     return;
 
+#if 0
+  return m_renderer->draw_item (item, painter, rect_to_draw, transform);
+#endif
+
   QRectF mapped_rect = transform.inverted ().mapRect (rect_to_draw);
   render_cache_id id_first = render_cache_id::get_id_by_pos (mapped_rect.x (), mapped_rect.y (), transform);
   render_cache_id id_last = render_cache_id::get_id_by_pos (mapped_rect.x () + mapped_rect.width (),

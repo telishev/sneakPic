@@ -36,7 +36,7 @@ public:
 
 protected:
   bool configure_painter (QPainter &painter) const;
-  void adjust_bbox (QRectF &bbox, const QTransform &full_transform) const;
+  void adjust_bbox (QRectF &bbox) const;
 };
 
 #endif // RENDERER_BASE_SHAPE_ITEM_H

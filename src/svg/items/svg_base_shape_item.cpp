@@ -84,7 +84,7 @@ void svg_base_shape_item::update_renderer_item ()
   path.setFillRule (fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
   set_item_style (m_render_item);
   /// must be last
-  m_render_item->set_painter_path (path, full_transform ());
+  m_render_item->set_painter_path (path);
 }
 
 const abstract_renderer_item *svg_base_shape_item::get_renderer_item () const 

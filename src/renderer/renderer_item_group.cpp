@@ -85,6 +85,6 @@ void renderer_item_group::update_bbox () const
       new_box = new_box.united (renderer_item->bounding_box ());
     }
 
-  m_bbox = new_box;
+  m_bbox = transform ().mapRect (new_box);;
   m_bbox_calculated = true;
 }

@@ -19,7 +19,7 @@ public:
   virtual void draw (QPainter &painter, const renderer_state &state) const override;
   virtual QRectF bounding_box () const override { return m_bbox; }
 
-  void set_painter_path (const QPainterPath &path, const QTransform &full_transform);
+  void set_painter_path (const QPainterPath &path);
 };
 
 
