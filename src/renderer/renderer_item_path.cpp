@@ -26,11 +26,12 @@ void renderer_item_path::draw (QPainter &painter, const renderer_state &state) c
     return;
 
   painter.drawPath (m_path);
+  painter.setClipping (false);
 }
 
-void renderer_item_path::set_painter_path (const QPainterPath &path)
+void renderer_item_path::set_painter_path (const QPainterPath &path, const QTransform &full_transform)
 {
   m_path = path;
   m_bbox = m_path.controlPointRect ();
-  adjust_bbox (m_bbox);
+  adjust_bbox (m_bbox, full_transform);
 }

@@ -5,6 +5,8 @@
 
 #include <QPainterPath>
 
+class QTransform;
+
 class renderer_item_path : public renderer_base_shape_item
 {
   QPainterPath m_path;
@@ -17,7 +19,7 @@ public:
   virtual void draw (QPainter &painter, const renderer_state &state) const override;
   virtual QRectF bounding_box () const override { return m_bbox; }
 
-  void set_painter_path (const QPainterPath &path);
+  void set_painter_path (const QPainterPath &path, const QTransform &full_transform);
 };
 
 

@@ -84,7 +84,7 @@ void svg_base_shape_item::update_renderer_item ()
   path.setFillRule (fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
   set_item_style (m_render_item);
   /// must be last
-  m_render_item->set_painter_path (path);
+  m_render_item->set_painter_path (path, full_transform ());
 }
 
 const abstract_renderer_item *svg_base_shape_item::get_renderer_item () const 
@@ -98,7 +98,7 @@ QTransform svg_base_shape_item::full_transform () const
   for (const abstract_svg_item *cur_item = this; cur_item; cur_item = cur_item->parent ())
     {
       const svg_attribute_transform *base_transform = cur_item->get_computed_attribute <svg_attribute_transform> ();
-      total_transform = base_transform->computed_transform () * total_transform;
+      total_transform = total_transform * base_transform->computed_transform ();
     }
 
   return total_transform;

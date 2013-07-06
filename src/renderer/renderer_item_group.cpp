@@ -51,15 +51,16 @@ void renderer_item_group::draw (QPainter &painter, const renderer_state &state) 
 
   group_painter.end ();
 
+  painter.setTransform (QTransform ());
   if (m_has_clip_path)
     {
-      QPainterPath clip_path = new_state.transform ().map (m_clip_path);
+      QPainterPath clip_path = state.transform ().map (m_clip_path);
       painter.setClipPath (clip_path);
     }
 
-  painter.setTransform (QTransform ());
   painter.setOpacity (m_opacity);
   painter.drawPixmap (result_rect, pixmap, pixmap.rect ());
+  painter.setClipping (false);
   return;
 }
 
@@ -84,6 +85,6 @@ void renderer_item_group::update_bbox () const
       new_box = new_box.united (renderer_item->bounding_box ());
     }
 
-  m_bbox = transform ().mapRect (new_box);
+  m_bbox = new_box;
   m_bbox_calculated = true;
 }

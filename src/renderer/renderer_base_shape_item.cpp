@@ -54,12 +54,12 @@ bool renderer_base_shape_item::configure_painter (QPainter &painter) const
   return true;
 }
 
-void renderer_base_shape_item::adjust_bbox (QRectF &bbox) const
+void renderer_base_shape_item::adjust_bbox (QRectF &bbox, const QTransform &full_transform) const
 {
   /// add pen width to a bbox
   double adjust_value = m_pen.widthF ();
   bbox.adjust (-adjust_value, -adjust_value, adjust_value, adjust_value);
-  bbox = transform ().mapRect (bbox);
+  bbox = full_transform.mapRect (bbox);
 }
 
 void renderer_base_shape_item::set_stroke_server (const renderer_paint_server *server)

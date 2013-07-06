@@ -9,7 +9,7 @@ class render_cache_id;
 
 class rendered_items_cache
 {
-  static const int m_block_pixel_size = 256;
+  static const int m_block_pixel_size;
   double m_block_local_size;
   std::map<render_cache_id, QPixmap> m_cache;
 

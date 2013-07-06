@@ -43,8 +43,13 @@ void svg_renderer::update_cache_item (const abstract_svg_item *item, const rende
   pixmap.fill (Qt::transparent);
   QPainter painter (&pixmap);
   QRectF local_rect = cache_id.pixel_rect (transform);
-  QTransform pixmap_transform = QTransform::fromTranslate (-local_rect.x (), -local_rect.y ());
-  draw_item (item, painter, pixmap.rect (), transform * pixmap_transform);
+  QTransform last_inverted = transform.inverted ();
+  QPointF last_pos_local = last_inverted.map (QPointF (0, 0));
+  QPointF cur_pos_local = last_inverted.map (QPointF (local_rect.x (), local_rect.y ()));
+  QPointF diff = -cur_pos_local + last_pos_local;
+
+  QTransform pixmap_transform = QTransform (transform).translate (diff.x (), diff.y ());
+  draw_item (item, painter, pixmap.rect (), pixmap_transform);
 
   painter.end ();
   m_cache->add_pixmap (cache_id, pixmap);

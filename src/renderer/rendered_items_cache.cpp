@@ -4,6 +4,8 @@
 
 #include <QPixmap>
 
+const int rendered_items_cache::m_block_pixel_size = 256;
+
 rendered_items_cache::rendered_items_cache ()
 {
 
