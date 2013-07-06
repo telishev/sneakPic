@@ -2,5 +2,7 @@
 #define CONSOLE_H
 class QStringList;
 
-int start_console_processing (QStringList arguments);
+class cl_arguments;
+
+int start_console_processing (cl_arguments *args);
 #endif // !CONSOLE_H

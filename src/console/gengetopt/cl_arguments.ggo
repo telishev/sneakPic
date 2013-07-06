@@ -1,0 +1,6 @@
+################################################################################
+section "Export"
+
+option "render-png" r "Renders target svg file to FileName.png" string optional typestr="FileName.png"
+option "save" - "Saves file to FileName.svg in svg format (for testing purposes)" string optional hidden typestr="FileName.svg"
+                        

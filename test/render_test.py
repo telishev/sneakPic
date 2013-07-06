@@ -5,14 +5,16 @@ import shutil
 import re
 
 test_files_directory = "./test_files"
-sneakpic_path = "../build/sneakPic.exe"
+sneakpic_path = "\"../build/sneakPic.exe\""
 compare_path = "compare"
 
 if not isdir (test_files_directory):
 	print "FAIL: Directory for test files: '" + test_files_directory + "' doesn't exit"
 	exit
 
-if not exists (sneakpic_path):
+try:
+	call (sneakpic_path + " --version", stdout=open(devnull, 'wb'))
+except OSError:
 	print "FAIL: sneakPic release version was not built"
 	exit
 
@@ -51,12 +53,14 @@ for file in files_list:
 	file_png = file_name + ".png"
 	file_png_ink = file_name + "__ink.png"
 	file_difference = file_name + "_diff.png"
+	
+	sneakpic_string = sneakpic_path + " --render-png=\"" + file_png + "\" \"" + full_path + "\""
 	try:
-		call ([sneakpic_path, full_path])
+		call (sneakpic_string, shell=True)
 	except OSError:
 		print "File wasn't processed by sneakPic"
 		continue;
-	inscape_string = "inkscape " + "--export-png=\"" + file_png_ink + "\" \"" + full_path + "\" 1>nul 2>nul"
+	inscape_string = "inkscape" + " --export-png=\"" + file_png_ink + "\" \"" + full_path + "\" 1>nul 2>nul"
 
 	#call (["inkscape.com", "--export-png=\"" + file_png_ink + "\" \"" + file + "\""])
 	#sadly inscape run only in system console

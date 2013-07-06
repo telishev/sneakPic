@@ -2,3 +2,5 @@ THIS_DIR = $$PROJ_DIR/src/console
 
 SOURCES += $$THIS_DIR/*.cpp
 HEADERS += $$THIS_DIR/*.h
+
+include ($$PROJ_DIR/src/console/gengetopt/gengetopt.in)

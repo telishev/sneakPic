@@ -20,6 +20,10 @@ INCLUDEPATH += src
 DEPENDPATH  += src
 VPATH += src
 
+# These are for gengetopt, version should be updated correctly later though
+DEFINES += "PACKAGE=\"sneakPic\""
+DEFINES += "VERSION=\"0.01\""
+
 UI_DIR = $$PROJ_DIR/src/ui
 
 win32:*msvc*{

@@ -4,12 +4,13 @@
 #include <QApplication>
 #include <QStringList>
 
-console_task::console_task (QObject *parent) : QObject (parent) 
+console_task::console_task (QObject *parent, cl_arguments *args_arg) : QObject (parent) 
 { 
   app = static_cast <QApplication *> (parent);
+  args = args_arg;
 }
 
 void console_task::run ()
 {
-  app->exit (start_console_processing (app->arguments ()));
+  app->exit (start_console_processing (args));
 }

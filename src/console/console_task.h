@@ -7,14 +7,17 @@
 
 class QApplication;
 
+class cl_arguments;
+
 class console_task : public QObject
 {
     Q_OBJECT
 private:
   QApplication *app;
+  cl_arguments *args;
 
 public:
-  console_task (QObject *parent = 0);
+  console_task (QObject *parent, cl_arguments *args_arg);
 
 public slots:
     void run();
