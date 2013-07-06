@@ -54,7 +54,7 @@ void renderer_item_group::draw (QPainter &painter, const renderer_state &state) 
   painter.setTransform (QTransform ());
   if (m_has_clip_path)
     {
-      QPainterPath clip_path = state.transform ().map (m_clip_path);
+      QPainterPath clip_path = item_transform.map (m_clip_path);
       painter.setClipPath (clip_path);
     }
 
