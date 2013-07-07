@@ -1,8 +1,11 @@
 /Makefile*
 /build
 /build.dbg
-/test/test_files/
+/test/test_files/*
+/test/diff_dir/*
 /test/*.txt
+/test/*.html
+/test/*.css
 build.bat
 
 Makefile
