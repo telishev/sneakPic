@@ -10,6 +10,9 @@ import hashlib
 import time
 import tempfile
 import datetime
+import string
+from sets import Set
+import math
 
 sneakpic_path = "../build/sneakPic.exe"
 inkscape_path = "inkscape"
@@ -23,6 +26,7 @@ md5 = 'md5'
 generator_md5 = 'generator_md5'
 elapsed_time = 'time_elapsed'
 log_filename = 'log.html'
+minimum_for_comparison = 1e-7
 
 def md5_for_file(file_name, block_size=2**20):
   fp = open(file_name, "rb")
@@ -35,6 +39,7 @@ def md5_for_file(file_name, block_size=2**20):
   fp.close ()
   return md5.hexdigest ()
 
+sneakpic_md5 = md5_for_file (sneakpic_path)
  
 def recreate_initial_info (file_name, md5_generator):
   doc = minidom.Document ()
@@ -59,14 +64,14 @@ def get_output (command):
 def check_render_and_cache_file (renderer, file_name): # file name here without extension or dir
   md5_generator = "";
   can_rerender = True;
-  if renderer == "sneakPic":
+  if renderer == "sneakpic":
     dir_name = join (test_files_directory, get_output (get_cur_commit_num) + "n") # n means normal
-    md5_generator = md5_for_file (sneakpic_path);
-  elif renderer == "Inkscape":
+    md5_generator = sneakpic_md5;
+  elif renderer == "inkscape":
     dir_name = join (test_files_directory, "ink") #TODO maybe make it depending on inkscape current version
-  elif renderer == "sneakPic_savedby":
+  elif renderer == "sneakpic_savedby":
     dir_name = join (test_files_directory, get_output (get_cur_commit_num) + "s") # s means saved
-    md5_generator = md5_for_file (sneakpic_path);
+    md5_generator = sneakpic_md5;
   else:
     dir_name = join (test_files_directory, renderer) # s means saved
     md5_generator = ""
@@ -103,14 +108,17 @@ def check_render_and_cache_file (renderer, file_name): # file name here without 
     if not can_rerender:
       return ""
     t = time.clock ()
-    if renderer == "sneakPic":
+    if renderer == "sneakpic":
       call (sneakpic_render_string, shell=True)
-    elif renderer == "Inkscape":
+    elif renderer == "inkscape":
       call (inscape_string, shell=True)
-    elif renderer == "sneakPic_savedby":
+    elif renderer == "sneakpic_savedby":
       call (sneakpic_save_string, shell=True)
       call (sneakpic_render_tmp_string, shell=True)
+    try:
       remove (svg_temp_file_name)
+    except OSError:
+      pass
       
     t = time.clock () - t
     base = xml_doc.childNodes[0]
@@ -129,8 +137,44 @@ def print_html_header (fp):
   
 def print_table_row (fp, strings):
   fp.write ("<TR>")
+  emphasize_min_max = True
+  min = 0.0
+  max = 0.0
+  try:
+    min = float(strings[1])
+    max = float(strings[1])
+  except ValueError:
+    emphasize_min_max = False
+  
+  if emphasize_min_max:
+    for string in strings[1:]:
+      try:
+        num = float(string)
+      except ValueError:
+        continue
+      if num < min:
+        min = num
+      if num > max:
+        max = num
+    
+  if (math.fabs (max - min) < minimum_for_comparison):
+    emphasize_min_max = False
+  #print min, max
   for string in strings:
-    fp.write ("<TD>" + string + "</TD>")
+    if (emphasize_min_max):
+      try:
+        num = float(string)
+        if (math.fabs (num - min) < minimum_for_comparison):
+          fp.write ("<TD STYLE=\"background-color:LightGreen\">")
+        elif (math.fabs (num - max) < minimum_for_comparison):
+          fp.write ("<TD STYLE=\"background-color:LightCoral\">")
+        else:
+          fp.write ("<TD>")
+      except ValueError:
+        fp.write ("<TD>")
+    else:
+      fp.write ("<TD>")
+    fp.write (string + "</TD>")
   fp.write ("</TR>\n")
   
 def print_html_footer (fp):
@@ -148,6 +192,22 @@ table.sortable thead {
   }''')
   fp.close ()
   
+dict = {
+        'ink': 'inkscape',
+        'i': 'inkscape',
+        's': 'sneakpic',
+        'ss': 'sneakpic_savedby',
+        'sn': 'sneakpic',
+       }
+       
+def strip_aliases (x):  
+  x = string.lower (x)
+  x = dict.get (x, x)
+
+  if x[0] == 'g':
+    x = get_output ("git rev-list --count " + x[2:]) + x[1:2]
+  return x
+  
 # FUNCTIONS END ================================================================================================================================================================
 if not isdir (diff_directory):
   makedirs (diff_directory)
@@ -158,11 +218,23 @@ parser = OptionParser()
 write_css ()
 parser.add_option("-b", "--base-renderer", dest="renderer", default="sneakPic",
                   help="Version or program which will be compared against the rest")
+parser.add_option("-m", "--metric", dest="metric", default="FUZZ",
+                  help="Metric used by compare util, could be one of AE, FUZZ[default], MAE, MEPP, MSE, NCC, PAE, PSNR, RMSE")
 (options, args) = parser.parse_args()
 base_renderer = options.renderer;
-compare_against = args;
+metric = options.metric;
+metric_set = Set (['AE', 'FUZZ', 'MAE', 'MEPP', 'MSE', 'NCC', 'PAE', 'PSNR', 'RMSE'])
+if not metric in metric_set:
+  metric = 'FUZZ'
+  
+compare_against = [];
+
+base_renderer = strip_aliases (base_renderer)
+for arg in args:
+  compare_against.append (strip_aliases (arg))
+
 if not compare_against:
-  compare_against = ["Inkscape"]
+  compare_against = ["inkscape"]
 
 if not isdir (test_files_directory):
   sys.exit ("FAIL: Directory for test files: '" + test_files_directory + "' doesn't exit")
@@ -194,9 +266,12 @@ fp = open (log_filename, "w")
 print_html_header (fp)
 column_names = [""]
 for r in compare_against:
-  column_names.append ("FUZZ (" +base_renderer + ", " + r + ")")
+  column_names.append (metric + " (" +base_renderer + ", " + r + ")")
+  column_names.append ("")
 print_table_row (fp, column_names)
-r = re.compile('[() ]+')
+r = re.compile('[() ,]+')
+diff_sum = [0.0] * len (compare_against)
+diff_count = [0] * len (compare_against)
 # main cycle
 for file in files_list:
   full_path = join (test_files_directory, file)
@@ -205,33 +280,67 @@ for file in files_list:
     continue
   base_png_name = check_render_and_cache_file (base_renderer, file_name)
   png_names = []
+  column_strings = ["<a href=\""+full_path+"\">"+ file +"</a>"]
   if not base_png_name == "":
-    column_strings = ["<a href=\""+full_path+"\">"+ file +"</a>" + "(<a href=\"" + base_png_name + "\">*</a>)"]
-  else:
-    column_strings = [""]
+    column_strings[0] += "(<a href=\"" + base_png_name + "\">*</a>)"
+  i = -1
   for renderer in compare_against:
+    i +=  1
+    link_text = "-"
     png_name = check_render_and_cache_file (renderer, file_name)
     if base_png_name == "":
       column_strings += ["Base File Generation Error"]
+      column_strings += [link_text]
+      continue
     if png_name == "":
       column_strings += ["Target File Generation Error"]
+      column_strings += [link_text]
+      continue
     file_difference = join (diff_directory, file_name) + ".png"
-    compare_string = compare_path + " -metric FUZZ \"" + base_png_name + "\" \"" + png_name + "\" \"" + file_difference + "\""
+    compare_string = compare_path + " -metric " + metric + " \"" + base_png_name + "\" \"" + png_name + "\" \"" + file_difference + "\""
     output = ""
     try:
       output = check_output (compare_string, stderr=STDOUT, shell=True)
     except (OSError, CalledProcessError) as e:
       output = e.output
+      
+    # print output
+    link_text = "<a href=\"" + png_name + "\">Link</a>"
     splitted = r.split(output)
+    if (len (splitted) == 0):
+      column_strings += ["Comparison error"]
+      column_strings += [link_text]
+      continue;
+      
     try:
-        float(splitted[1])
-        column_strings += [splitted[1] + "(<a href=\"" + png_name + "\">*</a>)"]
+        num = float(splitted[0])
+        format_string = '{0:.2f}'
+        if (metric == 'AE'):
+          format_string = '{0:.0f}'
+        elif (metric == 'FUZZ' or metric == 'MAE' or metric == 'MEPP' or metric == 'MSE' or metric == 'PAE' or metric == 'RMSE'):
+          format_string = '{0:.7f}'
+          num = float(splitted[1])
+        elif (metric == 'NCC' or metric == 'PSNR'):
+          format_string = '{0:.5f}'
+          
+        diff_sum[i] += num
+        diff_count[i] += 1
+        
+        column_strings += [format_string.format (num)]
+        column_strings += [link_text]
     except ValueError:
         column_strings += ["Comparison error"]
+        column_strings += [link_text]
   print_table_row (fp, column_strings)
   fp.close ()
   fp = open (log_filename, "a")
   print file + " comparison finished"
+column_strings = ["Mean value (excluding errors)"]
+i = 0
+for sum in diff_sum:
+  column_strings += [sum / diff_count[i]]
+  i += 1
+print_table_row (fp, column_strings)
 print_html_footer (fp)
 fp.close ()
 time_spent = time.time () - time_spent
