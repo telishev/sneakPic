@@ -68,7 +68,7 @@ def check_render_and_cache_file (renderer, file_name): # file name here without 
     dir_name = join (test_files_directory, get_output (get_cur_commit_num) + "s") # s means saved
     md5_generator = md5_for_file (sneakpic_path);
   else:
-    dir_name = join (test_files_directory, renderer + "s") # s means saved
+    dir_name = join (test_files_directory, renderer) # s means saved
     md5_generator = ""
     can_rerender = False
   
