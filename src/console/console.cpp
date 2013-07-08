@@ -9,26 +9,32 @@
 #include "common/memory_deallocation.h"
 
 #include "renderer/svg_renderer.h"
+#include "renderer/qt2skia.h"
 
 #include "svg/svg_document.h"
+
+#pragma warning(push, 0)
+#include <SkCanvas.h>
+#include <SkSurface.h>
+#include <SkDevice.h>
+#pragma warning(pop)
 
 
 void render_to_image (svg_document *doc, QString file_name, int width, int height)
 {
-  QImage image_output (width, height, QImage::Format::Format_ARGB32);
-  QPainter painter;
+  SkBitmap bitmap;
+  bitmap.setConfig (SkBitmap::kARGB_8888_Config, width, height);
+  bitmap.allocPixels ();
+  SkDevice device (bitmap);
+  SkCanvas canvas (&device);
+  canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
-  painter.begin (&image_output);
   QRect rect = QRect (0, 0, width, height);
-  painter.setRenderHint(QPainter::Antialiasing);
-  painter.setRenderHint(QPainter::HighQualityAntialiasing);
-  painter.setTransform (QTransform ());
-    doc->update_items ();
+  doc->update_items ();
 
   svg_renderer renderer (nullptr);
-  renderer.draw_item (doc->root (), painter, rect, QTransform ());
-  painter.end ();
-  image_output.save (file_name);
+  renderer.draw_item (doc->root (), canvas, rect, QTransform ());
+  qt2skia::qimage (bitmap).save (file_name);
 }
 
 int start_console_processing (cl_arguments *args)

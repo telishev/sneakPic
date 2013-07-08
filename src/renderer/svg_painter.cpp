@@ -9,10 +9,16 @@
 #include "renderer/render_cache_id.h"
 #include "renderer/rendered_items_cache.h"
 #include "renderer/svg_renderer.h"
+#include "renderer/qt2skia.h"
 
 #include "svg/svg_document.h"
 #include "svg/items/abstract_svg_item.h"
 
+#pragma warning(push, 0)
+#include <SkCanvas.h>
+#include <SkSurface.h>
+#include <SkDevice.h>
+#pragma warning(pop)
 
 
 
@@ -173,9 +179,16 @@ void svg_painter::draw_items (const abstract_svg_item *item, QPainter &painter, 
   if (!renderer_item)
     return;
 
+  SkBitmap bitmap;
+  bitmap.setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
+  bitmap.allocPixels ();
+  SkDevice device (bitmap);
+  SkCanvas canvas (&device);
+  canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
+
 #if 0
-  return m_renderer->draw_item (item, painter, rect_to_draw, transform);
-#endif
+  m_renderer->draw_item (item, canvas, rect_to_draw, transform);
+#else
 
   QRectF mapped_rect = transform.inverted ().mapRect (rect_to_draw);
   render_cache_id id_first = render_cache_id::get_id_by_pos (mapped_rect.x (), mapped_rect.y (), transform);
@@ -187,8 +200,8 @@ void svg_painter::draw_items (const abstract_svg_item *item, QPainter &painter, 
     for (int y = id_first.y (); y <= id_last.y (); y++)
       {
         render_cache_id cur_id (x, y);
-        QPixmap pixmap = m_cache->pixmap (cur_id);
-        if (pixmap.isNull ())
+        SkBitmap bitmap = m_cache->bitmap (cur_id);
+        if (bitmap.empty ())
           continue;
 
         QRectF pixel_rect = cur_id.pixel_rect (transform);
@@ -197,6 +210,9 @@ void svg_painter::draw_items (const abstract_svg_item *item, QPainter &painter, 
         pixel_rect.setWidth (block_size);
         pixel_rect.setHeight (block_size);
 
-        painter.drawPixmap (pixel_rect, pixmap, pixmap.rect ());
+        canvas.drawBitmap (bitmap, SkFloatToScalar (pixel_rect.x ()), SkFloatToScalar (pixel_rect.y ()));
       }
+#endif
+
+  painter.drawImage (rect_to_draw, qt2skia::qimage (bitmap));
 }

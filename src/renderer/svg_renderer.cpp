@@ -12,6 +12,13 @@
 #include "svg/items/abstract_svg_item.h"
 #include "common/common_utils.h"
 
+#pragma warning(push, 0)
+#include <SkCanvas.h>
+#include <SkSurface.h>
+#include <SkDevice.h>
+#pragma warning(pop)
+
+
 
 
 svg_renderer::svg_renderer (rendered_items_cache *cache)
@@ -24,7 +31,7 @@ svg_renderer::~svg_renderer ()
 
 }
 
-void svg_renderer::draw_item (const abstract_svg_item *item, QPainter &painter, const QRectF &rect_to_draw, const QTransform &transform)
+void svg_renderer::draw_item (const abstract_svg_item *item, SkCanvas &canvas, const QRectF &rect_to_draw, const QTransform &transform)
 {
   const abstract_renderer_item *renderer_item = item->get_renderer_item ();
   if (!renderer_item)
@@ -33,16 +40,19 @@ void svg_renderer::draw_item (const abstract_svg_item *item, QPainter &painter, 
   renderer_state state;
   state.set_rect (rect_to_draw.toRect ());
   state.set_transform (transform);
-  renderer_item->draw (painter, state);
+  renderer_item->draw (canvas, state);
 }
 
 void svg_renderer::update_cache_item (const abstract_svg_item *item, const render_cache_id &cache_id, const QTransform &transform, int total_x, int total_y)
 {
   int block_size = rendered_items_cache::block_pixel_size ();
-  QPixmap pixmap (block_size * total_x, block_size * total_y);
-  pixmap.fill (Qt::transparent);
+  SkBitmap bitmap;
+  bitmap.setConfig (SkBitmap::kARGB_8888_Config, block_size * total_x, block_size * total_y);
+  bitmap.allocPixels ();
+  SkDevice device (bitmap);
+  SkCanvas canvas (&device);
+  canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
-  QPainter painter (&pixmap);
   QRectF local_rect = cache_id.pixel_rect (transform);
   QTransform last_inverted = transform.inverted ();
   QPointF last_pos_local = last_inverted.map (QPointF (0, 0));
@@ -50,18 +60,19 @@ void svg_renderer::update_cache_item (const abstract_svg_item *item, const rende
   QPointF diff = -cur_pos_local + last_pos_local;
 
   QTransform pixmap_transform = QTransform (transform).translate (diff.x (), diff.y ());
-  draw_item (item, painter, pixmap.rect (), pixmap_transform);
+  draw_item (item, canvas, QRectF (0, 0, block_size * total_x, block_size * total_y), pixmap_transform);
 
-  painter.end ();
   if (total_x == total_y && total_x == 1)
-    m_cache->add_pixmap (cache_id, pixmap);
+    m_cache->add_bitmap (cache_id, bitmap);
   else
     {
       for (int i = 0; i < total_x; i++)
         for (int j = 0; j < total_y; j++)
           {
             render_cache_id cur_id (cache_id.x () + i, cache_id.y () + j);
-            m_cache->add_pixmap (cur_id, pixmap.copy (i * block_size, j * block_size, block_size, block_size));
+            SkBitmap bitmap_part;
+            DEBUG_ASSERT (bitmap.extractSubset (&bitmap_part, SkIRect::MakeXYWH (i * block_size, j * block_size, block_size, block_size)));
+            m_cache->add_bitmap (cur_id, bitmap_part);
           }
     }
   

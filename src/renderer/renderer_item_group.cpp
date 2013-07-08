@@ -3,9 +3,16 @@
 #include "svg/items/abstract_svg_item.h"
 
 #include "renderer/renderer_state.h"
+#include "renderer/qt2skia.h"
 
 #include <QPixmap>
 #include <QPainter>
+
+#pragma warning(push, 0)
+#include <SkCanvas.h>
+#include <SkSurface.h>
+#include <SkDevice.h>
+#pragma warning(pop)
 
 renderer_item_group::renderer_item_group (const abstract_svg_item *svg_item)
 {
@@ -20,7 +27,7 @@ renderer_item_group::~renderer_item_group ()
 
 }
 
-void renderer_item_group::draw (QPainter &painter, const renderer_state &state) const
+void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state) const
 {
   if (!m_svg_item)
     return;
@@ -31,12 +38,16 @@ void renderer_item_group::draw (QPainter &painter, const renderer_state &state) 
   if (result_rect.isNull ())
     return;
 
-  QPixmap pixmap (result_rect.width (), result_rect.height ());
-  pixmap.fill (Qt::transparent);
-  QTransform pixmap_transform = QTransform::fromTranslate (state.rect ().x () - result_rect.x (), state.rect ().y () - result_rect.y ());
+  SkBitmap bitmap;
+  bitmap.setConfig(SkBitmap::kARGB_8888_Config, result_rect.width (), result_rect.height ());
+  bitmap.allocPixels();
+  SkDevice device(bitmap);
+  SkCanvas child_canvas (&device);
+  SkPaint paint;
 
-  QPainter group_painter (&pixmap);
-  group_painter.setRenderHint (QPainter::Antialiasing);
+  child_canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
+
+  QTransform pixmap_transform = QTransform::fromTranslate (state.rect ().x () - result_rect.x (), state.rect ().y () - result_rect.y ());
 
   renderer_state new_state;
   new_state.set_rect (state.rect ());
@@ -46,21 +57,20 @@ void renderer_item_group::draw (QPainter &painter, const renderer_state &state) 
     {
       const abstract_renderer_item *child_item = child->get_renderer_item ();
       if (child_item)
-        child_item->draw (group_painter, new_state);
+        child_item->draw (child_canvas, new_state);
     }
 
-  group_painter.end ();
-
-  painter.setTransform (QTransform ());
+  canvas.save ();
   if (m_has_clip_path)
     {
       QPainterPath clip_path = item_transform.map (m_clip_path);
-      painter.setClipPath (clip_path);
+      canvas.clipPath (qt2skia::path (clip_path), SkRegion::kReplace_Op, true);
     }
 
-  painter.setOpacity (m_opacity);
-  painter.drawPixmap (result_rect, pixmap, pixmap.rect ());
-  painter.setClipping (false);
+  canvas.resetMatrix ();
+  paint.setAlpha (m_opacity * 255);
+  canvas.drawBitmap (bitmap, result_rect.x (), result_rect.y (), &paint);
+  canvas.restore ();
   return;
 }
 

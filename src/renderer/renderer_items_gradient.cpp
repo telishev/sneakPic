@@ -2,43 +2,66 @@
 
 #include "svg/attributes/svg_attributes_enum.h"
 
+#include "renderer/qt2skia.h"
+
+#include <memory>
+
+#pragma warning(push, 0)
+#include <SkCanvas.h>
+#include <SkGradientShader.h>
+#pragma warning(pop)
 
 void renderer_base_gradient_item::set_opacity (double opacity)
 {
-  QGradientStops stops = m_gradient.stops ();
-  for (int i = 0; i < stops.size (); i++)
-    stops[i].second.setAlphaF (opacity * stops[i].second.alphaF ());
-
-  m_gradient.setStops (stops);
+  for (int i = 0; i < m_stops.size (); i++)
+    m_stops[i].second.setAlphaF (opacity * m_stops[i].second.alphaF ());
 }
 
-QBrush renderer_base_gradient_item::get_brush () const 
+void renderer_linear_gradient::fill_paint (SkPaint &paint) const 
 {
-  return QBrush (m_gradient);
-}
+  SkPoint points[2] = { SkPoint::Make (SkFloatToScalar (m_x1), SkFloatToScalar (m_y1)),
+                        SkPoint::Make (SkFloatToScalar (m_x2), SkFloatToScalar (m_y2)) };
 
-void renderer_base_gradient_item::add_stop (double position, const QColor &color)
-{
-  m_gradient.setColorAt (position, color);
-}
-
-void renderer_base_gradient_item::set_spread (spread_method spread)
-{
-  switch (spread)
+  std::unique_ptr<SkColor []> colors (new SkColor [m_stops.size ()]);
+  std::unique_ptr<SkScalar[]> pos (new SkScalar [m_stops.size ()]);
+  for (size_t i = 0; i < m_stops.size (); i++)
     {
-    case spread_method::PAD: m_gradient.setSpread (QGradient::PadSpread); break;
-    case spread_method::REFLECT: m_gradient.setSpread (QGradient::ReflectSpread); break;
-    case spread_method::REPEAT: m_gradient.setSpread (QGradient::RepeatSpread); break;
+      colors[i] = qt2skia::color (m_stops[i].second);
+      pos[i] = SkFloatToScalar (m_stops[i].first);
+    }
+
+  SkShader::TileMode mode;
+  switch (m_spread)
+    {
+    case spread_method::PAD: mode = SkShader::kClamp_TileMode; break;
+    case spread_method::REFLECT: mode = SkShader::kMirror_TileMode; break;
+    case spread_method::REPEAT: mode = SkShader::kRepeat_TileMode; break;
     case spread_method::INVALID: return;
     }
+
+  paint.setShader (SkGradientShader::CreateLinear (points, colors.get (), pos.get (), (int)m_stops.size (), mode));
 }
 
-void renderer_base_gradient_item::set_gradient_units (gradient_units units)
+void renderer_radial_gradient::fill_paint (SkPaint &paint) const 
 {
-  switch (units)
+  SkPoint center = SkPoint::Make (SkFloatToScalar (m_cx), SkFloatToScalar (m_cy));
+
+  std::unique_ptr<SkColor []> colors (new SkColor [m_stops.size ()]);
+  std::unique_ptr<SkScalar[]> pos (new SkScalar [m_stops.size ()]);
+  for (size_t i = 0; i < m_stops.size (); i++)
     {
-    case gradient_units::OBJECT_BOUNDING_BOX: m_gradient.setCoordinateMode (QGradient::ObjectBoundingMode); break;
-    case gradient_units::USER_SPACE : m_gradient.setCoordinateMode (QGradient::LogicalMode); break;
-    case gradient_units::INVALID: return;
+      colors[i] = qt2skia::color (m_stops[i].second);
+      pos[i] = SkFloatToScalar (m_stops[i].first);
     }
+
+  SkShader::TileMode mode;
+  switch (m_spread)
+    {
+    case spread_method::PAD: mode = SkShader::kClamp_TileMode; break;
+    case spread_method::REFLECT: mode = SkShader::kMirror_TileMode; break;
+    case spread_method::REPEAT: mode = SkShader::kRepeat_TileMode; break;
+    case spread_method::INVALID: return;
+    }
+
+  paint.setShader (SkGradientShader::CreateRadial (center, SkFloatToScalar (m_r), colors.get (), pos.get (), (int)m_stops.size (), mode));
 }

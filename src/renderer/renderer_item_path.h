@@ -16,7 +16,7 @@ public:
   renderer_item_path ();
   ~renderer_item_path ();
 
-  virtual void draw (QPainter &painter, const renderer_state &state) const override;
+  virtual void draw (SkCanvas &canvas, const renderer_state &state) const override;
   virtual QRectF bounding_box () const override { return m_bbox; }
 
   void set_painter_path (const QPainterPath &path);

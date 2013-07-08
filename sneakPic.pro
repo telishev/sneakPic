@@ -8,6 +8,7 @@ isEmpty ($$PROJ_DIR) {
 }
 
 include (src/files.in)
+include (skia.pri)
 
 # configuration
 

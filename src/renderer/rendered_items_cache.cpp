@@ -2,7 +2,9 @@
 
 #include "renderer/render_cache_id.h"
 
-#include <QPixmap>
+#pragma warning(push, 0)
+#include <SkBitmap.h>
+#pragma warning(pop)
 
 const int rendered_items_cache::m_block_pixel_size = 256;
 
@@ -16,18 +18,18 @@ rendered_items_cache::~rendered_items_cache ()
 
 }
 
-QPixmap rendered_items_cache::pixmap (const render_cache_id &id) const
+SkBitmap rendered_items_cache::bitmap (const render_cache_id &id) const
 {
   auto it = m_cache.find (id);
   if (it == m_cache.end ())
-    return QPixmap ();
+    return SkBitmap ();
 
   return it->second;
 }
 
-void rendered_items_cache::add_pixmap (const render_cache_id &id, const QPixmap &pixmap)
+void rendered_items_cache::add_bitmap (const render_cache_id &id, const SkBitmap &bitmap)
 {
-  m_cache[id] = pixmap;
+  m_cache[id] = bitmap;
   ///TODO: cache cleanup
 }
 

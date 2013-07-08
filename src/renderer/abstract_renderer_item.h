@@ -2,6 +2,7 @@
 #define ABSTRACT_RENDERER_ITEM_H
  
 class QPainter;
+class SkCanvas;
 class renderer_state;
 
 #include <QRectF>
@@ -13,7 +14,7 @@ class abstract_renderer_item
 public:
   virtual ~abstract_renderer_item () {};
 
-  virtual void draw (QPainter &painter, const renderer_state &state) const = 0;
+  virtual void draw (SkCanvas &canvas, const renderer_state &state) const = 0;
   virtual QRectF bounding_box () const = 0;
 
   QTransform transform () const { return m_transform; }
