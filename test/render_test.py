@@ -79,7 +79,7 @@ def check_render_and_cache_file (renderer, file_name): # file name here without 
   
   if not isdir (dir_name):
     if not can_rerender:
-      return ""
+      return "", 0
     makedirs (dir_name)
   info_file_name =  join (dir_name, file_name + "_info.xml");
   svg_file_name = join (test_files_directory, file_name) + ".svg"
@@ -87,6 +87,7 @@ def check_render_and_cache_file (renderer, file_name): # file name here without 
   svg_temp_file_name = join (tempfile.gettempdir(), "_tmp_.svg")
   regenerate = "";
   xml_doc = 0;
+  result_time = 0;
   if not exists (info_file_name):
     regenerate = True
     xml_doc = recreate_initial_info (svg_file_name, md5_generator)
@@ -99,6 +100,8 @@ def check_render_and_cache_file (renderer, file_name): # file name here without 
     if supposed_md5 != md5_for_file (svg_file_name) or (md5_generator != "" and supposed_generator_md5 != md5_generator):
       xml_doc = recreate_initial_info (svg_file_name, md5_generator)
       regenerate = True;
+    else:
+      result_time = xml_doc.getElementsByTagName(elapsed_time)[0].childNodes[0].nodeValue
       
   inscape_string = "inkscape" + " --export-png=\"" + png_file_name + "\" \"" + svg_file_name + "\" 1>nul 2>nul"
   sneakpic_render_string = escape_path (sneakpic_path) + " --render-png=\"" + png_file_name + "\" \"" + svg_file_name + "\""
@@ -106,7 +109,7 @@ def check_render_and_cache_file (renderer, file_name): # file name here without 
   sneakpic_render_tmp_string = escape_path (sneakpic_path) + " --render-png=\"" + png_file_name + "\" \"" + svg_temp_file_name + "\""
   if regenerate:
     if not can_rerender:
-      return ""
+      return "", 0
     t = time.clock ()
     if renderer == "sneakpic":
       call (sneakpic_render_string, shell=True)
@@ -129,8 +132,8 @@ def check_render_and_cache_file (renderer, file_name): # file name here without 
     fp = open(info_file_name, "w")
     xml_doc.writexml (fp)
     fp.close ()
-    return png_file_name
-  return png_file_name
+    return png_file_name, t 
+  return png_file_name, result_time
 
 def print_html_header (fp):
   fp.write ("<HTML><HEAD><link rel=\"stylesheet\" type=\"text/css\" href=\"log.css\" /><script src=\"sorttable.js\"></script><TITLE>Test Results</TITLE></HEAD><BODY><TABLE class=\"sortable\">\n")
@@ -220,13 +223,16 @@ parser.add_option("-b", "--base-renderer", dest="renderer", default="sneakPic",
                   help="Version or program which will be compared against the rest")
 parser.add_option("-m", "--metric", dest="metric", default="FUZZ",
                   help="Metric used by compare util, could be one of AE, FUZZ[default], MAE, MEPP, MSE, NCC, PAE, PSNR, RMSE")
+parser.add_option("-t", "--time", dest="time", action="store_true", default=False,
+                  help="Print time of rendering in link column")
 (options, args) = parser.parse_args()
 base_renderer = options.renderer;
 metric = options.metric;
 metric_set = Set (['AE', 'FUZZ', 'MAE', 'MEPP', 'MSE', 'NCC', 'PAE', 'PSNR', 'RMSE'])
 if not metric in metric_set:
   metric = 'FUZZ'
-  
+print_time = options.time
+
 compare_against = [];
 
 base_renderer = strip_aliases (base_renderer)
@@ -278,16 +284,18 @@ for file in files_list:
   file_name, file_ext = splitext(file)
   if file_ext != ".svg":
     continue
-  base_png_name = check_render_and_cache_file (base_renderer, file_name)
+  base_png_name, render_time = check_render_and_cache_file (base_renderer, file_name)
   png_names = []
   column_strings = ["<a href=\""+full_path+"\">"+ file +"</a>"]
   if not base_png_name == "":
     column_strings[0] += "(<a href=\"" + base_png_name + "\">*</a>)"
+  if print_time:
+    column_strings[0] += " (" + '{0:.2f}'.format (float (render_time)) + ")"
   i = -1
   for renderer in compare_against:
     i +=  1
     link_text = "-"
-    png_name = check_render_and_cache_file (renderer, file_name)
+    png_name, render_time = check_render_and_cache_file (renderer, file_name)
     if base_png_name == "":
       column_strings += ["Base File Generation Error"]
       column_strings += [link_text]
@@ -306,6 +314,8 @@ for file in files_list:
       
     # print output
     link_text = "<a href=\"" + png_name + "\">Link</a>"
+    if print_time:
+      link_text += " (" + '{0:.2f}'.format (float (render_time)) + ")"
     splitted = r.split(output)
     if (len (splitted) == 0):
       column_strings += ["Comparison error"]
@@ -338,7 +348,8 @@ for file in files_list:
 column_strings = ["Mean value (excluding errors)"]
 i = 0
 for sum in diff_sum:
-  column_strings += [sum / diff_count[i]]
+  column_strings += [str (sum / diff_count[i])]
+  column_strings += ["-"]
   i += 1
 print_table_row (fp, column_strings)
 print_html_footer (fp)
