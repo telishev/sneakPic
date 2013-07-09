@@ -10,6 +10,8 @@ isEmpty ($$PROJ_DIR) {
 include (src/files.in)
 include (skia.pri)
 
+LIBS += -lopengl32
+
 # configuration
 
 #RC_FILE += $$PROJ_DIR/resource/sneakPic.rc
