@@ -35,9 +35,9 @@ void renderer_base_shape_item::set_stroke_linecap (Qt::PenCapStyle linecap)
 {
   switch  (linecap)
     {
-    case Qt::FlatCap: m_fill->setStrokeCap (SkPaint::kButt_Cap); break;
-    case Qt::RoundCap: m_fill->setStrokeCap (SkPaint::kRound_Cap); break;
-    case Qt::SquareCap: m_fill->setStrokeCap (SkPaint::kSquare_Cap); break;
+    case Qt::FlatCap: m_stroke->setStrokeCap (SkPaint::kButt_Cap); break;
+    case Qt::RoundCap: m_stroke->setStrokeCap (SkPaint::kRound_Cap); break;
+    case Qt::SquareCap: m_stroke->setStrokeCap (SkPaint::kSquare_Cap); break;
     default:
       return;
     }
@@ -48,9 +48,9 @@ void renderer_base_shape_item::set_stroke_linejoin (Qt::PenJoinStyle linejoin)
 {
   switch (linejoin)
     {
-    case Qt::BevelJoin: m_fill->setStrokeJoin (SkPaint::kBevel_Join); break;
-    case Qt::MiterJoin: m_fill->setStrokeJoin (SkPaint::kMiter_Join); break;
-    case Qt::RoundJoin: m_fill->setStrokeJoin (SkPaint::kRound_Join); break;
+    case Qt::BevelJoin: m_stroke->setStrokeJoin (SkPaint::kBevel_Join); break;
+    case Qt::MiterJoin: m_stroke->setStrokeJoin (SkPaint::kMiter_Join); break;
+    case Qt::RoundJoin: m_stroke->setStrokeJoin (SkPaint::kRound_Join); break;
     default:
       return;
     }
