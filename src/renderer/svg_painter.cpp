@@ -14,6 +14,7 @@
 #include "svg/svg_document.h"
 #include "svg/items/abstract_svg_item.h"
 
+
 #pragma warning(push, 0)
 #include <SkCanvas.h>
 #include <SkSurface.h>
@@ -178,12 +179,10 @@ void svg_painter::resizeGL (int width, int height)
 
 void svg_painter::draw_items (QPainter &painter, const QRectF &rect_to_draw, QTransform transform)
 {
-  SkBitmap bitmap;
-  bitmap.setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
-  bitmap.allocPixels ();
-  SkDevice device (bitmap);
-  SkCanvas canvas (&device);
-  canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
+  QImage img (rect_to_draw.width (), rect_to_draw.height (), QImage::Format_ARGB32);
+  img.fill (Qt::transparent);
+  QPainter img_painter (&img);
+  painter.setRenderHint (QPainter::SmoothPixmapTransform);
 
   m_cache->lock ();
   double cache_zoom_x = m_cache->zoom_x ();
@@ -194,14 +193,12 @@ void svg_painter::draw_items (QPainter &painter, const QRectF &rect_to_draw, QTr
   if (!are_equal (cache_zoom_x, cur_zoom_x) || !are_equal (cache_zoom_y, cur_zoom_y))
     {
       QTransform scale_transform = QTransform::fromScale (cache_zoom_x / cur_zoom_x, cache_zoom_y / cur_zoom_y);
-      painter.setTransform (scale_transform.inverted (), true);
+      img_painter.setTransform (scale_transform.inverted ());
       transform = transform * scale_transform;
     }
 
   render_cache_id id_first, id_last;
   get_cache_id (transform, id_first, id_last, mapped_rect);
-
-  //m_renderer->update_cache_items (item, id_first, id_last, transform);
 
   for (int x = id_first.x (); x <= id_last.x (); x++)
     for (int y = id_first.y (); y <= id_last.y (); y++)
@@ -212,16 +209,17 @@ void svg_painter::draw_items (QPainter &painter, const QRectF &rect_to_draw, QTr
           continue;
 
         QRectF pixel_rect = cur_id.pixel_rect (transform);
-        /// set rect width and height to integer values to eliminate rounding errors
+        QImage bitmap_img = qt2skia::qimage (bitmap);
         int block_size = rendered_items_cache::block_pixel_size ();
         pixel_rect.setWidth (block_size);
         pixel_rect.setHeight (block_size);
-
-        canvas.drawBitmap (bitmap, SkFloatToScalar (pixel_rect.x ()), SkFloatToScalar (pixel_rect.y ()));
+ 
+        img_painter.drawImage (pixel_rect, bitmap_img, bitmap_img.rect ());
       }
 
   m_cache->unlock ();
-  painter.drawImage (rect_to_draw, qt2skia::qimage (bitmap));
+  painter.setTransform (QTransform ());
+  painter.drawImage (rect_to_draw, img);
 }
 
 void svg_painter::send_changes ()
@@ -230,6 +228,7 @@ void svg_painter::send_changes ()
   QRectF mapped_rect = m_cur_transform.inverted ().mapRect (glwidget ()->rect ());
   get_cache_id (m_cur_transform, id_first, id_last, mapped_rect);
   m_queue->push_back (new event_transform_changed (id_first, id_last, m_cur_transform));
+  sleep_ms (5);
 }
 
 void svg_painter::get_cache_id (const QTransform &transform, render_cache_id &first, render_cache_id &last, const QRectF &rect) const

@@ -3,7 +3,7 @@
 #include "common/wait_queue.h"
 #include "common/memory_deallocation.h"
 #include "common/math_defs.h"
-
+#include "common/common_utils.h"
 
 #include "renderer/abstract_renderer_event.h"
 #include "renderer/svg_renderer.h"
@@ -12,9 +12,7 @@
 
 #include <QTransform>
 
-#ifdef _WIN32
-#  include <Windows.h>
-#endif
+
 
 renderer_thread::renderer_thread (svg_renderer *renderer, wait_queue<abstract_renderer_event> *queue, QObject *parent)
   : QThread (parent)
@@ -42,7 +40,6 @@ void renderer_thread::run ()
         }
       else
         {
-          small_wait ();
           abstract_renderer_event *ev = 0;
           m_queue->pull_front_nolock (&ev);
           while (ev)
@@ -50,6 +47,7 @@ void renderer_thread::run ()
               m_queue->unlock ();
               ev->process (this);
               FREE (ev);
+              small_wait ();
 
               m_queue->lock ();
               m_queue->pull_front_nolock (&ev);
@@ -99,7 +97,5 @@ void renderer_thread::redraw ()
 
 void renderer_thread::small_wait ()
 {
-#ifdef _WIN32
-  Sleep (10);
-#endif
+  sleep_ms (1);
 }

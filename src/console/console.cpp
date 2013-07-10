@@ -2,6 +2,8 @@
 #include <QPainter>
 #include <QStringList>
 
+#include <memory>
+
 #include "console/console.h"
 
 #include "console/gengetopt/cl_arguments_class.h"
@@ -31,7 +33,7 @@ void render_to_image (svg_document *doc, QString file_name, int width, int heigh
   canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
   QRect rect = QRect (0, 0, width, height);
-  renderer_items_container *container = doc->create_rendered_items ();
+  std::unique_ptr<renderer_items_container> container (doc->create_rendered_items ());
 
   svg_renderer renderer (nullptr);
   renderer.draw_item (container->root (), canvas, rect, QTransform ());

@@ -59,6 +59,7 @@ public:
 #define FIX_UNUSED_NOTHING() \
   do { } while (0)
 
+void sleep_ms (int ms);
 
 
 #endif // COMMON_UTILS_H
