@@ -9,12 +9,10 @@
 svg_item_use::svg_item_use (svg_document *document)
   : svg_item_group_type (document)
 {
-  m_renderer_item = nullptr;
 }
 
 svg_item_use::~svg_item_use ()
 {
-  FREE (m_renderer_item);
 }
 
 bool svg_item_use::check_item ()
@@ -43,15 +41,9 @@ bool svg_item_use::update_children_tree ()
   return true;
 }
 
-void svg_item_use::update_renderer_item ()
+abstract_renderer_item *svg_item_use::create_renderer_item () const
 {
-  if (!m_renderer_item)
-    m_renderer_item = new renderer_item_group (this);
-
-  update_group_item (m_renderer_item);
-}
-
-const abstract_renderer_item *svg_item_use::get_renderer_item () const 
-{
-  return m_renderer_item;
+  renderer_item_group *renderer_item = new renderer_item_group (id ().toStdString ());
+  update_group_item (renderer_item);
+  return renderer_item;
 }

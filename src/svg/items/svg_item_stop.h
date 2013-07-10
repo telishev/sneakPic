@@ -12,8 +12,6 @@ public:
   svg_item_stop (svg_document *document);
   virtual ~svg_item_stop () override;
 
-  virtual const abstract_renderer_item *get_renderer_item () const override { return nullptr; }
-
   double offset () const;
   QColor color () const;
 

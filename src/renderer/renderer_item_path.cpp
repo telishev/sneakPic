@@ -13,7 +13,8 @@
 #pragma warning(pop)
 
 
-renderer_item_path::renderer_item_path ()
+renderer_item_path::renderer_item_path (const std::string &name)
+  : renderer_base_shape_item (name)
 {
 }
 
@@ -21,7 +22,6 @@ renderer_item_path::~renderer_item_path ()
 {
 
 }
-
 
 void renderer_item_path::draw (SkCanvas &canvas, const renderer_state &state) const
 {
@@ -51,6 +51,10 @@ void renderer_item_path::draw (SkCanvas &canvas, const renderer_state &state) co
 void renderer_item_path::set_painter_path (const QPainterPath &path)
 {
   m_path = path;
+}
+
+void renderer_item_path::update_bbox ()
+{
   m_bbox = m_path.controlPointRect ();
   adjust_bbox (m_bbox);
 }

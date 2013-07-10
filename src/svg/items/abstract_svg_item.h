@@ -50,8 +50,7 @@ public:
   virtual const char *namespace_uri () const;
   virtual const char *namespace_name () const;
 
-  virtual void update_renderer_item () {};
-  virtual const abstract_renderer_item *get_renderer_item () const { return nullptr; }
+  virtual abstract_renderer_item *create_renderer_item () const { return nullptr; }
 
   svg_document *document () const { return m_document; }
 

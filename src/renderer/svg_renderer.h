@@ -1,7 +1,7 @@
 #ifndef SVG_RENDERER_H
 #define SVG_RENDERER_H
 
-class abstract_svg_item;
+class abstract_renderer_item;
 class rendered_items_cache;
 class render_cache_id;
 
@@ -18,12 +18,17 @@ public:
   svg_renderer (rendered_items_cache *cache);
   ~svg_renderer ();
 
-  void draw_item (const abstract_svg_item *item, SkCanvas &canvas, const QRectF &rect_to_draw, const QTransform &transform);
-  void update_cache_item (const abstract_svg_item *item, const render_cache_id &cache_id, const QTransform &transform, int total_x, int total_y);
-  void update_cache_items (const abstract_svg_item *item, const render_cache_id &first,
-                           const render_cache_id &last, QTransform transform);
+  void draw_item (const abstract_renderer_item *item, SkCanvas &canvas, const QRectF &rect_to_draw, const QTransform &transform);
 
-  bool is_something_cached ( const render_cache_id &first, const render_cache_id &last);
+  void update_cache_items (const abstract_renderer_item *item, const render_cache_id &first,
+                           const render_cache_id &last, QTransform transform, bool next_cache);
+
+  rendered_items_cache *cache () const { return m_cache; }
+
+private:
+  bool is_something_cached ( const render_cache_id &first, const render_cache_id &last, bool next_cache);
+  void update_cache_item (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform,
+                          int total_x, int total_y, bool next_cache);
 };
 
 #endif // SVG_RENDERER_H

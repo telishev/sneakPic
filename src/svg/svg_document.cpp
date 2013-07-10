@@ -17,21 +17,23 @@
 
 #include "svg/attributes/svg_attribute_factory.h"
 
+#include "renderer/renderer_items_container.h"
+#include "renderer/abstract_renderer_item.h"
 
 
-svg_document::svg_document ()
+
+svg_document::svg_document (wait_queue<abstract_renderer_event> *queue)
 {
   m_item_factory = new svg_item_factory (this);
   m_attribute_factory = new svg_attribute_factory (this);
   m_item_container = new svg_items_container;
   m_root = 0;
   item_svg = 0;
-  filename = new QString ();
+  m_queue = queue;
 }
 
 svg_document::~svg_document ()
 {
-  FREE (filename);
   FREE (m_root);
   FREE (m_item_factory);
   FREE (m_attribute_factory);
@@ -40,9 +42,9 @@ svg_document::~svg_document ()
 
 bool svg_document::read_file (const QString &filename_arg)
 {
-  *filename = filename_arg;
+  filename = filename_arg;
 
-  QFile file (*filename);
+  QFile file (filename);
   if (!file.open (QIODevice::ReadOnly))
     return false;
 
@@ -63,13 +65,13 @@ bool svg_document::read_file (const QString &filename_arg)
 
 QString svg_document::get_filename ()
 {
-  return *filename;
+  return filename;
 }
 
 bool svg_document::write_file (const QString &filename_arg)
 {
-  *filename = filename_arg;
-  QFile file (*filename);
+  filename = filename_arg;
+  QFile file (filename);
   if (!file.open (QIODevice::WriteOnly))
     return false;
 
@@ -98,13 +100,26 @@ bool svg_document::get_doc_dimensions (double &width, double &height)
   return true;
 }
 
-void svg_document::update_items ()
+renderer_items_container *svg_document::create_rendered_items ()
 {
-  /// TODO: update only changed items
-  auto items = m_item_container->get_items ();
-  for (auto &item_pair : items)
-    {
-      abstract_svg_item *svg_item = item_pair.second;
-      svg_item->update_renderer_item ();
-    }
+  renderer_items_container *renderer_items = new renderer_items_container;
+
+  create_renderer_item (renderer_items, item_svg);
+  renderer_items->set_root (item_svg->id ().toStdString ());
+  renderer_items->root ()->update_bbox ();
+  return renderer_items;
+}
+
+void svg_document::create_renderer_item (renderer_items_container *renderer_items, abstract_svg_item *svg_item)
+{
+  abstract_renderer_item *renderer_item = svg_item->create_renderer_item ();
+  if (!renderer_item)
+    return;
+
+  renderer_items->add_item (renderer_item);
+  if (svg_item->parent ())
+    renderer_items->add_child (svg_item->parent ()->id ().toStdString (), svg_item->id ().toStdString ());
+
+  for (abstract_svg_item *child = svg_item->first_child (); child; child = child->next_sibling ())
+    create_renderer_item (renderer_items, child);
 }

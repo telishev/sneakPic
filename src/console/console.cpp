@@ -10,6 +10,7 @@
 
 #include "renderer/svg_renderer.h"
 #include "renderer/qt2skia.h"
+#include "renderer/renderer_items_container.h"
 
 #include "svg/svg_document.h"
 
@@ -30,10 +31,10 @@ void render_to_image (svg_document *doc, QString file_name, int width, int heigh
   canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
   QRect rect = QRect (0, 0, width, height);
-  doc->update_items ();
+  renderer_items_container *container = doc->create_rendered_items ();
 
   svg_renderer renderer (nullptr);
-  renderer.draw_item (doc->root (), canvas, rect, QTransform ());
+  renderer.draw_item (container->root (), canvas, rect, QTransform ());
   qt2skia::qimage (bitmap).save (file_name);
 }
 

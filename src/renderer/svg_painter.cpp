@@ -18,22 +18,24 @@
 #include <SkCanvas.h>
 #include <SkSurface.h>
 #include <SkDevice.h>
+#include "common/math_defs.h"
+#include "event_transform_changed.h"
+#include "common/wait_queue.h"
 #pragma warning(pop)
 
 
 
-svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache)
+svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache, wait_queue<abstract_renderer_event> *queue)
   : abstract_painter (glwidget, mouse_filter_object)
 {
   m_document = nullptr;
   drag_started = false;
   m_cache = cache;
-  m_renderer = new svg_renderer (cache);
+  m_queue = queue;
 }
 
 svg_painter::~svg_painter ()
 {
-  FREE (m_renderer);
 }
 
 void svg_painter::reset_transform ()
@@ -42,6 +44,7 @@ void svg_painter::reset_transform ()
   m_document->get_doc_dimensions (doc_width, doc_height);
   double scale = qMin (glwidget ()->width () / doc_width, glwidget ()->height () / doc_height);
   m_cur_transform = QTransform::fromScale (scale, scale);
+  send_changes ();
 }
 
 void svg_painter::set_document (svg_document *document)
@@ -65,6 +68,7 @@ unsigned int svg_painter::mouse_moved (const unsigned char *dragging_buttons, co
       QPointF diff = cur_pos_local - last_pos_local;
 
       m_cur_transform = QTransform (m_last_transform).translate (diff.x (), diff.y ());
+      send_changes ();
       glwidget ()->repaint ();
     }
 
@@ -111,7 +115,7 @@ void svg_painter::draw ()
   painter.setRenderHint(QPainter::Antialiasing);
   painter.setRenderHint(QPainter::HighQualityAntialiasing);
   painter.setRenderHint (QPainter::SmoothPixmapTransform);
-  draw_items (m_document->root (), painter, glwidget ()->rect (), m_cur_transform);
+  draw_items (painter, glwidget ()->rect (), m_cur_transform);
   painter.end ();
 }
 
@@ -123,8 +127,7 @@ void svg_painter::configure ()
   if (get_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED))
     {
       set_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED, 0);
-      m_document->update_items ();
-      m_cache->zoom_level_changed ();
+      send_changes ();
     }
 
 
@@ -142,7 +145,7 @@ void svg_painter::wheelEvent (QWheelEvent *qevent)
       QPointF event_pos_local_after = m_cur_transform.inverted ().map (QPointF (qevent->pos ()));
       QPointF vector = event_pos_local_after - event_pos_local_before;
       m_cur_transform.translate (vector.x (), vector.y ());
-      m_cache->zoom_level_changed ();
+      send_changes ();
 
       glwidget ()->repaint ();
       qevent->accept ();
@@ -157,14 +160,14 @@ void svg_painter::leaveEvent (QEvent *qevent)
 bool svg_painter::keyReleaseEvent (QKeyEvent * qevent)
 {
   if (qevent->key () == Qt::Key_1 && qevent->modifiers () == Qt::NoModifier)
-  {
-    if (!m_document)
+    {
+      if (!m_document)
+        return true;
+      reset_transform ();
+      glwidget ()->repaint ();
+      qevent->accept ();
       return true;
-    reset_transform ();
-    glwidget ()->repaint ();
-    qevent->accept ();
-    return true;
-  }
+    }
   return false;
 }
 
@@ -173,12 +176,8 @@ void svg_painter::resizeGL (int width, int height)
   FIX_UNUSED (width, height);
 }
 
-void svg_painter::draw_items (const abstract_svg_item *item, QPainter &painter, const QRectF &rect_to_draw, QTransform transform)
+void svg_painter::draw_items (QPainter &painter, const QRectF &rect_to_draw, QTransform transform)
 {
-  const abstract_renderer_item *renderer_item = item->get_renderer_item ();
-  if (!renderer_item)
-    return;
-
   SkBitmap bitmap;
   bitmap.setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
   bitmap.allocPixels ();
@@ -186,16 +185,24 @@ void svg_painter::draw_items (const abstract_svg_item *item, QPainter &painter, 
   SkCanvas canvas (&device);
   canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
-#if 0
-  m_renderer->draw_item (item, canvas, rect_to_draw, transform);
-#else
-
+  m_cache->lock ();
+  double cache_zoom_x = m_cache->zoom_x ();
+  double cache_zoom_y = m_cache->zoom_x ();
+  double cur_zoom_x = transform.m11 ();
+  double cur_zoom_y = transform.m22 ();
   QRectF mapped_rect = transform.inverted ().mapRect (rect_to_draw);
-  render_cache_id id_first = render_cache_id::get_id_by_pos (mapped_rect.x (), mapped_rect.y (), transform);
-  render_cache_id id_last = render_cache_id::get_id_by_pos (mapped_rect.x () + mapped_rect.width (),
-    mapped_rect.y () + mapped_rect.height (), transform);
+  if (!are_equal (cache_zoom_x, cur_zoom_x) || !are_equal (cache_zoom_y, cur_zoom_y))
+    {
+      QTransform scale_transform = QTransform::fromScale (cache_zoom_x / cur_zoom_x, cache_zoom_y / cur_zoom_y);
+      painter.setTransform (scale_transform.inverted (), true);
+      transform = transform * scale_transform;
+    }
 
-  m_renderer->update_cache_items (item, id_first, id_last, transform);
+  render_cache_id id_first, id_last;
+  get_cache_id (transform, id_first, id_last, mapped_rect);
+
+  //m_renderer->update_cache_items (item, id_first, id_last, transform);
+
   for (int x = id_first.x (); x <= id_last.x (); x++)
     for (int y = id_first.y (); y <= id_last.y (); y++)
       {
@@ -212,7 +219,22 @@ void svg_painter::draw_items (const abstract_svg_item *item, QPainter &painter, 
 
         canvas.drawBitmap (bitmap, SkFloatToScalar (pixel_rect.x ()), SkFloatToScalar (pixel_rect.y ()));
       }
-#endif
 
+  m_cache->unlock ();
   painter.drawImage (rect_to_draw, qt2skia::qimage (bitmap));
+}
+
+void svg_painter::send_changes ()
+{
+  render_cache_id id_first, id_last;
+  QRectF mapped_rect = m_cur_transform.inverted ().mapRect (glwidget ()->rect ());
+  get_cache_id (m_cur_transform, id_first, id_last, mapped_rect);
+  m_queue->push_back (new event_transform_changed (id_first, id_last, m_cur_transform));
+}
+
+void svg_painter::get_cache_id (const QTransform &transform, render_cache_id &first, render_cache_id &last, const QRectF &rect) const
+{
+  first = render_cache_id::get_id_by_pos (rect.x (), rect.y (), transform);
+  last = render_cache_id::get_id_by_pos (rect.x () + rect.width (),
+      rect.y () + rect.height (), transform);
 }

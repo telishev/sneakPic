@@ -11,6 +11,12 @@ class QSettings;
 class svg_document;
 class svg_painter;
 class rendered_items_cache;
+class renderer_thread;
+
+class abstract_renderer_event;
+
+template<typename T>
+class wait_queue;
 
 class main_window : public QMainWindow
 {
@@ -19,8 +25,11 @@ class main_window : public QMainWindow
   Ui_main_window *ui;
   svg_document *m_doc;
   QSettings *m_settings;
-  svg_painter *m_renderer;
+  svg_painter *m_painter;
   rendered_items_cache *m_cache;
+  renderer_thread *m_renderer_thread;
+  wait_queue<abstract_renderer_event> *m_queue;
+  QTimer *update_timer;
 
 public:
   main_window ();
@@ -30,6 +39,7 @@ private slots:
   void open_file_clicked ();
   void open_last_file_clicked ();
   void save_file_clicked ();
+  void update_timeout ();
 
 private:
   void update_window_title ();

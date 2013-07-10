@@ -11,12 +11,10 @@
 svg_item_svg::svg_item_svg (svg_document *document)
   : svg_item_group_type (document)
 {
-  m_render_item = nullptr;
 }
 
 svg_item_svg::~svg_item_svg ()
 {
-  FREE (m_render_item);
 }
 
 double svg_item_svg::width () const
@@ -33,16 +31,16 @@ double svg_item_svg::height () const
 
 void svg_item_svg::update_renderer_item ()
 {
-  if (!m_render_item)
-    m_render_item = new renderer_item_svg (this);
 
-  m_render_item->set_height (height ());
-  m_render_item->set_width (width ());
-  update_group_item (m_render_item);
 }
 
-const abstract_renderer_item *svg_item_svg::get_renderer_item () const
+abstract_renderer_item *svg_item_svg::create_renderer_item () const
 {
-  return m_render_item;
+  renderer_item_svg *render_item = new renderer_item_svg (id ().toStdString ());
+
+  render_item->set_height (height ());
+  render_item->set_width (width ());
+  update_group_item (render_item);
+  return render_item;
 }
 

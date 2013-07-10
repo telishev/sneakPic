@@ -27,15 +27,13 @@
 svg_base_shape_item::svg_base_shape_item (svg_document *document)
    : abstract_svg_item (document)
 {
-  m_render_item = nullptr;
 }
 
 svg_base_shape_item::~svg_base_shape_item ()
 {
-  FREE (m_render_item);
 }
 
-void svg_base_shape_item::set_item_style (renderer_item_path *item)
+void svg_base_shape_item::set_item_style (renderer_item_path *item) const 
 {
   std::unique_ptr<renderer_paint_server> fill (get_computed_attribute<svg_attribute_fill> ()->create_paint_server ());
   std::unique_ptr<renderer_paint_server> stroke (get_computed_attribute<svg_attribute_stroke> ()->create_paint_server ());
@@ -74,21 +72,17 @@ QPainterPath svg_base_shape_item::get_path_for_clipping () const
   return path;
 }
 
-void svg_base_shape_item::update_renderer_item ()
+abstract_renderer_item *svg_base_shape_item::create_renderer_item () const 
 {
-  m_render_item = new renderer_item_path;
+  renderer_item_path *render_item = new renderer_item_path (id ().toStdString ());
 
   QPainterPath path = get_path ();
   const svg_attribute_fill_rule *fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();
   path.setFillRule (fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
-  set_item_style (m_render_item);
+  set_item_style (render_item);
   /// must be last
-  m_render_item->set_painter_path (path);
-}
-
-const abstract_renderer_item *svg_base_shape_item::get_renderer_item () const 
-{
-  return m_render_item;
+  render_item->set_painter_path (path);
+  return render_item;
 }
 
 QTransform svg_base_shape_item::full_transform () const

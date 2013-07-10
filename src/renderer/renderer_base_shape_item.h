@@ -20,7 +20,7 @@ protected:
   SkPaint *m_fill;
 
 public:
-  renderer_base_shape_item ();
+  renderer_base_shape_item (const std::string &name);
   ~renderer_base_shape_item ();
 
   void set_stroke_linecap (Qt::PenCapStyle linecap);

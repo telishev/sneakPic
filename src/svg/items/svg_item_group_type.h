@@ -11,7 +11,7 @@ public:
   svg_item_group_type (svg_document *document);
 
 protected:
-  void update_group_item (renderer_item_group *renderer_item);
+  void update_group_item (renderer_item_group *renderer_item) const;
 };
 
 

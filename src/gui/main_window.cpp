@@ -5,9 +5,14 @@
 #include "ui/ui_main_window.h"
 
 #include "common/memory_deallocation.h"
+#include "common/wait_queue.h"
 
 #include "renderer/svg_painter.h"
 #include "renderer/rendered_items_cache.h"
+#include "renderer/abstract_renderer_event.h"
+#include "renderer/renderer_thread.h"
+#include "renderer/svg_renderer.h"
+#include "renderer/event_container_changed.h"
 
 #include "svg/svg_document.h"
 
@@ -15,8 +20,7 @@
 #include <QSettings>
 #include <QFileInfo>
 #include <QMessageBox>
-
-
+#include <QTimer>
 
 
 main_window::main_window ()
@@ -26,20 +30,32 @@ main_window::main_window ()
   ui->setupUi (this);
   m_settings = new QSettings ("SneakPic");
   m_cache = new rendered_items_cache;
-  m_renderer = new svg_painter (ui->glwidget, ui->glwidget->mouse_filter_object (), m_cache);
-  ui->glwidget->set_painter (m_renderer);
+  m_queue = new wait_queue<abstract_renderer_event>;
+  m_painter = new svg_painter (ui->glwidget, ui->glwidget->mouse_filter_object (), m_cache, m_queue);
+  m_renderer_thread = new renderer_thread (new svg_renderer (m_cache), m_queue, this);
+  m_renderer_thread->start ();
+  ui->glwidget->set_painter (m_painter);
+  update_timer = new QTimer (this);
+  update_timer->setInterval (20);
+  update_timer->start ();
+
   update_window_title ();
 
   connect (ui->openFileAct    , SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
-  connect (ui->saveAsAct    , SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
+  connect (ui->saveAsAct      , SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
   connect (ui->openLastFileAct, SIGNAL (triggered ()), this, SLOT (open_last_file_clicked ()));
+  connect (update_timer       , SIGNAL (timeout ())  , this, SLOT (update_timeout ()));
 }
 
 main_window::~main_window ()
 {
+  m_renderer_thread->set_exit_needed ();
+  m_renderer_thread->wait ();
+  FREE (m_renderer_thread);
+  FREE (m_queue);
   FREE (ui);
   FREE (m_settings);
-  FREE (m_renderer);
+  FREE (m_painter);
   FREE (m_cache);
   init_clear ();
 }
@@ -99,7 +115,7 @@ void main_window::update_window_title ()
 
 void main_window::open_file (const QString &filename)
 {
-  m_renderer->set_document (nullptr);
+  m_painter->set_document (nullptr);
   FREE (m_doc);
   
   m_doc = new svg_document;
@@ -110,8 +126,15 @@ void main_window::open_file (const QString &filename)
       return;
     }
   
+  renderer_items_container *renderer_items = m_doc->create_rendered_items ();
+  m_queue->push_back (new event_container_changed (renderer_items));
   update_window_title ();
-  m_renderer->set_document (m_doc);
+  m_painter->set_document (m_doc);
   ui->glwidget->repaint ();
 }
 
+void main_window::update_timeout ()
+{
+  if (m_cache->has_pending_changes ())
+    ui->glwidget->repaint ();
+}

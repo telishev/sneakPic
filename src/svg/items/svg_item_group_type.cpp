@@ -14,7 +14,7 @@ svg_item_group_type::svg_item_group_type (svg_document *document)
 
 }
 
-void svg_item_group_type::update_group_item (renderer_item_group *renderer_item)
+void svg_item_group_type::update_group_item (renderer_item_group *renderer_item) const
 {
   const svg_attribute_opacity *opacity = get_computed_attribute<svg_attribute_opacity> ();
   const svg_attribute_transform *transform = get_computed_attribute<svg_attribute_transform> ();

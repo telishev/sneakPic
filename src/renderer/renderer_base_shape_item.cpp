@@ -13,7 +13,8 @@
 #include <SkDevice.h>
 #pragma warning(pop)
 
-renderer_base_shape_item::renderer_base_shape_item ()
+renderer_base_shape_item::renderer_base_shape_item (const std::string &name)
+  : abstract_renderer_item (name)
 {
   m_has_clip_path = false;
   visible = true;

@@ -12,8 +12,8 @@
 #pragma warning(pop)
 
 
-renderer_item_svg::renderer_item_svg (const abstract_svg_item *m_svg_item)
-  : renderer_item_group (m_svg_item)
+renderer_item_svg::renderer_item_svg (const std::string &name)
+  : renderer_item_group (name)
 {
   m_height = m_width = 0.0;
 

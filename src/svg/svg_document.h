@@ -7,9 +7,15 @@ class svg_items_container;
 
 class abstract_svg_item;
 class svg_item_svg;
+class renderer_items_container;
+class abstract_renderer_event;
 
-class QString;
+template<typename T>
+class wait_queue;
+
 class QDomDocument;
+
+#include <QString>
 
 
 class svg_document
@@ -20,9 +26,11 @@ class svg_document
 
   abstract_svg_item *m_root;
   svg_item_svg *item_svg;
-  QString *filename;
+  QString filename;
+
+  wait_queue<abstract_renderer_event> *m_queue;
 public:
-  svg_document ();
+  svg_document (wait_queue<abstract_renderer_event> *queue = nullptr);
   ~svg_document ();
 
   svg_item_factory *item_factory () const { return m_item_factory; }
@@ -35,9 +43,10 @@ public:
   bool read_file (const QString &filename_arg);
   bool write_file (const QString &filename);
 
-  void update_items ();
-
   QString get_filename ();
+
+  renderer_items_container *create_rendered_items ();
+  void create_renderer_item (renderer_items_container *renderer_items, abstract_svg_item *svg_item);
 };
 
 #endif // SVG_DOCUMENT_H

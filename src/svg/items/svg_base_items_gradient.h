@@ -16,8 +16,6 @@ public:
   renderer_paint_server *create_paint_server () const;
   bool fill_gradient (renderer_base_gradient_item *gradient) const;
 
-  virtual const abstract_renderer_item *get_renderer_item () const override { return nullptr; }
-
 protected:
   virtual renderer_base_gradient_item *create_gradient () const = 0;
 };

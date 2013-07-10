@@ -39,7 +39,7 @@ void renderer_linear_gradient::fill_paint (SkPaint &paint) const
     case spread_method::INVALID: return;
     }
 
-  paint.setShader (SkGradientShader::CreateLinear (points, colors.get (), pos.get (), (int)m_stops.size (), mode));
+  paint.setShader (SkGradientShader::CreateLinear (points, colors.get (), pos.get (), (int)m_stops.size (), mode))->unref ();
 }
 
 void renderer_radial_gradient::fill_paint (SkPaint &paint) const 
@@ -63,5 +63,5 @@ void renderer_radial_gradient::fill_paint (SkPaint &paint) const
     case spread_method::INVALID: return;
     }
 
-  paint.setShader (SkGradientShader::CreateRadial (center, SkFloatToScalar (m_r), colors.get (), pos.get (), (int)m_stops.size (), mode));
+  paint.setShader (SkGradientShader::CreateRadial (center, SkFloatToScalar (m_r), colors.get (), pos.get (), (int)m_stops.size (), mode))->unref ();
 }
