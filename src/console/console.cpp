@@ -24,6 +24,8 @@
 #include <SkDevice.h>
 #pragma warning(pop)
 
+#include <windows.h>
+
 
 void render_to_image (svg_document *doc, QString file_name, int width, int height)
 {

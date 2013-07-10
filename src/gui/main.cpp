@@ -25,27 +25,14 @@ int main (int argc, char **argv)
   QApplication app (argc, argv);
   std::unique_ptr<main_window> mainWin;
   std::unique_ptr<cl_arguments> args (new cl_arguments);
-  bool console_inited;
 
   if (app.arguments ().size () == 1) // If QT eaten all arguments, then it means that program needs to run GUI
     {
       mainWin.reset (new main_window);
       mainWin->show ();
-      
     }
   else
     {
-#ifdef _WINDOWS
-      DO_ON_EXIT ([] () {
-         fclose(stdout);
-         FreeConsole();
-      }
-      );
-      if (!AttachConsole (-1))
-        console_inited = AllocConsole ();
-      if (console_inited)
-        freopen("CONOUT$", "wb", stdout);     
-#endif // _WINDOWS
       if (args->init (argc, argv))
         return 0;
 

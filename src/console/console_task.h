@@ -8,6 +8,7 @@
 class QApplication;
 
 class cl_arguments;
+class main_window;
 
 class console_task : public QObject
 {
@@ -15,14 +16,13 @@ class console_task : public QObject
 private:
   QApplication *app;
   cl_arguments *args;
+  main_window  *main_window_inst;
 
 public:
   console_task (QObject *parent, cl_arguments *args_arg);
 
 public slots:
+    void cleanup ();
     void run();
-
-signals:
-    void finished();
 };
 #endif //!CONSOLE_TASK_H
