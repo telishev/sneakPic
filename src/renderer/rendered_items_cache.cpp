@@ -1,14 +1,15 @@
 #include "renderer/rendered_items_cache.h"
 
 #include "common/memory_deallocation.h"
+#include "common/math_defs.h"
 
 #include "renderer/render_cache_id.h"
 
 #include <QMutex>
+#include <QTransform>
 
 #pragma warning(push, 0)
 #include <SkBitmap.h>
-
 #pragma warning(pop)
 
 const int rendered_items_cache::m_block_pixel_size = 256;
@@ -77,4 +78,23 @@ bool rendered_items_cache::has_pending_changes ()
   bool has_changes = m_pending_changes;
   m_pending_changes = false;
   return has_changes;
+}
+
+void rendered_items_cache::clear_next_zoom_cache ()
+{
+  QMutexLocker lock (m_mutex);
+  m_next_zoom_cache->clear ();
+}
+
+bool rendered_items_cache::same_zoom (const QTransform &transform)
+{
+  QMutexLocker lock (m_mutex);
+  double cache_zoom_x = zoom_x ();
+  double cache_zoom_y = zoom_x ();
+  double cur_zoom_x = transform.m11 ();
+  double cur_zoom_y = transform.m22 ();
+  if (are_equal (cache_zoom_x, cur_zoom_x) && are_equal (cache_zoom_y, cur_zoom_y))
+    return true;
+  else
+    return false;
 }

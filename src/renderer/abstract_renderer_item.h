@@ -5,6 +5,7 @@ class QPainter;
 class SkCanvas;
 class renderer_state;
 class renderer_items_container;
+class renderer_config;
 
 #include <QRectF>
 #include <QTransform>
@@ -22,7 +23,7 @@ public:
   abstract_renderer_item (const std::string &name);
   virtual ~abstract_renderer_item ();
 
-  virtual void draw (SkCanvas &canvas, const renderer_state &state) const = 0;
+  virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const = 0;
   virtual QRectF bounding_box () const = 0;
   virtual void update_bbox () = 0;
 

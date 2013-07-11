@@ -44,7 +44,7 @@ void svg_painter::reset_transform ()
   m_document->get_doc_dimensions (doc_width, doc_height);
   double scale = qMin (glwidget ()->width () / doc_width, glwidget ()->height () / doc_height);
   m_cur_transform = QTransform::fromScale (scale, scale);
-  send_changes ();
+  send_changes (true);
 }
 
 void svg_painter::set_document (svg_document *document)
@@ -68,7 +68,7 @@ unsigned int svg_painter::mouse_moved (const unsigned char *dragging_buttons, co
       QPointF diff = cur_pos_local - last_pos_local;
 
       m_cur_transform = QTransform (m_last_transform).translate (diff.x (), diff.y ());
-      send_changes ();
+      send_changes (false);
       glwidget ()->repaint ();
     }
 
@@ -127,7 +127,7 @@ void svg_painter::configure ()
   if (get_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED))
     {
       set_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED, 0);
-      send_changes ();
+      send_changes (true);
     }
 
 
@@ -145,7 +145,7 @@ void svg_painter::wheelEvent (QWheelEvent *qevent)
       QPointF event_pos_local_after = m_cur_transform.inverted ().map (QPointF (qevent->pos ()));
       QPointF vector = event_pos_local_after - event_pos_local_before;
       m_cur_transform.translate (vector.x (), vector.y ());
-      send_changes ();
+      send_changes (true);
 
       glwidget ()->repaint ();
       qevent->accept ();
@@ -219,12 +219,12 @@ void svg_painter::draw_items (QPainter &painter, const QRectF &rect_to_draw, QTr
   painter.drawImage (rect_to_draw, qt2skia::qimage (bitmap));
 }
 
-void svg_painter::send_changes ()
+void svg_painter::send_changes (bool interrrupt_rendering)
 {
   render_cache_id id_first, id_last;
   QRectF mapped_rect = m_cur_transform.inverted ().mapRect (glwidget ()->rect ());
   get_cache_id (m_cur_transform, id_first, id_last, mapped_rect);
-  int queue_id = m_queue->add_event (new event_transform_changed (id_first, id_last, m_cur_transform));
+  int queue_id = m_queue->add_event (new event_transform_changed (id_first, id_last, m_cur_transform, interrrupt_rendering));
   m_queue->wait_for_id (queue_id, 50);
 }
 

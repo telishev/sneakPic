@@ -13,6 +13,7 @@ public:
   int queue_id () const { return m_queue_id; }
 
   virtual void process (renderer_thread *renderer) = 0;
+  virtual bool interrupt_rendering () const = 0;
 };
 
 #endif // ABSTRACT_RENDERER_EVENT_H

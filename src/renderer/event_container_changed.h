@@ -21,6 +21,8 @@ public:
   {
     return renderer->container_changed (m_container);
   }
+
+  virtual bool interrupt_rendering () const override { return true; }
 };
 
 #endif // EVENT_CONTAINER_CHANGED_H

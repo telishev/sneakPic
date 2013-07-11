@@ -11,7 +11,7 @@ public:
   renderer_item_svg (const std::string &name);
   ~renderer_item_svg ();
 
-  virtual void draw (SkCanvas &canvas, const renderer_state &state) const override;
+  virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
 
   void set_height (double height);
   void set_width (double width);

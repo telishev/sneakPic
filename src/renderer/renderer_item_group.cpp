@@ -5,6 +5,7 @@
 #include "renderer/renderer_state.h"
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_items_container.h"
+#include "renderer/renderer_config.h"
 
 #include <QPixmap>
 #include <QPainter>
@@ -27,8 +28,11 @@ renderer_item_group::~renderer_item_group ()
 
 }
 
-void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state) const
+void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
 {
+  if (config && config->is_interrupted ())
+    return;
+
   QTransform item_transform = transform () * state.transform ();
   QRectF transformed_rect = state.transform ().mapRect (bounding_box ());
   QRect result_rect = state.rect ().intersected (transformed_rect.toRect ());
@@ -54,7 +58,10 @@ void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state) c
     {
       abstract_renderer_item *child_item = container ()->item (child_name);
       if (child_item)
-        child_item->draw (child_canvas, new_state);
+        child_item->draw (child_canvas, new_state, config);
+
+      if (config && config->is_interrupted ())
+        return;
     }
 
   canvas.save ();

@@ -16,7 +16,7 @@ public:
   renderer_item_path (const std::string &name);
   ~renderer_item_path ();
 
-  virtual void draw (SkCanvas &canvas, const renderer_state &state) const override;
+  virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
   virtual QRectF bounding_box () const override { return m_bbox; }
   virtual void update_bbox () override;
 

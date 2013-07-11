@@ -15,6 +15,8 @@ class events_queue
   QMutex *m_mutex;
   QWaitCondition *m_wait_cond;
   QQueue<abstract_renderer_event *> m_queue;
+
+  bool m_interrupt;
 public:
   events_queue ();
   ~events_queue ();
@@ -30,6 +32,10 @@ public:
   void unlock ();
 
   int empty () const;
+  int empty_nolock () const;
+
+  bool is_interrupted () const;
+  void reset_interrupt ();
 };
 
 #endif // EVENTS_QUEUE_H

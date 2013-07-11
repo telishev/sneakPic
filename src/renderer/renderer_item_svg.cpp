@@ -24,7 +24,7 @@ renderer_item_svg::~renderer_item_svg ()
 
 }
 
-void renderer_item_svg::draw (SkCanvas &canvas, const renderer_state &state) const
+void renderer_item_svg::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
 {
   /// TODO: render document boundaries
   canvas.setMatrix (qt2skia::matrix (state.transform ()));
@@ -32,7 +32,7 @@ void renderer_item_svg::draw (SkCanvas &canvas, const renderer_state &state) con
   paint.setStyle (SkPaint::kStroke_Style);
   canvas.drawRect (SkRect::MakeXYWH (SkFloatToScalar (0.0), SkFloatToScalar (0.0), SkFloatToScalar (m_width), SkFloatToScalar (m_height)), paint);
 
-  renderer_item_group::draw (canvas, state);
+  renderer_item_group::draw (canvas, state, config);
 }
 
 void renderer_item_svg::set_height (double height)

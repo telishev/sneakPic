@@ -4,6 +4,7 @@
 class abstract_renderer_item;
 class rendered_items_cache;
 class render_cache_id;
+class events_queue;
 
 class QPainter;
 class QRectF;
@@ -14,8 +15,9 @@ class SkCanvas;
 class svg_renderer
 {
   rendered_items_cache *m_cache;
+  events_queue *m_queue;
 public:
-  svg_renderer (rendered_items_cache *cache);
+  svg_renderer (rendered_items_cache *cache, events_queue *queue);
   ~svg_renderer ();
 
   void draw_item (const abstract_renderer_item *item, SkCanvas &canvas, const QRectF &rect_to_draw, const QTransform &transform);

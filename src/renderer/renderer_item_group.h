@@ -19,7 +19,7 @@ public:
   renderer_item_group (const std::string &name);
   ~renderer_item_group ();
 
-  virtual void draw (SkCanvas &canvas, const renderer_state &state) const override;
+  virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
   virtual QRectF bounding_box () const override;
   virtual void update_bbox () override;
   void set_opacity (double opacity) { m_opacity = opacity; }

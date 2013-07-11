@@ -47,7 +47,7 @@ public:
   void draw_items (QPainter &painter, const QRectF &rect_to_draw, QTransform transform);
 private:
   void reset_transform ();
-  void send_changes ();
+  void send_changes (bool interrrupt_rendering);
   void get_cache_id (const QTransform &transform, render_cache_id &first, render_cache_id &last, const QRectF &rect) const;
 };
 

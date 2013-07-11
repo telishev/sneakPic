@@ -35,7 +35,7 @@ void renderer_thread::run ()
   while (!m_exit_needed)
     {
       m_queue->lock ();
-      if (m_queue->empty ())
+      if (m_queue->empty_nolock ())
         {
           m_queue->timed_wait (m_wait_time);
         }
@@ -56,7 +56,13 @@ void renderer_thread::run ()
         }
       m_queue->unlock ();
       redraw ();
-      m_queue->set_calculated_id (queue_id);
+      if (m_queue->empty ())
+        {
+          rendered_items_cache *cache = m_renderer->cache ();
+          if (!cache->same_zoom (m_last_transform))
+            cache->zoom_level_changed (m_last_transform.m11 (), m_last_transform.m22 ());
+          m_queue->set_calculated_id (queue_id);
+        }
     }
 
 }
@@ -79,20 +85,15 @@ void renderer_thread::redraw ()
   if (!m_container)
     return;
 
+  m_queue->reset_interrupt ();
   rendered_items_cache *cache = m_renderer->cache ();
-  double cache_zoom_x = cache->zoom_x ();
-  double cache_zoom_y = cache->zoom_x ();
-  double cur_zoom_x = m_last_transform.m11 ();
-  double cur_zoom_y = m_last_transform.m22 ();
-  bool new_cache = false;
-  if (!are_equal (cache_zoom_x, cur_zoom_x) || !are_equal (cache_zoom_y, cur_zoom_y))
+  bool new_cache = !cache->same_zoom (m_last_transform);
+  if (new_cache)
     {
-      new_cache = true;
+      cache->clear_next_zoom_cache ();
     }
 
   m_renderer->update_cache_items (m_container->root (), m_first_id_to_change, m_last_id_to_change, m_last_transform, new_cache);
-  if (new_cache)
-    cache->zoom_level_changed (cur_zoom_x, cur_zoom_y);
 }
 
 void renderer_thread::small_wait ()

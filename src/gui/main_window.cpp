@@ -32,7 +32,7 @@ main_window::main_window ()
   m_cache = new rendered_items_cache;
   m_queue = new events_queue;
   m_painter = new svg_painter (ui->glwidget, ui->glwidget->mouse_filter_object (), m_cache, m_queue);
-  m_renderer_thread = new renderer_thread (new svg_renderer (m_cache), m_queue, this);
+  m_renderer_thread = new renderer_thread (new svg_renderer (m_cache, m_queue), m_queue, this);
   m_renderer_thread->start ();
   ui->glwidget->set_painter (m_painter);
   update_timer = new QTimer (this);

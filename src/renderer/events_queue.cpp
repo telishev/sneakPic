@@ -35,6 +35,8 @@ int events_queue::add_event (abstract_renderer_event *ev)
   m_queue.enqueue (ev);
   m_last_queue_id++;
   ev->set_queue_id (m_last_queue_id);
+  if (ev->interrupt_rendering ())
+    m_interrupt = true;
   m_wait_cond->wakeOne ();
   return m_last_queue_id;
 }
@@ -85,7 +87,25 @@ void events_queue::unlock ()
 
 int events_queue::empty () const
 {
+  QMutexLocker ml (m_mutex);
+  return empty_nolock ();
+}
+
+int events_queue::empty_nolock () const
+{
   return m_queue.isEmpty ();
+}
+
+bool events_queue::is_interrupted () const
+{
+  QMutexLocker ml (m_mutex);
+  return m_interrupt;
+}
+
+void events_queue::reset_interrupt ()
+{
+  QMutexLocker ml (m_mutex);
+  m_interrupt = false;
 }
 
 

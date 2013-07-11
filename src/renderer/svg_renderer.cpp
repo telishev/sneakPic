@@ -4,13 +4,15 @@
 #include <QRectF>
 #include <QTransform>
 
+#include "common/common_utils.h"
+
 #include "renderer/abstract_renderer_item.h"
 #include "renderer/renderer_state.h"
 #include "renderer/rendered_items_cache.h"
 #include "renderer/render_cache_id.h"
+#include "renderer/renderer_config.h"
 
 #include "svg/items/abstract_svg_item.h"
-#include "common/common_utils.h"
 
 #pragma warning(push, 0)
 #include <SkCanvas.h>
@@ -19,11 +21,10 @@
 #pragma warning(pop)
 
 
-
-
-svg_renderer::svg_renderer (rendered_items_cache *cache)
+svg_renderer::svg_renderer (rendered_items_cache *cache, events_queue *queue)
 {
   m_cache = cache;
+  m_queue = queue;
 }
 
 svg_renderer::~svg_renderer ()
@@ -36,7 +37,8 @@ void svg_renderer::draw_item (const abstract_renderer_item *item, SkCanvas &canv
   renderer_state state;
   state.set_rect (rect_to_draw.toRect ());
   state.set_transform (transform);
-  item->draw (canvas, state);
+  renderer_config cfg (m_queue);
+  item->draw (canvas, state, &cfg);
 }
 
 void svg_renderer::update_cache_item (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform,

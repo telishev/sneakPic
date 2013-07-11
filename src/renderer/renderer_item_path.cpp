@@ -23,7 +23,7 @@ renderer_item_path::~renderer_item_path ()
 
 }
 
-void renderer_item_path::draw (SkCanvas &canvas, const renderer_state &state) const
+void renderer_item_path::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config * /*config*/) const
 {
   QTransform item_transform = transform () * state.transform ();
   QRectF transformed_rect = state.transform ().mapRect (bounding_box ());
