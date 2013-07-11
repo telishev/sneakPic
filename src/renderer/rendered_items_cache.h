@@ -32,6 +32,7 @@ public:
 
   void zoom_level_changed (double zoom_x, double zoom_y);
   void clear_next_zoom_cache ();
+  void clear ();
 
   void lock ();
   void unlock ();

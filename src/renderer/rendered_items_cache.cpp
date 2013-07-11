@@ -98,3 +98,10 @@ bool rendered_items_cache::same_zoom (const QTransform &transform)
   else
     return false;
 }
+
+void rendered_items_cache::clear ()
+{
+  QMutexLocker lock (m_mutex);
+  m_next_zoom_cache->clear ();
+  m_cache->clear ();
+}

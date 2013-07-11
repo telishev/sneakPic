@@ -78,6 +78,8 @@ void renderer_thread::container_changed (renderer_items_container *container)
 {
   FREE (m_container);
   m_container = container;
+  rendered_items_cache *cache = m_renderer->cache ();
+  cache->clear ();
 }
 
 void renderer_thread::redraw ()
