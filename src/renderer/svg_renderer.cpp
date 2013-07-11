@@ -85,7 +85,7 @@ void svg_renderer::update_cache_items (const abstract_renderer_item *item, const
   /// if nothing is cached, render everything in one pass
   if (!is_something_cached (first, last, next_cache))
     {
-      update_cache_item (item, first, transform, last.x () - first.x () + 1,  last.y () - first.y () + 1, next_cache);
+      update_cache_item (item, first, transform, next_cache, last.x () - first.x () + 1,  last.y () - first.y () + 1);
       return;
     }
 
