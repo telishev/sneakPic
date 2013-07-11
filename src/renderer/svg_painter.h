@@ -11,10 +11,7 @@ class abstract_renderer_item;
 class rendered_items_cache;
 class render_cache_id;
 class svg_renderer;
-class abstract_renderer_event;
-
-template<typename T>
-class wait_queue;
+class events_queue;
 
 
 class svg_painter : public abstract_painter
@@ -25,10 +22,10 @@ class svg_painter : public abstract_painter
   svg_document *m_document;
   bool drag_started;
   rendered_items_cache *m_cache;
-  wait_queue<abstract_renderer_event> *m_queue;
+  events_queue *m_queue;
 
 public:
-  svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache, wait_queue<abstract_renderer_event> *queue);
+  svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache, events_queue *queue);
   ~svg_painter ();
 
   void set_document (svg_document *document);

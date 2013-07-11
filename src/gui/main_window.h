@@ -12,11 +12,8 @@ class svg_document;
 class svg_painter;
 class rendered_items_cache;
 class renderer_thread;
+class events_queue;
 
-class abstract_renderer_event;
-
-template<typename T>
-class wait_queue;
 
 class main_window : public QMainWindow
 {
@@ -28,7 +25,7 @@ class main_window : public QMainWindow
   svg_painter *m_painter;
   rendered_items_cache *m_cache;
   renderer_thread *m_renderer_thread;
-  wait_queue<abstract_renderer_event> *m_queue;
+  events_queue *m_queue;
   QTimer *update_timer;
 
 public:

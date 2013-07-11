@@ -37,7 +37,6 @@ gl_widget::gl_widget (QWidget *parent)
 
 gl_widget::~gl_widget ()
 {
-  FREE (m_cur_painter);
 }
 
 void gl_widget::paintEvent (QPaintEvent * /*qevent*/)

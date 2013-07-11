@@ -1,6 +1,5 @@
 #include "renderer/renderer_thread.h"
 
-#include "common/wait_queue.h"
 #include "common/memory_deallocation.h"
 #include "common/math_defs.h"
 #include "common/common_utils.h"
@@ -9,12 +8,13 @@
 #include "renderer/svg_renderer.h"
 #include "renderer/renderer_items_container.h"
 #include "renderer/rendered_items_cache.h"
+#include "renderer/events_queue.h"
 
 #include <QTransform>
 
 
 
-renderer_thread::renderer_thread (svg_renderer *renderer, wait_queue<abstract_renderer_event> *queue, QObject *parent)
+renderer_thread::renderer_thread (svg_renderer *renderer, events_queue *queue, QObject *parent)
   : QThread (parent)
 {
   m_renderer = renderer;
@@ -31,32 +31,32 @@ renderer_thread::~renderer_thread ()
 
 void renderer_thread::run ()
 {
+  int queue_id = 0;
   while (!m_exit_needed)
     {
       m_queue->lock ();
-      if (m_queue->empty_nolock ())
+      if (m_queue->empty ())
         {
           m_queue->timed_wait (m_wait_time);
         }
       else
         {
-          abstract_renderer_event *ev = 0;
-          m_queue->pull_front_nolock (&ev);
+          abstract_renderer_event *ev = m_queue->pull_event ();
           while (ev)
             {
               m_queue->unlock ();
+              queue_id = ev->queue_id ();
               ev->process (this);
               FREE (ev);
               small_wait ();
 
               m_queue->lock ();
-              m_queue->pull_front_nolock (&ev);
+              ev = m_queue->pull_event ();
             }
-
-          
         }
       m_queue->unlock ();
       redraw ();
+      m_queue->set_calculated_id (queue_id);
     }
 
 }

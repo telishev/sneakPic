@@ -7,10 +7,7 @@
 class svg_renderer;
 class renderer_items_container;
 class render_cache_id;
-class abstract_renderer_event;
-
-template<typename T>
-class wait_queue;
+class events_queue;
 
 #include <QTransform>
  
@@ -21,13 +18,13 @@ class renderer_thread : public QThread
   svg_renderer *m_renderer;
   renderer_items_container *m_container;
   bool m_exit_needed;
-  wait_queue<abstract_renderer_event> *m_queue;
+  events_queue *m_queue;
 
   render_cache_id m_first_id_to_change, m_last_id_to_change;
   QTransform m_last_transform;
 
 public:
-  renderer_thread (svg_renderer *renderer, wait_queue<abstract_renderer_event> *queue, QObject *parent);
+  renderer_thread (svg_renderer *renderer, events_queue *queue, QObject *parent);
   ~renderer_thread ();
 
   void set_exit_needed () { m_exit_needed = true; }
