@@ -3,6 +3,8 @@
 #include <QPainter>
 #include <QRectF>
 #include <QTransform>
+#include <QFuture>
+#include <QtConcurrent/QtConcurrent>
 
 #include "common/common_utils.h"
 
@@ -42,7 +44,7 @@ void svg_renderer::draw_item (const abstract_renderer_item *item, SkCanvas &canv
 }
 
 void svg_renderer::update_cache_item (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform,
-                                      int total_x, int total_y, bool next_cache)
+                                      bool next_cache, int total_x, int total_y)
 {
   int block_size = rendered_items_cache::block_pixel_size ();
   SkBitmap bitmap;
@@ -87,6 +89,7 @@ void svg_renderer::update_cache_items (const abstract_renderer_item *item, const
       return;
     }
 
+  QList<QFuture<void>> futures_list;
   for (int x = first.x (); x <= last.x (); x++)
     for (int y = first.y (); y <= last.y (); y++)
       {
@@ -94,8 +97,12 @@ void svg_renderer::update_cache_items (const abstract_renderer_item *item, const
         if (m_cache->is_cached (id, next_cache))
           continue;
 
+        futures_list.push_back (QtConcurrent::run (this, &svg_renderer::update_cache_item_async, item, id, transform, next_cache));
         update_cache_item (item, id, transform, 1, 1, next_cache);
       }
+
+  for (int i = 0; i < futures_list.size (); i++)
+    futures_list[i].waitForFinished ();
 }
 
 bool svg_renderer::is_something_cached (const render_cache_id &first, const render_cache_id &last, bool next_cache)
@@ -109,6 +116,11 @@ bool svg_renderer::is_something_cached (const render_cache_id &first, const rend
       }
 
     return false;
+}
+
+void svg_renderer::update_cache_item_async (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform, bool next_cache)
+{
+  return update_cache_item (item, cache_id, transform, next_cache, 1, 1);
 }
 
 

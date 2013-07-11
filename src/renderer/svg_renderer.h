@@ -30,7 +30,10 @@ public:
 private:
   bool is_something_cached ( const render_cache_id &first, const render_cache_id &last, bool next_cache);
   void update_cache_item (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform,
-                          int total_x, int total_y, bool next_cache);
+                          bool next_cache, int total_x, int total_y);
+
+  void update_cache_item_async (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform,
+                                bool next_cache);
 };
 
 #endif // SVG_RENDERER_H
