@@ -12,6 +12,12 @@ class renderer_state
   QTransform m_transform; 
 public:
 
+  renderer_state (const QRect &rect, const QTransform &transform)
+  {
+    m_rect_to_draw = rect;
+    m_transform = transform;
+  }
+
   QRect rect () const { return m_rect_to_draw; }
   void set_rect (QRect val) { m_rect_to_draw = val; }
 

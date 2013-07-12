@@ -19,6 +19,7 @@
 
 #include "renderer/renderer_items_container.h"
 #include "renderer/abstract_renderer_item.h"
+#include "renderer/rendered_items_cache.h"
 
 
 
@@ -100,9 +101,11 @@ bool svg_document::get_doc_dimensions (double &width, double &height)
   return true;
 }
 
-renderer_items_container *svg_document::create_rendered_items ()
+renderer_items_container *svg_document::create_rendered_items (rendered_items_cache *cache)
 {
   renderer_items_container *renderer_items = new renderer_items_container;
+  renderer_items->set_cache (cache);
+  cache->clear_selection_mapping ();
 
   create_renderer_item (renderer_items, item_svg);
   renderer_items->set_root (item_svg->id ().toStdString ());

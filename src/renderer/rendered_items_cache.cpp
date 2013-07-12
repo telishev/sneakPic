@@ -2,11 +2,13 @@
 
 #include "common/memory_deallocation.h"
 #include "common/math_defs.h"
+#include "common/debug_utils.h"
 
 #include "renderer/render_cache_id.h"
 
 #include <QMutex>
 #include <QTransform>
+#include <QColor>
 
 #pragma warning(push, 0)
 #include <SkBitmap.h>
@@ -40,6 +42,7 @@ SkBitmap rendered_items_cache::bitmap (const render_cache_id &id) const
 void rendered_items_cache::add_bitmap (const render_cache_id &id, const SkBitmap &bitmap, bool next_cache)
 {
   QMutexLocker lock (m_mutex);
+  DEBUG_ASSERT (id.id () != render_cache_id::INVALID);
   auto cache_to_use = next_cache ? m_next_zoom_cache : m_cache;
   (*cache_to_use)[id] = bitmap;
   m_pending_changes = true;
@@ -104,4 +107,58 @@ void rendered_items_cache::clear ()
   QMutexLocker lock (m_mutex);
   m_next_zoom_cache->clear ();
   m_cache->clear ();
+}
+
+void rendered_items_cache::add_selection_mapping (int id, const std::string &name)
+{
+  QMutexLocker lock (m_mutex);
+  DEBUG_ASSERT (m_selection_map.find (id) == m_selection_map.end ());
+  m_selection_map[id] = name;
+}
+
+void rendered_items_cache::remove_selection_mapping (int id)
+{
+  QMutexLocker lock (m_mutex);
+  auto it = m_selection_map.find (id);
+  DEBUG_ASSERT (it != m_selection_map.end ());
+  m_selection_map.erase (it);
+}
+
+std::string rendered_items_cache::get_selection_name (int id) const
+{
+  QMutexLocker lock (m_mutex);
+  auto it = m_selection_map.find (id);
+  if (it != m_selection_map.end ())
+    return it->second;
+
+  return std::string ();
+}
+
+QColor rendered_items_cache::get_selection_color (int id)
+{
+  int r = (((id) >>  0) & 0xFF);
+  int g = (((id) >>  8) & 0xFF);
+  int b = (((id) >> 16) & 0xFF);
+  int a = 0xFF;
+
+  return QColor (r, g, b, a);
+}
+
+int rendered_items_cache::get_id_by_color (const QColor &color)
+{
+  int r = color.red ();
+  int g = color.green ();
+  int b = color.blue ();
+
+  return (b << 16) | (g << 8) | (r << 0);
+}
+
+void rendered_items_cache::clear_selection_mapping ()
+{
+  m_selection_map.clear ();
+}
+
+void rendered_items_cache::remove_from_cache (const render_cache_id &id)
+{
+  m_cache->erase (id);
 }

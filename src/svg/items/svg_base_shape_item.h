@@ -15,6 +15,7 @@ public:
 
   QPainterPath get_path_for_clipping () const;
   virtual abstract_renderer_item *create_renderer_item () const override;
+  virtual abstract_renderer_item *create_overlay_item () const override;
 
 protected:
   void set_item_style (renderer_item_path *item) const;

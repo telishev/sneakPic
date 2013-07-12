@@ -9,8 +9,10 @@
 #include "renderer/renderer_items_container.h"
 #include "renderer/rendered_items_cache.h"
 #include "renderer/events_queue.h"
+#include "renderer/renderer_config.h"
 
 #include <QTransform>
+
 
 
 
@@ -84,7 +86,7 @@ void renderer_thread::container_changed (renderer_items_container *container)
 
 void renderer_thread::redraw ()
 {
-  if (!m_container)
+  if (!m_container || m_first_id_to_change.id () == render_cache_id::INVALID)
     return;
 
   m_queue->reset_interrupt ();
@@ -95,7 +97,16 @@ void renderer_thread::redraw ()
       cache->clear_next_zoom_cache ();
     }
 
-  m_renderer->update_cache_items (m_container->root (), m_first_id_to_change, m_last_id_to_change, m_last_transform, new_cache);
+  /// first, render actual image
+  renderer_config cfg;
+  cfg.set_use_new_cache (new_cache);
+  m_renderer->update_cache_items (m_container->root (), m_first_id_to_change, m_last_id_to_change, m_last_transform, cfg);
+
+  /// then, render image for fast selection
+  cfg.set_render_for_selection (true);
+  render_cache_id first (m_first_id_to_change.x (), m_first_id_to_change.y (), render_cache_id::ROOT_ITEM_SELECTION);
+  render_cache_id last (m_last_id_to_change.x (), m_last_id_to_change.y (), render_cache_id::ROOT_ITEM_SELECTION);
+  m_renderer->update_cache_items (m_container->root (), first, last, m_last_transform, cfg);
 }
 
 void renderer_thread::small_wait ()

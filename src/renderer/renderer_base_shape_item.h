@@ -3,8 +3,6 @@
 
 #include "renderer/abstract_renderer_item.h"
 
-#include <QPen>
-#include <QBrush>
 #include <QPainterPath>
 
 class renderer_paint_server;
@@ -34,7 +32,8 @@ public:
   void set_clip_path (const QPainterPath &path) { m_clip_path = path; m_has_clip_path = true; }
 
 protected:
-  bool configure_painter (SkPaint &paint, bool stroke) const;
+  bool configure_painter (SkPaint &paint, bool stroke, bool config_for_selection) const;
+  bool configure_painter_for_selection (SkPaint &paint) const;
   void adjust_bbox (QRectF &bbox) const;
 };
 

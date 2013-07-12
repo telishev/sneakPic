@@ -34,17 +34,14 @@ svg_renderer::~svg_renderer ()
 
 }
 
-void svg_renderer::draw_item (const abstract_renderer_item *item, SkCanvas &canvas, const QRectF &rect_to_draw, const QTransform &transform)
+void svg_renderer::draw_item (const abstract_renderer_item *item, SkCanvas &canvas, const renderer_state &state, renderer_config &cfg)
 {
-  renderer_state state;
-  state.set_rect (rect_to_draw.toRect ());
-  state.set_transform (transform);
-  renderer_config cfg (m_queue);
+  cfg.set_queue (m_queue);
   item->draw (canvas, state, &cfg);
 }
 
 void svg_renderer::update_cache_item (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform,
-                                      bool next_cache, int total_x, int total_y)
+                                      renderer_config &cfg, int total_x, int total_y)
 {
   int block_size = rendered_items_cache::block_pixel_size ();
   SkBitmap bitmap;
@@ -61,31 +58,34 @@ void svg_renderer::update_cache_item (const abstract_renderer_item *item, const 
   QPointF diff = -cur_pos_local + last_pos_local;
 
   QTransform pixmap_transform = QTransform (transform).translate (diff.x (), diff.y ());
-  draw_item (item, canvas, QRectF (0, 0, block_size * total_x, block_size * total_y), pixmap_transform);
+  renderer_state state (QRect (0, 0, block_size * total_x, block_size * total_y), pixmap_transform);
+  draw_item (item, canvas, state, cfg);
 
   if (total_x == total_y && total_x == 1)
-    m_cache->add_bitmap (cache_id, bitmap, next_cache);
+    m_cache->add_bitmap (cache_id, bitmap, cfg.use_new_cache ());
   else
     {
       for (int i = 0; i < total_x; i++)
         for (int j = 0; j < total_y; j++)
           {
-            render_cache_id cur_id (cache_id.x () + i, cache_id.y () + j);
+            render_cache_id cur_id (cache_id.x () + i, cache_id.y () + j, cache_id.id ());
             SkBitmap bitmap_part;
             DEBUG_ASSERT (bitmap.extractSubset (&bitmap_part, SkIRect::MakeXYWH (i * block_size, j * block_size, block_size, block_size)));
-            m_cache->add_bitmap (cur_id, bitmap_part, next_cache);
+            m_cache->add_bitmap (cur_id, bitmap_part, cfg.use_new_cache ());
           }
     }
   
 }
 
 void svg_renderer::update_cache_items (const abstract_renderer_item *item, const render_cache_id &first,
-                                       const render_cache_id &last, QTransform transform, bool next_cache)
+                                       const render_cache_id &last, QTransform transform, renderer_config &cfg)
 {
+  DEBUG_ASSERT (first.id () == last.id ());
+
   /// if nothing is cached, render everything in one pass
-  if (!is_something_cached (first, last, next_cache))
+  if (!is_something_cached (first, last, cfg))
     {
-      update_cache_item (item, first, transform, next_cache, last.x () - first.x () + 1,  last.y () - first.y () + 1);
+      update_cache_item (item, first, transform, cfg, last.x () - first.x () + 1,  last.y () - first.y () + 1);
       return;
     }
 
@@ -93,34 +93,34 @@ void svg_renderer::update_cache_items (const abstract_renderer_item *item, const
   for (int x = first.x (); x <= last.x (); x++)
     for (int y = first.y (); y <= last.y (); y++)
       {
-        render_cache_id id (x, y);
-        if (m_cache->is_cached (id, next_cache))
+        render_cache_id id (x, y, first.id ());
+        if (m_cache->is_cached (id, cfg.use_new_cache ()))
           continue;
 
-        futures_list.push_back (QtConcurrent::run (this, &svg_renderer::update_cache_item_async, item, id, transform, next_cache));
-        update_cache_item (item, id, transform, 1, 1, next_cache);
+        futures_list.push_back (QtConcurrent::run (this, &svg_renderer::update_cache_item_async, item, id, transform, cfg));
+        update_cache_item (item, id, transform, cfg, 1, 1);
       }
 
   for (int i = 0; i < futures_list.size (); i++)
     futures_list[i].waitForFinished ();
 }
 
-bool svg_renderer::is_something_cached (const render_cache_id &first, const render_cache_id &last, bool next_cache)
+bool svg_renderer::is_something_cached (const render_cache_id &first, const render_cache_id &last, renderer_config &cfg)
 {
   for (int x = first.x (); x <= last.x (); x++)
     for (int y = first.y (); y <= last.y (); y++)
       {
-        render_cache_id id (x, y);
-        if (m_cache->is_cached (id, next_cache))
+        render_cache_id id (x, y, first.id ());
+        if (m_cache->is_cached (id, cfg.use_new_cache ()))
           return true;
       }
 
     return false;
 }
 
-void svg_renderer::update_cache_item_async (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform, bool next_cache)
+void svg_renderer::update_cache_item_async (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform, renderer_config &cfg)
 {
-  return update_cache_item (item, cache_id, transform, next_cache, 1, 1);
+  return update_cache_item (item, cache_id, transform, cfg, 1, 1);
 }
 
 

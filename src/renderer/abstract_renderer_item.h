@@ -19,6 +19,7 @@ protected:
   renderer_items_container *m_container;
   std::vector<std::string> m_children;
   QTransform m_transform;
+  int m_unique_id;
 public:
   abstract_renderer_item (const std::string &name);
   virtual ~abstract_renderer_item ();
@@ -31,10 +32,16 @@ public:
   void set_transform (const QTransform &transform) { m_transform = transform; }
 
   std::string name () const { return m_name; }
+
   void set_container (renderer_items_container *container) { m_container = container; }
   renderer_items_container *container () const { return m_container; }
 
   void push_back_child (const std::string &child);
+
+  void set_unique_id (int id) { m_unique_id = id; }
+  int unique_id () const { return m_unique_id; }
+
+  void erase_child (const std::string &child);
 };
 
 #endif // ABSTRACT_RENDERER_ITEM_H

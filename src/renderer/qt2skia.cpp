@@ -4,6 +4,7 @@
 #include <QPointF>
 #include <QPainterPath>
 #include <QBrush>
+#include <QRect>
 
 #pragma warning(push, 0)
 #include <SkCanvas.h>
@@ -61,4 +62,9 @@ QImage qt2skia::qimage (const SkBitmap &bitmap)
 {
   SkAutoLockPixels image_lock (bitmap);
   return QImage ((unsigned char*)bitmap.getPixels (), bitmap.width (), bitmap.height (), (int)bitmap.rowBytes (), QImage::Format_ARGB32_Premultiplied);
+}
+
+SkRect qt2skia::rect (const QRect &rect)
+{
+  return SkRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());
 }

@@ -126,7 +126,7 @@ void main_window::open_file (const QString &filename)
       return;
     }
   
-  renderer_items_container *renderer_items = m_doc->create_rendered_items ();
+  renderer_items_container *renderer_items = m_doc->create_rendered_items (m_cache);
   m_queue->add_event (new event_container_changed (renderer_items));
   update_window_title ();
   m_painter->set_document (m_doc);
@@ -136,5 +136,8 @@ void main_window::open_file (const QString &filename)
 void main_window::update_timeout ()
 {
   if (m_cache->has_pending_changes ())
-    ui->glwidget->repaint ();
+    {
+      m_painter->set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
+      ui->glwidget->repaint ();
+    }
 }

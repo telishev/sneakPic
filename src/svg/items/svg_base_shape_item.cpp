@@ -18,10 +18,12 @@
 #include "svg/items/svg_item_clip_path.h"
 
 #include "renderer/renderer_item_path.h"
+#include "renderer/renderer_overlay_path.h"
 
 #include <memory>
 #include <QPainterPath>
 #include <QTransform>
+
 
 
 svg_base_shape_item::svg_base_shape_item (svg_document *document)
@@ -95,6 +97,17 @@ QTransform svg_base_shape_item::full_transform () const
     }
 
   return total_transform;
+}
+
+abstract_renderer_item *svg_base_shape_item::create_overlay_item () const 
+{
+  QPainterPath path = get_path ();
+  const svg_attribute_clip_rule *clip_rule = get_computed_attribute<svg_attribute_clip_rule> ();
+  path = full_transform ().map (path);
+  path.setFillRule (clip_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
+  renderer_overlay_path *overlay_item = new renderer_overlay_path (id ().toStdString ());
+  overlay_item->set_painter_path (path);
+  return overlay_item;
 }
 
 

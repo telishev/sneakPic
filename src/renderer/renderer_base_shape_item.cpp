@@ -1,11 +1,13 @@
 #include "renderer/renderer_base_shape_item.h"
 
 #include "common/memory_deallocation.h"
+#include "common/debug_utils.h"
 
 #include <QPainter>
 
 #include "renderer_paint_server.h"
 #include "renderer/qt2skia.h"
+#include "renderer/rendered_items_cache.h"
 
 #pragma warning(push, 0)
 #include <SkCanvas.h>
@@ -72,7 +74,7 @@ void renderer_base_shape_item::set_stroke_width (double width)
   m_stroke->setStrokeWidth (SkFloatToScalar (width));
 }
 
-bool renderer_base_shape_item::configure_painter (SkPaint &paint, bool stroke) const
+bool renderer_base_shape_item::configure_painter (SkPaint &paint, bool stroke, bool config_for_selection) const
 {
   if (!visible)
     return false;
@@ -82,7 +84,13 @@ bool renderer_base_shape_item::configure_painter (SkPaint &paint, bool stroke) c
   else
     paint = *m_fill;
 
-  return true;
+  if (SkColorGetA (paint.getColor ()) == 0)
+    return false;
+
+  if (config_for_selection)
+    return configure_painter_for_selection (paint);
+  else  
+    return true;
 }
 
 void renderer_base_shape_item::adjust_bbox (QRectF &bbox) const
@@ -101,5 +109,15 @@ void renderer_base_shape_item::set_stroke_server (const renderer_paint_server *s
 void renderer_base_shape_item::set_fill_server (const renderer_paint_server *server)
 {
   server->fill_paint (*m_fill);
+}
+
+bool renderer_base_shape_item::configure_painter_for_selection (SkPaint &paint) const
+{
+  DEBUG_ASSERT (m_unique_id < (1 << 24));
+  paint.setAntiAlias (false);
+  QColor color = rendered_items_cache::get_selection_color (m_unique_id);
+  paint.setColor (qt2skia::color (color));
+  paint.setShader (nullptr);
+  return true;
 }
 

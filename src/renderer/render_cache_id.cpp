@@ -17,7 +17,7 @@ render_cache_id render_cache_id::get_id_by_pos (double x_pos, double y_pos, cons
   block_size_y /= transform.m22 ();
   int x = (int)floor (x_pos / block_size_x);
   int y = (int)floor (y_pos / block_size_y);
-  return render_cache_id (x, y);
+  return render_cache_id (x, y, ROOT_ITEM);
 }
 
 QRectF render_cache_id::local_rect (const QTransform &transform) const

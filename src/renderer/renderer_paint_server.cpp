@@ -24,5 +24,5 @@ void renderer_painter_server_color::fill_paint (SkPaint &paint) const
 
 void renderer_painter_server_none::fill_paint (SkPaint &paint) const 
 {
-  paint.setShader (new SkEmptyShader);
+  paint.setColor (0);
 }

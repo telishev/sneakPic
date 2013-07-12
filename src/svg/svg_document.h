@@ -9,6 +9,7 @@ class abstract_svg_item;
 class svg_item_svg;
 class renderer_items_container;
 class abstract_renderer_event;
+class rendered_items_cache;
 
 template<typename T>
 class wait_queue;
@@ -45,7 +46,7 @@ public:
 
   QString get_filename ();
 
-  renderer_items_container *create_rendered_items ();
+  renderer_items_container *create_rendered_items (rendered_items_cache *cache);
   void create_renderer_item (renderer_items_container *renderer_items, abstract_svg_item *svg_item);
 };
 

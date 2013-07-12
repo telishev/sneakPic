@@ -40,8 +40,8 @@ void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, c
     return;
 
   SkBitmap bitmap;
-  bitmap.setConfig(SkBitmap::kARGB_8888_Config, result_rect.width (), result_rect.height ());
-  bitmap.allocPixels();
+  bitmap.setConfig (SkBitmap::kARGB_8888_Config, result_rect.width (), result_rect.height ());
+  bitmap.allocPixels ();
   SkDevice device(bitmap);
   SkCanvas child_canvas (&device);
   SkPaint paint;
@@ -50,9 +50,7 @@ void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, c
 
   QTransform pixmap_transform = QTransform::fromTranslate (state.rect ().x () - result_rect.x (), state.rect ().y () - result_rect.y ());
 
-  renderer_state new_state;
-  new_state.set_rect (state.rect ());
-  new_state.set_transform (item_transform * pixmap_transform);
+  renderer_state new_state (state.rect (), item_transform * pixmap_transform);
 
   for (const std::string &child_name : m_children)
     {
@@ -68,11 +66,12 @@ void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, c
   if (m_has_clip_path)
     {
       QPainterPath clip_path = item_transform.map (m_clip_path);
-      canvas.clipPath (qt2skia::path (clip_path), SkRegion::kReplace_Op, true);
+      canvas.clipPath (qt2skia::path (clip_path), SkRegion::kReplace_Op, !config->render_for_selection ());
     }
 
   canvas.resetMatrix ();
-  paint.setAlpha (m_opacity * 255);
+  if (!config->render_for_selection ())
+    paint.setAlpha (m_opacity * 255);
   canvas.drawBitmap (bitmap, result_rect.x (), result_rect.y (), &paint);
   canvas.restore ();
   return;

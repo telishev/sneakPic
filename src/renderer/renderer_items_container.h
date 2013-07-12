@@ -5,11 +5,14 @@
 #include <string>
 
 class abstract_renderer_item;
+class rendered_items_cache;
 
 class renderer_items_container
 {
   std::unordered_map<std::string, abstract_renderer_item *> m_items;
   std::string m_root;
+  int m_last_id;
+  rendered_items_cache *m_cache;
 public:
   renderer_items_container ();
   ~renderer_items_container ();
@@ -25,6 +28,8 @@ public:
   void remove_item (const std::string &name);
 
   void add_child (const std::string &parent, const std::string &child);
+
+  void set_cache (rendered_items_cache *cache) { m_cache = cache; }
 };
 
 #endif // RENDERER_ITEMS_CONTAINER_H

@@ -12,6 +12,7 @@ class rendered_items_cache;
 class render_cache_id;
 class svg_renderer;
 class events_queue;
+class overlay_renderer;
 
 
 class svg_painter : public abstract_painter
@@ -23,6 +24,7 @@ class svg_painter : public abstract_painter
   bool drag_started;
   rendered_items_cache *m_cache;
   events_queue *m_queue;
+  overlay_renderer *m_overlay;
 
 public:
   svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache, events_queue *queue);
@@ -43,12 +45,14 @@ public:
   virtual void resizeGL (int width, int height) override;
   virtual bool event (QEvent * /*qevent*/) override { return false; }
   virtual bool keyReleaseEvent (QKeyEvent *qevent) override;
-
-  void draw_items (QPainter &painter, const QRectF &rect_to_draw, QTransform transform);
 private:
   void reset_transform ();
   void send_changes (bool interrrupt_rendering);
   void get_cache_id (const QTransform &transform, render_cache_id &first, render_cache_id &last, const QRectF &rect) const;
+  abstract_svg_item *get_current_item (const QPoint &pos);
+  void update_drawing (QTransform transform);
+  void draw_base (QPainter &painter);
+  void draw_overlay (QPainter &painter);
 };
 
 #endif // SVG_PAINTER_H

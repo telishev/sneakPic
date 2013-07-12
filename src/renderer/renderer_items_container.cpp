@@ -1,14 +1,18 @@
 #include "renderer/renderer_items_container.h"
 
 #include "common/memory_deallocation.h"
+#include "common/debug_utils.h"
 
 #include "renderer/abstract_renderer_item.h"
-#include "common/debug_utils.h"
+#include "renderer/render_cache_id.h"
+#include "renderer/rendered_items_cache.h"
+
 
 
 renderer_items_container::renderer_items_container ()
 {
-
+  m_last_id = render_cache_id::OBJECTS_ID_COUNT;
+  m_cache = nullptr;
 }
 
 renderer_items_container::~renderer_items_container ()
@@ -59,6 +63,9 @@ void renderer_items_container::add_item (abstract_renderer_item *item)
   DEBUG_ASSERT (it == m_items.end ());
 
   item->set_container (this);
+  item->set_unique_id (m_last_id++);
+  if (m_cache)
+    m_cache->add_selection_mapping (item->unique_id (), item->name ());
   m_items.insert (std::make_pair (item->name (), item));
 }
 
@@ -67,6 +74,10 @@ void renderer_items_container::remove_item (const std::string &name)
   auto it = m_items.find (name);
   DEBUG_ASSERT (it != m_items.end ());
 
+  if (m_cache)
+    m_cache->remove_selection_mapping (it->second->unique_id ());
+  abstract_renderer_item *item = it->second;
+  FREE (item);
   m_items.erase (it);
 }
 

@@ -4,6 +4,7 @@
 
 #include "renderer/renderer_state.h"
 #include "renderer/qt2skia.h"
+#include "renderer/renderer_config.h"
 
 #pragma warning(push, 0)
 #include <SkCanvas.h>
@@ -23,7 +24,7 @@ renderer_item_path::~renderer_item_path ()
 
 }
 
-void renderer_item_path::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config * /*config*/) const
+void renderer_item_path::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
 {
   QTransform item_transform = transform () * state.transform ();
   QRectF transformed_rect = state.transform ().mapRect (bounding_box ());
@@ -34,12 +35,12 @@ void renderer_item_path::draw (SkCanvas &canvas, const renderer_state &state, co
   canvas.save ();
   canvas.setMatrix (qt2skia::matrix (item_transform));
   if (m_has_clip_path)
-    canvas.clipPath (qt2skia::path (m_clip_path), SkRegion::kReplace_Op, true);
+    canvas.clipPath (qt2skia::path (m_clip_path), SkRegion::kReplace_Op, !config->render_for_selection ());
 
   for (int i = 0; i < 2; i++)
     {
       SkPaint paint;
-      if (!configure_painter (paint, i != 0))
+      if (!configure_painter (paint, i != 0, config->render_for_selection ()))
         continue;
 
       canvas.drawPath (path, paint);
