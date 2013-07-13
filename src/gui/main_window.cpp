@@ -57,6 +57,7 @@ main_window::~main_window ()
   FREE (m_settings);
   FREE (m_painter);
   FREE (m_cache);
+  FREE (m_doc);
   init_clear ();
 }
 

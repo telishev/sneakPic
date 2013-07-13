@@ -44,6 +44,7 @@ svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_
 
 svg_painter::~svg_painter ()
 {
+  FREE (m_overlay);
 }
 
 void svg_painter::reset_transform ()
