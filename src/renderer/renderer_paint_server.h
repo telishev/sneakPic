@@ -12,6 +12,8 @@ public:
 
   virtual void set_opacity (double opacity) = 0;
   virtual void fill_paint (SkPaint &paint) const = 0;
+
+  virtual renderer_paint_server *clone () const = 0;
 };
 
 class renderer_painter_server_color : public renderer_paint_server
@@ -23,6 +25,8 @@ public:
 
   virtual void set_opacity (double opacity) override;
   virtual void fill_paint (SkPaint &paint) const override;
+
+  virtual renderer_paint_server *clone () const override;
 };
 
 class renderer_painter_server_none : public renderer_paint_server
@@ -31,6 +35,7 @@ public:
 
   virtual void set_opacity (double /*opacity*/) override {}
   virtual void fill_paint (SkPaint &paint) const override;
+  virtual renderer_paint_server *clone () const override;
 };
 
 

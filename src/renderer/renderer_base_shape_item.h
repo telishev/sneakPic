@@ -16,6 +16,8 @@ protected:
   bool visible;
   SkPaint *m_stroke;
   SkPaint *m_fill;
+  renderer_paint_server *m_stroke_server;
+  renderer_paint_server *m_fill_server;
 
 public:
   renderer_base_shape_item (const std::string &name);

@@ -55,6 +55,11 @@ void renderer_linear_gradient::fill_paint (SkPaint &paint) const
   paint.setShader (SkGradientShader::CreateLinear (points, colors.get (), pos.get (), (int)m_stops.size (), mode))->unref ();
 }
 
+renderer_paint_server *renderer_linear_gradient::clone () const 
+{
+  return new renderer_linear_gradient (*this);
+}
+
 void renderer_radial_gradient::fill_paint (SkPaint &paint) const 
 {
   SkPoint center = SkPoint::Make (SkFloatToScalar (m_cx), SkFloatToScalar (m_cy));
@@ -77,4 +82,9 @@ void renderer_radial_gradient::fill_paint (SkPaint &paint) const
     }
 
   paint.setShader (SkGradientShader::CreateRadial (center, SkFloatToScalar (m_r), colors.get (), pos.get (), (int)m_stops.size (), mode))->unref ();
+}
+
+renderer_paint_server *renderer_radial_gradient::clone () const 
+{
+  return new renderer_radial_gradient (*this);
 }

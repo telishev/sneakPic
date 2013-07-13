@@ -26,12 +26,16 @@ renderer_base_shape_item::renderer_base_shape_item (const std::string &name)
   m_fill->setStyle (SkPaint::kFill_Style);
   m_stroke->setAntiAlias (true);
   m_fill->setAntiAlias (true);
+  m_stroke_server = nullptr;
+  m_fill_server = nullptr;
 }
 
 renderer_base_shape_item::~renderer_base_shape_item ()
 {
   FREE (m_stroke);
   FREE (m_fill);
+  FREE (m_stroke_server);
+  FREE (m_fill_server);
 }
 
 void renderer_base_shape_item::set_stroke_linecap (Qt::PenCapStyle linecap)
@@ -80,9 +84,17 @@ bool renderer_base_shape_item::configure_painter (SkPaint &paint, bool stroke, b
     return false;
 
   if (stroke)
-    paint = *m_stroke;
+    {
+      paint = *m_stroke;
+      if (m_stroke_server)
+        m_stroke_server->fill_paint (paint);
+    }
   else
-    paint = *m_fill;
+    {
+      paint = *m_fill;
+      if (m_fill_server)
+        m_fill_server->fill_paint (paint);
+    }
 
   if (SkColorGetA (paint.getColor ()) == 0)
     return false;
@@ -103,12 +115,12 @@ void renderer_base_shape_item::adjust_bbox (QRectF &bbox) const
 
 void renderer_base_shape_item::set_stroke_server (const renderer_paint_server *server)
 {
-  server->fill_paint (*m_stroke);
+  m_stroke_server = server->clone ();
 }
 
 void renderer_base_shape_item::set_fill_server (const renderer_paint_server *server)
 {
-  server->fill_paint (*m_fill);
+  m_fill_server = server->clone ();
 }
 
 bool renderer_base_shape_item::configure_painter_for_selection (SkPaint &paint) const

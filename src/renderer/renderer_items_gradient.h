@@ -39,6 +39,7 @@ public:
   }
 
   virtual void fill_paint (SkPaint &paint) const override;
+  virtual renderer_paint_server *clone () const override;
 };
 
 class renderer_radial_gradient : public renderer_base_gradient_item
@@ -55,5 +56,6 @@ public:
   }
 
   virtual void fill_paint (SkPaint &paint) const override;
+  virtual renderer_paint_server *clone () const override;
 };
 #endif // RENDERER_ITEMS_GRADIENT_H
