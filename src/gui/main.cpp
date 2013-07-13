@@ -43,9 +43,8 @@ int main (int argc, char **argv)
       );
       if (!AttachConsole (-1))
         console_inited = AllocConsole ();
-      if (!console_inited)
-        goto cleanup;
-      freopen("CONOUT$", "wb", stdout);     
+      if (console_inited)
+        freopen("CONOUT$", "wb", stdout);     
 #endif // _WINDOWS
       if (args->init (argc, argv))
         return 0;
@@ -55,10 +54,4 @@ int main (int argc, char **argv)
     }
 
   return app.exec ();
-cleanup:
-  if (console_inited)   // Actually if gengetopt exited this cleanup won't be mad
-    {                   // For now let's ignore it
-      fclose(stdout);
-      FreeConsole();
-    }
 }

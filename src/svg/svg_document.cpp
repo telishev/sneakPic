@@ -105,7 +105,8 @@ renderer_items_container *svg_document::create_rendered_items (rendered_items_ca
 {
   renderer_items_container *renderer_items = new renderer_items_container;
   renderer_items->set_cache (cache);
-  cache->clear_selection_mapping ();
+  if (cache)
+    cache->clear_selection_mapping ();
 
   create_renderer_item (renderer_items, item_svg);
   renderer_items->set_root (item_svg->id ().toStdString ());
