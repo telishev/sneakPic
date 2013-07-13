@@ -68,7 +68,7 @@ void overlay_renderer::set_current_item (const std::string &id)
     return;
 
   abstract_renderer_item *overlay_item = svg_item->create_overlay_item ();
-  if (!svg_item)
+  if (!overlay_item)
     return;
 
   m_container->add_item (overlay_item);

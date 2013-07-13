@@ -96,7 +96,7 @@ bool rendered_items_cache::same_zoom (const QTransform &transform)
 {
   QMutexLocker lock (m_mutex);
   double cache_zoom_x = zoom_x ();
-  double cache_zoom_y = zoom_x ();
+  double cache_zoom_y = zoom_y ();
   double cur_zoom_x = transform.m11 ();
   double cur_zoom_y = transform.m22 ();
   if (are_equal (cache_zoom_x, cur_zoom_x) && are_equal (cache_zoom_y, cur_zoom_y))

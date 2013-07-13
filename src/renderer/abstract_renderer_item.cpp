@@ -23,5 +23,5 @@ void abstract_renderer_item::push_back_child (const std::string &child)
 
 void abstract_renderer_item::erase_child (const std::string &child)
 {
-  m_children.erase (std::remove (m_children.begin (), m_children.end (), child));
+  m_children.erase (std::remove (m_children.begin (), m_children.end (), child), m_children.end ());
 }

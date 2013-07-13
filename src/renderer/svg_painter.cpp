@@ -206,7 +206,7 @@ void svg_painter::update_drawing (QTransform transform)
 {
   m_cache->lock ();
   double cache_zoom_x = m_cache->zoom_x ();
-  double cache_zoom_y = m_cache->zoom_x ();
+  double cache_zoom_y = m_cache->zoom_y ();
   double cur_zoom_x = transform.m11 ();
   double cur_zoom_y = transform.m22 ();
   QRectF rect_to_draw = QRectF (glwidget ()->rect ());
@@ -281,7 +281,7 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
 {
   //// first, change current position and zoom to previous zoom level
   double cache_zoom_x = m_cache->zoom_x ();
-  double cache_zoom_y = m_cache->zoom_x ();
+  double cache_zoom_y = m_cache->zoom_y ();
   double cur_zoom_x = m_cur_transform.m11 ();
   double cur_zoom_y = m_cur_transform.m22 ();
   QTransform scale_transform = QTransform::fromScale (cache_zoom_x / cur_zoom_x, cache_zoom_y / cur_zoom_y);
