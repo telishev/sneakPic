@@ -39,6 +39,19 @@ void renderer_linear_gradient::fill_paint (SkPaint &paint) const
     case spread_method::INVALID: return;
     }
 
+  /// standard says to stop rendering in case of 0 stops
+  if (m_stops.size () == 0)
+    {
+      paint.setColor (0);
+      return;
+    }
+  /// and to render with solid color in case of 1 stop 
+  else if (m_stops.size () == 1) 
+    {
+      paint.setColor (colors[0]);
+      return;
+    }
+
   paint.setShader (SkGradientShader::CreateLinear (points, colors.get (), pos.get (), (int)m_stops.size (), mode))->unref ();
 }
 
