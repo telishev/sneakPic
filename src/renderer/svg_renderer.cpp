@@ -123,6 +123,20 @@ void svg_renderer::update_cache_item_async (const abstract_renderer_item *item, 
   return update_cache_item (item, cache_id, transform, cfg, 1, 1);
 }
 
+SkBitmap *svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const abstract_renderer_item *item)
+{
+  SkBitmap *bitmap = new SkBitmap;
+  bitmap->setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
+  bitmap->allocPixels ();
+  SkDevice device (*bitmap);
+  SkCanvas canvas (&device);
+  canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
+  svg_renderer renderer (nullptr, nullptr);
+  renderer_state state (rect_to_draw, transform);
+  renderer_config cfg;
+  renderer.draw_item (item, canvas, state, cfg);
+  return bitmap;
+}
 
 

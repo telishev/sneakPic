@@ -5,6 +5,7 @@ class svg_renderer;
 class renderer_items_container;
 class svg_document;
 class renderer_overlay_root;
+class renderer_page;
 
 class QPainter;
 class QRect;
@@ -18,6 +19,7 @@ class overlay_renderer
   renderer_items_container *m_container;
   svg_document *m_document;
   renderer_overlay_root *m_root;
+  renderer_page *m_page_item;
 
   std::string m_current_item;
 public:
@@ -30,7 +32,7 @@ public:
   std::string current_item () const { return m_current_item; }
 
   void draw (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform);
-
+  void draw_page (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform);
 };
 
 #endif // OVERLAY_RENDERER_H

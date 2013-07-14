@@ -11,8 +11,10 @@ class renderer_config;
 class QPainter;
 class QRectF;
 class QTransform;
+class QRect;
 
 class SkCanvas;
+class SkBitmap;
 
 class svg_renderer
 {
@@ -28,6 +30,8 @@ public:
                            const render_cache_id &last, QTransform transform, renderer_config &cfg);
 
   rendered_items_cache *cache () const { return m_cache; }
+
+  SkBitmap *draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const abstract_renderer_item *item);
 
 private:
   bool is_something_cached ( const render_cache_id &first, const render_cache_id &last, renderer_config &cfg);

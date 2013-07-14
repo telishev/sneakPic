@@ -24,26 +24,15 @@
 #include <SkDevice.h>
 #pragma warning(pop)
 
-#include <windows.h>
-
 
 void render_to_image (svg_document *doc, QString file_name, int width, int height)
 {
-  SkBitmap bitmap;
-  bitmap.setConfig (SkBitmap::kARGB_8888_Config, width, height);
-  bitmap.allocPixels ();
-  SkDevice device (bitmap);
-  SkCanvas canvas (&device);
-  canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
-
   QRect rect = QRect (0, 0, width, height);
   std::unique_ptr<renderer_items_container> container (doc->create_rendered_items (nullptr));
 
   svg_renderer renderer (nullptr, nullptr);
-  renderer_state state (rect, QTransform ());
-  renderer_config cfg;
-  renderer.draw_item (container->root (), canvas, state, cfg);
-  qt2skia::qimage (bitmap).save (file_name);
+  std::unique_ptr<SkBitmap> bitmap (renderer.draw_to_bitmap (rect, QTransform (), container->root ()));
+  qt2skia::qimage (*bitmap).save (file_name);
 }
 
 int start_console_processing (cl_arguments *args)

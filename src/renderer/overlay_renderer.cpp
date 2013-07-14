@@ -8,7 +8,7 @@
 #include "renderer/renderer_config.h"
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_overlay_root.h"
-
+#include "renderer/renderer_page.h"
 
 #include "svg/svg_document.h"
 #include "svg/items/svg_items_container.h"
@@ -24,6 +24,8 @@
 #include <QTransform>
 #include <QImage>
 #include <QPainter>
+#include <memory>
+
 
 
 overlay_renderer::overlay_renderer ()
@@ -32,6 +34,7 @@ overlay_renderer::overlay_renderer ()
   m_container = nullptr;
   m_renderer = new svg_renderer (nullptr, nullptr);
   m_root = nullptr;
+  m_page_item = nullptr;
 }
 
 overlay_renderer::~overlay_renderer ()
@@ -49,6 +52,12 @@ void overlay_renderer::set_document (svg_document *document)
   m_container->set_root (m_root->name ());
   m_document = document;
   m_current_item = std::string ();
+
+  m_page_item = new renderer_page ("#page_item");
+  double width, height;
+  m_document->get_doc_dimensions (width, height);
+  m_page_item->set_height (height);
+  m_page_item->set_width (width);
 }
 
 void overlay_renderer::set_current_item (const std::string &id)
@@ -80,17 +89,17 @@ void overlay_renderer::draw (QPainter &painter, const QRect &rect_to_draw, const
 {
   if (!m_container)
     return;
-  SkBitmap bitmap;
-  bitmap.setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
-  bitmap.allocPixels ();
-  SkDevice device (bitmap);
-  SkCanvas canvas (&device);
-  canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
+  std::unique_ptr<SkBitmap> bitmap (m_renderer->draw_to_bitmap (rect_to_draw, transform, m_container->root ()));
+  QImage img = qt2skia::qimage (*bitmap);
+  painter.drawImage (rect_to_draw, img);
+}
 
-  svg_renderer renderer (nullptr, nullptr);
-  renderer_state state (rect_to_draw, transform);
-  renderer_config cfg;
-  renderer.draw_item (m_container->root (), canvas, state, cfg);
-  QImage img = qt2skia::qimage (bitmap);
+void overlay_renderer::draw_page (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform)
+{
+  if (!m_page_item)
+    return;
+
+  std::unique_ptr<SkBitmap> bitmap (m_renderer->draw_to_bitmap (rect_to_draw, transform, m_page_item));
+  QImage img = qt2skia::qimage (*bitmap);
   painter.drawImage (rect_to_draw, img);
 }

@@ -53,6 +53,7 @@ private:
   void update_drawing (QTransform transform);
   void draw_base (QPainter &painter);
   void draw_overlay (QPainter &painter);
+  void draw_page (QPainter &painter);
 };
 
 #endif // SVG_PAINTER_H

@@ -132,6 +132,7 @@ void svg_painter::draw ()
   if (!m_document)
     return;
 
+  draw_page (painter);
   draw_base (painter);
   draw_overlay (painter);
 
@@ -310,4 +311,9 @@ void svg_painter::draw_base (QPainter &painter)
 void svg_painter::draw_overlay (QPainter &painter)
 {
   m_overlay->draw (painter, glwidget ()->rect (), m_cur_transform);
+}
+
+void svg_painter::draw_page (QPainter &painter)
+{
+  m_overlay->draw_page (painter, glwidget ()->rect (), m_cur_transform);
 }

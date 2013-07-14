@@ -38,8 +38,6 @@ abstract_renderer_item *svg_item_svg::create_renderer_item () const
 {
   renderer_item_svg *render_item = new renderer_item_svg (id ().toStdString ());
 
-  render_item->set_height (height ());
-  render_item->set_width (width ());
   update_group_item (render_item);
   return render_item;
 }
