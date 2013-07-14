@@ -28,8 +28,7 @@ public:
 
   static render_cache_id current_screen_id () { return render_cache_id (0, 0, CURRENT_SCREEN); }
 
-  static render_cache_id get_id_by_pos (double x_pos, double y_pos, const QTransform &transform);
-  QRectF local_rect (const QTransform &transform) const;
+  static render_cache_id get_id_by_pixel_pos (double x_pos, double y_pos, const QTransform &transform);
   QRectF pixel_rect (const QTransform &transform) const;
 
   int x () const { return m_x; }

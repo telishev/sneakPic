@@ -210,7 +210,6 @@ void svg_painter::update_drawing (QTransform transform)
   double cur_zoom_x = transform.m11 ();
   double cur_zoom_y = transform.m22 ();
   QRectF rect_to_draw = QRectF (glwidget ()->rect ());
-  QRectF mapped_rect = transform.inverted ().mapRect (rect_to_draw);
 
   SkBitmap bitmap, *bitmap_to_draw = &bitmap;
   std::unique_ptr<SkBitmap> scaled_bitmap;
@@ -233,7 +232,7 @@ void svg_painter::update_drawing (QTransform transform)
   canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
   render_cache_id id_first, id_last;
-  get_cache_id (transform, id_first, id_last, mapped_rect);
+  get_cache_id (transform, id_first, id_last, rect_to_draw);
 
   for (int x = id_first.x (); x <= id_last.x (); x++)
     for (int y = id_first.y (); y <= id_last.y (); y++)
@@ -263,8 +262,7 @@ void svg_painter::update_drawing (QTransform transform)
 void svg_painter::send_changes (bool interrrupt_rendering)
 {
   render_cache_id id_first, id_last;
-  QRectF mapped_rect = m_cur_transform.inverted ().mapRect (glwidget ()->rect ());
-  get_cache_id (m_cur_transform, id_first, id_last, mapped_rect);
+  get_cache_id (m_cur_transform, id_first, id_last, glwidget ()->rect ());
   int queue_id = m_queue->add_event (new event_transform_changed (id_first, id_last, m_cur_transform, interrrupt_rendering));
   m_queue->wait_for_id (queue_id, 50);
   set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
@@ -272,8 +270,8 @@ void svg_painter::send_changes (bool interrrupt_rendering)
 
 void svg_painter::get_cache_id (const QTransform &transform, render_cache_id &first, render_cache_id &last, const QRectF &rect) const
 {
-  first = render_cache_id::get_id_by_pos (rect.x (), rect.y (), transform);
-  last = render_cache_id::get_id_by_pos (rect.x () + rect.width (),
+  first = render_cache_id::get_id_by_pixel_pos (rect.x (), rect.y (), transform);
+  last = render_cache_id::get_id_by_pixel_pos (rect.x () + rect.width (),
       rect.y () + rect.height (), transform);
 }
 
@@ -288,10 +286,8 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
   QTransform transform = m_cur_transform * scale_transform;
   QPointF scaled_pos = scale_transform.map (QPointF (pos));
 
-  QPointF local_pos = transform.inverted ().map (scaled_pos);
-
   //// find corresponding block in cache
-  render_cache_id id = render_cache_id::get_id_by_pos (local_pos.x (), local_pos.y (), transform);
+  render_cache_id id = render_cache_id::get_id_by_pixel_pos (scaled_pos.x (), scaled_pos.y (), transform);
   id.set_id (render_cache_id::ROOT_ITEM_SELECTION);
   SkBitmap bitmap = m_cache->bitmap (id);
   if (bitmap.empty ())
