@@ -21,7 +21,6 @@ void console_task::cleanup ()
 {
     // Actually if gengetopt exited this cleanup won't be made
     // For now let's ignore it
-    FREE (main_window_inst);
     FREE (args);
 }
 

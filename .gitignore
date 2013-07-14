@@ -3,6 +3,7 @@
 /build.dbg
 /test/test_files/*
 /test/diff_dir/*
+/test/output/*
 /test/*.txt
 /test/*.html
 /test/*.css
