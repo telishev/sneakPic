@@ -204,6 +204,7 @@ void svg_painter::resizeGL (int width, int height)
 
 void svg_painter::update_drawing (QTransform transform)
 {
+  DO_ON_EXIT ([&] () {m_cache->unlock ();});
   m_cache->lock ();
   double cache_zoom_x = m_cache->zoom_x ();
   double cache_zoom_y = m_cache->zoom_y ();
@@ -211,24 +212,20 @@ void svg_painter::update_drawing (QTransform transform)
   double cur_zoom_y = transform.m22 ();
   QRectF rect_to_draw = QRectF (glwidget ()->rect ());
 
-  SkBitmap bitmap, *bitmap_to_draw = &bitmap;
-  std::unique_ptr<SkBitmap> scaled_bitmap;
+  SkBitmap bitmap;
   bitmap.setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
   bitmap.allocPixels ();
+  SkDevice device (bitmap);
+  SkCanvas canvas (&device);
 
   if (!are_equal (cache_zoom_x, cur_zoom_x) || !are_equal (cache_zoom_y, cur_zoom_y))
     {
       QTransform scale_transform = QTransform::fromScale (cache_zoom_x / cur_zoom_x, cache_zoom_y / cur_zoom_y);
       transform = transform * scale_transform;
-      QRectF bitmap_rect = scale_transform.mapRect (rect_to_draw);
-      scaled_bitmap.reset (new SkBitmap);
-      scaled_bitmap->setConfig (SkBitmap::kARGB_8888_Config, bitmap_rect.width (), bitmap_rect.height ());
-      scaled_bitmap->allocPixels ();
-      bitmap_to_draw = scaled_bitmap.get ();
+      canvas.setMatrix (qt2skia::matrix (scale_transform.inverted ()));
+      rect_to_draw = scale_transform.mapRect (rect_to_draw);
     }
 
-  SkDevice device (*bitmap_to_draw);
-  SkCanvas canvas (&device);
   canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
   render_cache_id id_first, id_last;
@@ -246,17 +243,7 @@ void svg_painter::update_drawing (QTransform transform)
         canvas.drawBitmap (bitmap, SkFloatToScalar (pixel_rect.x ()), SkFloatToScalar (pixel_rect.y ()));
       }
 
-  m_cache->unlock ();
-  if (scaled_bitmap)
-    {
-      SkDevice device (bitmap);
-      SkCanvas canvas (&device);
-      canvas.drawBitmapRect (*scaled_bitmap, qt2skia::rect (glwidget ()->rect ()), nullptr);
-    }
-
-  render_cache_id screen_id = render_cache_id::current_screen_id ();
-  m_cache->remove_from_cache (screen_id);
-  m_cache->add_bitmap (screen_id, bitmap, false);
+  m_cache->set_current_screen (bitmap);
 }
 
 void svg_painter::send_changes (bool interrrupt_rendering)
@@ -285,6 +272,8 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
   QTransform scale_transform = QTransform::fromScale (cache_zoom_x / cur_zoom_x, cache_zoom_y / cur_zoom_y);
   QTransform transform = m_cur_transform * scale_transform;
   QPointF scaled_pos = scale_transform.map (QPointF (pos));
+  m_cache->lock ();
+  DO_ON_EXIT ([&] () {m_cache->unlock ();});
 
   //// find corresponding block in cache
   render_cache_id id = render_cache_id::get_id_by_pixel_pos (scaled_pos.x (), scaled_pos.y (), transform);
@@ -303,7 +292,6 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
   QColor color (img.pixel (point_to_pick.toPoint ()));
   int item_id = rendered_items_cache::get_id_by_color (color);
 
-
   std::string selected_item_name = m_cache->get_selection_name (item_id);
   if (selected_item_name.empty ())
     return nullptr;
@@ -314,7 +302,7 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
 void svg_painter::draw_base (QPainter &painter)
 {
   m_cache->lock ();
-  QImage img = qt2skia::qimage (m_cache->bitmap (render_cache_id::current_screen_id ()));
+  QImage img = qt2skia::qimage (m_cache->get_current_screen ());
   painter.drawImage (img.rect (), img);
   m_cache->unlock ();
 }

@@ -14,8 +14,7 @@ public:
   enum object_id
   {
     INVALID = -1,
-    CURRENT_SCREEN = 0,
-    ROOT_ITEM,
+    ROOT_ITEM = 0,
     ROOT_ITEM_SELECTION,
 
     OBJECTS_ID_COUNT,
@@ -25,8 +24,6 @@ public:
   render_cache_id () { m_x = m_y = 0; m_id = INVALID; }
   render_cache_id (int x_num, int y_num, int id) { m_x = x_num; m_y = y_num; m_id = id; }
   ~render_cache_id () {}
-
-  static render_cache_id current_screen_id () { return render_cache_id (0, 0, CURRENT_SCREEN); }
 
   static render_cache_id get_id_by_pixel_pos (double x_pos, double y_pos, const QTransform &transform);
   QRectF pixel_rect (const QTransform &transform) const;

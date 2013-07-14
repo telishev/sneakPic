@@ -24,6 +24,8 @@ class rendered_items_cache
   QMutex *m_mutex;
   bool m_pending_changes;
 
+  SkBitmap *m_current_screen;
+
 public:
   rendered_items_cache ();
   ~rendered_items_cache ();
@@ -48,9 +50,11 @@ public:
   void add_selection_mapping (int id, const std::string &name);
   void remove_selection_mapping (int id);
 
-  std::string get_selection_name (int id) const;
+  void set_current_screen (const SkBitmap &bitmap);
+  SkBitmap get_current_screen () const; 
 
   /// call this functions only after calling lock
+  std::string get_selection_name (int id) const;
   SkBitmap bitmap (const render_cache_id &id) const;
   double zoom_x () const { return m_zoom_x; }
   double zoom_y () const { return m_zoom_y; }

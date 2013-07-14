@@ -23,6 +23,7 @@ rendered_items_cache::rendered_items_cache ()
   m_next_zoom_cache = new std::map<render_cache_id, SkBitmap>;
   m_pending_changes = false;
   m_zoom_y = m_zoom_x = 1.0;
+  m_current_screen = new SkBitmap;
 
 }
 
@@ -129,7 +130,6 @@ void rendered_items_cache::remove_selection_mapping (int id)
 
 std::string rendered_items_cache::get_selection_name (int id) const
 {
-  QMutexLocker lock (m_mutex);
   auto it = m_selection_map.find (id);
   if (it != m_selection_map.end ())
     return it->second;
@@ -158,10 +158,22 @@ int rendered_items_cache::get_id_by_color (const QColor &color)
 
 void rendered_items_cache::clear_selection_mapping ()
 {
+  QMutexLocker lock (m_mutex);
   m_selection_map.clear ();
 }
 
 void rendered_items_cache::remove_from_cache (const render_cache_id &id)
 {
+  QMutexLocker lock (m_mutex);
   m_cache->erase (id);
+}
+
+void rendered_items_cache::set_current_screen (const SkBitmap &bitmap)
+{
+  *m_current_screen = bitmap;
+}
+
+SkBitmap rendered_items_cache::get_current_screen () const
+{
+  return *m_current_screen;
 }
