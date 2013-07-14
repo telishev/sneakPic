@@ -34,7 +34,7 @@ bool svg_item_use::update_children_tree ()
 
   transform->set_additional_transform (QTransform::fromTranslate (x->value (), y->value ()));
 
-  abstract_svg_item *item_ref = href->href ();
+  abstract_svg_item *item_ref = href->get_fragment ();
   if (item_ref)
     insert_child (nullptr, item_ref->create_clone ());
 

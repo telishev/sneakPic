@@ -6,6 +6,7 @@ class SkCanvas;
 class renderer_state;
 class renderer_items_container;
 class renderer_config;
+class SkPaint;
 
 #include <QRectF>
 #include <QTransform>
@@ -42,6 +43,9 @@ public:
   int unique_id () const { return m_unique_id; }
 
   void erase_child (const std::string &child);
+
+protected:
+  bool configure_painter_for_selection (SkPaint &paint) const;
 };
 
 #endif // ABSTRACT_RENDERER_ITEM_H

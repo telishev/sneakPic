@@ -26,6 +26,7 @@ public:
   static SkPath path (const QPainterPath &qpath);
   static SkColor color (const QColor &color);
   static QImage qimage (const SkBitmap &img);
+  static SkBitmap image (const QImage &image_arg);
   static SkRect rect (const QRect &rect);
 };
 

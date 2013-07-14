@@ -122,14 +122,3 @@ void renderer_base_shape_item::set_fill_server (const renderer_paint_server *ser
 {
   m_fill_server = server->clone ();
 }
-
-bool renderer_base_shape_item::configure_painter_for_selection (SkPaint &paint) const
-{
-  DEBUG_ASSERT (m_unique_id < (1 << 24));
-  paint.setAntiAlias (false);
-  QColor color = rendered_items_cache::get_selection_color (m_unique_id);
-  paint.setColor (qt2skia::color (color));
-  paint.setShader (nullptr);
-  return true;
-}
-

@@ -34,6 +34,8 @@ bool svg_paint_server::read (const QString &data, bool /*from_css*/)
       QString url = data.mid (begin + 1, end - begin - 1);
       if (!m_iri.read (url))
         return false;
+      if (m_iri.get_type () != iri_type::document_fragment)
+        return false;
 
       m_server_type = paint_server_type::IRI;
     }
@@ -76,7 +78,7 @@ renderer_paint_server *svg_paint_server::create_paint_server () const
     case paint_server_type::IRI:
       {
         /// TODO: support other paint servers
-        const svg_base_items_gradient *base_gradient = dynamic_cast<const svg_base_items_gradient *> (m_iri.href ());
+        const svg_base_items_gradient *base_gradient = dynamic_cast<const svg_base_items_gradient *> (m_iri.get_fragment ());
         if (!base_gradient)
           return new renderer_painter_server_none;
 

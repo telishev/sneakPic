@@ -18,6 +18,7 @@ DECLARE_ITEM(STOP            , "stop"           , SVG         , svg_item_stop   
 DECLARE_ITEM(LINEAR_GRADIENT , "linearGradient" , SVG         , svg_item_linear_gradient )   \
 DECLARE_ITEM(RADIAL_GRADIENT , "radialGradient" , SVG         , svg_item_radial_gradient )   \
 DECLARE_ITEM(CLIP_PATH       , "clipPath"       , SVG         , svg_item_clip_path       )   \
+DECLARE_ITEM(IMAGE           , "image"          , SVG         , svg_item_image           )   \
 
 
 enum class svg_item_type

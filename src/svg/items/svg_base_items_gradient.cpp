@@ -28,7 +28,7 @@ static const T *gradient_get_attribute (const abstract_svg_item *item, const abs
 bool svg_base_items_gradient::fill_gradient (renderer_base_gradient_item *gradient) const
 {
   /// TODO:support gradientUnits
-  const abstract_svg_item *href = get_computed_attribute<svg_attribute_xlink_href> ()->href ();
+  const abstract_svg_item *href = get_computed_attribute<svg_attribute_xlink_href> ()->get_fragment ();
   const svg_attribute_gradient_units *gradient_units = gradient_get_attribute<svg_attribute_gradient_units> (this, href);
   const svg_attribute_spread_method *spread_method = gradient_get_attribute<svg_attribute_spread_method> (this, href);
 

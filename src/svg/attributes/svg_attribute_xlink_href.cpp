@@ -26,7 +26,22 @@ bool svg_attribute_xlink_href::write (QString &data, bool /*to_css*/) const
   return m_iri.write (data);
 }
 
-abstract_svg_item *svg_attribute_xlink_href::href () const
+iri_type svg_attribute_xlink_href::get_data_type () const
 {
-  return m_iri.href ();
+  return m_iri.get_type ();
+}
+
+bool svg_attribute_xlink_href::has_image_data () const
+{
+  return (m_iri.get_image_data () != nullptr); // For now this method is most adequate
+}
+
+QImage *svg_attribute_xlink_href::get_image_data () const
+{
+  return m_iri.get_image_data ();
+}
+
+abstract_svg_item *svg_attribute_xlink_href::get_fragment () const
+{
+  return m_iri.get_fragment ();
 }

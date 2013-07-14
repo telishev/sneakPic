@@ -35,7 +35,6 @@ public:
 
 protected:
   bool configure_painter (SkPaint &paint, bool stroke, bool config_for_selection) const;
-  bool configure_painter_for_selection (SkPaint &paint) const;
   void adjust_bbox (QRectF &bbox) const;
 };
 

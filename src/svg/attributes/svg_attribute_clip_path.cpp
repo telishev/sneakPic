@@ -44,7 +44,7 @@ bool svg_attribute_clip_path::write (QString &data, bool /*to_css*/) const
 
 const svg_item_clip_path *svg_attribute_clip_path::clip_path () const
 {
-  const abstract_svg_item *path = m_iri.href ();
+  const abstract_svg_item *path = m_iri.get_fragment ();
   if (!path || path->type () != svg_item_type::CLIP_PATH)
     return nullptr;
 

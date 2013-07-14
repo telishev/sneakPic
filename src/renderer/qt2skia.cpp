@@ -58,6 +58,14 @@ SkColor qt2skia::color (const QColor &color)
   return SkColorSetARGBInline (color.alpha (), color.red (), color.green (), color.blue ());
 }
 
+SkBitmap qt2skia::image (const QImage &image_arg)
+{
+  SkBitmap bitmap = SkBitmap ();
+  bitmap.setConfig (SkBitmap::Config::kARGB_8888_Config, image_arg.width (), image_arg.height ());
+  bitmap.setPixels ((void *) image_arg.bits ());
+  return bitmap;
+}
+
 QImage qt2skia::qimage (const SkBitmap &bitmap)
 {
   SkAutoLockPixels image_lock (bitmap);
