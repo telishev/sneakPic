@@ -1,5 +1,7 @@
 #include "renderer/renderer_item_group.h"
 
+#include "svg/attributes/svg_attributes_enum.h"
+
 #include "svg/items/abstract_svg_item.h"
 
 #include "renderer/renderer_state.h"
@@ -30,7 +32,7 @@ renderer_item_group::~renderer_item_group ()
 
 void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
 {
-  if (config && config->is_interrupted ())
+  if ((config && config->is_interrupted ()) || m_display == display::NONE)
     return;
 
   QTransform item_transform = transform () * state.transform ();

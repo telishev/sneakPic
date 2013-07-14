@@ -6,6 +6,7 @@
 #include <QImage>
 
 class QTransform;
+enum class display;
 
 class renderer_item_image : public abstract_renderer_item
 {
@@ -13,6 +14,7 @@ class renderer_item_image : public abstract_renderer_item
   QRectF m_bbox;
   double m_x, m_y, m_width, m_height;
   QImage m_image_data;
+  display m_display;
 
 public:
   renderer_item_image (const std::string &name);
@@ -24,6 +26,7 @@ public:
 
   void set_dimensions (double x, double y, double w, double h);
   void set_image_data (QImage &image_data);
+  void set_display (display display) { m_display = display; }
 };
 
 

@@ -5,6 +5,7 @@
 
 class renderer_item_svg : public renderer_item_group
 {
+  bool m_display;
 public:
   renderer_item_svg (const std::string &name);
   ~renderer_item_svg ();

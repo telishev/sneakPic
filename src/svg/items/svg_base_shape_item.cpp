@@ -49,6 +49,7 @@ void svg_base_shape_item::set_item_style (renderer_item_path *item) const
   const svg_attribute_fill_opacity *fill_opacity = get_computed_attribute<svg_attribute_fill_opacity> ();
   const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path ();
   const svg_attribute_visibility *visibility = get_computed_attribute<svg_attribute_visibility> ();
+  const svg_attribute_display *display = get_computed_attribute<svg_attribute_display> ();
 
   fill->set_opacity (fill_opacity->value () * opacity->computed_opacity ());
   stroke->set_opacity (stroke_opacity->value () * opacity->computed_opacity ());
@@ -56,7 +57,8 @@ void svg_base_shape_item::set_item_style (renderer_item_path *item) const
   item->set_stroke_linecap (stroke_linecap->get_stroke_linecap ());
   item->set_stroke_linejoin (stroke_linejoin->get_stroke_linejoin ());
   item->set_stroke_miterlimit (stroke_miterlimit->get_stroke_miterlimit ());
-  item->set_visibility (visibility->value () == visibility::VISIBLE);
+  // For now display does the same stuff as visibility, though they little differ by specification
+  item->set_visibility (visibility->value () == visibility::VISIBLE && display->value () != display::NONE);
   item->set_stroke_width (stroke_width->get_stroke_width ());
   item->set_transform (transform->computed_transform ());
   item->set_fill_server (fill.get ());

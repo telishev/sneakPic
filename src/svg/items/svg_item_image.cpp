@@ -1,6 +1,7 @@
 #include "svg/items/svg_item_image.h"
 
 #include "svg/attributes/svg_attributes_length_type.h"
+#include "svg/attributes/svg_attributes_enum.h"
 #include "svg/attributes/svg_attribute_xlink_href.h"
 
 #include "renderer/renderer_item_image.h"
@@ -34,9 +35,11 @@ abstract_renderer_item *svg_item_image::create_renderer_item () const
   const svg_attribute_y *y = get_computed_attribute<svg_attribute_y> ();
   const svg_attribute_width *width = get_computed_attribute<svg_attribute_width> ();
   const svg_attribute_height *height = get_computed_attribute<svg_attribute_height> ();
+  const svg_attribute_display *display = get_computed_attribute<svg_attribute_display> ();
 
   render_item->set_dimensions (x->value (), y->value (), width->value (), height->value ());
   render_item->set_image_data (*xlink_href->get_image_data ());
+  render_item->set_display (display->value ());
   return render_item;
 }
 

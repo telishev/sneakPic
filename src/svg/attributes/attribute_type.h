@@ -32,6 +32,7 @@ DECLARE_ATTRIBUTE(CY                , "cy"                , EMPTY      , svg_att
 DECLARE_ATTRIBUTE(FX                , "fx"                , EMPTY      , svg_attribute_fx                 , NONE         )   \
 DECLARE_ATTRIBUTE(FY                , "fy"                , EMPTY      , svg_attribute_fy                 , NONE         )   \
 DECLARE_ATTRIBUTE(VISIBILITY        , "visibility"        , EMPTY      , svg_attribute_visibility         , STYLE        )   \
+DECLARE_ATTRIBUTE(DISPLAY           , "display"           , EMPTY      , svg_attribute_display            , STYLE        )   \
 DECLARE_ATTRIBUTE(OPACITY           , "opacity"           , EMPTY      , svg_attribute_opacity            , STYLE        )   \
 DECLARE_ATTRIBUTE(STROKE_OPACITY    , "stroke-opacity"    , EMPTY      , svg_attribute_stroke_opacity     , STYLE        )   \
 DECLARE_ATTRIBUTE(FILL_OPACITY      , "fill-opacity"      , EMPTY      , svg_attribute_fill_opacity       , STYLE        )   \

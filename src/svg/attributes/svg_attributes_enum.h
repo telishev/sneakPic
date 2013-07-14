@@ -103,7 +103,7 @@ enum class visibility
   HIDDEN,
   COLLAPSE,
 
-  INVALID,
+  INVALID
 };
 
 const char *enum_to_string (visibility id);
@@ -115,6 +115,40 @@ class svg_attribute_visibility : public svg_base_attribute_enum<visibility>
 public:
   svg_attribute_visibility (abstract_svg_item *item) : svg_base_attribute_enum (item)
   { m_value = visibility::VISIBLE; }
+};
+
+enum class display // Seriously like that many?
+{
+  INLINE,
+  BLOCK,
+  LIST_ITEM,
+  RUN_IN,
+  COMPACT,
+  MARKER,
+  TABLE,
+  INLINE_TABLE,
+  TABLE_ROW_GROUP,
+  TABLE_HEADER_GROUP,
+  TABLE_FOOTER_GROUP,
+  TABLE_ROW,
+  TABLE_COLUMN_GROUP,
+  TABLE_COLUMN,
+  TABLE_CELL,
+  TABLE_CAPTION,
+  NONE,
+
+  INVALID
+};
+
+const char *enum_to_string (display id);
+static inline int enum_values_count (display) { return (int)display::INVALID; }
+
+class svg_attribute_display : public svg_base_attribute_enum<display>
+{
+  SVG_ATTRIBUTE
+public:
+  svg_attribute_display (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  { m_value = display::INLINE; }
 };
 
 #endif // SVG_ATTRIBUTES_ENUM_H

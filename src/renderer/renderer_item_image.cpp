@@ -6,6 +6,8 @@
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_config.h"
 
+#include "svg/attributes/svg_attributes_enum.h"
+
 #pragma warning(push, 0)
 #include <SkCanvas.h>
 #include <SkSurface.h>
@@ -39,6 +41,9 @@ void renderer_item_image::set_image_data (QImage &image_data)
 
 void renderer_item_image::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
 {
+  if (m_display == display::NONE)
+    return;
+
   QTransform item_transform = transform () * state.transform ();
   QRectF transformed_rect = state.transform ().mapRect (bounding_box ());
   if (!state.rect ().intersects (transformed_rect.toRect ()))

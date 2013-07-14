@@ -49,3 +49,30 @@ const char *enum_to_string (visibility id)
 
   return "";
 }
+
+const char *enum_to_string (display id)
+{
+  switch (id)
+    {
+      case display::INLINE:return "inline";
+      case display::BLOCK:return "block";
+      case display::LIST_ITEM:return "list-item";
+      case display::RUN_IN:return "run-in";
+      case display::COMPACT:return "compact";
+      case display::MARKER:return "marker";
+      case display::TABLE:return "table";
+      case display::INLINE_TABLE:return "inline-table";
+      case display::TABLE_ROW_GROUP:return "table-row-group";
+      case display::TABLE_HEADER_GROUP:return "table-header-group";
+      case display::TABLE_FOOTER_GROUP:return "table-footer-group";
+      case display::TABLE_ROW:return "table-row";
+      case display::TABLE_COLUMN_GROUP:return "table-column-group";
+      case display::TABLE_COLUMN:return "table-column";
+      case display::TABLE_CELL:return "table-cell";
+      case display::TABLE_CAPTION:return "table-caption";
+      case display::NONE:return "none";
+      case display::INVALID:return "";
+    }
+
+  return "";
+}

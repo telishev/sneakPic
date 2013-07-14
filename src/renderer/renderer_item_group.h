@@ -6,11 +6,13 @@
 #include <vector>
 #include <string>
 
+enum class display;
 class abstract_svg_item;
 
 class renderer_item_group : public abstract_renderer_item
 {
   double m_opacity;
+  display m_display;
   QRectF m_bbox;
   QPainterPath m_clip_path;
   bool m_has_clip_path;
@@ -23,6 +25,7 @@ public:
   virtual QRectF bounding_box () const override;
   virtual void update_bbox () override;
   void set_opacity (double opacity) { m_opacity = opacity; }
+  void set_display (display display_arg) { m_display = display_arg; }
   void set_clip_path (const QPainterPath &path) { m_clip_path = path; m_has_clip_path = true; }  
 };
 
