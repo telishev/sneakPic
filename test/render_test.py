@@ -301,7 +301,7 @@ def strip_aliases (x):
     num = 1
     if x[2:]:
       try:
-        num = int (x[1:])
+        num = int (x[2:])
       except ValueError:
         return ""
     it = get_number_by_hash ("HEAD") #going through current branch
