@@ -41,6 +41,7 @@ print_mean_values = True
 diff_splitter = re.compile('[() \t,]+')
 metric_splitter = re.compile('[\t ,]+')
 sum_row = []
+sneakpic_md5 = ""
 
 def md5_for_file(file_name, block_size=2**20):
   fp = open(file_name, "rb")
@@ -53,7 +54,6 @@ def md5_for_file(file_name, block_size=2**20):
   fp.close ()
   return md5.hexdigest ()
 
-sneakpic_md5 = md5_for_file (sneakpic_path)
 
 
 
@@ -141,6 +141,7 @@ def get_ability_to_render (renderer):
   return (renderer == "sneakpic" or renderer == "inkscape" or renderer == "sneakpic_savedby")
 
 def check_render_and_cache_file (renderer, file_name): # file name here without extension or dir
+  global sneakpic_md5
   md5_generator = "";
   dir_name = get_output_dir (renderer);
   if renderer == "sneakpic":
@@ -595,7 +596,10 @@ def print_row (cells):
     if cell.cell_class == 'text':
       output_str = cell.value
     else:
-      output_str = cell.format.format (cell.value)
+      if not cell.error:
+        output_str = cell.format.format (cell.value)
+      else:
+        output_str = cell.value
     fp.write ("<TD" + style + ">" + output_str + "</TD>")
   fp.write ("</TR>\n")
   fp.close ()
@@ -663,7 +667,9 @@ if not isdir (output_directory):
 
 diff_directory = join (output_directory, "diff_dir")
 
-shutil.rmtree (join (diff_directory))
+if isdir (diff_directory):
+  shutil.rmtree (diff_directory)
+
 if not isdir (diff_directory):
   makedirs (diff_directory)
 
@@ -671,6 +677,8 @@ try:
   call (sneakpic_path + " --version", stdout=open(devnull, 'wb'))
 except OSError:
   sys.exit ("FAIL: sneakPic.com haven't been found, please build it in utils/console_wrapper and place it to build dir")
+
+sneakpic_md5 = md5_for_file (sneakpic_path)
 
 try:
   call ("git --version", stdout=open(devnull, 'wb'))
