@@ -16,14 +16,14 @@ enum class iri_type
   unsupported,
 };
 
-enum class data_type_t
+enum class data_type
 {
   image_jpeg,
   image_png,
   unsupported
 };
 
-enum class data_format_t
+enum class data_format
 {
   base64,
   percentencoding
@@ -34,7 +34,7 @@ class data_type_iri
   abstract_svg_item *m_item;
   QString m_element_id;
   QImage *m_image_data;
-  data_type_t m_data_type;
+  data_type m_data_type;
   iri_type m_iri_type;
 public:
   data_type_iri (abstract_svg_item *item);
@@ -44,7 +44,7 @@ public:
   bool write (QString &data) const;
 
   iri_type get_type () const; // Type should be checked before calling further getters
-  data_type_t get_data_type () const;
+  data_type get_data_type () const;
 
   bool has_image_data () const;
   abstract_svg_item *get_fragment () const;

@@ -15,7 +15,7 @@ data_type_iri::data_type_iri (abstract_svg_item *item)
   m_item = item;
   m_image_data = 0; 
   m_iri_type = iri_type::document_fragment;
-  m_data_type = data_type_t::unsupported;
+  m_data_type = data_type::unsupported;
 }
 
 data_type_iri::~data_type_iri ()
@@ -23,21 +23,21 @@ data_type_iri::~data_type_iri ()
   FREE (m_image_data);
 }
 
-const char *enum_to_string (data_type_t id)
+const char *enum_to_string (data_type id)
 {
   switch (id)
     {
-      case data_type_t::image_jpeg: return "image/jpeg";
-      case data_type_t::image_png: return "image/png";
-      case data_type_t::unsupported: return "";
+      case data_type::image_jpeg: return "image/jpeg";
+      case data_type::image_png: return "image/png";
+      case data_type::unsupported: return "";
     };
 
   return "";
 }
 
-static inline int enum_values_count (data_type_t)
+static inline int enum_values_count (data_type)
 {
-  return (int) data_type_t::unsupported;
+  return (int) data_type::unsupported;
 }
 
 bool data_type_iri::read (const QString &data)
@@ -54,17 +54,17 @@ bool data_type_iri::read (const QString &data)
       QString data_with_offset = data.mid (5);
 
       int next_index = data_with_offset.indexOf (QRegExp ("[;,]"));
-      m_data_type = string_to_enum <data_type_t> (data_with_offset.left (next_index).toLatin1 ().data ());
-      if (m_data_type == data_type_t::unsupported)
+      m_data_type = string_to_enum <data_type> (data_with_offset.left (next_index).toLatin1 ().data ());
+      if (m_data_type == data_type::unsupported)
         return false;
-      data_format_t data_format;
+      data_format data_format;
       if (data_with_offset[next_index] == ',')
-        data_format = data_format_t::percentencoding;
+        data_format = data_format::percentencoding;
       else
         {
           if (data_with_offset.startsWith ("base64,"))
             return false;
-          data_format = data_format_t::base64;
+          data_format = data_format::base64;
         }
 
       next_index = data_with_offset.indexOf (',');
@@ -75,24 +75,24 @@ bool data_type_iri::read (const QString &data)
       QByteArray raw_data;
       switch (data_format)
       {
-        case data_format_t::base64:
+        case data_format::base64:
           raw_data = QByteArray::fromBase64 (data_with_offset.toLatin1 ());
           break;
-        case data_format_t::percentencoding:
+        case data_format::percentencoding:
           raw_data = QByteArray::fromPercentEncoding (data_with_offset.toLatin1 ());
           return false;
       }
       switch (m_data_type)
       {
-        case data_type_t::image_jpeg:
+        case data_type::image_jpeg:
           m_image_data = new QImage ();
           m_image_data->load (&QBuffer (&raw_data), "jpg");
           break;
-        case data_type_t::image_png:
+        case data_type::image_png:
           m_image_data = new QImage ();
           m_image_data->load (&QBuffer (&raw_data), "png");
           break;
-        case data_type_t::unsupported:
+        case data_type::unsupported:
           return false;
       }
       return true;
@@ -103,11 +103,33 @@ bool data_type_iri::read (const QString &data)
 
 bool data_type_iri::write (QString &data) const 
 {
-  switch (m_data_type)
+  switch (m_iri_type)
     {
+    case iri_type::document_fragment:
       data = QLatin1String ("#") + m_element_id;
+      return true;
+    case iri_type::media_data:
+      {
+        QByteArray raw_data;
+        QBuffer buffer (&raw_data);
+        switch (m_data_type)
+          {
+          case data_type::image_jpeg:
+            m_image_data->save (&buffer, "jpg");
+            break;
+          case data_type::image_png:
+            m_image_data->save (&buffer, "png");
+            break;
+          case data_type::unsupported:
+            return false;
+          }
+        data = QLatin1String ("data:") + enum_to_string (m_data_type) + ";base64," + raw_data.toBase64 ();
+      }
+      break;
+    case iri_type::unsupported:
+      return false;
     }
-  return true;
+  return false;
 }
 
 abstract_svg_item *data_type_iri::get_fragment () const
@@ -123,7 +145,7 @@ iri_type data_type_iri::get_type () const
   return m_iri_type;
 }
 
-data_type_t data_type_iri::get_data_type () const
+data_type data_type_iri::get_data_type () const
 {
   return m_data_type;
 }
