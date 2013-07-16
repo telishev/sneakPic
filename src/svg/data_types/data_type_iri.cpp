@@ -71,8 +71,6 @@ bool data_type_iri::read (const QString &data)
       data_with_offset = data_with_offset.mid (next_index + 1);
       m_iri_type = iri_type::media_data;
 
-
-      QByteArray raw_data;
       switch (data_format)
       {
         case data_format::base64:
@@ -109,22 +107,7 @@ bool data_type_iri::write (QString &data) const
       data = QLatin1String ("#") + m_element_id;
       return true;
     case iri_type::media_data:
-      {
-        QByteArray raw_data;
-        QBuffer buffer (&raw_data);
-        switch (m_data_type)
-          {
-          case data_type::image_jpeg:
-            m_image_data->save (&buffer, "jpg");
-            break;
-          case data_type::image_png:
-            m_image_data->save (&buffer, "png");
-            break;
-          case data_type::unsupported:
-            return false;
-          }
-        data = QLatin1String ("data:") + enum_to_string (m_data_type) + ";base64," + raw_data.toBase64 ();
-      }
+        data = QLatin1String ("data:") + enum_to_string (m_data_type) + ";base64," + raw_data.toBase64 (); // We're using the date we calculated previously
       break;
     case iri_type::unsupported:
       return false;

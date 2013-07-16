@@ -36,6 +36,7 @@ class data_type_iri
   QImage *m_image_data;
   data_type m_data_type;
   iri_type m_iri_type;
+  QByteArray raw_data;
 public:
   data_type_iri (abstract_svg_item *item);
   virtual ~data_type_iri ();
