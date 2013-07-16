@@ -16,6 +16,7 @@ from sets import Set
 import math
 
 sneakpic_path = "../build/sneakPic.com"
+sneakpic_exe_path = "../build/sneakPic.exe"
 inkscape_path = "inkscape"
 compare_path = "compare"
 get_cur_commit_num = "git rev-list --count HEAD"
@@ -696,7 +697,7 @@ try:
 except OSError:
   sys.exit ("FAIL: sneakPic.com haven't been found, please build it in utils/console_wrapper and place it to build dir")
 
-sneakpic_md5 = md5_for_file (sneakpic_path)
+sneakpic_md5 = md5_for_file (sneakpic_exe_path)
 
 try:
   call ("git --version", stdout=open(devnull, 'wb'))
