@@ -1,6 +1,7 @@
 #include "svg/items/abstract_svg_item.h"
 
 #include <QDomElement>
+#include <QXmlStreamWriter>
 
 #include "common/debug_utils.h"
 #include "common/memory_deallocation.h"
@@ -77,32 +78,27 @@ void abstract_svg_item::read (const QDomElement &item)
 
 }
 
-void abstract_svg_item::write (QDomElement &item, QDomDocument &doc) const 
+void abstract_svg_item::write (QXmlStreamWriter &writer) const 
 {
   if (is_cloned ())
     return;
 
-  for (const abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
-    {
-      QDomElement child_element = doc.createElementNS (child->namespace_uri (), full_name (child->namespace_name (), child->name ()));
-      child->write (child_element, doc);
-      item.appendChild (child_element);
-    }
+  writer.writeStartElement (namespace_uri (), name ());
 
   for (auto &attribute_pair : m_attributes)
     {
       abstract_attribute *attribute = attribute_pair.second;
-      QDomAttr dom_attribute;
-      if (QString (attribute->namespace_name ()).isEmpty ())
-        dom_attribute = doc.createAttribute (attribute->name ());
-      else
-        dom_attribute = doc.createAttributeNS (attribute->namespace_uri (), full_name (attribute->namespace_name (), attribute->name ()));
-
       QString value;
       attribute->write (value);
-      dom_attribute.setValue (value);
-      item.setAttributeNode (dom_attribute);
+      writer.writeAttribute (attribute->namespace_uri (), attribute->name (), value);
     }
+
+  for (const abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
+    {
+      child->write (writer);
+    }
+
+  writer.writeEndElement ();
 }
 
 void abstract_svg_item::add_attribute (abstract_attribute *attribute)
@@ -359,5 +355,21 @@ void abstract_svg_item::create_id_by_attr ()
 
   if (container->contains (id ()))
     create_unique_name ();
+}
+
+void abstract_svg_item::get_used_namespaces (std::map<QString, QString> &map) const
+{
+  if (*namespace_uri ())
+    map.insert (std::make_pair (namespace_uri (), namespace_name ()));
+
+  for (auto &attribute_pair : m_attributes)
+    {
+      const abstract_attribute *attribute = attribute_pair.second; 
+      if (*attribute->namespace_uri ())
+        map.insert (std::make_pair (attribute->namespace_uri (), attribute->namespace_name ()));
+    }
+
+  for (const abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
+    child->get_used_namespaces (map);
 }
 

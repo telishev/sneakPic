@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QDomDocument>
 #include <QTextStream>
+#include <QXmlStreamWriter>
 
 #include "common/memory_deallocation.h"
 
@@ -76,18 +77,16 @@ bool svg_document::write_file (const QString &filename_arg)
   if (!file.open (QIODevice::WriteOnly))
     return false;
 
-  QTextStream stream (&file);
-
-  QDomDocument doc;
-  QDomProcessingInstruction instr = doc.createProcessingInstruction ("xml", "version='1.0' encoding='UTF-8'");
-  doc.appendChild(instr);
-
-  QDomElement root_item = doc.createElementNS (m_root->namespace_uri (), m_root->name ());
-  doc.appendChild (root_item);
-  m_root->write (root_item, doc);
-
-  
-  stream << doc.toString (1);
+  QXmlStreamWriter writer (&file);
+  writer.setAutoFormatting(true);
+  writer.writeDefaultNamespace (svg_namespaces::svg_uri ());
+  std::map<QString, QString> namespaces;
+  m_root->get_used_namespaces (namespaces);
+  for (auto namespace_pair : namespaces)
+    writer.writeNamespace (namespace_pair.first, namespace_pair.second);
+  writer.writeStartDocument();
+  m_root->write (writer);
+  writer.writeEndDocument();
   return false;
 }
 

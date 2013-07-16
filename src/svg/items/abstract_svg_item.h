@@ -19,11 +19,13 @@ private:                                           \
 
 class QDomElement;
 class QDomDocument;
+class QXmlStreamWriter;
 
 class abstract_attribute;
 class svg_document;
 class svg_item_defs;
 class abstract_renderer_item;
+
 
 enum class svg_namespaces_t;
 enum class svg_item_type;
@@ -59,7 +61,7 @@ public:
   void remove_attribute (abstract_attribute *attribute);
 
   void read (const QDomElement &item);
-  void write (QDomElement &item, QDomDocument &doc) const;
+  void write (QXmlStreamWriter &writer) const;
 
   bool has_id () const;
   QString id () const;
@@ -94,6 +96,8 @@ public:
   bool is_cloned () const;
   /// creates cloned item, for "use" item
   abstract_svg_item *create_clone ();
+
+  void get_used_namespaces (std::map<QString, QString> &map) const;
 
 protected:
   virtual bool read_item (const QString &/*data*/) { return true; }
