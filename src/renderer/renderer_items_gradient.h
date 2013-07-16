@@ -5,6 +5,7 @@
 
 #include <utility>
 #include <vector>
+#include <QTransform>
 
 class QColor;
 
@@ -17,6 +18,7 @@ protected:
   std::vector<std::pair<double, QColor>> m_stops;
   spread_method m_spread;
   gradient_units m_units;
+  QTransform m_transform;
 public:
 
   virtual void set_opacity (double opacity) override;
@@ -24,6 +26,7 @@ public:
   void add_stop (double position, const QColor &color) { m_stops.push_back (std::make_pair (position, color)); }
   void set_spread (spread_method spread) { m_spread = spread; }
   void set_gradient_units (gradient_units units) { m_units = units; }
+  void set_transform (const QTransform &transform) { m_transform = transform; }
 };
 
 class renderer_linear_gradient : public renderer_base_gradient_item

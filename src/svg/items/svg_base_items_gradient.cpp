@@ -5,6 +5,7 @@
 #include "svg/attributes/svg_attributes_enum.h"
 #include "svg/items/svg_item_stop.h"
 #include "svg/attributes/svg_attribute_xlink_href.h"
+#include "svg/attributes/svg_attribute_gradient_transform.h"
 
 
 renderer_paint_server *svg_base_items_gradient::create_paint_server () const
@@ -31,9 +32,11 @@ bool svg_base_items_gradient::fill_gradient (renderer_base_gradient_item *gradie
   const abstract_svg_item *href = get_computed_attribute<svg_attribute_xlink_href> ()->get_fragment ();
   const svg_attribute_gradient_units *gradient_units = gradient_get_attribute<svg_attribute_gradient_units> (this, href);
   const svg_attribute_spread_method *spread_method = gradient_get_attribute<svg_attribute_spread_method> (this, href);
+  const svg_attribute_gradient_transform *transform = gradient_get_attribute<svg_attribute_gradient_transform> (this, href);
 
   gradient->set_gradient_units (gradient_units->value ());
   gradient->set_spread (spread_method->value ());
+  gradient->set_transform (transform->transform ());
 
   auto stops = get_childs_by_name (svg_item_stop::static_name ());
   if (stops.first == stops.second && href)

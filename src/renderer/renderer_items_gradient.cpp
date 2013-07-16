@@ -52,7 +52,15 @@ void renderer_linear_gradient::fill_paint (SkPaint &paint) const
       return;
     }
 
-  paint.setShader (SkGradientShader::CreateLinear (points, colors.get (), pos.get (), (int)m_stops.size (), mode))->unref ();
+  SkShader *shader = SkGradientShader::CreateLinear (points, colors.get (), pos.get (), (int)m_stops.size (), mode);
+  if (!shader)
+    {
+      paint.setColor (0);
+      return;
+    }
+
+  shader->setLocalMatrix (qt2skia::matrix (m_transform));
+  paint.setShader (shader)->unref ();
 }
 
 renderer_paint_server *renderer_linear_gradient::clone () const 
@@ -81,7 +89,28 @@ void renderer_radial_gradient::fill_paint (SkPaint &paint) const
     case spread_method::INVALID: return;
     }
 
-  paint.setShader (SkGradientShader::CreateRadial (center, SkFloatToScalar (m_r), colors.get (), pos.get (), (int)m_stops.size (), mode))->unref ();
+  /// standard says to stop rendering in case of 0 stops
+  if (m_stops.size () == 0)
+    {
+      paint.setColor (0);
+      return;
+    }
+  /// and to render with solid color in case of 1 stop 
+  else if (m_stops.size () == 1) 
+    {
+      paint.setColor (colors[0]);
+      return;
+    }
+
+  SkShader *shader = SkGradientShader::CreateRadial (center, SkFloatToScalar (m_r), colors.get (), pos.get (), (int)m_stops.size (), mode);
+  if (!shader)
+    {
+      paint.setColor (0);
+      return;
+    }
+
+  shader->setLocalMatrix (qt2skia::matrix (m_transform));
+  paint.setShader (shader)->unref ();
 }
 
 renderer_paint_server *renderer_radial_gradient::clone () const 

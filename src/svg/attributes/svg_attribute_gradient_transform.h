@@ -17,7 +17,7 @@ public:
   virtual bool read (const QString &data, bool /*from_css*/ = false) override { return m_transform.read (data); }
   virtual bool write (QString &data, bool /*to_css*/ = false) const override { return m_transform.write (data); }
 
-  QTransform transform () const { m_transform.transform (); }
+  QTransform transform () const { return m_transform.transform (); }
 };
 
 #endif // SVG_ATTRIBUTE_GRADIENT_TRANSFORM_H
