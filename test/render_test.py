@@ -113,15 +113,25 @@ def escape_path (path):
 def get_output (command):
   return check_output (command, shell=True, stderr=open(devnull, 'wb'))[:-1]
 
+# remove sed usage before enabling it
+'''
 def get_hash_by_number (number):
   try:
     return get_output ("git rev-list --reverse HEAD | sed " + str (number) + "q;d")
   except CalledProcessError:
     return ""
+'''
+
+def get_previous_hash (sha1):
+  try:
+    out = get_output ("git rev-parse " + sha1 + "^^")
+    return out
+  except CalledProcessError:
+    return ""
 
 def get_full_sha1 (incomplete_sha1):
   try:
-    sha1 = get_output ("git rev-parse " + sha1)
+    sha1 = get_output ("git rev-parse " + incomplete_sha1)
     return True, sha1
   except CalledProcessError:
     return False, ""
@@ -304,14 +314,19 @@ def strip_aliases (x):
         num = int (x[2:])
       except ValueError:
         return ""
-    it = get_number_by_hash ("HEAD") #going through current branch
+    result, initial_sha1 = get_full_sha1 ("HEAD")
+    if not result:
+      return ""
     if num == 0:
-      return "g" + x[1] + get_full_sha1 ("HEAD") #another alias for current version pn0
-    while (it != 0):
-      it -= 1
-      hash_in_question = get_hash_by_number (it)
-      v ("Scanning through " + hash_in_question + "...")
-      tested_dir = "g" + x[1] + hash_in_question
+      return "g" + x[1] + initial_sha1 #another alias for current version pn0
+    cur_sha1 = initial_sha1
+    while True:
+      cur_sha1 = get_previous_hash (cur_sha1)
+      if not cur_sha1:
+        v ("Not found...")
+        return ""
+      v ("Scanning through " + cur_sha1 + "...")
+      tested_dir = "g" + x[1] + cur_sha1
       if isdir (join (output_directory, tested_dir)):
         num -= 1
       if num == 0: # then we found it
@@ -618,10 +633,13 @@ parser.add_option("-t", "--time", dest="time", action="store_true", default=Fals
                   help="Print time of rendering in link column")
 parser.add_option("-d", "--diff", dest="diff", action="store_true", default=False,
                   help="Print difference between nearest renderers in list")
+parser.add_option("-v", "--verbose", dest="verbose", action="store_true", default=False,
+                  help="Allow detailed output")
 
 (options, args) = parser.parse_args()
 base_renderer = options.renderer;
 diff_in_pairs = options.diff
+verbose = options.verbose
 metric = options.metric;
 metric_list = metric_splitter.split (metric)
 metric_set = Set (['AE', 'FUZZ', 'MAE', 'MEPP', 'MSE', 'NCC', 'PAE', 'PSNR', 'RMSE'])
@@ -726,6 +744,7 @@ for file in files_list:
   if file_ext != ".svg":
     continue
   # at first we generated every picture for every renderer
+  check_render_and_cache_file (base_renderer, file_name)
   for renderer in compare_against:
     check_render_and_cache_file (renderer, file_name)
 
@@ -733,7 +752,7 @@ for file in files_list:
   row = generate_row (base_renderer, compare_against, measure_list, file, print_links)
   print_row (row)
   i += 1
-  v ("File " +  file + " has been fully processed (" + str (i) + "/" + str (num) + ")")
+  print "File " +  file + " has been fully processed (" + str (i) + "/" + str (num) + ")"
 for table_cell in sum_row:
   if table_cell.cell_class != "text" and (not table_cell.error):
     table_cell.value /= num
