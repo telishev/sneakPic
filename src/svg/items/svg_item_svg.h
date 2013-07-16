@@ -20,7 +20,7 @@ public:
   virtual abstract_renderer_item *create_renderer_item () const;
 
 protected:
-  virtual bool check_item () override { return true; }
+  virtual bool check_item () override;
 };
 
 #endif // SVG_ITEM_SVG_H

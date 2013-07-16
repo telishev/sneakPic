@@ -4,8 +4,12 @@
 
 #include "svg/attributes/abstract_attribute.h"
 #include "svg/attributes/svg_attributes_length_type.h"
+#include "svg/attributes/svg_attribute_transform.h"
+#include "svg/attributes/svg_attribute_viewbox.h"
+
 
 #include "renderer/renderer_item_svg.h"
+
 
 
 svg_item_svg::svg_item_svg (svg_document *document)
@@ -40,5 +44,24 @@ abstract_renderer_item *svg_item_svg::create_renderer_item () const
 
   update_group_item (render_item);
   return render_item;
+}
+
+bool svg_item_svg::check_item ()
+{
+  const svg_attribute_view_box *view_box = get_computed_attribute<svg_attribute_view_box> ();
+  if (!view_box->is_empty ())
+    {
+      QRectF viewport = QRectF (0, 0, width (), height ());
+      svg_attribute_transform *transform = get_attribute<svg_attribute_transform> ();
+      if (!transform)
+        {
+          transform = new svg_attribute_transform (this);
+          add_attribute (transform);
+        }
+
+      transform->set_additional_transform (view_box->get_transform (viewport));
+    }
+
+  return true;
 }
 
