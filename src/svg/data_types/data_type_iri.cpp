@@ -103,7 +103,10 @@ bool data_type_iri::read (const QString &data)
 
 bool data_type_iri::write (QString &data) const 
 {
-  data = QLatin1String ("#") + m_element_id;
+  switch (m_data_type)
+    {
+      data = QLatin1String ("#") + m_element_id;
+    }
   return true;
 }
 
