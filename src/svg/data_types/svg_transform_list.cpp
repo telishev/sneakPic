@@ -12,9 +12,9 @@ bool svg_transform_list::read (const QString &data)
 
 bool svg_transform_list::write (QString &data) const 
 {
-  double m11 = m_transform.m11 (), m21 = m_transform.m21 (), m31 = m_transform.m31 ();
-  double m12 = m_transform.m12 (), m22 = m_transform.m22 (), m32 = m_transform.m32 ();
-  data = QString ("matrix(%1,%2,%3,%4,%5,%6)").arg (m11).arg (m12).arg (m21).arg (m22).arg (m31).arg (m32);
+  QString m11 = double_to_str (m_transform.m11 ()), m21 = double_to_str (m_transform.m21 ()), m31 = double_to_str (m_transform.m31 ());
+  QString m12 = double_to_str (m_transform.m12 ()), m22 = double_to_str (m_transform.m22 ()), m32 = double_to_str (m_transform.m32 ());
+  data = QString ("matrix(%1,%2,%3,%4,%5,%6)").arg (m11, m12, m21, m22, m31, m32);
   return true;
 }
 

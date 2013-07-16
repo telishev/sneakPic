@@ -697,4 +697,9 @@ static inline QString color_to_string (const QColor &color)
   return QString ("#%1%2%3").arg (hex_to_str (color.red ()), hex_to_str (color.green ()), hex_to_str (color.blue ()));
 }
 
+static inline QString double_to_str (double value)
+{
+  return QString::number (value, 'f', 10);
+}
+
 #endif // STRING_UTILS_H

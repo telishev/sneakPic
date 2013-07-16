@@ -1,5 +1,7 @@
 #include "svg/attributes/svg_attribute_stroke_miterlimit.h"
 
+#include "common/string_utils.h"
+
 svg_attribute_stroke_miterlimit::svg_attribute_stroke_miterlimit (abstract_svg_item *item)
   : abstract_attribute (item)
 {
@@ -21,6 +23,6 @@ bool svg_attribute_stroke_miterlimit::read (const QString &data, bool /*from_css
 
 bool svg_attribute_stroke_miterlimit::write (QString &data, bool /*from_css*/) const
 {
-  data = QString::number (m_miterlimit);
+  data = double_to_str (m_miterlimit);
   return true;
 }

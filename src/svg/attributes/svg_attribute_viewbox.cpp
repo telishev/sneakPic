@@ -33,7 +33,8 @@ bool svg_attribute_view_box::read (const QString &data, bool /*from_css*/)
 
 bool svg_attribute_view_box::write (QString &data, bool /*to_css*/) const 
 {
-  data = QString ("%1 %2 %3 %4").arg (m_x).arg (m_y).arg (m_width).arg (m_height);
+  QString x = double_to_str (m_x), y = double_to_str (m_y), width = double_to_str (m_width), heigth = double_to_str (m_height);
+  data = QString ("%1 %2 %3 %4").arg (m_x, m_y, m_width, m_height);
   return true;
 }
 

@@ -71,13 +71,13 @@ bool svg_data_type_length::read (const char *data, bool is_css)
 QString svg_data_type_length::write (bool is_css) const
 {
   if (!is_css)
-    return QString::number (m_value) + enum_to_string (m_units);
+    return double_to_str (m_value) + enum_to_string (m_units);
   else
     {
       if (m_units == svg_length_units::NO_UNITS)
-        return QString::number (m_value);
+        return double_to_str (m_value);
       else
-        return QString::number (m_value) + "~" + enum_to_string (m_units);
+        return double_to_str (m_value) + "~" + enum_to_string (m_units);
     }
 }
 

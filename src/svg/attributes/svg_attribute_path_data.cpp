@@ -36,7 +36,7 @@ bool svg_attribute_path_data::write (QString &data, bool /*to_css*/) const
       data += command_svg_name (m_commands[i]);
       int data_count = command_data_count (m_commands[i]);
       for (int j = 0; j < data_count; j++)
-        data += QString::number (m_path_data[data_offset++]) + " ";
+        data += double_to_str (m_path_data[data_offset++]) + " ";
     }
   return true;
 }

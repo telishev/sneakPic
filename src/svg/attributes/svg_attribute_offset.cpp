@@ -28,6 +28,6 @@ bool svg_attribute_offset::read (const char *data)
 
 bool svg_attribute_offset::write (QString &data, bool /*to_css*/ /*= false*/) const 
 {
-  data = QString::number (m_offset);
+  data = double_to_str (m_offset);
   return true;
 }
