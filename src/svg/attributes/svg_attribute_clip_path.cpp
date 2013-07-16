@@ -37,7 +37,7 @@ bool svg_attribute_clip_path::read (const QString &data, bool /*from_css*/)
 bool svg_attribute_clip_path::write (QString &data, bool /*to_css*/) const 
 {
   QString url;
-  CHECK (m_iri.write (data));
+  CHECK (m_iri.write (url));
   data = QString ("url(%1)").arg (url);
   return true;
 }
