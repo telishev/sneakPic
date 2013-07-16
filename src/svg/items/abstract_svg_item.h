@@ -101,6 +101,7 @@ public:
 
 protected:
   virtual bool read_item (const QString &/*data*/) { return true; }
+  virtual bool write_item (QString &/*data*/) const { return true; }
   virtual bool check_item () = 0;
 
 private:

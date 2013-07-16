@@ -70,3 +70,17 @@ const abstract_attribute *svg_item_style::get_attribute (const std::string &str,
 
   return nullptr;
 }
+
+bool svg_item_style::write_item (QString &data) const
+{
+  for (auto rule : m_rule_set)
+    {
+      abstract_css_selector *selector = rule.first;
+      css_declaration *declaration = rule.second;
+
+      std::string str = selector->to_string () + "{" + declaration->to_string () + "}";
+      data += QString::fromStdString (str);
+    }
+
+  return true;
+}

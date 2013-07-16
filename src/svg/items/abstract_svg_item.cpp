@@ -84,6 +84,10 @@ void abstract_svg_item::write (QXmlStreamWriter &writer) const
     return;
 
   writer.writeStartElement (namespace_uri (), name ());
+  QString item_data;
+  write_item (item_data);
+  if (!item_data.isEmpty ())
+    writer.writeCharacters (item_data);
 
   for (auto &attribute_pair : m_attributes)
     {

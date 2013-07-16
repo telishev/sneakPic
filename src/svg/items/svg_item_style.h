@@ -25,6 +25,7 @@ protected:
 
 protected:
   virtual bool read_item (const QString &data) override;
+  virtual bool write_item (QString &data) const override;
 
 private:
   bool read_item (const char *data);
