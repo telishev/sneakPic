@@ -1,152 +1,142 @@
-// This file is for the most part taken from Inkscape source, please abstain from copying it, if your project
-// doesn't use GPL compatible license.
+// Modified (for our needs) example from http://msdn.microsoft.com/en-us/library/windows/desktop/ms682499(v=vs.85).aspx
 
-/** \file
- * @brief Command-line wrapper for Windows.
- *
- * Windows has two types of executables: GUI and console.
- * The GUI executables detach immediately when run from the command
- * prompt (cmd.exe), and whatever you write to standard output
- * disappears into a black hole. Console executables handle
- * do display standard output and take standard input from the console,
- * but when you run them from the GUI, an extra console window appears.
- * It's possible to hide it, but it still flashes from a fraction
- * of a second.
- *
- * To provide an Unix-like experienve, where the application will behave
- * correctly in command line mode and at the same time won't create
- * the ugly console window when run from the GUI, we have to have two
- * executables. The first one, inkscape.exe, is the GUI application.
- * Its entry points are in main.cpp and winmain.cpp. The second one,
- * called inkscape.com, is a small helper application contained in
- * this file. It spawns the GUI application and redirects its output
- * to the console.
- *
- * Note that inkscape.com has nothing to do with "compact executables"
- * from DOS. It's a normal PE executable renamed to .com. The trick
- * is that cmd.exe picks .com over .exe when both are present in PATH,
- * so when you type "inkscape" into the command prompt, inkscape.com
- * gets run. The Windows program loader does not inspect the extension,
- * just like an Unix program loader; it determines the binary format
- * based on the contents of the file.
- *
- *//*
- * Authors:
- *   Jos Hirth <jh@kaioa.com>
- *   Krzysztof Kosiсski <tweenk.pl@gmail.com>
- *
- * Copyright (C) 2008-2010 Authors
- *
- * Released under GNU GPL, read the file 'COPYING' for more information
- */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <stdlib.h>
+#include <tchar.h>
 
-struct echo_thread_info {
-    HANDLE echo_read;
-    HANDLE echo_write;
-    unsigned buffer_size;
+#define BUFSIZE 4096
+
+HANDLE child_stdout = NULL;
+HANDLE child_stderr = NULL;
+HANDLE child_stdin = NULL;
+HANDLE mediator_stdout = NULL;
+HANDLE mediator_stderr = NULL;
+HANDLE mediator_stdin = NULL;
+HANDLE parent_stdout = NULL;
+HANDLE parent_stderr = NULL;
+HANDLE parent_stdin = NULL;
+
+HANDLE g_hInputFile = NULL;
+
+void CreateChildProcess(void);
+void WriteToPipe(void);
+void ReadFromPipe(void);
+void ErrorExit(PTSTR);
+
+struct pipe_info
+{
+  PHANDLE in;
+  PHANDLE out;
 };
 
-// thread function for echoing from one file handle to another
-DWORD WINAPI echo_thread(void *info_void)
+DWORD WINAPI process_pipe_thread (LPVOID lpParam)
 {
-    echo_thread_info *info = static_cast<echo_thread_info*>(info_void);
-    char *buffer = reinterpret_cast<char *>(LocalAlloc(LMEM_FIXED, info->buffer_size));
-    DWORD bytes_read, bytes_written;
+  pipe_info *info = (pipe_info *) lpParam;
+  DWORD dwRead, dwWritten;
+  CHAR chBuf[BUFSIZE];
+  BOOL bSuccess = FALSE;
 
-    while(true){
-        if (!ReadFile(info->echo_read, buffer, info->buffer_size, &bytes_read, NULL) || bytes_read == 0)
-            if (GetLastError() == ERROR_BROKEN_PIPE)
-                break;
+   while (1)
+   {
+      bSuccess = ReadFile (*(info->in), chBuf, BUFSIZE, &dwRead, NULL);
+      if (!bSuccess || dwRead == 0)
+        break;
 
-        if (!WriteFile(info->echo_write, buffer, bytes_read, &bytes_written, NULL)) {
-            if (GetLastError() == ERROR_NO_DATA)
-                break;
-        }
-    }
-
-    LocalFree(reinterpret_cast<HLOCAL>(buffer));
-    CloseHandle(info->echo_read);
-    CloseHandle(info->echo_write);
-
-    return 1;
+      bSuccess = WriteFile (*(info->out), chBuf, dwRead, &dwWritten, NULL);
+      if (!bSuccess )
+        break;
+   }
+   return 0;
 }
 
-int main()
+int _tmain ()
 {
-    // structs that will store information for our I/O threads
-    echo_thread_info stdin = {NULL, NULL, 4096};
-    echo_thread_info stdout = {NULL, NULL, 4096};
-    echo_thread_info stderr = {NULL, NULL, 4096};
-    // handles we'll pass to inkscape.exe
-    HANDLE inkscape_stdin, inkscape_stdout, inkscape_stderr;
-    HANDLE stdin_thread, stdout_thread, stderr_thread;
+   SECURITY_ATTRIBUTES saAttr;
+   saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+   saAttr.bInheritHandle = TRUE;
+   saAttr.lpSecurityDescriptor = NULL;
 
-    SECURITY_ATTRIBUTES sa;
-    sa.nLength=sizeof(SECURITY_ATTRIBUTES);
-    sa.lpSecurityDescriptor=NULL;
-    sa.bInheritHandle=TRUE;
+   parent_stdin  = GetStdHandle (STD_INPUT_HANDLE);
+   parent_stderr = GetStdHandle (STD_ERROR_HANDLE);
+   parent_stdout = GetStdHandle (STD_OUTPUT_HANDLE);
 
-    // Determine the path to the Inkscape executable.
-    // Do this by looking up the name of this one and redacting the extension to ".exe"
-    const int pathbuf = 2048;
-    WCHAR *inkscape = reinterpret_cast<WCHAR*>(LocalAlloc(LMEM_FIXED, pathbuf * sizeof(WCHAR)));
-    GetModuleFileNameW(NULL, inkscape, pathbuf);
-    WCHAR *dot_index = wcsrchr(inkscape, L'.');
-    wcsncpy_s (dot_index, pathbuf, L".exe", 4);
+   pipe_info info[3];
 
-    // we simply reuse our own command line for inkscape.exe
-    // it guarantees perfect behavior w.r.t. quoting
-    WCHAR *cmd = GetCommandLineW();
+   if (!CreatePipe (&child_stdin, &mediator_stdin, &saAttr, 0))
+     exit (1);
 
-    // set up the pipes and handles
-    stdin.echo_read = GetStdHandle(STD_INPUT_HANDLE);
-    stdout.echo_write = GetStdHandle(STD_OUTPUT_HANDLE);
-    stderr.echo_write = GetStdHandle(STD_ERROR_HANDLE);
-    CreatePipe(&inkscape_stdin, &stdin.echo_write, &sa, 0);
-    CreatePipe(&stdout.echo_read, &inkscape_stdout, &sa, 0);
-    CreatePipe(&stderr.echo_read, &inkscape_stderr, &sa, 0);
+   if (!CreatePipe (&mediator_stdout, &child_stdout, &saAttr, 0))
+     exit (1);
 
-    // fill in standard IO handles to be used by the process
-    PROCESS_INFORMATION pi;
-    STARTUPINFOW si;
+   if (!CreatePipe (&mediator_stderr, &child_stderr, &saAttr, 0))
+     exit (1);
 
-    ZeroMemory(&si,sizeof(STARTUPINFO));
-    si.cb = sizeof(STARTUPINFO);
-    si.dwFlags = STARTF_USESTDHANDLES;
-    si.hStdInput = inkscape_stdin;
-    si.hStdOutput = inkscape_stdout;
-    si.hStdError = inkscape_stderr;
+   CreateChildProcess();
 
-    // spawn inkscape.exe
-    CreateProcessW(inkscape, // path to inkscape.exe
-                   cmd, // command line as a single string
-                   NULL, // process security attributes - unused
-                   NULL, // thread security attributes - unused
-                   TRUE, // inherit handles
-                   0, // flags
-                   NULL, // environment - NULL = inherit from us
-                   NULL, // working directory - NULL = inherit ours
-                   &si, // startup info - see above
-                   &pi); // information about the created process - unused
+   HANDLE threads[3];
+   info[0].in  = &parent_stdin;
+   info[0].out = &mediator_stdin;
+   info[1].in  = &mediator_stdout;
+   info[1].out = &parent_stdout;
+   info[2].in  = &mediator_stderr;
+   info[2].out = &parent_stderr;
+   for (int i = 0; i < 3; i++)
+     threads[i] = CreateThread (NULL, 0, process_pipe_thread, info + i, 0, 0);
+   WaitForMultipleObjects (2, threads + 1, TRUE, INFINITE); // Waiting for stdout and stderr threads
+  return 0;
+}
 
-    // clean up a bit
-    LocalFree(reinterpret_cast<HLOCAL>(inkscape));
-    CloseHandle(pi.hThread);
-    CloseHandle(pi.hProcess);
-    CloseHandle(inkscape_stdin);
-    CloseHandle(inkscape_stdout);
-    CloseHandle(inkscape_stderr);
+void CreateChildProcess()
+// Create a child process that uses the previously created pipes for STDIN and STDOUT.
+{
+   wchar_t szFileName[MAX_PATH];
+   GetModuleFileNameW ( NULL, szFileName, MAX_PATH );
+   wchar_t *period_pos = wcsrchr (szFileName, L'.');
+   if (!period_pos)
+     exit (1);
+   wcscpy_s (period_pos, 5, L".exe");
 
-    // create IO echo threads
-    DWORD unused;
-    stdin_thread = CreateThread(NULL, 0, echo_thread, (void*) &stdin, 0, &unused);
-    stdout_thread = CreateThread(NULL, 0, echo_thread, (void*) &stdout, 0, &unused);
-    stderr_thread = CreateThread(NULL, 0, echo_thread, (void*) &stderr, 0, &unused);
+   wchar_t *command_line = GetCommandLineW ();
+   PROCESS_INFORMATION piProcInfo;
+   STARTUPINFOW siStartInfo;
+   BOOL bSuccess = FALSE;
 
-    // wait until the standard output thread terminates
-    WaitForSingleObject(stdout_thread, INFINITE);
+// Set up members of the PROCESS_INFORMATION structure.
 
-    return 0;
+   ZeroMemory (&piProcInfo, sizeof(PROCESS_INFORMATION));
+
+// Set up members of the STARTUPINFO structure.
+// This structure specifies the STDIN and STDOUT handles for redirection.
+
+   ZeroMemory (&siStartInfo, sizeof(STARTUPINFOW));
+   siStartInfo.cb = sizeof(STARTUPINFOW);
+   siStartInfo.hStdError = child_stderr;
+   siStartInfo.hStdOutput = child_stdout;
+   siStartInfo.hStdInput = child_stdin;
+   siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+// Create the child process.
+
+   bSuccess = CreateProcessW (szFileName,
+      command_line,     // command line
+      NULL,          // process security attributes
+      NULL,          // primary thread security attributes
+      TRUE,          // handles are inherited
+      0,             // creation flags
+      NULL,          // use parent's environment
+      NULL,          // use parent's current directory
+      &siStartInfo,  // STARTUPINFO pointer
+      &piProcInfo);  // receives PROCESS_INFORMATION
+
+   if (! bSuccess)
+      exit (1);
+   else
+     {
+        CloseHandle (piProcInfo.hProcess);
+        CloseHandle (piProcInfo.hThread);
+        CloseHandle (child_stdin);
+        CloseHandle (child_stdout);
+        CloseHandle (child_stderr);
+     }
 }
