@@ -20,7 +20,7 @@ protected:
 protected:
   virtual bool check_item () override;
   abstract_renderer_item *create_renderer_item () const override;
-  abstract_renderer_item *svg_item_image::create_overlay_item () const override;
+  abstract_renderer_item *svg_item_image::create_overlay_item (overlay_item_type overlay_type) const override;
 };
 
 #endif // SVG_ITEM_IMAGE_H

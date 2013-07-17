@@ -7,6 +7,8 @@
 
 #include "svg/items/svg_base_items_gradient.h"
 
+#include <memory>
+
 
 
 svg_paint_server::svg_paint_server (abstract_svg_item *item)
@@ -87,4 +89,10 @@ renderer_paint_server *svg_paint_server::create_paint_server () const
     }
 
   return new renderer_painter_server_none;
+}
+
+bool svg_paint_server::need_to_render () const
+{
+  std::unique_ptr<renderer_paint_server> server (create_paint_server ());
+  return server->need_to_render ();
 }

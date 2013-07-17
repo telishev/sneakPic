@@ -30,6 +30,7 @@ class abstract_renderer_item;
 enum class svg_namespaces_t;
 enum class svg_item_type;
 enum class svg_inherit_type;
+enum class overlay_item_type;
 
 class abstract_svg_item : public tree_structure<abstract_svg_item>
 {
@@ -53,7 +54,7 @@ public:
   virtual const char *namespace_name () const;
 
   virtual abstract_renderer_item *create_renderer_item () const { return nullptr; }
-  virtual abstract_renderer_item *create_overlay_item () const { return nullptr; }
+  virtual abstract_renderer_item *create_overlay_item (overlay_item_type /*overlay_type*/) const { return nullptr; }
 
   svg_document *document () const { return m_document; }
 

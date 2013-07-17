@@ -14,6 +14,7 @@ public:
   virtual void fill_paint (SkPaint &paint) const = 0;
 
   virtual renderer_paint_server *clone () const = 0;
+  virtual bool need_to_render () const { return true; }
 };
 
 class renderer_painter_server_color : public renderer_paint_server
@@ -36,6 +37,7 @@ public:
   virtual void set_opacity (double /*opacity*/) override {}
   virtual void fill_paint (SkPaint &paint) const override;
   virtual renderer_paint_server *clone () const override;
+  virtual bool need_to_render () const override { return false; }
 };
 
 

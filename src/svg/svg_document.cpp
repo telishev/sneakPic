@@ -31,9 +31,10 @@ svg_document::svg_document (wait_queue<abstract_renderer_event> *queue)
   m_item_factory = new svg_item_factory (this);
   m_attribute_factory = new svg_attribute_factory (this);
   m_item_container = new svg_items_container;
-  m_root = 0;
-  item_svg = 0;
+  m_root = nullptr;
+  item_svg = nullptr;
   m_queue = queue;
+  m_last_overlay_num = 0;
 }
 
 svg_document::~svg_document ()
@@ -204,4 +205,9 @@ abstract_svg_item *svg_document::process_new_item (QXmlStreamReader &reader, abs
   else
     m_root = child_item;
   return child_item;
+}
+
+QString svg_document::create_overlay_name ()
+{
+  return QString ("#overlay%1").arg (m_last_overlay_num++);
 }

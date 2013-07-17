@@ -11,6 +11,8 @@ class SkPaint;
 class renderer_base_shape_item : public abstract_renderer_item
 {
 protected:
+  QPainterPath m_path;
+  QRectF m_bbox;
   QPainterPath m_clip_path;
   bool m_has_clip_path;
   bool visible;
@@ -33,9 +35,15 @@ public:
   void set_fill_server (const renderer_paint_server *server);
   void set_clip_path (const QPainterPath &path) { m_clip_path = path; m_has_clip_path = true; }
 
+  virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
+  virtual QRectF bounding_box () const override { return m_bbox; }
+  virtual void update_bbox () override {}
+
+  void set_painter_path (const QPainterPath &path) { m_path = path; }
+  void set_bounding_box (const QRectF &rect) { m_bbox = rect; }
+
 protected:
   bool configure_painter (SkPaint &paint, bool stroke, bool config_for_selection) const;
-  void adjust_bbox (QRectF &bbox) const;
 };
 
 #endif // RENDERER_BASE_SHAPE_ITEM_H

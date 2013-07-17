@@ -28,6 +28,7 @@ class svg_document
   abstract_svg_item *m_root;
   svg_item_svg *item_svg;
   QString filename;
+  int m_last_overlay_num;
 
   wait_queue<abstract_renderer_event> *m_queue;
 public:
@@ -48,6 +49,8 @@ public:
 
   renderer_items_container *create_rendered_items (rendered_items_cache *cache);
   void create_renderer_item (renderer_items_container *renderer_items, abstract_svg_item *svg_item);
+
+  QString create_overlay_name ();
 
 private:
   abstract_svg_item *process_new_item (QXmlStreamReader &reader, abstract_svg_item *cur_item);

@@ -13,6 +13,7 @@ class render_cache_id;
 class svg_renderer;
 class events_queue;
 class overlay_renderer;
+class items_selection;
 
 
 class svg_painter : public abstract_painter
@@ -25,6 +26,7 @@ class svg_painter : public abstract_painter
   rendered_items_cache *m_cache;
   events_queue *m_queue;
   overlay_renderer *m_overlay;
+  items_selection *m_selection;
 
 public:
   svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache, events_queue *queue);
@@ -54,6 +56,7 @@ private:
   void draw_base (QPainter &painter);
   void draw_overlay (QPainter &painter);
   void draw_page (QPainter &painter);
+  void select_item (const QPoint &pos);
 };
 
 #endif // SVG_PAINTER_H

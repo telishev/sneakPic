@@ -31,6 +31,8 @@ public:
   virtual bool write (QString &data, bool to_css = false) const override;
 
   renderer_paint_server *create_paint_server () const;
+
+  bool need_to_render () const;
 };
 
 

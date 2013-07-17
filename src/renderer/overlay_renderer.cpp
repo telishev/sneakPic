@@ -2,6 +2,8 @@
 
 #include "common/memory_deallocation.h"
 
+#include "editor/items_selection.h"
+
 #include "renderer/renderer_items_container.h"
 #include "renderer/svg_renderer.h"
 #include "renderer/renderer_state.h"
@@ -9,6 +11,7 @@
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_overlay_root.h"
 #include "renderer/renderer_page.h"
+#include "renderer/overlay_item_type.h"
 
 #include "svg/svg_document.h"
 #include "svg/items/svg_items_container.h"
@@ -25,6 +28,8 @@
 #include <QImage>
 #include <QPainter>
 #include <memory>
+
+
 
 
 
@@ -72,18 +77,27 @@ void overlay_renderer::set_current_item (const std::string &id)
   if (id.empty ())
     return;
 
-  abstract_svg_item *svg_item = m_document->item_container ()->get_item (QString::fromStdString (id));
-  if (!svg_item)
-    return;
-
-  abstract_renderer_item *overlay_item = svg_item->create_overlay_item ();
-  if (!overlay_item)
-    return;
-
-  m_container->add_item (overlay_item);
-  m_container->add_child (m_root->name (), overlay_item->name ());
-  m_current_item = overlay_item->name ();
+  m_current_item = add_item (id, overlay_item_type::CURRENT_ITEM);
 }
+
+void overlay_renderer::selection_changed (const items_selection *selection)
+{
+  for (const std::string &item : m_selection)
+    {
+      m_root->erase_child (item);
+      m_container->remove_item (item);
+    }
+
+  m_selection.clear ();
+
+  for (const std::string &item : selection->selection ())
+    {
+      std::string new_item = add_item (item, overlay_item_type::SELECTION);
+      if (!new_item.empty ())
+        m_selection.insert (new_item);
+    }
+}
+
 
 void overlay_renderer::draw (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform)
 {
@@ -102,4 +116,19 @@ void overlay_renderer::draw_page (QPainter &painter, const QRect &rect_to_draw, 
   std::unique_ptr<SkBitmap> bitmap (m_renderer->draw_to_bitmap (rect_to_draw, transform, m_page_item));
   QImage img = qt2skia::qimage (*bitmap);
   painter.drawImage (rect_to_draw, img);
+}
+
+std::string overlay_renderer::add_item (const std::string &name, overlay_item_type type)
+{
+  abstract_svg_item *svg_item = m_document->item_container ()->get_item (QString::fromStdString (name));
+  if (!svg_item)
+    return std::string ();
+
+  abstract_renderer_item *overlay_item = svg_item->create_overlay_item (type);
+  if (!overlay_item)
+    return std::string ();
+
+  m_container->add_item (overlay_item);
+  m_container->add_child (m_root->name (), overlay_item->name ());
+  return overlay_item->name ();
 }

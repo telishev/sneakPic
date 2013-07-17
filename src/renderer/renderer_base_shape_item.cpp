@@ -8,11 +8,14 @@
 #include "renderer_paint_server.h"
 #include "renderer/qt2skia.h"
 #include "renderer/rendered_items_cache.h"
+#include "renderer/renderer_state.h"
+#include "renderer/renderer_config.h"
 
 #pragma warning(push, 0)
 #include <SkCanvas.h>
 #include <SkSurface.h>
 #include <SkDevice.h>
+#include <SkPoint.h>
 #pragma warning(pop)
 
 renderer_base_shape_item::renderer_base_shape_item (const std::string &name)
@@ -105,14 +108,6 @@ bool renderer_base_shape_item::configure_painter (SkPaint &paint, bool stroke, b
     return true;
 }
 
-void renderer_base_shape_item::adjust_bbox (QRectF &bbox) const
-{
-  /// add pen width to a bbox
-  double adjust_value = m_stroke->getStrokeWidth ();
-  bbox.adjust (-adjust_value, -adjust_value, adjust_value, adjust_value);
-  bbox = transform ().mapRect (bbox);
-}
-
 void renderer_base_shape_item::set_stroke_server (const renderer_paint_server *server)
 {
   m_stroke_server = server->clone ();
@@ -121,4 +116,29 @@ void renderer_base_shape_item::set_stroke_server (const renderer_paint_server *s
 void renderer_base_shape_item::set_fill_server (const renderer_paint_server *server)
 {
   m_fill_server = server->clone ();
+}
+
+void renderer_base_shape_item::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
+{
+  QTransform item_transform = transform () * state.transform ();
+  QRectF transformed_rect = state.transform ().mapRect (bounding_box ());
+  if (!state.rect ().intersects (transformed_rect.toRect ()))
+    return;
+
+  SkPath path = qt2skia::path (m_path);
+  canvas.save ();
+  canvas.setMatrix (qt2skia::matrix (item_transform));
+  if (m_has_clip_path)
+    canvas.clipPath (qt2skia::path (m_clip_path), SkRegion::kReplace_Op, !config->render_for_selection ());
+
+  for (int i = 0; i < 2; i++)
+    {
+      SkPaint paint;
+      if (!configure_painter (paint, i != 0, config->render_for_selection ()))
+        continue;
+
+      canvas.drawPath (path, paint);
+    }
+
+  canvas.restore ();
 }

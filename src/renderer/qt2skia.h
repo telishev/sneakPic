@@ -15,6 +15,7 @@ class QColor;
 class QBrush;
 class QImage;
 class QRect;
+class QRectF;
 
 typedef unsigned int SkColor;
 
@@ -28,6 +29,7 @@ public:
   static QImage qimage (const SkBitmap &img);
   static SkBitmap image (const QImage &image_arg);
   static SkRect rect (const QRect &rect);
+  static SkRect rect (const QRectF &rect);
 };
 
 #endif // QT2SKIA_H

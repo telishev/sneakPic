@@ -3,6 +3,8 @@
 #include "renderer/renderer_base_shape_item.h"
 #include "renderer/renderer_paint_server.h"
 
+#include "svg/svg_document.h"
+
 #include "svg/attributes/svg_attributes_enum.h"
 #include "svg/attributes/svg_attribute_style.h"
 #include "svg/attributes/svg_attribute_stroke_linecap.h"
@@ -17,12 +19,15 @@
 
 #include "svg/items/svg_item_clip_path.h"
 
-#include "renderer/renderer_item_path.h"
+#include "renderer/renderer_base_shape_item.h"
 #include "renderer/renderer_overlay_path.h"
+#include "renderer/overlay_item_type.h"
 
 #include <memory>
 #include <QPainterPath>
 #include <QTransform>
+#include "renderer/renderer_item_selection.h"
+
 
 
 
@@ -35,7 +40,7 @@ svg_base_shape_item::~svg_base_shape_item ()
 {
 }
 
-void svg_base_shape_item::set_item_style (renderer_item_path *item) const 
+void svg_base_shape_item::set_item_style (renderer_base_shape_item *item) const 
 {
   std::unique_ptr<renderer_paint_server> fill (get_computed_attribute<svg_attribute_fill> ()->create_paint_server ());
   std::unique_ptr<renderer_paint_server> stroke (get_computed_attribute<svg_attribute_stroke> ()->create_paint_server ());
@@ -63,6 +68,7 @@ void svg_base_shape_item::set_item_style (renderer_item_path *item) const
   item->set_transform (transform->computed_transform ());
   item->set_fill_server (fill.get ());
   item->set_stroke_server (stroke.get ());
+  item->set_bounding_box (exact_bbox (false));
   if (clip_path)
     item->set_clip_path (clip_path->get_clip_path ());
 }
@@ -78,7 +84,7 @@ QPainterPath svg_base_shape_item::get_path_for_clipping () const
 
 abstract_renderer_item *svg_base_shape_item::create_renderer_item () const 
 {
-  renderer_item_path *render_item = new renderer_item_path (name ().toStdString ());
+  renderer_base_shape_item *render_item = new renderer_base_shape_item (name ().toStdString ());
 
   QPainterPath path = get_path ();
   const svg_attribute_fill_rule *fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();
@@ -101,15 +107,79 @@ QTransform svg_base_shape_item::full_transform () const
   return total_transform;
 }
 
-abstract_renderer_item *svg_base_shape_item::create_overlay_item () const 
+abstract_renderer_item *svg_base_shape_item::create_overlay_item (overlay_item_type overlay_type) const 
 {
-  QPainterPath path = get_path ();
-  const svg_attribute_clip_rule *clip_rule = get_computed_attribute<svg_attribute_clip_rule> ();
-  path = full_transform ().map (path);
-  path.setFillRule (clip_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
-  renderer_overlay_path *overlay_item = new renderer_overlay_path (name ().toStdString ());
-  overlay_item->set_painter_path (path);
-  return overlay_item;
+  switch (overlay_type)
+    {
+    case overlay_item_type::CURRENT_ITEM:
+      {
+        QPainterPath path = get_path ();
+        path = full_transform ().map (path);
+        renderer_overlay_path *overlay_item = new renderer_overlay_path (document ()->create_overlay_name ().toStdString ());
+        overlay_item->set_painter_path (path);
+        return overlay_item;
+      }
+    case overlay_item_type::SELECTION:
+      {
+        renderer_item_selection *selection = new renderer_item_selection (document ()->create_overlay_name ().toStdString ());
+        selection->set_bbox (bbox_with_clip (true));
+        return selection;
+      }
+    }
+  return nullptr;
 }
 
+QRectF svg_base_shape_item::exact_bbox (bool use_full_transform) const
+{
+  QPainterPath path = get_path ();
+  const svg_attribute_fill_rule *fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();
+  const svg_attribute_transform *transform = get_computed_attribute<svg_attribute_transform> ();
+  path.setFillRule (fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
+  get_stroke (path);
 
+  if (use_full_transform)
+    path = full_transform ().map (path);
+  else
+    path = transform->computed_transform ().map (path);
+  return path.boundingRect ();
+}
+
+bool svg_base_shape_item::get_stroke (QPainterPath &dst) const
+{
+  const svg_attribute_stroke *stroke = get_computed_attribute<svg_attribute_stroke> ();
+  if (!stroke->need_to_render ())
+    return false;
+
+  const svg_attribute_stroke_width *stroke_width = get_computed_attribute<svg_attribute_stroke_width> ();
+  const svg_attribute_stroke_linecap *stroke_linecap = get_computed_attribute<svg_attribute_stroke_linecap> ();
+  const svg_attribute_stroke_linejoin *stroke_linejoin = get_computed_attribute<svg_attribute_stroke_linejoin> ();
+  const svg_attribute_stroke_miterlimit *stroke_miterlimit = get_computed_attribute<svg_attribute_stroke_miterlimit> ();
+
+  QPainterPath path = get_path ();
+  QPainterPathStroker stroker;
+  stroker.setCapStyle (stroke_linecap->get_stroke_linecap ());
+  stroker.setJoinStyle (stroke_linejoin->get_stroke_linejoin ());
+  stroker.setMiterLimit (stroke_miterlimit->get_stroke_miterlimit ());
+  stroker.setWidth (stroke_width->get_stroke_width ());
+  dst = stroker.createStroke (path);
+  return true;
+}
+
+QRectF svg_base_shape_item::bbox_with_clip (bool use_full_transform) const
+{
+  const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path ();
+  const svg_attribute_fill_rule *fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();
+  const svg_attribute_transform *transform = get_computed_attribute<svg_attribute_transform> ();
+  QPainterPath path = get_path ();
+  path.setFillRule (fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
+  get_stroke (path);
+
+  if (clip_path)
+    path = path.intersected (clip_path->get_clip_path ());
+
+  if (use_full_transform)
+    path = full_transform ().map (path);
+  else
+    path = transform->computed_transform ().map (path);
+  return path.boundingRect ();
+}

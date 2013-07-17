@@ -3,6 +3,8 @@
 #include "common/common_utils.h"
 #include "common/math_defs.h"
 
+#include "editor/items_selection.h"
+
 #include "gui/gl_widget.h"
 
 #include "renderer/abstract_renderer_item.h"
@@ -14,6 +16,7 @@
 #include "renderer/events_queue.h"
 #include "renderer/event_transform_changed.h"
 #include "renderer/overlay_renderer.h"
+
 
 #include "svg/svg_document.h"
 #include "svg/items/abstract_svg_item.h"
@@ -32,6 +35,7 @@
 
 
 
+
 svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache, events_queue *queue)
   : abstract_painter (glwidget, mouse_filter_object)
 {
@@ -40,11 +44,13 @@ svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_
   m_cache = cache;
   m_queue = queue;
   m_overlay = new overlay_renderer;
+  m_selection = new items_selection (m_document);
 }
 
 svg_painter::~svg_painter ()
 {
   FREE (m_overlay);
+  FREE (m_selection);
 }
 
 void svg_painter::reset_transform ()
@@ -98,6 +104,7 @@ unsigned int svg_painter::mouse_moved (const unsigned char *dragging_buttons, co
 unsigned int svg_painter::mouse_clicked (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
 {
   FIX_UNUSED (button, pos, modifiers);
+  select_item (pos);
   return 0;
 }
 
@@ -316,4 +323,15 @@ void svg_painter::draw_overlay (QPainter &painter)
 void svg_painter::draw_page (QPainter &painter)
 {
   m_overlay->draw_page (painter, glwidget ()->rect (), m_cur_transform);
+}
+
+void svg_painter::select_item (const QPoint &pos)
+{
+  m_selection->clear ();
+  abstract_svg_item *item = get_current_item (pos);
+  if (item)
+    m_selection->add_item (item);
+
+  m_overlay->selection_changed (m_selection);
+  glwidget ()->repaint ();
 }

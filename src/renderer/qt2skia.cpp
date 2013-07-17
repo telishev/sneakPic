@@ -5,6 +5,7 @@
 #include <QPainterPath>
 #include <QBrush>
 #include <QRect>
+#include <QRectF>
 
 #pragma warning(push, 0)
 #include <SkCanvas.h>
@@ -73,6 +74,11 @@ QImage qt2skia::qimage (const SkBitmap &bitmap)
 }
 
 SkRect qt2skia::rect (const QRect &rect)
+{
+  return SkRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());
+}
+
+SkRect qt2skia::rect (const QRectF &rect)
 {
   return SkRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());
 }

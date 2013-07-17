@@ -2,8 +2,6 @@
 
 #include <QPainterPath>
 
-#include "renderer/renderer_item_path.h"
-
 #include "svg/attributes/svg_attribute_path_data.h"
 
 
