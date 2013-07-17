@@ -37,47 +37,6 @@ abstract_svg_item::~abstract_svg_item ()
     delete attribute.second;
 }
 
-void abstract_svg_item::read (const QDomElement &item)
-{
-  svg_item_factory *item_factory = m_document->item_factory ();
-  svg_attribute_factory *attribute_factory = m_document->attribute_factory ();
-  read_item (item.text ());
-
-  QDomNamedNodeMap attributes = item.attributes();
-  for (int i = 0; i < attributes.count (); i++)
-    {
-      QDomNode item = attributes.item (i);
-      if (!item.isAttr ())
-        continue;
-
-      QDomAttr attr_item = item.toAttr ();
-      abstract_attribute *attribute = attribute_factory->create_attribute (this, attr_item.localName (), attr_item.namespaceURI (), attr_item.prefix ());
-      if (attribute->read (attr_item.value ()))
-        add_attribute (attribute);
-      else
-        FREE (attribute);
-    }
-
-  /// if item has a name, add it to container before children
-  /// we cannot generate unique name right now for items that don't have it
-  /// because that name could be used by next items in file
-  create_id_by_attr ();
-  if (has_id ())
-    add_to_container ();
-
-  for (QDomNode child = item.firstChild(); !child.isNull(); child = child.nextSibling())
-    {
-      if (!child.isElement ())
-        continue;
-
-      QDomElement child_element = child.toElement ();
-      abstract_svg_item *child_item = item_factory->create_item (child_element.localName (), child_element.namespaceURI (), child_element.prefix ());
-      child_item->read (child_element);
-      insert_child (nullptr, child_item);
-    }
-
-}
-
 void abstract_svg_item::write (QXmlStreamWriter &writer) const 
 {
   if (is_cloned ())
@@ -375,5 +334,15 @@ void abstract_svg_item::get_used_namespaces (std::map<QString, QString> &map) co
 
   for (const abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
     child->get_used_namespaces (map);
+}
+
+void abstract_svg_item::process_after_read ()
+{
+  /// if item has a name, add it to container before children
+  /// we cannot generate unique name right now for items that don't have it
+  /// because that name could be used by next items in file
+  create_id_by_attr ();
+  if (has_id ())
+    add_to_container ();
 }
 

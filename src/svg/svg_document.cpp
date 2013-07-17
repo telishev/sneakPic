@@ -4,6 +4,7 @@
 #include <QDomDocument>
 #include <QTextStream>
 #include <QXmlStreamWriter>
+#include <QXmlStreamReader>
 
 #include "common/memory_deallocation.h"
 
@@ -21,6 +22,7 @@
 #include "renderer/renderer_items_container.h"
 #include "renderer/abstract_renderer_item.h"
 #include "renderer/rendered_items_cache.h"
+#include "attributes/abstract_attribute.h"
 
 
 
@@ -42,6 +44,15 @@ svg_document::~svg_document ()
   FREE (m_item_container);
 }
 
+static inline QString get_namespace_name (const QXmlStreamNamespaceDeclarations &declarations, const QString &uri)
+{
+  for (int i = 0; i < declarations.size (); i++)
+    if (declarations[i].namespaceUri () == uri)
+      return declarations[i].prefix ().toString ();
+
+  return QString ();
+}
+
 bool svg_document::read_file (const QString &filename_arg)
 {
   filename = filename_arg;
@@ -50,13 +61,52 @@ bool svg_document::read_file (const QString &filename_arg)
   if (!file.open (QIODevice::ReadOnly))
     return false;
 
-  QDomDocument doc;
-  if (!doc.setContent (&file, true))
+
+  QXmlStreamReader reader (&file);
+  abstract_svg_item *cur_item = nullptr;
+  while (!reader.atEnd ())
+    {
+      switch (reader.readNext ())
+        {
+          case QXmlStreamReader::Invalid:
+          case QXmlStreamReader::NoToken:
+            return false;
+          case QXmlStreamReader::Comment:
+          case QXmlStreamReader::DTD:
+          case QXmlStreamReader::EndDocument:
+          case QXmlStreamReader::EntityReference:
+          case QXmlStreamReader::ProcessingInstruction:
+          case QXmlStreamReader::StartDocument:
+            break;
+
+          case QXmlStreamReader::Characters:
+            {
+              if (!cur_item)
+                DEBUG_PAUSE ("cur_item must not be nullptr");
+
+              cur_item->read_item (reader.text ().toString ());
+              break;
+            }
+          case QXmlStreamReader::EndElement:
+            {
+              if (!cur_item)
+                DEBUG_PAUSE ("cur_item must not be nullptr");
+
+              cur_item = cur_item->parent ();
+              break;
+            }
+          case QXmlStreamReader::StartElement:
+            {
+              cur_item = process_new_item (reader, cur_item);
+              break;
+            }
+
+        }
+    }
+
+  if (reader.hasError () || !m_root)
     return false;
 
-  QDomElement root = doc.documentElement ();
-  m_root = m_item_factory->create_item (root.localName (), root.namespaceURI (), root.prefix ());
-  m_root->read (root);
   if (m_root->type () == svg_item_type::SVG)
     item_svg = static_cast<svg_item_svg *> (m_root);
   else
@@ -125,4 +175,33 @@ void svg_document::create_renderer_item (renderer_items_container *renderer_item
 
   for (abstract_svg_item *child = svg_item->first_child (); child; child = child->next_sibling ())
     create_renderer_item (renderer_items, child);
+}
+
+abstract_svg_item *svg_document::process_new_item (QXmlStreamReader &reader, abstract_svg_item *cur_item)
+{
+  QString namespace_uri = reader.namespaceUri ().toString ();
+  QString name = reader.name ().toString ();
+  QString namespace_name = get_namespace_name (reader.namespaceDeclarations (), namespace_uri);
+  abstract_svg_item *child_item = m_item_factory->create_item (name, namespace_uri, namespace_name);
+
+  QXmlStreamAttributes attributes = reader.attributes ();
+
+  for (int i = 0; i < attributes.size (); i++)
+    {
+      QString attribute_namespace_uri = attributes[i].namespaceUri ().toString ();
+      QString attribute_name = attributes[i].name ().toString ();
+      QString attribute_namespace_name = attributes[i].prefix ().toString ();
+      abstract_attribute *attribute = m_attribute_factory->create_attribute (child_item, attribute_name, attribute_namespace_uri, attribute_namespace_name);
+      if (attribute->read (attributes[i].value ().toString ()))
+        child_item->add_attribute (attribute);
+      else
+        FREE (attribute);
+    }
+
+  child_item->process_after_read ();
+  if (cur_item)
+    cur_item->insert_child (nullptr, child_item);
+  else
+    m_root = child_item;
+  return child_item;
 }

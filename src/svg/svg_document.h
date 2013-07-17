@@ -14,7 +14,7 @@ class rendered_items_cache;
 template<typename T>
 class wait_queue;
 
-class QDomDocument;
+class QXmlStreamReader;
 
 #include <QString>
 
@@ -48,6 +48,9 @@ public:
 
   renderer_items_container *create_rendered_items (rendered_items_cache *cache);
   void create_renderer_item (renderer_items_container *renderer_items, abstract_svg_item *svg_item);
+
+private:
+  abstract_svg_item *process_new_item (QXmlStreamReader &reader, abstract_svg_item *cur_item);
 };
 
 #endif // SVG_DOCUMENT_H

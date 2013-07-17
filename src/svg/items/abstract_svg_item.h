@@ -60,8 +60,9 @@ public:
   void add_attribute (abstract_attribute *attribute);
   void remove_attribute (abstract_attribute *attribute);
 
-  void read (const QDomElement &item);
   void write (QXmlStreamWriter &writer) const;
+
+  virtual bool read_item (const QString &/*data*/) { return true; }
 
   bool has_id () const;
   QString id () const;
@@ -98,9 +99,9 @@ public:
   abstract_svg_item *create_clone ();
 
   void get_used_namespaces (std::map<QString, QString> &map) const;
+  void process_after_read ();
 
 protected:
-  virtual bool read_item (const QString &/*data*/) { return true; }
   virtual bool write_item (QString &/*data*/) const { return true; }
   virtual bool check_item () = 0;
 
