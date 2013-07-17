@@ -158,7 +158,7 @@ renderer_items_container *svg_document::create_rendered_items (rendered_items_ca
     cache->clear_selection_mapping ();
 
   create_renderer_item (renderer_items, item_svg);
-  renderer_items->set_root (item_svg->id ().toStdString ());
+  renderer_items->set_root (item_svg->name ().toStdString ());
   renderer_items->root ()->update_bbox ();
   return renderer_items;
 }
@@ -171,7 +171,7 @@ void svg_document::create_renderer_item (renderer_items_container *renderer_item
 
   renderer_items->add_item (renderer_item);
   if (svg_item->parent ())
-    renderer_items->add_child (svg_item->parent ()->id ().toStdString (), svg_item->id ().toStdString ());
+    renderer_items->add_child (svg_item->parent ()->name ().toStdString (), svg_item->name ().toStdString ());
 
   for (abstract_svg_item *child = svg_item->first_child (); child; child = child->next_sibling ())
     create_renderer_item (renderer_items, child);

@@ -25,7 +25,7 @@ public:
   virtual bool read (const QString &data, bool /*from_css*/ = false) override { m_value = data; return true; }
   virtual bool write (QString &data, bool /*to_css*/ = false) const override { data = m_value; return true; }
 
-  virtual const char *name () const override { return m_name.c_str ();}
+  virtual const char *type_name () const override { return m_name.c_str ();}
   virtual const char *namespace_uri () const override { return m_namespace_uri.c_str (); }
 
   virtual svg_attribute_type type () const override { return svg_attribute_type::UNKNOWN; }

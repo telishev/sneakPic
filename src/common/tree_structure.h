@@ -64,7 +64,7 @@ public:
     if (prev == m_last_child)
       m_last_child = new_child;
 
-    m_child_map.insert (std::make_pair (new_child->name (), new_child));
+    m_child_map.insert (std::make_pair (new_child->type_name (), new_child));
   }
 
   void remove_child (T *child)

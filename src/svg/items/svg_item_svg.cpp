@@ -40,7 +40,7 @@ void svg_item_svg::update_renderer_item ()
 
 abstract_renderer_item *svg_item_svg::create_renderer_item () const
 {
-  renderer_item_svg *render_item = new renderer_item_svg (id ().toStdString ());
+  renderer_item_svg *render_item = new renderer_item_svg (name ().toStdString ());
 
   update_group_item (render_item);
   return render_item;

@@ -11,6 +11,6 @@ id_selector::id_selector (const std::string &id_name)
 
 bool id_selector::is_matched (const abstract_svg_item *item) const 
 {
-  return item->id ().toStdString () == m_id_name;
+  return item->name ().toStdString () == m_id_name;
 }
 

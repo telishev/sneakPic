@@ -78,7 +78,7 @@ QPainterPath svg_base_shape_item::get_path_for_clipping () const
 
 abstract_renderer_item *svg_base_shape_item::create_renderer_item () const 
 {
-  renderer_item_path *render_item = new renderer_item_path (id ().toStdString ());
+  renderer_item_path *render_item = new renderer_item_path (name ().toStdString ());
 
   QPainterPath path = get_path ();
   const svg_attribute_fill_rule *fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();
@@ -107,7 +107,7 @@ abstract_renderer_item *svg_base_shape_item::create_overlay_item () const
   const svg_attribute_clip_rule *clip_rule = get_computed_attribute<svg_attribute_clip_rule> ();
   path = full_transform ().map (path);
   path.setFillRule (clip_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
-  renderer_overlay_path *overlay_item = new renderer_overlay_path (id ().toStdString ());
+  renderer_overlay_path *overlay_item = new renderer_overlay_path (name ().toStdString ());
   overlay_item->set_painter_path (path);
   return overlay_item;
 }

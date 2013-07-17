@@ -25,7 +25,7 @@
 #include <QString>
 
 #define DECLARE_ATTRIBUTE(ENUM,NAME,NAMESPACE,CLASS,INHERIT_TYPE)                                  \
-  const char * CLASS::static_name () { return NAME; }                                              \
+  const char * CLASS::static_type_name () { return NAME; }                                         \
   svg_namespaces_t CLASS::static_ns_type () { return svg_namespaces_t::NAMESPACE; }                \
   svg_attribute_type CLASS::static_type () { return svg_attribute_type::ENUM; }                    \
   svg_attribute_type CLASS::type () const { return svg_attribute_type::ENUM; }                     \
@@ -33,7 +33,7 @@
   svg_namespaces_t CLASS::namespace_type () const { return static_ns_type (); }                    \
   const char *CLASS::namespace_uri () const { return svg_namespaces::uri (namespace_type ()); }    \
   const char *CLASS::namespace_name () const { return svg_namespaces::name (namespace_type ()); }  \
-  const char *CLASS::name () const { return static_name (); }                                      \
+  const char *CLASS::type_name () const { return static_type_name (); }                            \
   svg_inherit_type CLASS::inherit_type () const { return static_inherit_type (); }                 \
   svg_inherit_type CLASS::static_inherit_type () { return svg_inherit_type::INHERIT_TYPE; }        \
   const abstract_attribute *CLASS::default_value ()                                                \
@@ -45,7 +45,7 @@
 template<typename T>
 void svg_attribute_factory::support_attribute ()
 {
-  QString item_id = create_unique_attribute_name (T::static_name (), T::static_ns_URI ());
+  QString item_id = create_unique_attribute_name (T::static_type_name (), T::static_ns_URI ());
   m_map.insert (make_pair (item_id.toStdString (), [] (abstract_svg_item *item) { return new T (item); } ));
 }
 

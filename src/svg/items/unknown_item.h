@@ -23,7 +23,7 @@ public:
   virtual ~unknown_item () override {}
   virtual svg_item_type type () const override { return svg_item_type::UNKNOWN; }
 
-  virtual const char *name () const override { return m_name.c_str (); }
+  virtual const char *type_name () const override { return m_name.c_str (); }
   virtual const char *namespace_uri () const override { return m_namespace_uri.c_str (); }
   virtual const char *namespace_name () const override { return m_namespace_name.c_str (); }
   virtual svg_namespaces_t namespace_type () const override { return svg_namespaces_t::UNKNOWN; }

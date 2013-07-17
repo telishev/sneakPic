@@ -84,7 +84,7 @@ unsigned int svg_painter::mouse_moved (const unsigned char *dragging_buttons, co
   else
     {
       abstract_svg_item *current_item = get_current_item (pos);
-      std::string item_string = current_item ? current_item->id ().toStdString () : std::string ();
+      std::string item_string = current_item ? current_item->name ().toStdString () : std::string ();
       if (item_string != m_overlay->current_item ())
         {
           m_overlay->set_current_item (item_string);

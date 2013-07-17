@@ -3,7 +3,7 @@
 
 #define SVG_ATTRIBUTE                                           \
 public:                                                         \
-  static const char *static_name ();                            \
+  static const char *static_type_name ();                       \
   static svg_namespaces_t static_ns_type ();                    \
   virtual svg_attribute_type type () const override;            \
   static svg_attribute_type static_type ();                     \
@@ -11,7 +11,7 @@ public:                                                         \
   virtual svg_namespaces_t namespace_type () const override;    \
   virtual const char *namespace_uri () const override;          \
   virtual const char *namespace_name () const override;         \
-  virtual const char *name () const override;                   \
+  virtual const char *type_name () const override;              \
   virtual svg_inherit_type inherit_type () const override;      \
   static svg_inherit_type static_inherit_type ();               \
   static const abstract_attribute *default_value ();            \
@@ -36,7 +36,7 @@ public:
   virtual bool read (const QString &data, bool from_css = false) = 0;
   virtual bool write (QString &data, bool to_css = false) const = 0;
 
-  virtual const char *name () const = 0;
+  virtual const char *type_name () const = 0;
   virtual const char *namespace_uri () const = 0;
   virtual const char *namespace_name () const = 0;
   virtual svg_namespaces_t namespace_type () const = 0;

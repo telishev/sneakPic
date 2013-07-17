@@ -42,7 +42,7 @@ void abstract_svg_item::write (QXmlStreamWriter &writer) const
   if (is_cloned ())
     return;
 
-  writer.writeStartElement (namespace_uri (), name ());
+  writer.writeStartElement (namespace_uri (), type_name ());
   QString item_data;
   write_item (item_data);
   if (!item_data.isEmpty ())
@@ -53,7 +53,7 @@ void abstract_svg_item::write (QXmlStreamWriter &writer) const
       abstract_attribute *attribute = attribute_pair.second;
       QString value;
       attribute->write (value);
-      writer.writeAttribute (attribute->namespace_uri (), attribute->name (), value);
+      writer.writeAttribute (attribute->namespace_uri (), attribute->type_name (), value);
     }
 
   for (const abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
@@ -71,7 +71,7 @@ void abstract_svg_item::add_attribute (abstract_attribute *attribute)
       DEBUG_PAUSE ("One does not simply add attributes to cloned items");
       return;
     }
-  m_attributes.insert (std::make_pair (attribute->name (), attribute));
+  m_attributes.insert (std::make_pair (attribute->type_name (), attribute));
 }
 
 void abstract_svg_item::remove_attribute (abstract_attribute *attribute)
@@ -81,7 +81,7 @@ void abstract_svg_item::remove_attribute (abstract_attribute *attribute)
       DEBUG_PAUSE ("remove attribute is not allowed for cloned items");
       return;
     }
-  m_attributes.erase (attribute->name ());
+  m_attributes.erase (attribute->type_name ());
 }
 
 const char *abstract_svg_item::namespace_uri () const 
@@ -102,12 +102,12 @@ QString abstract_svg_item::full_name (const QString &namespace_name, const QStri
   return namespace_name + ":" + local_name;
 }
 
-bool abstract_svg_item::has_id () const
+bool abstract_svg_item::has_name () const
 {
   return !m_own_id.isEmpty ();
 }
 
-QString abstract_svg_item::id () const
+QString abstract_svg_item::name () const
 {
   return m_own_id;
 }
@@ -118,7 +118,7 @@ bool abstract_svg_item::check ()
     return false;
 
   /// for items that don't have a name, generate it
-  if (!has_id ())
+  if (!has_name ())
     {
       create_unique_name ();
       add_to_container ();
@@ -133,13 +133,13 @@ bool abstract_svg_item::check ()
 void abstract_svg_item::add_to_container ()
 {
   svg_items_container *container = document ()->item_container ();
-  DEBUG_ASSERT (has_id ());
+  DEBUG_ASSERT (has_name ());
   container->add_item (this);
 }
 
 void abstract_svg_item::remove_from_container ()
 {
-  if (has_id ())
+  if (has_name ())
     document ()->item_container ()->remove_item (this);
 }
 
@@ -231,7 +231,7 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const 
     return attribute;
 
   /// 3. search in sibling <defs> items
-  auto range = get_childs_by_name (svg_item_defs::static_name ());
+  auto range = get_childs_by_name (svg_item_defs::static_type_name ());
   for (auto it = range.first; it != range.second; it++)
     {
       const abstract_svg_item *child = it->second;
@@ -247,7 +247,7 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const 
 const abstract_attribute *abstract_svg_item::find_attribute_in_style_item (const char *data, const abstract_svg_item *item) const
 {
   const abstract_attribute *attribute = nullptr;
-  auto range = get_childs_by_name (svg_item_style::static_name ());
+  auto range = get_childs_by_name (svg_item_style::static_type_name ());
   for (auto it = range.first; it != range.second; it++)
     {
       const svg_item_style *style = static_cast <const svg_item_style *> (it->second);
@@ -266,10 +266,10 @@ bool abstract_svg_item::is_cloned () const
 
 abstract_svg_item *abstract_svg_item::create_clone ()
 {
-  abstract_svg_item *clone = m_document->item_factory ()->create_item (name (), namespace_uri (), namespace_name ());
+  abstract_svg_item *clone = m_document->item_factory ()->create_item (type_name (), namespace_uri (), namespace_name ());
   /// leave m_attributes empty
-  clone->m_original_id = id ();
-  clone->m_own_id = m_document->item_container ()->create_unique_name (clone->name ());
+  clone->m_original_id = name ();
+  clone->m_own_id = m_document->item_container ()->create_unique_name (clone->type_name ());
   clone->add_to_container ();
   
   /// append cloned children to a clone
@@ -299,7 +299,7 @@ void abstract_svg_item::create_unique_name ()
     }
 
   svg_items_container *container = document ()->item_container ();
-  m_own_id = container->create_unique_name (name ());
+  m_own_id = container->create_unique_name (type_name ());
   svg_attribute_id *attribute_id = get_attribute<svg_attribute_id> ();
   if (!attribute_id)
     {
@@ -316,7 +316,7 @@ void abstract_svg_item::create_id_by_attr ()
   if (m_own_id.isEmpty ())
     m_own_id = get_computed_attribute<svg_attribute_id> ()->id ();
 
-  if (container->contains (id ()))
+  if (container->contains (name ()))
     create_unique_name ();
 }
 
@@ -342,7 +342,7 @@ void abstract_svg_item::process_after_read ()
   /// we cannot generate unique name right now for items that don't have it
   /// because that name could be used by next items in file
   create_id_by_attr ();
-  if (has_id ())
+  if (has_name ())
     add_to_container ();
 }
 

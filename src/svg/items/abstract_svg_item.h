@@ -10,10 +10,10 @@
 public:                                            \
 virtual svg_item_type type () const override;      \
 static svg_item_type static_type ();               \
-static const char *static_name ();                 \
+static const char *static_type_name ();            \
 static svg_namespaces_t static_ns_type ();         \
 static const char *static_ns_URI ();               \
-virtual const char *name () const override;        \
+virtual const char *type_name () const override;   \
 virtual svg_namespaces_t namespace_type () const;  \
 private:                                           \
 
@@ -47,7 +47,7 @@ public:
 
   virtual svg_item_type type () const = 0;
   virtual svg_namespaces_t namespace_type () const = 0;
-  virtual const char *name () const = 0;
+  virtual const char *type_name () const = 0;
 
   virtual const char *namespace_uri () const;
   virtual const char *namespace_name () const;
@@ -64,8 +64,8 @@ public:
 
   virtual bool read_item (const QString &/*data*/) { return true; }
 
-  bool has_id () const;
-  QString id () const;
+  bool has_name () const;
+  QString name () const;
 
   bool is_xml_class (const QString &class_name) const;
 
@@ -73,7 +73,7 @@ public:
   template <typename T>
   T *get_attribute () const
   {
-    abstract_attribute *attribute = get_attribute (T::static_name ());
+    abstract_attribute *attribute = get_attribute (T::static_type_name ());
     if (!attribute || attribute->type () != T::static_type ())
       return nullptr;
     return static_cast< T *> (attribute);
@@ -83,7 +83,7 @@ public:
   template <typename T>
   const T *get_computed_attribute (const T *default_val = static_cast<const T *> (T::default_value ())) const
   {
-    const abstract_attribute *attribute = get_computed_attribute (T::static_name (), T::static_inherit_type ());
+    const abstract_attribute *attribute = get_computed_attribute (T::static_type_name (), T::static_inherit_type ());
     /// if not found, return default value
     if (!attribute || attribute->type () != T::static_type ())
       attribute = default_val;

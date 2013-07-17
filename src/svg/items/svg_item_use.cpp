@@ -43,7 +43,7 @@ bool svg_item_use::update_children_tree ()
 
 abstract_renderer_item *svg_item_use::create_renderer_item () const
 {
-  renderer_item_group *renderer_item = new renderer_item_group (id ().toStdString ());
+  renderer_item_group *renderer_item = new renderer_item_group (name ().toStdString ());
   update_group_item (renderer_item);
   return renderer_item;
 }

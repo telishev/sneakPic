@@ -30,7 +30,7 @@ abstract_renderer_item *svg_item_image::create_renderer_item () const
   if (!xlink_href->has_image_data ())
     return 0;
 
-  renderer_item_image *render_item = new renderer_item_image (id ().toStdString ());
+  renderer_item_image *render_item = new renderer_item_image (name ().toStdString ());
   const svg_attribute_x *x = get_computed_attribute <svg_attribute_x> ();
   const svg_attribute_y *y = get_computed_attribute<svg_attribute_y> ();
   const svg_attribute_width *width = get_computed_attribute<svg_attribute_width> ();
@@ -51,7 +51,7 @@ abstract_renderer_item *svg_item_image::create_overlay_item () const
   const svg_attribute_width *width = get_computed_attribute<svg_attribute_width> ();
   const svg_attribute_height *height = get_computed_attribute<svg_attribute_height> ();
   path.addRect (x->value (), y->value (), width->value (), height->value ());
-  renderer_overlay_path *overlay_item = new renderer_overlay_path (id ().toStdString ());
+  renderer_overlay_path *overlay_item = new renderer_overlay_path (name ().toStdString ());
   overlay_item->set_painter_path (path);
   return overlay_item;
 }

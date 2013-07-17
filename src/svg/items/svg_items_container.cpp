@@ -18,7 +18,7 @@ svg_items_container::~svg_items_container ()
 
 void svg_items_container::add_item (abstract_svg_item *item)
 {
-  QString id = item->id ();
+  QString id = item->name ();
   extract_number (id.toUtf8 ().constData ());
   DEBUG_ASSERT (!id.isEmpty ());
   DEBUG_ASSERT (!contains (id));
@@ -28,7 +28,7 @@ void svg_items_container::add_item (abstract_svg_item *item)
 
 void svg_items_container::remove_item (abstract_svg_item *item)
 {
-  QString id = item->id ();
+  QString id = item->name ();
   DEBUG_ASSERT (!id.isEmpty ());
   DEBUG_ASSERT (contains (id));
   m_map.erase (id);
