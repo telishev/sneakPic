@@ -22,8 +22,9 @@ svg_paint_server::~svg_paint_server ()
 
 }
 
-bool svg_paint_server::read (const QString &data, bool /*from_css*/)
+bool svg_paint_server::read (const char *char_data, bool /*from_css*/)
 {
+  QString data (char_data);
   if (data == "none")
     m_server_type = paint_server_type::NONE;
   else if (data.startsWith ("url("))

@@ -52,11 +52,11 @@ bool css_declaration::create_attribute (const std::string &name, const std::stri
   std::string real_value = from_escaped_string (value);
 
   /// TODO: do something with namespaces
-  std::unique_ptr <abstract_attribute> attribute (factory->create_attribute (m_item, QString::fromStdString (real_name), QString (), QString ()));
+  std::unique_ptr <abstract_attribute> attribute (factory->create_attribute (m_item, real_name.c_str (), "", ""));
   if (!attribute)
     return false;
 
-  if (!attribute->read (QString::fromStdString (real_value), true))
+  if (!attribute->read (real_value.c_str (), true))
     return false;
 
   auto it = m_attributes.find (name);

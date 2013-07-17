@@ -8,11 +8,9 @@
 
 
 
-bool svg_base_attribute_number::read (const QString &data, bool /*from_css*/ /*= false*/)
+bool svg_base_attribute_number::read (const char *data, bool /*from_css*/ /*= false*/)
 {
-  bool ok;
-  m_value = data.toDouble (&ok);
-  return ok;
+  return str_to_double (data, m_value);
 }
 
 bool svg_base_attribute_number::write (QString &data, bool /*from_css*/ /*= false*/) const 

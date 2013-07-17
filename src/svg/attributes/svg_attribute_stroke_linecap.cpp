@@ -10,12 +10,12 @@ svg_attribute_stroke_linecap::~svg_attribute_stroke_linecap ()
 {
 }
 
-bool svg_attribute_stroke_linecap::read (const QString &data, bool /*from_css*/)
+bool svg_attribute_stroke_linecap::read (const char *data, bool /*from_css*/)
 {
   m_linecap = Qt::PenCapStyle::FlatCap;
-  if (data == "round")
+  if (QLatin1String (data) == "round")
     m_linecap = Qt::PenCapStyle::RoundCap;
-  else if (data == "square")
+  else if (QLatin1String (data) == "square")
     m_linecap = Qt::PenCapStyle::SquareCap;
   return true;
 }

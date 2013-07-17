@@ -6,12 +6,7 @@
 #include "common/string_utils.h"
 
 
-bool svg_attribute_offset::read (const QString &data, bool /*from_css*/ /*= false*/)
-{
-  return read (data.toUtf8 ().constData ());
-}
-
-bool svg_attribute_offset::read (const char *data)
+bool svg_attribute_offset::read (const char *data, bool /*from_css*/)
 {
   CHECK (str_to_double (data, m_offset));
   trim_whitespace_left (data);

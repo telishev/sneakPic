@@ -16,9 +16,9 @@ public:
   svg_base_attribute_enum (abstract_svg_item *item) : abstract_attribute (item) { m_value = T (); }
   virtual ~svg_base_attribute_enum () {}
 
-  virtual bool read (const QString &data, bool /*from_css*/ = false) override
+  virtual bool read (const char *data, bool /*from_css*/ = false) override
   {
-    m_value = string_to_enum<T> (data.toUtf8 ().constData ());
+    m_value = string_to_enum<T> (data);
     return m_value != (T)enum_values_count (T ());
   }
 

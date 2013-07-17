@@ -22,12 +22,6 @@ svg_attribute_path_data::~svg_attribute_path_data ()
 {
 }
 
-bool svg_attribute_path_data::read (const QString &data, bool /*from_css*/)
-{
-  return read_data (data.toUtf8 ().constData ());
-
-}
-
 bool svg_attribute_path_data::write (QString &data, bool /*to_css*/) const 
 {
   size_t data_offset = 0;
@@ -41,7 +35,7 @@ bool svg_attribute_path_data::write (QString &data, bool /*to_css*/) const
   return true;
 }
 
-bool svg_attribute_path_data::read_data (const char *data)
+bool svg_attribute_path_data::read (const char *data, bool /*from_css*/)
 {
   point_2d subpath_start_point;
   point_2d current_point;

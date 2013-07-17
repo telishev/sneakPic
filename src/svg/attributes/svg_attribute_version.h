@@ -12,7 +12,7 @@ public:
   svg_attribute_version (abstract_svg_item *item) : abstract_attribute (item) {}
   virtual ~svg_attribute_version () {}
 
-  virtual bool read (const QString &data, bool /*from_css*/ = false) override { version = data; return true; }
+  virtual bool read (const char *data, bool /*from_css*/ = false) override { version = data; return true; }
   virtual bool write (QString &data, bool /*from_css*/ = false) const override { data = version ; return true; }
 };
 

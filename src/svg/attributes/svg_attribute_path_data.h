@@ -28,14 +28,12 @@ public:
   svg_attribute_path_data (abstract_svg_item *item);
   virtual ~svg_attribute_path_data ();
 
-  virtual bool read (const QString &data, bool from_css = false) override;
+  virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 
   QPainterPath create_painter_path () const;
 
 private:
-  bool read_data (const char *data);
-
   bool is_upper (char v) const;
   unsigned char to_command (char v) const;
 

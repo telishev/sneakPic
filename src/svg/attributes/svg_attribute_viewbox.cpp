@@ -20,14 +20,12 @@ svg_attribute_view_box::~svg_attribute_view_box ()
 
 }
 
-bool svg_attribute_view_box::read (const QString &data, bool /*from_css*/)
+bool svg_attribute_view_box::read (const char *data, bool /*from_css*/)
 {
-  QByteArray arr = data.toUtf8 ();
-  const char *char_data = arr.constData ();
-  CHECK (str_to_double (char_data, m_x));
-  CHECK (str_to_double (char_data, m_y));
-  CHECK (str_to_double (char_data, m_width));
-  CHECK (str_to_double (char_data, m_height));
+  CHECK (str_to_double (data, m_x));
+  CHECK (str_to_double (data, m_y));
+  CHECK (str_to_double (data, m_width));
+  CHECK (str_to_double (data, m_height));
   return true;
 }
 

@@ -27,7 +27,7 @@ public:
   svg_paint_server (abstract_svg_item *item);
   ~svg_paint_server ();
 
-  virtual bool read (const QString &data, bool from_css = false) override;
+  virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 
   renderer_paint_server *create_paint_server () const;

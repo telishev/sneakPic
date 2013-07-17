@@ -19,13 +19,13 @@ public:
   svg_attribute_factory (svg_document *document);
   ~svg_attribute_factory ();
 
-  abstract_attribute *create_attribute (abstract_svg_item *item, const QString &localName, const QString &namespaceURI, const QString &prefix) const;
+  abstract_attribute *create_attribute (abstract_svg_item *item, const char *localName, const char *namespaceURI, const char *prefix) const;
 
 private:
   template<typename T>
   void support_attribute ();
 
-  QString create_unique_attribute_name (const QString &localName, const QString &namespaceURI) const;
+  std::string create_unique_attribute_name (const char *localName, const char *namespaceURI) const;
 };
 
 #endif // SVG_ATTRIBUTE_FACTORY_H

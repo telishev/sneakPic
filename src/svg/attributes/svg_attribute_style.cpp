@@ -19,9 +19,9 @@ svg_attribute_style::~svg_attribute_style ()
   FREE (declaration);
 }
 
-bool svg_attribute_style::read (const QString &data, bool /*from_css*/)
+bool svg_attribute_style::read (const char *data, bool /*from_css*/)
 {
-  return declaration->parse (data.toUtf8 ().constData ());
+  return declaration->parse (data);
 }
 
 bool svg_attribute_style::write (QString &data, bool /*to_css*/) const 

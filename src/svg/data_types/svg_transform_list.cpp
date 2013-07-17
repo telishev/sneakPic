@@ -5,11 +5,6 @@
 #include "common/string_utils.h"
 #include "common/common_utils.h"
 
-bool svg_transform_list::read (const QString &data)
-{
-  return read (data.toUtf8 ().constData ());
-}
-
 bool svg_transform_list::write (QString &data) const 
 {
   QString m11 = double_to_str (m_transform.m11 ()), m21 = double_to_str (m_transform.m21 ()), m31 = double_to_str (m_transform.m31 ());

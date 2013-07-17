@@ -14,7 +14,7 @@ public:
   svg_attribute_gradient_transform (abstract_svg_item *item) : abstract_attribute (item) {}
   virtual ~svg_attribute_gradient_transform () {}
 
-  virtual bool read (const QString &data, bool /*from_css*/ = false) override { return m_transform.read (data); }
+  virtual bool read (const char *data, bool /*from_css*/ = false) override { return m_transform.read (data); }
   virtual bool write (QString &data, bool /*to_css*/ = false) const override { return m_transform.write (data); }
 
   QTransform transform () const { return m_transform.transform (); }

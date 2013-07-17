@@ -45,8 +45,8 @@
 template<typename T>
 void svg_attribute_factory::support_attribute ()
 {
-  QString item_id = create_unique_attribute_name (T::static_type_name (), T::static_ns_URI ());
-  m_map.insert (make_pair (item_id.toStdString (), [] (abstract_svg_item *item) { return new T (item); } ));
+  std::string item_id = create_unique_attribute_name (T::static_type_name (), T::static_ns_URI ());
+  m_map.insert (make_pair (item_id, [] (abstract_svg_item *item) { return new T (item); } ));
 }
 
 svg_attribute_factory::svg_attribute_factory (svg_document *document)
@@ -64,18 +64,18 @@ svg_attribute_factory::~svg_attribute_factory ()
 
 }
 
-abstract_attribute *svg_attribute_factory::create_attribute (abstract_svg_item *item, const QString &localName, const QString &namespaceURI, const QString &prefix) const
+abstract_attribute *svg_attribute_factory::create_attribute (abstract_svg_item *item, const char *localName, const char *namespaceURI, const char *prefix) const
 {
-  QString item_id = create_unique_attribute_name (localName, namespaceURI);
-  auto it = m_map.find (item_id.toStdString ());
+  std::string item_id = create_unique_attribute_name (localName, namespaceURI);
+  auto it = m_map.find (item_id);
   if (it == m_map.end ())
     return new unknown_attribute (item, localName, namespaceURI, prefix);
 
   return it->second (item);
 }
 
-QString svg_attribute_factory::create_unique_attribute_name (const QString &localName, const QString &namespaceURI) const
+std::string svg_attribute_factory::create_unique_attribute_name (const char *localName, const char *namespaceURI) const
 {
-  return namespaceURI + ":" + localName;
+  return std::string (namespaceURI) + ":" +  localName;
 }
 

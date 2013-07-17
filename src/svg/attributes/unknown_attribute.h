@@ -12,17 +12,17 @@ class unknown_attribute : public abstract_attribute
   std::string m_namespace_name;
   QString m_value;
 public:
-  unknown_attribute (abstract_svg_item *item, const QString &local_name, const QString &namespace_uri, const QString &namespace_name)
+  unknown_attribute (abstract_svg_item *item, const char *local_name, const char *namespace_uri, const char *namespace_name)
     : abstract_attribute (item)
   {
-    m_name = local_name.toStdString ();
-    m_namespace_uri = namespace_uri.toStdString ();
-    m_namespace_name = namespace_name.toStdString ();
+    m_name = local_name;
+    m_namespace_uri = namespace_uri;
+    m_namespace_name = namespace_name;
   }
 
   ~unknown_attribute () {};
 
-  virtual bool read (const QString &data, bool /*from_css*/ = false) override { m_value = data; return true; }
+  virtual bool read (const char *data, bool /*from_css*/ = false) override { m_value = data; return true; }
   virtual bool write (QString &data, bool /*to_css*/ = false) const override { data = m_value; return true; }
 
   virtual const char *type_name () const override { return m_name.c_str ();}

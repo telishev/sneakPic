@@ -16,7 +16,7 @@ public:
 
   double get_stroke_miterlimit () const { return m_miterlimit; }
 
-  virtual bool read (const QString &data, bool from_css = false) override;
+  virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 };
 #endif // SVG_ATTRIBUTE_STROKE_MITERLIMIT_H

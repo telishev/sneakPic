@@ -14,7 +14,7 @@ public:
   svg_attribute_xlink_href (abstract_svg_item *item);
   virtual ~svg_attribute_xlink_href ();
 
-  virtual bool read (const QString &data, bool from_css = false) override;
+  virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 
   abstract_svg_item *get_fragment () const;

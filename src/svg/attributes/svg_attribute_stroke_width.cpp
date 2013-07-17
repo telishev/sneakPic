@@ -11,9 +11,9 @@ svg_attribute_stroke_width::~svg_attribute_stroke_width ()
 
 }
 
-bool svg_attribute_stroke_width::read (const QString &data, bool from_css)
+bool svg_attribute_stroke_width::read (const char *data, bool from_css)
 {
-  return m_stroke_width.read (data.toUtf8 ().constData (), from_css);
+  return m_stroke_width.read (data, from_css);
 }
 
 bool svg_attribute_stroke_width::write (QString &data, bool from_css) const 

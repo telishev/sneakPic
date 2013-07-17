@@ -10,12 +10,12 @@ svg_attribute_stroke_linejoin::~svg_attribute_stroke_linejoin ()
 {
 }
 
-bool svg_attribute_stroke_linejoin::read (const QString &data, bool /*from_css*/)
+bool svg_attribute_stroke_linejoin::read (const char *data, bool /*from_css*/)
 {
   m_linejoin = Qt::PenJoinStyle::SvgMiterJoin;
-  if (data == "round")
+  if (QLatin1String (data) == "round")
     m_linejoin = Qt::PenJoinStyle::RoundJoin;
-  else if (data == "bevel")
+  else if (QLatin1String (data) == "bevel")
     m_linejoin = Qt::PenJoinStyle::BevelJoin;
   return true;
 }

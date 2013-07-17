@@ -14,7 +14,7 @@ public:
   svg_attribute_clip_path (abstract_svg_item *item);
   virtual ~svg_attribute_clip_path ();
 
-  virtual bool read (const QString &data, bool from_css = false) override;
+  virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 
   const svg_item_clip_path *clip_path () const;

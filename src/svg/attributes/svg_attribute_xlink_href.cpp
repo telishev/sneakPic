@@ -16,7 +16,7 @@ svg_attribute_xlink_href::~svg_attribute_xlink_href ()
 
 }
 
-bool svg_attribute_xlink_href::read (const QString &data, bool /*from_css*/)
+bool svg_attribute_xlink_href::read (const char *data, bool /*from_css*/)
 {
   return m_iri.read (data);
 }

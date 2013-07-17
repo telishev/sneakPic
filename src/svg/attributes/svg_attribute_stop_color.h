@@ -18,7 +18,7 @@ public:
   svg_attribute_stop_color (abstract_svg_item *item) : abstract_attribute (item) { }
   virtual ~svg_attribute_stop_color () {}
 
-  virtual bool read (const QString &data, bool /*from_css*/ = false) override
+  virtual bool read (const char *data, bool /*from_css*/ = false) override
   {
     m_stop_color = QColor (data);
     return true;

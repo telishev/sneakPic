@@ -12,7 +12,7 @@ public:
 
   double value () const { return m_value; }
 
-  virtual bool read (const QString &data, bool from_css = false) override;
+  virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool from_css = false) const override;
 };
 

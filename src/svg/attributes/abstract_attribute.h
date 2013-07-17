@@ -33,7 +33,7 @@ public:
   abstract_attribute (abstract_svg_item *item) { m_item = item; }
   virtual ~abstract_attribute () {}
 
-  virtual bool read (const QString &data, bool from_css = false) = 0;
+  virtual bool read (const char *data, bool from_css = false) = 0;
   virtual bool write (QString &data, bool to_css = false) const = 0;
 
   virtual const char *type_name () const = 0;

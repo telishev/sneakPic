@@ -14,9 +14,9 @@ public:
 
   double value () const { return m_value.value (); }
 
-  virtual bool read (const QString &data, bool from_css = false) override
+  virtual bool read (const char *data, bool from_css = false) override
   {
-    return m_value.read (data.toUtf8 ().constData (), from_css);
+    return m_value.read (data, from_css);
   }
   virtual bool write (QString &data, bool from_css = false) const override
   {

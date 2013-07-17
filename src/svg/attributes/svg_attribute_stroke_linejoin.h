@@ -17,7 +17,7 @@ public:
 
   Qt::PenJoinStyle get_stroke_linejoin () const { return m_linejoin; }
 
-  virtual bool read (const QString &data, bool from_css = false) override;
+  virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 };
 #endif // SVG_ATTRIBUTE_STROKE_LINEJOIN_H

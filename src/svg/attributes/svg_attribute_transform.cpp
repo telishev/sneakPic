@@ -19,7 +19,7 @@ svg_attribute_transform::~svg_attribute_transform ()
 
 }
 
-bool svg_attribute_transform::read (const QString &data, bool /*from_css*/)
+bool svg_attribute_transform::read (const char *data, bool /*from_css*/)
 {
   return m_transform.read (data);
 }

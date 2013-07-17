@@ -17,8 +17,9 @@ svg_attribute_clip_path::~svg_attribute_clip_path ()
 
 }
 
-bool svg_attribute_clip_path::read (const QString &data, bool /*from_css*/)
+bool svg_attribute_clip_path::read (const char *char_data, bool /*from_css*/)
 {
+  QString data (char_data);
   if (!data.startsWith ("url("))
     return false;
 
