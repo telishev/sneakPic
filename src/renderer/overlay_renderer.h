@@ -7,6 +7,7 @@ class svg_document;
 class renderer_overlay_root;
 class renderer_page;
 class items_selection;
+class rendered_items_cache;
 
 class QPainter;
 class QRect;
@@ -24,11 +25,12 @@ class overlay_renderer
   svg_document *m_document;
   renderer_overlay_root *m_root;
   renderer_page *m_page_item;
+  rendered_items_cache *m_cache;
   std::set<std::string> m_selection;
 
   std::string m_current_item;
 public:
-  overlay_renderer ();
+  overlay_renderer (rendered_items_cache *cache);
   ~overlay_renderer ();
 
   void set_document (svg_document *document);

@@ -43,7 +43,7 @@ svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_
   drag_started = false;
   m_cache = cache;
   m_queue = queue;
-  m_overlay = new overlay_renderer;
+  m_overlay = new overlay_renderer (m_cache);
   m_selection = new items_selection (m_document);
 }
 
@@ -140,7 +140,7 @@ void svg_painter::draw ()
     return;
 
   draw_page (painter);
-  draw_base (painter);
+  //draw_base (painter);
   draw_overlay (painter);
 
   painter.end ();

@@ -12,6 +12,7 @@
 #include "renderer/renderer_overlay_root.h"
 #include "renderer/renderer_page.h"
 #include "renderer/overlay_item_type.h"
+#include "renderer/rendered_items_cache.h"
 
 #include "svg/svg_document.h"
 #include "svg/items/svg_items_container.h"
@@ -31,15 +32,14 @@
 
 
 
-
-
-overlay_renderer::overlay_renderer ()
+overlay_renderer::overlay_renderer (rendered_items_cache *cache)
 {
   m_document = nullptr;
   m_container = nullptr;
   m_renderer = new svg_renderer (nullptr, nullptr);
   m_root = nullptr;
   m_page_item = nullptr;
+  m_cache = cache;
 }
 
 overlay_renderer::~overlay_renderer ()
@@ -103,8 +103,20 @@ void overlay_renderer::draw (QPainter &painter, const QRect &rect_to_draw, const
 {
   if (!m_container)
     return;
-  std::unique_ptr<SkBitmap> bitmap (m_renderer->draw_to_bitmap (rect_to_draw, transform, m_container->root ()));
-  QImage img = qt2skia::qimage (*bitmap);
+
+  SkBitmap bitmap;
+  bitmap.setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
+  bitmap.allocPixels ();
+  bitmap.eraseColor (SK_ColorWHITE);
+  SkDevice device (bitmap);
+  SkCanvas canvas (&device);
+
+  m_cache->lock ();
+  canvas.drawBitmap (m_cache->get_current_screen (), 0, 0);
+  m_cache->unlock ();
+
+  m_renderer->draw_to_bitmap (rect_to_draw, transform, m_container->root (), &bitmap);
+  QImage img = qt2skia::qimage (bitmap);
   painter.drawImage (rect_to_draw, img);
 }
 

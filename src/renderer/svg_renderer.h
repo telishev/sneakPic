@@ -32,6 +32,7 @@ public:
   rendered_items_cache *cache () const { return m_cache; }
 
   SkBitmap *draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const abstract_renderer_item *item);
+  void draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const abstract_renderer_item *item, SkBitmap *bitmap);
 
 private:
   bool is_something_cached ( const render_cache_id &first, const render_cache_id &last, renderer_config &cfg);

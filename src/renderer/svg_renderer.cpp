@@ -128,15 +128,20 @@ SkBitmap *svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransf
   SkBitmap *bitmap = new SkBitmap;
   bitmap->setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
   bitmap->allocPixels ();
+  bitmap->eraseColor (SK_ColorTRANSPARENT);
+  draw_to_bitmap (rect_to_draw, transform, item, bitmap);
+  return bitmap;
+}
+
+void svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const abstract_renderer_item *item, SkBitmap *bitmap)
+{
   SkDevice device (*bitmap);
   SkCanvas canvas (&device);
-  canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
   svg_renderer renderer (nullptr, nullptr);
   renderer_state state (rect_to_draw, transform);
   renderer_config cfg;
   renderer.draw_item (item, canvas, state, cfg);
-  return bitmap;
 }
 
 
