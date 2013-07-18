@@ -57,6 +57,7 @@ void overlay_renderer::set_document (svg_document *document)
   m_container->set_root (m_root->name ());
   m_document = document;
   m_current_item = std::string ();
+  m_selection.clear ();
 
   m_page_item = new renderer_page ("#page_item");
   double width, height;
