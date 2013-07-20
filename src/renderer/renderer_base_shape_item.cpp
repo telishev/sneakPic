@@ -19,10 +19,8 @@
 #pragma warning(pop)
 
 renderer_base_shape_item::renderer_base_shape_item (const std::string &name)
-  : abstract_renderer_item (name)
+  : renderer_graphics_item (name)
 {
-  m_has_clip_path = false;
-  visible = true;
   m_stroke = new SkPaint;
   m_stroke->setStyle (SkPaint::kStroke_Style);
   m_fill = new SkPaint;
@@ -66,11 +64,6 @@ void renderer_base_shape_item::set_stroke_linejoin (Qt::PenJoinStyle linejoin)
     }
 }
 
-void renderer_base_shape_item::set_visibility (bool visible_arg)
-{
-  visible = visible_arg;
-}
-
 void renderer_base_shape_item::set_stroke_miterlimit (double miterlimit)
 {
   m_stroke->setStrokeMiter (SkFloatToScalar (miterlimit));
@@ -83,9 +76,6 @@ void renderer_base_shape_item::set_stroke_width (double width)
 
 bool renderer_base_shape_item::configure_painter (SkPaint &paint, bool stroke, bool config_for_selection) const
 {
-  if (!visible)
-    return false;
-
   if (stroke)
     {
       paint = *m_stroke;
@@ -118,27 +108,13 @@ void renderer_base_shape_item::set_fill_server (const renderer_paint_server *ser
   m_fill_server = server->clone ();
 }
 
-void renderer_base_shape_item::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
+void renderer_base_shape_item::draw_graphics_item (SkCanvas &canvas, const renderer_config *config)  const
 {
-  QTransform item_transform = transform () * state.transform ();
-  QRectF transformed_rect = state.transform ().mapRect (bounding_box ());
-  if (!state.rect ().intersects (transformed_rect.toRect ()))
-    return;
-
   SkPath path = qt2skia::path (m_path);
-  canvas.save ();
-  canvas.setMatrix (qt2skia::matrix (item_transform));
-  if (m_has_clip_path)
-    canvas.clipPath (qt2skia::path (m_clip_path), SkRegion::kReplace_Op, !config->render_for_selection ());
-
   for (int i = 0; i < 2; i++)
     {
       SkPaint paint;
-      if (!configure_painter (paint, i != 0, config->render_for_selection ()))
-        continue;
-
+      configure_painter (paint, i != 0, config->render_for_selection ());
       canvas.drawPath (path, paint);
     }
-
-  canvas.restore ();
 }
