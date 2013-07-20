@@ -274,7 +274,15 @@ def print_table_row (fp, strings):
 
 def print_html_footer ():
   fp = open (log_filename, "a")
-  fp.write ("</BODY></HTML></TABLE>\n")
+  fp.write ('''</TABLE>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+<script src="./jquery.stickytableheaders.min.js" type="text/javascript"></script>
+
+  <script type="text/javascript">
+  $(document).ready(function () {
+    $('table').stickyTableHeaders();
+    });
+  </script></BODY></HTML>\n''')
   fp.close ()
 
 def write_css ():
