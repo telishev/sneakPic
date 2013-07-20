@@ -14,12 +14,18 @@ renderer_graphics_item::renderer_graphics_item (const std::string &name)
   : abstract_renderer_item (name)
 {
   m_has_clip_path = false;
+  m_opacity = 1.0;
   visible = true;
 }
 
 void renderer_graphics_item::set_visibility (bool visible_arg)
 {
   visible = visible_arg;
+}
+
+void renderer_graphics_item::set_opacity (double opacity)
+{
+  m_opacity = opacity;
 }
 
 renderer_graphics_item::~renderer_graphics_item ()

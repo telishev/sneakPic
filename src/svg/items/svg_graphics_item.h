@@ -24,6 +24,7 @@ protected:
   virtual abstract_renderer_item *create_renderer_item () const override;
   virtual renderer_graphics_item *create_renderer_graphics_item () const = 0;
   virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const override;
+  virtual abstract_renderer_item *create_outline_renderer () const {return 0; } // override and return renderer to make outline rendered
 
 private:
   void set_item_style (renderer_graphics_item *item) const;

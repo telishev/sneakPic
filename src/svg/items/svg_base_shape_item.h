@@ -23,6 +23,7 @@ protected:
   virtual QPainterPath get_path () const = 0;
   QPainterPath get_boundaries () const override;
   bool get_stroke (QPainterPath &dst) const;
+  abstract_renderer_item *create_outline_renderer () const override;
 };
 
 #endif // SVG_BASE_SHAPE_ITEM_H

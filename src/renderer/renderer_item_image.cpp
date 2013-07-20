@@ -44,6 +44,7 @@ void renderer_item_image::draw_graphics_item (SkCanvas &canvas, const renderer_c
   SkBitmap bitmap =  qt2skia::image (m_image_data);
   SkPaint paint;
   
+  paint.setAlpha ((int) (m_opacity * 255));
   if (config->render_for_selection ())
   {
     if (!configure_painter_for_selection (paint))

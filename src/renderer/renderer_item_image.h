@@ -21,7 +21,6 @@ public:
   ~renderer_item_image ();
 
   virtual void draw_graphics_item (SkCanvas &canvas, const renderer_config *config) const override;
-  virtual QRectF bounding_box () const override { return m_bbox; }
   virtual void update_bbox () override;
 
   void set_dimensions (double x, double y, double w, double h);

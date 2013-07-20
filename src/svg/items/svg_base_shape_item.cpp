@@ -10,7 +10,10 @@
 #include "svg/attributes/svg_attributes_fill_stroke.h"
 #include "svg/attributes/svg_attributes_enum.h"
 
+#include "svg/svg_document.h"
+
 #include "renderer/renderer_base_shape_item.h"
+#include "renderer/renderer_overlay_path.h"
 
 #include <memory>
 
@@ -77,6 +80,15 @@ QPainterPath svg_base_shape_item::get_boundaries () const
   path.setFillRule (fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
   get_stroke (path);
   return path;
+}
+
+abstract_renderer_item *svg_base_shape_item::create_outline_renderer () const
+{
+  QPainterPath path = get_path ();
+  path = full_transform ().map (path);
+  renderer_overlay_path *overlay_item = new renderer_overlay_path (document ()->create_overlay_name ().toStdString ());
+  overlay_item->set_painter_path (path);
+  return overlay_item;
 }
 
 bool svg_base_shape_item::get_stroke (QPainterPath &dst) const

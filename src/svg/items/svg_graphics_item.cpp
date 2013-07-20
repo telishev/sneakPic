@@ -32,11 +32,7 @@ abstract_renderer_item *svg_graphics_item::create_overlay_item (overlay_item_typ
     {
     case overlay_item_type::CURRENT_ITEM:
       {
-        renderer_overlay_path *overlay_item = new renderer_overlay_path (document ()->create_overlay_name ().toStdString ());
-        QPainterPath path = get_boundaries ();
-        path = full_transform ().map (path);
-        overlay_item->set_painter_path (path);
-        return overlay_item;
+        return create_outline_renderer ();
       }
     case overlay_item_type::SELECTION:
       {
@@ -54,11 +50,13 @@ void svg_graphics_item::set_item_style (renderer_graphics_item *item) const
   const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path ();
   const svg_attribute_visibility *visibility = get_computed_attribute<svg_attribute_visibility> ();
   const svg_attribute_display *display = get_computed_attribute<svg_attribute_display> ();
+  const svg_attribute_opacity *opacity = get_computed_attribute<svg_attribute_opacity> ();
 
   // For now display does the same stuff as visibility, though they little differ by specification
   item->set_visibility (visibility->value () == visibility::VISIBLE && display->value () != display::NONE);
   item->set_transform (transform->computed_transform ());
   item->set_bounding_box (exact_bbox (false));
+  item->set_opacity (opacity->value ());
   if (clip_path)
     item->set_clip_path (clip_path->get_clip_path ());
 }

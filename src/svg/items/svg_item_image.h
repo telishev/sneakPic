@@ -1,11 +1,12 @@
 #ifndef SVG_ITEM_IMAGE_H
 #define SVG_ITEM_IMAGE_H
 
-#include "svg/items/abstract_svg_item.h"
+#include "svg/items/svg_graphics_item.h"
 
 class QImage;
+class QPainterPath;
 
-class svg_item_image : public abstract_svg_item
+class svg_item_image : public svg_graphics_item
 {
   SVG_ITEM
 
@@ -19,8 +20,8 @@ protected:
 
 protected:
   virtual bool check_item () override;
-  abstract_renderer_item *create_renderer_item () const override;
-  abstract_renderer_item *svg_item_image::create_overlay_item (overlay_item_type overlay_type) const override;
+  virtual QPainterPath svg_item_image::get_boundaries () const override;
+  virtual renderer_graphics_item *create_renderer_graphics_item () const override;
 };
 
 #endif // SVG_ITEM_IMAGE_H

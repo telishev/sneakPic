@@ -17,13 +17,14 @@ protected:
   bool m_has_clip_path;
   bool visible;
   display m_display;
+  double m_opacity;
 
 public:
   renderer_graphics_item (const std::string &name);
   virtual ~renderer_graphics_item ();
 
   void set_clip_path (const QPainterPath &path) { m_clip_path = path; m_has_clip_path = true; }
-  void set_visibility (bool visible_arg);
+  void set_visibility (bool visible);
   void set_display (display display) { m_display = display; }
   void set_opacity (double opacity_arg);
 
