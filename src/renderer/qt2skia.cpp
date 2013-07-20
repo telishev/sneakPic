@@ -1,3 +1,5 @@
+#include "common/math_defs.h"
+
 #include "renderer/qt2skia.h"
 
 #include <QTransform>
@@ -29,8 +31,19 @@ SkPoint qt2skia::point (const QPointF &point)
 SkPath qt2skia::path (const QPainterPath &qpath)
 {
   SkPath path;
-  for (int i = 0; i < qpath.elementCount (); i++)
+  int count = qpath.elementCount ();
+  for (int i = 0; i < count; i++)
     {
+      if (   i == count - 1
+          && count > 3 
+          && are_equal (qpath.elementAt (count - 1).x, qpath.elementAt (0).x) 
+          && are_equal (qpath.elementAt (count - 1).y, qpath.elementAt (0).y)
+         )
+        {
+          path.close ();
+          break;
+        }
+
       QPainterPath::Element elem = qpath.elementAt (i);
       switch  (elem.type)
         {
@@ -51,6 +64,8 @@ SkPath qt2skia::path (const QPainterPath &qpath)
           break;
         }
     }
+
+  // Qt doesn't have any special definition if path is closed expect that it's first and last points are equal
   return path;
 }
 

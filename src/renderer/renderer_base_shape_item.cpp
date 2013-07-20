@@ -59,7 +59,7 @@ void renderer_base_shape_item::set_stroke_linejoin (Qt::PenJoinStyle linejoin)
   switch (linejoin)
     {
     case Qt::BevelJoin: m_stroke->setStrokeJoin (SkPaint::kBevel_Join); break;
-    case Qt::MiterJoin: m_stroke->setStrokeJoin (SkPaint::kMiter_Join); break;
+    case Qt::SvgMiterJoin: m_stroke->setStrokeJoin (SkPaint::kMiter_Join); break;
     case Qt::RoundJoin: m_stroke->setStrokeJoin (SkPaint::kRound_Join); break;
     default:
       return;

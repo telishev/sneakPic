@@ -15,7 +15,7 @@ svg_attribute_stroke_miterlimit::~svg_attribute_stroke_miterlimit ()
 bool svg_attribute_stroke_miterlimit::read (const char *data, bool /*from_css*/)
 {
   bool ok = str_to_double (data, m_miterlimit);
-  if (!ok || m_miterlimit < 1.0) // According to svg specification mitterlimit < 1.0 should cause an error, for now just defaulting it
+  if (!ok) // According to svg specification mitterlimit < 1.0 should cause an error, for now let's ignore it
     m_miterlimit = 4.0;
   return true;
 }
