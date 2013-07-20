@@ -386,7 +386,8 @@ class TableCell:
   cell_class = '' # name of difference used or time for now, either text (not searching any maximums)
   value = ''      # in case of anything comparable (by cell class should be converted to number)
   format = ''     # preferable output format
-  error = False
+  error = False   # if some error has happened
+  count = 0       # special value for summarizing row
   def __init__ (self, class_arg, value_arg, format_arg = '', error_arg = False):
     self.cell_class = class_arg
     self.value = value_arg
@@ -538,11 +539,11 @@ def generate_row (base_renderer, renderers, measures, file_name, print_links_arg
       if diff_in_pairs and i > 0:
         diff_type = "incomparable"
         if prev_error and error:
-          Row += [TableCell (diff_type, 0.0, '0:0.f', True)]
+          Row += [TableCell (diff_type, "Error in Both", '', True)]
         elif prev_error:
-          Row += [TableCell (diff_type, 1e10, '0:0.f', True)]
+          Row += [TableCell (diff_type, "Error in First", '', True)]
         elif error:
-          Row += [TableCell (diff_type, -1e10, '0:0.f', True)]
+          Row += [TableCell (diff_type, "Error in Second", '', True)]
         else:
           Row += [TableCell (diff_type, value - prev_value, format, False)]
 
@@ -553,8 +554,10 @@ def generate_row (base_renderer, renderers, measures, file_name, print_links_arg
   if not sum_row:
     sum_row = copy.deepcopy (Row)
     for table_cell in sum_row:
-      if table_cell.cell_class == "text":
+      if not table_cell.error and table_cell.cell_class == "text":
         table_cell.value = ""
+      else:
+        table_cell.count = 1
     sum_row[0].value = "Mean Values:"
   else:
     i = 0
@@ -562,9 +565,13 @@ def generate_row (base_renderer, renderers, measures, file_name, print_links_arg
       if table_cell.cell_class != "text" and (not table_cell.error):
         if sum_row[i].error:
           sum_row[i].error = False
+          sum_row[i].cell_class = table_cell.cell_class
+          sum_row[i].format = table_cell.format
           sum_row[i].value = table_cell.value
+          sum_row[i].count = 1
         else:
           sum_row[i].value += table_cell.value
+          sum_row[i].count += 1
       i += 1
   return Row
 
@@ -576,7 +583,7 @@ def values_eq (a, b):
 
 
 
-def print_row (cells):
+def print_row (cells): 
   fp = open (log_filename, "a")
   fp.write ("<TR>")
   minimum = {} # dictionaries
@@ -616,6 +623,7 @@ def print_row (cells):
         output_str = cell.format.format (cell.value)
       else:
         output_str = cell.value
+    #print cell.cell_class
     fp.write ("<TD" + style + ">" + output_str + "</TD>")
   fp.write ("</TR>\n")
   fp.close ()
@@ -756,7 +764,7 @@ for file in files_list:
   print "File " +  file + " has been fully processed (" + str (i) + "/" + str (num) + ")"
 for table_cell in sum_row:
   if table_cell.cell_class != "text" and (not table_cell.error):
-    table_cell.value /= num
+    table_cell.value /= table_cell.count
 if print_mean_values:
   print_row (sum_row)
 print_html_footer ()
