@@ -600,6 +600,9 @@ read_exp:
           exp = exp * 10 + (*p - '0');
           p += 1;
         }
+
+      if (exp == 0) // If exponent is not read then it's just letter 'e' at the end, returning backwards
+        p--;
     }
 
   if (expSign)
