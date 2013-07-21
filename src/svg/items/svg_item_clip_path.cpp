@@ -7,7 +7,6 @@
 #include "svg/items/svg_item_use.h"
 
 #include "svg/attributes/svg_attribute_clip_path.h"
-#include "svg/attributes/svg_attribute_transform.h"
 
 svg_item_clip_path::svg_item_clip_path (svg_document *document)
   : abstract_svg_item (document)

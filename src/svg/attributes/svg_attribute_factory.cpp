@@ -21,6 +21,8 @@
 #include "svg/attributes/svg_attributes_fill_stroke.h"
 #include "svg/attributes/svg_attribute_clip_path.h"
 #include "svg/attributes/svg_attribute_viewbox.h"
+#include "svg/attributes/svg_attributes_string.h"
+#include "svg/attributes/svg_attribute_font_size.h"
 
 #include <QString>
 

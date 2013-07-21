@@ -47,6 +47,9 @@ DECLARE_ATTRIBUTE(CLIP_PATH         , "clip-path"         , EMPTY      , svg_att
 DECLARE_ATTRIBUTE(FILL_RULE         , "fill-rule"         , EMPTY      , svg_attribute_fill_rule          , STYLE        )   \
 DECLARE_ATTRIBUTE(CLIP_RULE         , "clip-rule"         , EMPTY      , svg_attribute_clip_rule          , STYLE        )   \
 DECLARE_ATTRIBUTE(VIEW_BOX          , "viewBox"           , EMPTY      , svg_attribute_view_box           , NONE         )   \
+DECLARE_ATTRIBUTE(FONT_FAMILY       , "font-family"       , EMPTY      , svg_attribute_font_family        , INHERIT      )   \
+DECLARE_ATTRIBUTE(FONT_SIZE         , "font-size"         , EMPTY      , svg_attribute_font_size          , INHERIT      )   \
+
 
 enum class svg_attribute_type
 {

@@ -17,6 +17,7 @@
 #include "svg/items/svg_item_linear_gradient.h"
 #include "svg/items/svg_item_radial_gradient.h"
 #include "svg/items/svg_item_clip_path.h"
+#include "svg/items/svg_item_text.h"
 
 #include "svg/svg_namespaces.h"
 
