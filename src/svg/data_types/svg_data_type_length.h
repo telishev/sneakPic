@@ -35,12 +35,12 @@ public:
   bool read (const char *data, bool is_css);
   QString write (bool is_css) const ;
 
-  double value () const;
+  double value (abstract_svg_item *current_item) const;
 
   void set_value (double val, svg_length_units units = svg_length_units::NO_UNITS);
 
 private:
-  double get_units_mult () const;
+  double get_units_mult (abstract_svg_item *current_item) const;
 };
 
 #endif // SVG_DATA_TYPE_LENGTH_H

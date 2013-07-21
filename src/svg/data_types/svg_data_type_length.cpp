@@ -5,6 +5,9 @@
 #include "common/string_utils.h"
 #include "common/enum_conversion.h"
 
+#include "svg/items/abstract_svg_item.h"
+
+#include "svg/attributes/svg_attribute_font_size.h"
 
 const char *enum_to_string (svg_length_units id)
 {
@@ -87,7 +90,7 @@ void svg_data_type_length::set_value (double val, svg_length_units units)
   m_units = units;
 }
 
-double svg_data_type_length::get_units_mult () const
+double svg_data_type_length::get_units_mult (abstract_svg_item *current_item) const
 {
   /// TODO:support relative units
   switch (m_units)
@@ -99,7 +102,7 @@ double svg_data_type_length::get_units_mult () const
     case svg_length_units::MM: return 3.543307;
     case svg_length_units::PT: return 1.25;
     case svg_length_units::PC: return 15.0;
-    case svg_length_units::EM: return 1.0;
+    case svg_length_units::EM: return (current_item ? current_item->get_computed_attribute <svg_attribute_font_size> ()->value () : 1.0);
     case svg_length_units::EX: return 1.0;
     case svg_length_units::PERCENT: return 1.0;
     default: break;
@@ -109,8 +112,8 @@ double svg_data_type_length::get_units_mult () const
   return 1.0;
 }
 
-double svg_data_type_length::value () const
+double svg_data_type_length::value (abstract_svg_item *current_item) const
 {
-  return m_value * get_units_mult ();
+  return m_value * get_units_mult (current_item);
 }
 

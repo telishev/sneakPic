@@ -12,7 +12,7 @@ public:
   svg_base_attribute_length (abstract_svg_item *item, double value = 0.0, svg_length_units units = svg_length_units::NO_UNITS)
     : abstract_attribute (item) { m_value.set_value (value, units); }
 
-  double value () const { return m_value.value (); }
+  double value () const { return m_value.value (item ()); }
 
   virtual bool read (const char *data, bool from_css = false) override
   {

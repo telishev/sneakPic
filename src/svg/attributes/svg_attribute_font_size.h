@@ -14,7 +14,7 @@ public:
   svg_attribute_font_size (abstract_svg_item *item);
   virtual ~svg_attribute_font_size ();
   
-  double value () const {return m_font_size.value (); }
+  double value () const {return m_font_size.value (item ()); }
 
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
