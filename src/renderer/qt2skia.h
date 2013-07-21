@@ -1,9 +1,11 @@
 #ifndef QT2SKIA_H
 #define QT2SKIA_H
+#pragma warning(push, 0)
+#include <SkPath.h>
+#pragma warning(pop)
 
 class SkMatrix;
 struct SkPoint;
-class SkPath;
 class SkPaint;
 class SkBitmap;
 struct SkRect;
@@ -16,6 +18,11 @@ class QBrush;
 class QImage;
 class QRect;
 class QRectF;
+
+namespace Qt
+{
+  enum FillRule : int;
+};
 
 typedef unsigned int SkColor;
 
@@ -30,6 +37,7 @@ public:
   static SkBitmap image (const QImage &image_arg);
   static SkRect rect (const QRect &rect);
   static SkRect rect (const QRectF &rect);
+  static SkPath::FillType fill_rule (Qt::FillRule rule);
 };
 
 #endif // QT2SKIA_H

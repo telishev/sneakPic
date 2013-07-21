@@ -28,6 +28,16 @@ SkPoint qt2skia::point (const QPointF &point)
   return SkPoint::Make (SkFloatToScalar (point.x ()), SkFloatToScalar (point.y ()));
 }
 
+SkPath::FillType qt2skia::fill_rule (Qt::FillRule rule)
+{
+  switch (rule)
+    {
+      case Qt::FillRule::OddEvenFill:return SkPath::FillType::kEvenOdd_FillType;
+      case Qt::FillRule::WindingFill:return SkPath::FillType::kWinding_FillType;
+    }
+  return SkPath::FillType::kWinding_FillType;
+}
+
 SkPath qt2skia::path (const QPainterPath &qpath)
 {
   SkPath path;
@@ -60,8 +70,9 @@ SkPath qt2skia::path (const QPainterPath &qpath)
      && are_equal (qpath.elementAt (count - 1).y, qpath.elementAt (0).y)
     )
   path.close ();
-
   // Qt doesn't have any special definition if path is closed expect that it's first and last points are equal
+
+ path.setFillType (qt2skia::fill_rule (qpath.fillRule ()));
   return path;
 }
 
