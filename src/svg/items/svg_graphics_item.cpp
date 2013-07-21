@@ -68,18 +68,6 @@ abstract_renderer_item *svg_graphics_item::create_renderer_item () const
   return render_item;
 }
 
-QTransform svg_graphics_item::full_transform () const
-{
-  QTransform total_transform;
-  for (const abstract_svg_item *cur_item = this; cur_item; cur_item = cur_item->parent ())
-    {
-      const svg_attribute_transform *base_transform = cur_item->get_computed_attribute <svg_attribute_transform> ();
-      total_transform = total_transform * base_transform->computed_transform ();
-    }
-
-  return total_transform;
-}
-
 QRectF svg_graphics_item::exact_bbox (bool use_full_transform) const
 {
   QPainterPath path = get_boundaries ();

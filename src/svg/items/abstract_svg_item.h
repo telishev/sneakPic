@@ -17,9 +17,8 @@ virtual const char *type_name () const override;   \
 virtual svg_namespaces_t namespace_type () const;  \
 private:                                           \
 
-class QDomElement;
-class QDomDocument;
 class QXmlStreamWriter;
+class QTransform;
 
 class abstract_attribute;
 class svg_document;
@@ -101,6 +100,8 @@ public:
 
   void get_used_namespaces (std::map<QString, QString> &map) const;
   void process_after_read ();
+
+  QTransform full_transform () const;
 
 protected:
   virtual bool write_item (QString &/*data*/) const { return true; }

@@ -38,6 +38,7 @@ QPainterPath svg_item_clip_path::get_clip_path () const
   if (clip_path)
     path = path.intersected (clip_path->get_clip_path ());
 
+  path = full_transform ().inverted ().map (path);
   return path;
 }
 

@@ -1,7 +1,7 @@
 #include "svg/items/abstract_svg_item.h"
 
-#include <QDomElement>
 #include <QXmlStreamWriter>
+#include <QTransform>
 
 #include "common/debug_utils.h"
 #include "common/memory_deallocation.h"
@@ -13,6 +13,7 @@
 #include "svg/attributes/svg_attribute_class.h"
 #include "svg/attributes/svg_attribute_style.h"
 #include "svg/attributes/attribute_type.h"
+#include "svg/attributes/svg_attribute_transform.h"
 
 #include "svg/items/svg_item_factory.h"
 #include "svg/items/svg_items_container.h"
@@ -21,6 +22,7 @@
 
 #include "svg/svg_document.h"
 #include "svg/svg_namespaces.h"
+
 
 
 
@@ -346,3 +348,14 @@ void abstract_svg_item::process_after_read ()
     add_to_container ();
 }
 
+QTransform abstract_svg_item::full_transform () const
+{
+  QTransform total_transform;
+  for (const abstract_svg_item *cur_item = this; cur_item; cur_item = cur_item->parent ())
+    {
+      const svg_attribute_transform *base_transform = cur_item->get_computed_attribute <svg_attribute_transform> ();
+      total_transform = total_transform * base_transform->computed_transform ();
+    }
+
+  return total_transform;
+}
