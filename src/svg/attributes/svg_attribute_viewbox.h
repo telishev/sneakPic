@@ -18,6 +18,8 @@ public:
   virtual bool write (QString &data, bool to_css = false) const override;
 
   QTransform get_transform (const QRectF &viewport) const;
+  double get_width () const {return m_width; }
+  double get_height () const {return m_height; }
 };
 
 

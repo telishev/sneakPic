@@ -6,8 +6,13 @@
 #include "common/enum_conversion.h"
 
 #include "svg/items/abstract_svg_item.h"
+#include "svg/items/svg_item_type.h"
 
 #include "svg/attributes/svg_attribute_font_size.h"
+#include "svg/attributes/svg_attributes_length_type.h"
+#include "svg/attributes/svg_attribute_viewbox.h"
+
+#include <qmath.h>
 
 const char *enum_to_string (svg_length_units id)
 {
@@ -90,7 +95,37 @@ void svg_data_type_length::set_value (double val, svg_length_units units)
   m_units = units;
 }
 
-double svg_data_type_length::get_units_mult (abstract_svg_item *current_item) const
+static double get_required_viewport_size (abstract_svg_item *current_item, units_orientation orientation)
+{
+  for (; current_item; current_item = current_item->parent ())
+    {
+      if (current_item->type () == svg_item_type::SVG)
+        {
+          double width = current_item->get_computed_attribute <svg_attribute_width> ()->value ();
+          double height = current_item->get_computed_attribute <svg_attribute_height> ()->value ();
+          // Probably later viewbox checking and getting actual width, height should be moved to svg (viewport) item
+          const svg_attribute_view_box *viewbox = current_item->get_computed_attribute <svg_attribute_view_box> ();
+          if (viewbox)
+            {
+              width = viewbox->get_width ();
+              height = viewbox->get_height ();
+            }
+
+          switch (orientation)
+            {
+            case units_orientation::X:
+              return width;
+            case units_orientation::Y:
+              return height;
+            case units_orientation::OTHER:
+              return qSqrt ((width * width + height * height) * 0.5);
+            }
+        }
+    }
+  return 100.0;
+}
+
+double svg_data_type_length::get_units_mult (abstract_svg_item *current_item, units_orientation orientation) const
 {
   /// TODO:support relative units
   switch (m_units)
@@ -104,7 +139,7 @@ double svg_data_type_length::get_units_mult (abstract_svg_item *current_item) co
     case svg_length_units::PC: return 15.0;
     case svg_length_units::EM: return (current_item ? current_item->get_computed_attribute <svg_attribute_font_size> ()->value () : 1.0);
     case svg_length_units::EX: return 1.0;
-    case svg_length_units::PERCENT: return 1.0;
+    case svg_length_units::PERCENT: return get_required_viewport_size (current_item, orientation) * 0.01; // dividing by 100 because it's percent
     default: break;
     }
 
@@ -112,8 +147,8 @@ double svg_data_type_length::get_units_mult (abstract_svg_item *current_item) co
   return 1.0;
 }
 
-double svg_data_type_length::value (abstract_svg_item *current_item) const
+double svg_data_type_length::value (abstract_svg_item *current_item, units_orientation orientation) const
 {
-  return m_value * get_units_mult (current_item);
+  return m_value * get_units_mult (current_item, orientation);
 }
 
