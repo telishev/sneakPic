@@ -20,6 +20,7 @@ DECLARE_ITEM(RADIAL_GRADIENT , "radialGradient" , SVG         , svg_item_radial_
 DECLARE_ITEM(CLIP_PATH       , "clipPath"       , SVG         , svg_item_clip_path       )   \
 DECLARE_ITEM(IMAGE           , "image"          , SVG         , svg_item_image           )   \
 DECLARE_ITEM(TEXT            , "text"           , SVG         , svg_item_text            )   \
+DECLARE_ITEM(POLYGON         , "polygon"        , SVG         , svg_item_polygon         )   \
 
 
 enum class svg_item_type

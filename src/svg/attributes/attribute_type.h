@@ -49,6 +49,7 @@ DECLARE_ATTRIBUTE(CLIP_RULE         , "clip-rule"         , EMPTY      , svg_att
 DECLARE_ATTRIBUTE(VIEW_BOX          , "viewBox"           , EMPTY      , svg_attribute_view_box           , NONE         )   \
 DECLARE_ATTRIBUTE(FONT_FAMILY       , "font-family"       , EMPTY      , svg_attribute_font_family        , INHERIT      )   \
 DECLARE_ATTRIBUTE(FONT_SIZE         , "font-size"         , EMPTY      , svg_attribute_font_size          , INHERIT      )   \
+DECLARE_ATTRIBUTE(POINTS            , "points"            , EMPTY      , svg_attribute_points             , NONE         )   \
 
 
 enum class svg_attribute_type
