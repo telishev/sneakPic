@@ -19,6 +19,7 @@
 #include "svg/items/svg_item_clip_path.h"
 #include "svg/items/svg_item_text.h"
 #include "svg/items/svg_item_polygon.h"
+#include "svg/items/svg_item_polyline.h"
 
 #include "svg/svg_namespaces.h"
 
