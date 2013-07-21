@@ -46,7 +46,7 @@ svg_data_type_length::~svg_data_type_length ()
 
 }
 
-bool svg_data_type_length::read (const char *data, bool is_css)
+bool svg_data_type_length::read_and_shift (const char *&data, bool is_css)
 {
   CHECK (str_to_double (data, m_value));
   QString str (data);
@@ -63,7 +63,10 @@ bool svg_data_type_length::read (const char *data, bool is_css)
       if (!str.startsWith ('~'))
         return false;
       else
-        str = str.mid (1);
+        {
+          str = str.mid (1);
+          data++;
+        }
     }
 
   m_units = string_to_enum<svg_length_units> (str.toUtf8 ().constData ());
@@ -72,8 +75,15 @@ bool svg_data_type_length::read (const char *data, bool is_css)
       m_units = svg_length_units::NO_UNITS;
       return false;
     }
+  else
+    data += strlen (enum_to_string (m_units));
 
   return true;
+}
+
+bool svg_data_type_length::read (const char *data, bool is_css)
+{
+  return read_and_shift (data, is_css);
 }
 
 QString svg_data_type_length::write (bool is_css) const

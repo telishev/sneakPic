@@ -50,6 +50,9 @@ DECLARE_ATTRIBUTE(VIEW_BOX          , "viewBox"           , EMPTY      , svg_att
 DECLARE_ATTRIBUTE(FONT_FAMILY       , "font-family"       , EMPTY      , svg_attribute_font_family        , INHERIT      )   \
 DECLARE_ATTRIBUTE(FONT_SIZE         , "font-size"         , EMPTY      , svg_attribute_font_size          , INHERIT      )   \
 DECLARE_ATTRIBUTE(POINTS            , "points"            , EMPTY      , svg_attribute_points             , NONE         )   \
+DECLARE_ATTRIBUTE(DX                , "dx"                , EMPTY      , svg_attribute_dx                 , NONE         )   \
+DECLARE_ATTRIBUTE(DY                , "dy"                , EMPTY      , svg_attribute_dy                 , NONE         )   \
+DECLARE_ATTRIBUTE(TEXT_ANCHOR       , "text-anchor"       , EMPTY      , svg_attribute_text_anchor        , INHERIT      )   \
 
 
 enum class svg_attribute_type

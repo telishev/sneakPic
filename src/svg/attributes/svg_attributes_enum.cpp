@@ -76,3 +76,16 @@ const char *enum_to_string (display id)
 
   return "";
 }
+
+const char *enum_to_string (text_anchor id)
+{
+  switch (id)
+    {
+      case text_anchor::START: return "start";
+      case text_anchor::MIDDLE:return "middle";
+      case text_anchor::END:   return "end";
+      case text_anchor::INVALID:return "";
+    }
+
+  return "";
+}

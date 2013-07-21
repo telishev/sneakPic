@@ -1,8 +1,12 @@
 #ifndef SVG_BASE_ATTRIBUTE_LENGTH_H
 #define SVG_BASE_ATTRIBUTE_LENGTH_H
 
+#include "common/common_utils.h"
+
 #include "svg/attributes/abstract_attribute.h"
 #include "svg/data_types/svg_data_type_length.h"
+
+#include <QList>
 
 class svg_base_attribute_length : public abstract_attribute
 {

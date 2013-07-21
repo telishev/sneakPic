@@ -12,6 +12,7 @@
 #include "svg/attributes/svg_attribute_stroke_width.h"
 #include "svg/attributes/svg_attribute_transform.h"
 #include "svg/attributes/svg_attributes_length_type.h"
+#include "svg/attributes/svg_attributes_length_type_list.h"
 #include "svg/attributes/svg_attributes_number.h"
 #include "svg/attributes/svg_attribute_xlink_href.h"
 #include "svg/attributes/svg_attributes_enum.h"

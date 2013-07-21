@@ -41,6 +41,7 @@ public:
   ~svg_data_type_length ();
 
   bool read (const char *data, bool is_css);
+  bool read_and_shift (const char *&data, bool is_css); // shifts data pointer position (for reading lists, etc. )
   QString write (bool is_css) const ;
 
   double value (abstract_svg_item *current_item, units_orientation orientation) const;

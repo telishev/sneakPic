@@ -151,4 +151,24 @@ public:
   { m_value = display::INLINE; }
 };
 
+enum class text_anchor
+{
+  START,
+  MIDDLE,
+  END,
+
+  INVALID
+};
+
+const char *enum_to_string (text_anchor id);
+static inline int enum_values_count (text_anchor) { return (int)text_anchor::INVALID; }
+
+class svg_attribute_text_anchor : public svg_base_attribute_enum<text_anchor>
+{
+  SVG_ATTRIBUTE
+public:
+  svg_attribute_text_anchor (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  { m_value = text_anchor::START; }
+};
+
 #endif // SVG_ATTRIBUTES_ENUM_H
