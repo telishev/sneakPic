@@ -63,6 +63,9 @@ void svg_graphics_item::set_item_style (renderer_graphics_item *item) const
 abstract_renderer_item *svg_graphics_item::create_renderer_item () const 
 {
   renderer_graphics_item *render_item = create_renderer_graphics_item ();
+  if (!render_item)
+    return 0;
+
   set_item_style (render_item);
   return render_item;
 }
