@@ -7,6 +7,7 @@
 #include "svg/items/svg_item_use.h"
 
 #include "svg/attributes/svg_attribute_clip_path.h"
+#include "svg/attributes/svg_attribute_transform.h"
 
 svg_item_clip_path::svg_item_clip_path (svg_document *document)
   : abstract_svg_item (document)
@@ -26,7 +27,10 @@ QPainterPath svg_item_clip_path::get_clip_path () const
     {
       if (child->type () == svg_item_type::USE)
         {
-          path.addPath (get_single_child_path (child->first_child ()));
+          QPainterPath child_path = get_single_child_path (child->first_child ());
+          const svg_attribute_transform *transform = child->get_computed_attribute<svg_attribute_transform> ();
+          child_path = transform->computed_transform ().map (child_path);
+          path.addPath (child_path);
         }
       else
         path.addPath (get_single_child_path (child));
@@ -37,7 +41,6 @@ QPainterPath svg_item_clip_path::get_clip_path () const
   if (clip_path)
     path = path.intersected (clip_path->get_clip_path ());
 
-  path = full_transform ().inverted ().map (path);
   return path;
 }
 

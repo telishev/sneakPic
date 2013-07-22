@@ -43,9 +43,12 @@ void renderer_graphics_item::draw (SkCanvas &canvas, const renderer_state &state
     return;
 
   canvas.save ();
-  canvas.setMatrix (qt2skia::matrix (item_transform));
   if (m_has_clip_path)
-    canvas.clipPath (qt2skia::path (m_clip_path), SkRegion::kReplace_Op, !config->render_for_selection ());
+    {
+      QPainterPath clip_path = item_transform.map (m_clip_path);
+      canvas.clipPath (qt2skia::path (clip_path), SkRegion::kReplace_Op, !config->render_for_selection ());
+    }
+  canvas.setMatrix (qt2skia::matrix (item_transform));
 
   draw_graphics_item (canvas, config);
 

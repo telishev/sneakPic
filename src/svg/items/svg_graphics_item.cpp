@@ -46,7 +46,6 @@ abstract_renderer_item *svg_graphics_item::create_overlay_item (overlay_item_typ
 
 void svg_graphics_item::set_item_style (renderer_graphics_item *item) const 
 {
-  const svg_attribute_transform *transform = get_computed_attribute<svg_attribute_transform> ();
   const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path ();
   const svg_attribute_visibility *visibility = get_computed_attribute<svg_attribute_visibility> ();
   const svg_attribute_display *display = get_computed_attribute<svg_attribute_display> ();
@@ -54,8 +53,8 @@ void svg_graphics_item::set_item_style (renderer_graphics_item *item) const
 
   // For now display does the same stuff as visibility, though they little differ by specification
   item->set_visibility (visibility->value () == visibility::VISIBLE && display->value () != display::NONE);
-  item->set_transform (transform->computed_transform ());
-  item->set_bounding_box (exact_bbox (false));
+  item->set_transform (full_transform ());
+  item->set_bounding_box (exact_bbox (true));
   item->set_opacity (opacity->value ());
   if (clip_path)
     item->set_clip_path (clip_path->get_clip_path ());

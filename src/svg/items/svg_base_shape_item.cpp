@@ -9,6 +9,7 @@
 #include "svg/attributes/svg_attributes_number.h"
 #include "svg/attributes/svg_attributes_fill_stroke.h"
 #include "svg/attributes/svg_attributes_enum.h"
+#include "svg/attributes/svg_attribute_transform.h"
 
 #include "svg/svg_document.h"
 
@@ -16,6 +17,7 @@
 #include "renderer/renderer_overlay_path.h"
 
 #include <memory>
+
 
 svg_base_shape_item::svg_base_shape_item (svg_document *document)
    : svg_graphics_item (document)
@@ -55,7 +57,8 @@ QPainterPath svg_base_shape_item::get_path_for_clipping () const
 {
   QPainterPath path = get_path ();
   const svg_attribute_clip_rule *clip_rule = get_computed_attribute<svg_attribute_clip_rule> ();
-  path = full_transform ().map (path);
+  const svg_attribute_transform *transform = get_computed_attribute<svg_attribute_transform> ();
+  path = transform->computed_transform ().map (path);
   path.setFillRule (clip_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
   return path;
 }

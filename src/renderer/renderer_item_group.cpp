@@ -35,7 +35,6 @@ void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, c
   if ((config && config->is_interrupted ()) || m_display == display::NONE)
     return;
 
-  QTransform item_transform = transform () * state.transform ();
   QRectF transformed_rect = state.transform ().mapRect (bounding_box ());
   QRect result_rect = state.rect ().intersected (transformed_rect.toRect ());
   if (result_rect.isNull ())
@@ -52,7 +51,7 @@ void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, c
 
   QTransform pixmap_transform = QTransform::fromTranslate (state.rect ().x () - result_rect.x (), state.rect ().y () - result_rect.y ());
 
-  renderer_state new_state (state.rect (), item_transform * pixmap_transform);
+  renderer_state new_state (state.rect (), state.transform () * pixmap_transform);
 
   for (const std::string &child_name : m_children)
     {
@@ -67,6 +66,7 @@ void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, c
   canvas.save ();
   if (m_has_clip_path)
     {
+      QTransform item_transform = transform () * state.transform ();
       QPainterPath clip_path = item_transform.map (m_clip_path);
       canvas.clipPath (qt2skia::path (clip_path), SkRegion::kReplace_Op, !config->render_for_selection ());
     }
@@ -97,5 +97,5 @@ void renderer_item_group::update_bbox ()
       new_box = new_box.united (renderer_item->bounding_box ());
     }
 
-  m_bbox = transform ().mapRect (new_box);
+  m_bbox = new_box;
 }
