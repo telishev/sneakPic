@@ -45,6 +45,7 @@ public:
   QString write (bool is_css) const ;
 
   double value (abstract_svg_item *current_item, units_orientation orientation) const;
+  svg_length_units units_type () const { return m_units; }
 
   void set_value (double val, svg_length_units units = svg_length_units::NO_UNITS);
 

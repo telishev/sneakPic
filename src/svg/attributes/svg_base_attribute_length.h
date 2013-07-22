@@ -19,6 +19,7 @@ public:
     : abstract_attribute (item) { m_value.set_value (value, units); m_units_orientation = units_orientation_arg; }
 
   double value () const { return m_value.value (item (), m_units_orientation); }
+  svg_length_units units_type () const { return m_value.units_type (); }
 
   virtual bool read (const char *data, bool from_css = false) override
   {
