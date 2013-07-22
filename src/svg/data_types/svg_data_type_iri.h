@@ -29,7 +29,7 @@ enum class data_format
   percentencoding
 };
 
-class data_type_iri
+class svg_data_type_iri
 {
   abstract_svg_item *m_item;
   QString m_element_id;
@@ -38,8 +38,8 @@ class data_type_iri
   iri_type m_iri_type;
   QByteArray raw_data;
 public:
-  data_type_iri (abstract_svg_item *item);
-  virtual ~data_type_iri ();
+  svg_data_type_iri (abstract_svg_item *item);
+  virtual ~svg_data_type_iri ();
 
   bool read (const QString &data);
   bool write (QString &data) const;

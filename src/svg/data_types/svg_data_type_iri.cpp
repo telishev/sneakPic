@@ -1,4 +1,4 @@
-#include "svg/data_types/data_type_iri.h"
+#include "svg/data_types/svg_data_type_iri.h"
 
 #include "svg/svg_document.h"
 
@@ -10,7 +10,7 @@
 #include <QBuffer>
 #include <QImageReader>
 
-data_type_iri::data_type_iri (abstract_svg_item *item)
+svg_data_type_iri::svg_data_type_iri (abstract_svg_item *item)
 {
   m_item = item;
   m_image_data = 0; 
@@ -18,7 +18,7 @@ data_type_iri::data_type_iri (abstract_svg_item *item)
   m_data_type = data_type::unsupported;
 }
 
-data_type_iri::~data_type_iri ()
+svg_data_type_iri::~svg_data_type_iri ()
 {
   FREE (m_image_data);
 }
@@ -40,7 +40,7 @@ static inline int enum_values_count (data_type)
   return (int) data_type::unsupported;
 }
 
-bool data_type_iri::read (const QString &data)
+bool svg_data_type_iri::read (const QString &data)
 {
   /// For now we only support local references in a form  #<elementID>
   if (data.startsWith ("#"))
@@ -99,7 +99,7 @@ bool data_type_iri::read (const QString &data)
   return false;
 }
 
-bool data_type_iri::write (QString &data) const 
+bool svg_data_type_iri::write (QString &data) const 
 {
   switch (m_iri_type)
     {
@@ -115,7 +115,7 @@ bool data_type_iri::write (QString &data) const
   return false;
 }
 
-abstract_svg_item *data_type_iri::get_fragment () const
+abstract_svg_item *svg_data_type_iri::get_fragment () const
 {
   if (!m_item)
     return nullptr;
@@ -123,17 +123,17 @@ abstract_svg_item *data_type_iri::get_fragment () const
   return m_item->document ()->item_container ()->get_item (m_element_id);
 }
 
-iri_type data_type_iri::get_type () const
+iri_type svg_data_type_iri::get_type () const
 {
   return m_iri_type;
 }
 
-data_type data_type_iri::get_data_type () const
+data_type svg_data_type_iri::get_data_type () const
 {
   return m_data_type;
 }
 
-QImage *data_type_iri::get_image_data () const
+QImage *svg_data_type_iri::get_image_data () const
 {
   if (!m_image_data)
     return nullptr;

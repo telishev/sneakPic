@@ -4,7 +4,7 @@
 #include <QColor>
 
 #include "svg/attributes/abstract_attribute.h"
-#include "svg/data_types/data_type_iri.h"
+#include "svg/data_types/svg_data_type_iri.h"
 
 class renderer_paint_server;
 
@@ -19,7 +19,7 @@ protected:
     IRI,
   };
 
-  data_type_iri m_iri;
+  svg_data_type_iri m_iri;
   QColor m_color;
   paint_server_type m_server_type;
 
