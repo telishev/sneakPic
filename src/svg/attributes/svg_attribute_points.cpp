@@ -18,8 +18,9 @@ bool svg_attribute_points::read (const char *data, bool /* from_css */)
   double x, y;
   while (*data)
     {
-      CHECK (str_to_double (data, x));
-      CHECK (str_to_double (data, y));
+      // Actually error or warning should be printed in case of odd number of coordinates
+      CHECK_RET (str_to_double (data, x), true);
+      CHECK_RET (str_to_double (data, y), true);
       m_point_list.push_back (QPointF (x, y));
     }
   return true;
