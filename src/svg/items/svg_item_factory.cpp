@@ -20,6 +20,7 @@
 #include "svg/items/svg_item_text.h"
 #include "svg/items/svg_item_polygon.h"
 #include "svg/items/svg_item_polyline.h"
+#include "svg/items/svg_item_a.h"
 
 #include "svg/svg_namespaces.h"
 

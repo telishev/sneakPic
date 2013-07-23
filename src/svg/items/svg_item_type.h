@@ -24,6 +24,7 @@ DECLARE_ITEM(IMAGE           , "image"          , SVG         , svg_item_image  
 DECLARE_ITEM(TEXT            , "text"           , SVG         , svg_item_text            )   \
 DECLARE_ITEM(POLYGON         , "polygon"        , SVG         , svg_item_polygon         )   \
 DECLARE_ITEM(POLYLINE        , "polyline"       , SVG         , svg_item_polyline        )   \
+DECLARE_ITEM(A               , "a"              , SVG         , svg_item_a               )   \
 
 
 enum class svg_item_type
