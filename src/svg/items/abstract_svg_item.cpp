@@ -14,6 +14,7 @@
 #include "svg/attributes/svg_attribute_style.h"
 #include "svg/attributes/attribute_type.h"
 #include "svg/attributes/svg_attribute_transform.h"
+#include "svg/attributes/svg_attribute_element_mapping.h"
 
 #include "svg/items/svg_item_factory.h"
 #include "svg/items/svg_items_container.h"
@@ -22,6 +23,7 @@
 
 #include "svg/svg_document.h"
 #include "svg/svg_namespaces.h"
+
 
 
 
@@ -145,23 +147,25 @@ void abstract_svg_item::remove_from_container ()
     document ()->item_container ()->remove_item (this);
 }
 
-const abstract_attribute *abstract_svg_item::get_computed_attribute (const char *data, svg_inherit_type inherit_type) const
+const abstract_attribute *abstract_svg_item::get_computed_attribute (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type) const
 {
   /// 1. search in own attributes
+  const svg_attribute_element_mapping *mapping = svg_attribute_element_mapping::get ();
+  bool can_be_specified = mapping->can_be_specified (type (), attr_type);
   const abstract_attribute *attribute = get_attribute (data);
-  if (attribute)
+  if (attribute && attribute->type () == attr_type)
     return attribute;
 
   if (inherit_type == svg_inherit_type::NONE)
     return nullptr;
 
-  if (inherit_type == svg_inherit_type::STYLE)
+  if (inherit_type == svg_inherit_type::STYLE && can_be_specified)
     {
       /// 2. Search in "style" attribute
       const svg_attribute_style *style = get_computed_attribute<svg_attribute_style> ();
       if (style)
         attribute = style->get_attribute (data);
-      if (attribute)
+      if (attribute && attribute->type () == attr_type)
         return attribute;
 
       /// 3. Search in selectors
@@ -170,10 +174,10 @@ const abstract_attribute *abstract_svg_item::get_computed_attribute (const char 
         {
           const abstract_svg_item *original_item = get_original_item ();
           if (original_item)
-            attribute = original_item->find_attribute_in_selectors (data, original_item);
+            attribute = original_item->find_attribute_in_selectors (data, original_item, attr_type);
         }
       else
-        attribute = find_attribute_in_selectors (data, this);
+        attribute = find_attribute_in_selectors (data, this, attr_type);
       if (attribute)
         return attribute;
     }
@@ -181,7 +185,7 @@ const abstract_attribute *abstract_svg_item::get_computed_attribute (const char 
   /// 4. Inherit from parent
   if (parent ())
     {
-      attribute = parent ()->get_computed_attribute (data, inherit_type);
+      attribute = parent ()->get_computed_attribute (data, inherit_type, attr_type);
       if (attribute)
         return attribute;
     }
@@ -216,11 +220,11 @@ abstract_attribute *abstract_svg_item::get_attribute (const char *data) const
   return nullptr;
 }
 
-const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const char *data, const abstract_svg_item *item) const
+const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const char *data, const abstract_svg_item *item, svg_attribute_type attr_type) const
 {
   const abstract_attribute *attribute = nullptr;
   /// 1. search in <style> child
-  attribute = find_attribute_in_style_item (data, item);
+  attribute = find_attribute_in_style_item (data, item, attr_type);
   if (attribute)
     return attribute;
 
@@ -228,7 +232,7 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const 
   if (!parent ())
     return nullptr;
 
-  attribute = parent ()->find_attribute_in_selectors (data, item);
+  attribute = parent ()->find_attribute_in_selectors (data, item, attr_type);
   if (attribute)
     return attribute;
 
@@ -237,7 +241,7 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const 
   for (auto it = range.first; it != range.second; it++)
     {
       const abstract_svg_item *child = it->second;
-      attribute = child->find_attribute_in_style_item (data, item);
+      attribute = child->find_attribute_in_style_item (data, item, attr_type);
       if (attribute)
         return attribute;
     }
@@ -246,7 +250,7 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const 
   return nullptr;
 }
 
-const abstract_attribute *abstract_svg_item::find_attribute_in_style_item (const char *data, const abstract_svg_item *item) const
+const abstract_attribute *abstract_svg_item::find_attribute_in_style_item (const char *data, const abstract_svg_item *item, svg_attribute_type attr_type) const
 {
   const abstract_attribute *attribute = nullptr;
   auto range = get_childs_by_name (svg_item_style::static_type_name ());
@@ -254,7 +258,7 @@ const abstract_attribute *abstract_svg_item::find_attribute_in_style_item (const
     {
       const svg_item_style *style = static_cast <const svg_item_style *> (it->second);
       attribute = style->get_attribute (data, item);
-      if (attribute)
+      if (attribute && attribute->type () == attr_type)
         return attribute;
     }
 

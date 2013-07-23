@@ -81,9 +81,9 @@ svg_attribute_element_mapping::~svg_attribute_element_mapping ()
 
 }
 
-svg_attribute_element_mapping *svg_attribute_element_mapping::get ()
+const svg_attribute_element_mapping *svg_attribute_element_mapping::get ()
 {
-  static svg_attribute_element_mapping mapping;
+  static const svg_attribute_element_mapping mapping;
   return &mapping;
 }
 

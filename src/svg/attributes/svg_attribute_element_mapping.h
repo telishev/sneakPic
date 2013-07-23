@@ -11,7 +11,7 @@ class svg_attribute_element_mapping
 {
   std::vector<std::unordered_set<svg_item_type>> m_map;
 public:
-  static svg_attribute_element_mapping *get ();
+  static const svg_attribute_element_mapping *get ();
 
   bool can_be_specified (svg_item_type item_type, svg_attribute_type attribute_type) const;
 

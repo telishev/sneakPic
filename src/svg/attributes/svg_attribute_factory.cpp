@@ -78,7 +78,7 @@ abstract_attribute *svg_attribute_factory::create_attribute (abstract_svg_item *
 {
   std::string item_id = localName;
   auto it_pair = m_map.equal_range (item_id);
-  svg_attribute_element_mapping *mapping = svg_attribute_element_mapping::get ();
+  const svg_attribute_element_mapping *mapping = svg_attribute_element_mapping::get ();
 
   for (auto it = it_pair.first; it != it_pair.second; ++it)
     {
