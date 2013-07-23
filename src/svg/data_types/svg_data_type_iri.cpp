@@ -9,11 +9,13 @@
 
 #include <QBuffer>
 #include <QImageReader>
+#include <QFileInfo>
+#include <QDir>
 
 svg_data_type_iri::svg_data_type_iri (abstract_svg_item *item)
 {
   m_item = item;
-  m_image_data = 0; 
+  m_image_data = 0;
   m_iri_type = iri_type::document_fragment;
   m_data_type = data_type::unsupported;
 }
@@ -95,6 +97,29 @@ bool svg_data_type_iri::read (const QString &data)
       }
       return true;
     }
+  else // try to treat as a link
+    {
+      QFileInfo file (QFileInfo (m_item->get_document_path ()).absoluteDir (), data);
+      if (!file.exists ())
+        return false;
+
+      m_iri_type = iri_type::media_resource;
+      link_to_resource = data;
+      if (file.suffix () == "jpg") 
+        {
+          m_image_data = new QImage ();
+          if (m_image_data->load (file.absoluteFilePath ()))
+            m_data_type = data_type::image_jpeg;
+          return true;
+        }
+      else if (file.suffix () == "png")
+        {
+          m_image_data = new QImage ();
+          if (m_image_data->load (file.absoluteFilePath ()))
+            m_data_type = data_type::image_png;
+          return true;
+        }
+    }
   // Everything else is unsupported
   return false;
 }
@@ -108,6 +133,9 @@ bool svg_data_type_iri::write (QString &data) const
       return true;
     case iri_type::media_data:
         data = QLatin1String ("data:") + enum_to_string (m_data_type) + ";base64," + raw_data.toBase64 (); // We're using the date we calculated previously
+      break;
+    case iri_type::media_resource:
+      data = link_to_resource;
       break;
     case iri_type::unsupported:
       return false;

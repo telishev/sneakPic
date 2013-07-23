@@ -11,8 +11,8 @@ enum class iri_type
   document_fragment,
   // external_frament,  // Not supported
   // external_document, // Not supported
-  // media_resource,    // Not supported
-  media_data,           // Only for image
+  media_resource,       // Only for raster image
+  media_data,           // Only for raster image
   unsupported,
 };
 
@@ -37,6 +37,7 @@ class svg_data_type_iri
   data_type m_data_type;
   iri_type m_iri_type;
   QByteArray raw_data;
+  QString link_to_resource;
 public:
   svg_data_type_iri (abstract_svg_item *item);
   virtual ~svg_data_type_iri ();

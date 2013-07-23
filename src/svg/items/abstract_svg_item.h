@@ -104,6 +104,8 @@ public:
 
   QTransform full_transform () const;
 
+  QString get_document_path () const;
+
 protected:
   virtual bool write_item (QString &/*data*/) const { return true; }
   virtual bool check_item () = 0;

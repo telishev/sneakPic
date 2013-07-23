@@ -363,3 +363,8 @@ QTransform abstract_svg_item::full_transform () const
 
   return total_transform;
 }
+
+QString abstract_svg_item::get_document_path () const
+{
+  return m_document->get_filename ();
+}
