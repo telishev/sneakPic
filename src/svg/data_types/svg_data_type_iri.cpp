@@ -29,6 +29,7 @@ const char *enum_to_string (data_type id)
 {
   switch (id)
     {
+      case data_type::image_jpg: return "image/jpg";
       case data_type::image_jpeg: return "image/jpeg";
       case data_type::image_png: return "image/png";
       case data_type::unsupported: return "";
@@ -85,6 +86,7 @@ bool svg_data_type_iri::read (const QString &data)
       switch (m_data_type)
       {
         case data_type::image_jpeg:
+        case data_type::image_jpg:
           m_image_data = new QImage ();
           m_image_data->load (&QBuffer (&raw_data), "jpg");
           break;
@@ -105,7 +107,7 @@ bool svg_data_type_iri::read (const QString &data)
 
       m_iri_type = iri_type::media_resource;
       link_to_resource = data;
-      if (file.suffix () == "jpg") 
+      if (file.suffix () == "jpg" || file.suffix () == "jpeg") 
         {
           m_image_data = new QImage ();
           if (m_image_data->load (file.absoluteFilePath ()))

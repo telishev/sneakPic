@@ -19,6 +19,7 @@ enum class iri_type
 enum class data_type
 {
   image_jpeg,
+  image_jpg,
   image_png,
   unsupported
 };
