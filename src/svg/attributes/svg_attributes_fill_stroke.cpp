@@ -44,8 +44,38 @@ bool svg_paint_server::read (const char *char_data, bool /*from_css*/)
     }
   else
     {
-      m_color = QColor (data);
       m_server_type = paint_server_type::COLOR;
+      m_color = QColor (data);
+      if (!m_color.isValid ())
+        {
+          if (!data.startsWith ("rgb("))
+            return false;
+          char_data += 4;
+          bool percent_mode = false;
+          bool percent_mode_is_set = false;
+          double rgb[3];
+          for (int i = 0; i < 3; i++)
+          {
+            CHECK (str_to_double (char_data, rgb[i]));
+            trim_whitespace_left (char_data);
+            if (!percent_mode_is_set)
+              percent_mode = (*char_data == '%');
+            else
+              CHECK (percent_mode == (*char_data == '%')) // percent mode should be the smae
+           if (*char_data == '%')
+             char_data++;
+          }
+          trim_whitespace_left (char_data);
+          if (*char_data != ')') // consistency check
+            return false;
+          if (percent_mode)
+            {
+              for (int i = 0; i < 3; i++)
+                rgb[i] *= 2.55; // it's actually 255 / 100, calm down
+            }
+          // and finally we're happy to present our new color:
+          m_color = QColor ((int) rgb[0], (int) rgb[1], (int) rgb[2]);
+        }
     }
 
   return true;
