@@ -95,7 +95,7 @@ bool svg_attribute_element_mapping::can_be_specified (svg_item_type item_type, s
 
 void svg_attribute_element_mapping::fill_presentation_attribute (svg_attribute_type type)
 {
-  DO_MAP_ATTRIBUTE (type, SVG, G, PATH, DEFS, LINE, RECT, ELLIPSE, CIRCLE, USE, STOP, LINEAR_GRADIENT, RADIAL_GRADIENT, CLIP_PATH, IMAGE, TEXT, POLYGON, POLYLINE);
+  DO_MAP_ATTRIBUTE (type, SVG, G, PATH, DEFS, LINE, RECT, ELLIPSE, CIRCLE, USE, STOP, LINEAR_GRADIENT, RADIAL_GRADIENT, CLIP_PATH, IMAGE, TEXT, POLYGON, POLYLINE, STYLE);
 }
 
 void svg_attribute_element_mapping::fill_all_items (svg_attribute_type type)
