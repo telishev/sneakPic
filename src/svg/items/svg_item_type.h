@@ -1,6 +1,8 @@
 #ifndef SVG_ITEM_TYPE_H
 #define SVG_ITEM_TYPE_H
 
+/// !!!! Don't forget to update svg/attributes/svg_attribute_element_mapping.h after adding new item
+
 #define DECLARE_SVG_ITEM                                          \
 /*                                                            */  \
 /*            ENUM           |   NAME           |  NAMESPACE  |         CLASS            */  \

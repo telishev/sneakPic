@@ -14,7 +14,7 @@ class QString;
 class svg_attribute_factory
 {
   svg_document *m_document;
-  std::unordered_map<std::string, std::function<abstract_attribute * (abstract_svg_item *)>> m_map;
+  std::unordered_multimap<std::string, std::function<abstract_attribute * (abstract_svg_item *)>> m_map;
 public:
   svg_attribute_factory (svg_document *document);
   ~svg_attribute_factory ();
