@@ -61,7 +61,7 @@ bool svg_transform_list::apply_transform (const std::string &name, std::vector<d
 
       double tx, ty;
       tx = data[0];
-      ty = data.size () == 1 ? tx : data[1];
+      ty = data.size () == 1 ? 0 : data[1];
 
       new_transform.translate (tx, ty);
     }
