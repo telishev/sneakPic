@@ -1,9 +1,10 @@
+#include "common/common_utils.h"
+#include "common/string_utils.h"
+
 #include "svg/attributes/svg_attribute_viewbox.h"
 
 #include <QTransform>
 #include <QRectF>
-
-#include "common/string_utils.h"
 
 
 svg_attribute_view_box::svg_attribute_view_box (abstract_svg_item *item)

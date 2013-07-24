@@ -1,5 +1,7 @@
-#include "common/string_utils.h"
 #include "svg/attributes/svg_attribute_points.h"
+
+#include "common/common_utils.h"
+#include "common/string_utils.h"
 
 #include <QString>
 
