@@ -52,7 +52,10 @@ void renderer_item_image::draw_graphics_item (SkCanvas &canvas, const renderer_c
     canvas.drawRect (SkRect::MakeXYWH (m_x, m_y, m_width, m_height), paint);
   }
   else
-    canvas.drawBitmapRect (bitmap, SkRect::MakeXYWH (m_x, m_y, m_width, m_height), &paint);
+    {
+      if (!bitmap.isNull ())
+        canvas.drawBitmapRect (bitmap, SkRect::MakeXYWH (m_x, m_y, m_width, m_height), &paint);
+    }
 }
 
 void renderer_item_image::update_bbox ()

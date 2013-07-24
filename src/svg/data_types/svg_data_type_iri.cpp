@@ -97,33 +97,45 @@ bool svg_data_type_iri::read (const QString &data)
         case data_type::unsupported:
           return false;
       }
+      if (m_image_data)
+        *m_image_data = m_image_data->convertToFormat (QImage::Format_ARGB32);
       return true;
     }
   else // try to treat as a link
     {
       QFileInfo file (QFileInfo (m_item->get_document_path ()).absoluteDir (), data);
+      m_iri_type = iri_type::media_resource;
       if (!file.exists ())
         return false;
 
-      m_iri_type = iri_type::media_resource;
       link_to_resource = data;
       if (file.suffix () == "jpg" || file.suffix () == "jpeg") 
         {
           m_image_data = new QImage ();
-          if (m_image_data->load (file.absoluteFilePath ()))
+          if (m_image_data->load (file.absoluteFilePath (), "jpeg"))
             m_data_type = data_type::image_jpeg;
-          return true;
+          else
+            {
+              FREE (m_image_data);
+              return false;
+            }
         }
       else if (file.suffix () == "png")
         {
           m_image_data = new QImage ();
-          if (m_image_data->load (file.absoluteFilePath ()))
+          if (m_image_data->load (file.absoluteFilePath (), "png"))
             m_data_type = data_type::image_png;
-          return true;
+          else
+            {
+              FREE (m_image_data);
+              return false;
+            }
         }
+
+      if (m_image_data)
+        *m_image_data = m_image_data->convertToFormat (QImage::Format_ARGB32);
+      return true;
     }
-  // Everything else is unsupported
-  return false;
 }
 
 bool svg_data_type_iri::write (QString &data) const 
