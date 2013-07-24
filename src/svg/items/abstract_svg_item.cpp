@@ -12,7 +12,7 @@
 #include "svg/attributes/svg_attribute_factory.h"
 #include "svg/attributes/svg_attribute_class.h"
 #include "svg/attributes/svg_attribute_style.h"
-#include "svg/attributes/attribute_type.h"
+#include "svg/attributes/svg_attribute_type.h"
 #include "svg/attributes/svg_attribute_transform.h"
 #include "svg/attributes/svg_attribute_element_mapping.h"
 

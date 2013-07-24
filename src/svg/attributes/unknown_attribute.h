@@ -3,7 +3,7 @@
 
 #include "svg/attributes/abstract_attribute.h"
 #include "svg/svg_namespaces.h"
-#include "svg/attributes/attribute_type.h"
+#include "svg/attributes/svg_attribute_type.h"
 
 class unknown_attribute : public abstract_attribute
 {

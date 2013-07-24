@@ -153,14 +153,15 @@ static const int isalnum_array[256] =
 };
 
 /// Analog of isalnum function from ctype.h (for default locale)
-static inline int is_alnum (const unsigned char c)
+static inline
+int is_alnum (const unsigned char c)
 {
   return isalnum_array [c];
 }
 
 /// returns next identifier (string consisting of numbers and letters)
 /// moves str to the end of the identifier
-static std::string get_next_identifier (const char *&str)
+static inline std::string get_next_identifier (const char *&str)
 {
   const char *begin = str;
   trim_whitespace_left (str);
@@ -173,7 +174,8 @@ static std::string get_next_identifier (const char *&str)
 
 
 ///  finds end of comment
-static inline bool goto_comment_end (const char *&str)
+static inline
+bool goto_comment_end (const char *&str)
 {
   if (!*str)
     return true;
@@ -191,7 +193,8 @@ static inline bool goto_comment_end (const char *&str)
 }
 
 /// skips comments and whitespaces, sets str to the first non-space and comment symbol or to string end
-static inline bool skip_comments_and_whitespaces (const char *&str)
+static inline
+bool skip_comments_and_whitespaces (const char *&str)
 {
   for (; *str; str++)
     {
@@ -211,7 +214,8 @@ static inline bool skip_comments_and_whitespaces (const char *&str)
 
 /// find a char or end of string in string, considering escape chars, strings etc
 /// sets str to that symbol's address or to string end
-static inline bool goto_next_char (const char *&str, char to_find)
+static inline
+bool goto_next_char (const char *&str, char to_find)
 {
   char cur_char;
   for (; *str; str++)
@@ -251,7 +255,8 @@ static inline bool goto_next_char (const char *&str, char to_find)
 }
 
 /// returns string where escape characters are replaced
-static inline std::string from_escaped_string (const std::string &str)
+static inline
+std::string from_escaped_string (const std::string &str)
 {
   std::string result;
   result.reserve (str.length () + 1);
@@ -270,14 +275,16 @@ static inline std::string from_escaped_string (const std::string &str)
   return result;
 }
 
-static inline bool need_to_escape (char c)
+static inline
+bool need_to_escape (char c)
 {
   return (   c == '\\' || c ==';' || c == ':' || c == '\''
           || c == '\"' || c == '{' || c == '}');
 }
 
 /// returns string with special symbols escaped
-static inline std::string to_escaped_string (const std::string &str)
+static inline
+std::string to_escaped_string (const std::string &str)
 {
   std::string result;
   result.reserve (str.length () * 2);
@@ -293,7 +300,8 @@ static inline std::string to_escaped_string (const std::string &str)
   return result;
 }
 
-static inline bool extract_chunk (char chunk_end, const char *&data, std::string &result)
+static inline
+bool extract_chunk (char chunk_end, const char *&data, std::string &result)
 {
   const char *data_start = data;
   CHECK (goto_next_char (data, chunk_end));
@@ -687,7 +695,8 @@ bool str_to_double (const char *&string, double &data)
   return ok;
 }
 
-static inline QString hex_to_str (int value)
+static inline
+QString hex_to_str (int value)
 {
   DEBUG_ASSERT (value >= 0 && value < 256);
   int first = value / 16;
@@ -695,12 +704,55 @@ static inline QString hex_to_str (int value)
   return QString::number (first, 16) + QString::number (second, 16);
 }
 
-static inline QString color_to_string (const QColor &color)
+static inline
+QString color_to_string (const QColor &color)
 {
   return QString ("#%1%2%3").arg (hex_to_str (color.red ()), hex_to_str (color.green ()), hex_to_str (color.blue ()));
 }
 
-static inline QString double_to_str (double value)
+static inline
+QColor string_to_color (const char *string)
+{
+  QColor color;
+  color = QColor (string);
+  if (!color.isValid ())
+    {
+      if (strncmp (string, "rgb(", 4) != 0)
+        return QColor ();
+      string += 4;
+      bool percent_mode = false;
+      bool percent_mode_is_set = false;
+      double rgb[3];
+      for (int i = 0; i < 3; i++)
+      {
+        CHECK_RET (str_to_double (string, rgb[i]), QColor ());
+        trim_whitespace_left (string);
+        if (!percent_mode_is_set)
+        {
+          percent_mode = (*string == '%');
+          percent_mode_is_set = true;
+        }
+        else
+          CHECK_RET (percent_mode == (*string == '%'), QColor ()) // percent mode should be the smae
+       if (*string == '%')
+         string++;
+      }
+      trim_whitespace_left (string);
+      if (*string != ')') // consistency check
+        return QColor (); // invalid color
+      if (percent_mode)
+        {
+          for (int i = 0; i < 3; i++)
+            rgb[i] *= 2.55; // it's actually 255 / 100, calm down
+        }
+      // and finally we're happy to present our new color:
+      color = QColor ((int) rgb[0], (int) rgb[1], (int) rgb[2]);
+    }
+  return color;
+}
+
+static inline
+QString double_to_str (double value)
 {
   return QString::number (value, 'f', 10);
 }

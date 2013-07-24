@@ -29,6 +29,7 @@
 #include "svg/attributes/svg_attributes_string.h"
 #include "svg/attributes/svg_attribute_font_size.h"
 #include "svg/attributes/svg_attribute_points.h"
+#include "svg/attributes/svg_attribute_color.h"
 
 #include <QString>
 #include <memory>

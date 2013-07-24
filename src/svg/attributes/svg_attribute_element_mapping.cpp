@@ -3,7 +3,7 @@
 #include "common/common_utils.h"
 #include "common/debug_utils.h"
 
-#include "svg/attributes/attribute_type.h"
+#include "svg/attributes/svg_attribute_type.h"
 
 #include "svg/items/svg_item_type.h"
 
@@ -44,6 +44,7 @@ svg_attribute_element_mapping::svg_attribute_element_mapping ()
   fill_presentation_attribute (svg_attribute_type::FONT_FAMILY);
   fill_presentation_attribute (svg_attribute_type::FONT_SIZE);
   fill_presentation_attribute (svg_attribute_type::TEXT_ANCHOR);
+  fill_presentation_attribute (svg_attribute_type::COLOR);
 
   MAP_ATTRIBUTE  (SVG_VERSION        , SVG);
   MAP_ATTRIBUTE  (WIDTH              , IMAGE, RECT, SVG, USE);

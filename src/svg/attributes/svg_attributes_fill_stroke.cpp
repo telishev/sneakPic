@@ -1,5 +1,7 @@
 #include "svg/attributes/svg_attributes_fill_stroke.h"
 
+#include "svg/attributes/svg_attribute_color.h"
+
 #include "common/common_utils.h"
 #include "common/string_utils.h"
 
@@ -42,42 +44,17 @@ bool svg_paint_server::read (const char *char_data, bool /*from_css*/)
 
       m_server_type = paint_server_type::IRI;
     }
+  else if (data == "currentColor")
+    {
+      m_server_type = paint_server_type::CURRENT_COLOR;
+    }
   else
     {
       m_server_type = paint_server_type::COLOR;
-      m_color = QColor (data);
+      m_color = string_to_color (char_data);
       if (!m_color.isValid ())
-        {
-          if (!data.startsWith ("rgb("))
-            return false;
-          char_data += 4;
-          bool percent_mode = false;
-          bool percent_mode_is_set = false;
-          double rgb[3];
-          for (int i = 0; i < 3; i++)
-          {
-            CHECK (str_to_double (char_data, rgb[i]));
-            trim_whitespace_left (char_data);
-            if (!percent_mode_is_set)
-              percent_mode = (*char_data == '%');
-            else
-              CHECK (percent_mode == (*char_data == '%')) // percent mode should be the smae
-           if (*char_data == '%')
-             char_data++;
-          }
-          trim_whitespace_left (char_data);
-          if (*char_data != ')') // consistency check
-            return false;
-          if (percent_mode)
-            {
-              for (int i = 0; i < 3; i++)
-                rgb[i] *= 2.55; // it's actually 255 / 100, calm down
-            }
-          // and finally we're happy to present our new color:
-          m_color = QColor ((int) rgb[0], (int) rgb[1], (int) rgb[2]);
-        }
+        return false;
     }
-
   return true;
 }
 
@@ -88,6 +65,9 @@ bool svg_paint_server::write (QString &data, bool /*to_css*/) const
     case paint_server_type::NONE: data = "none"; return true;
     case paint_server_type::COLOR:
       data = color_to_string (m_color);
+      return true;
+    case paint_server_type::CURRENT_COLOR:
+      data =  "currentColor";
       return true;
     case paint_server_type::IRI:
       {
@@ -108,6 +88,8 @@ renderer_paint_server *svg_paint_server::create_paint_server () const
     case paint_server_type::NONE: return new renderer_painter_server_none;
     case paint_server_type::COLOR:
       return new renderer_painter_server_color (m_color);
+    case paint_server_type::CURRENT_COLOR:
+      return new renderer_painter_server_color (get_item ()->get_computed_attribute <svg_attribute_color> ()->value ());
     case paint_server_type::IRI:
       {
         /// TODO: support other paint servers

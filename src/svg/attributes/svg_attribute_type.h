@@ -56,6 +56,7 @@ DECLARE_ATTRIBUTE(POINTS            , "points"            , SVG        , svg_att
 DECLARE_ATTRIBUTE(DX                , "dx"                , SVG        , svg_attribute_dx                 , NONE         )   \
 DECLARE_ATTRIBUTE(DY                , "dy"                , SVG        , svg_attribute_dy                 , NONE         )   \
 DECLARE_ATTRIBUTE(TEXT_ANCHOR       , "text-anchor"       , SVG        , svg_attribute_text_anchor        , INHERIT      )   \
+DECLARE_ATTRIBUTE(COLOR             , "color"             , SVG        , svg_attribute_color              , STYLE        )   \
 
 
 enum class svg_attribute_type

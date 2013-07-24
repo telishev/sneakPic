@@ -2,6 +2,7 @@
 /build
 /build.dbg
 /test/test_files/*
+/test/images/*
 /test/diff_dir/*
 /test/output/*
 /test/*.txt
