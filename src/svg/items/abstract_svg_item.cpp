@@ -56,7 +56,10 @@ void abstract_svg_item::write (QXmlStreamWriter &writer) const
     {
       abstract_attribute *attribute = attribute_pair.second;
       QString value;
-      attribute->write (value);
+      if (attribute->is_inherited ())
+        value = "inherit";
+      else
+        attribute->write (value);
       writer.writeAttribute (attribute->namespace_uri (), attribute->type_name (), value);
     }
 
@@ -153,6 +156,10 @@ const abstract_attribute *abstract_svg_item::get_computed_attribute (const char 
   const svg_attribute_element_mapping *mapping = svg_attribute_element_mapping::get ();
   bool can_be_specified = mapping->can_be_specified (type (), attr_type);
   const abstract_attribute *attribute = get_attribute (data);
+
+  if (attribute && attribute->is_inherited ())
+    return parent () ? parent ()->get_computed_attribute (data, inherit_type, attr_type) : nullptr;
+
   if (attribute && attribute->type () == attr_type)
     return attribute;
 

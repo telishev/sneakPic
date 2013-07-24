@@ -17,6 +17,7 @@
 
 #include "svg/svg_namespaces.h"
 
+#include "svg/attributes/svg_attribute_type.h"
 #include "svg/attributes/svg_attribute_factory.h"
 
 #include "renderer/renderer_items_container.h"
@@ -194,6 +195,9 @@ abstract_svg_item *svg_document::process_new_item (QXmlStreamReader &reader, abs
       QStringRef attribute_namespace_name = attributes[i].prefix ();
       abstract_attribute *attribute = m_attribute_factory->create_attribute (child_item,
         attribute_name.toLatin1 ().constData (), attribute_namespace_uri.toLatin1 ().constData (), attribute_namespace_name.toLatin1 ().constData ());
+
+      if (attribute->inherit_type () != svg_inherit_type::NONE && attributes[i].value () == "inherit")
+        attribute->set_is_inherited (true);
 
       if (attribute->read (attributes[i].value ().toLatin1 ().constData ()))
         child_item->add_attribute (attribute);

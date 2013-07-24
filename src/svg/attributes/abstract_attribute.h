@@ -29,8 +29,9 @@ enum class svg_inherit_type;
 class abstract_attribute
 {
   abstract_svg_item *m_item;
+  bool m_is_inherited;
 public:
-  abstract_attribute (abstract_svg_item *item) { m_item = item; }
+  abstract_attribute (abstract_svg_item *item) { m_item = item; m_is_inherited = false; }
   virtual ~abstract_attribute () {}
 
   virtual bool read (const char *data, bool from_css = false) = 0;
@@ -47,6 +48,8 @@ public:
   bool is_empty () const { return m_item == nullptr; }
 
   abstract_svg_item *item () const { return m_item; }
+  void set_is_inherited (bool value) { m_is_inherited = value; }
+  bool is_inherited () const { return m_is_inherited; }
 };
 
 #endif // ABSTRACT_ATTRIBUTE_H
