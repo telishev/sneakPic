@@ -98,7 +98,7 @@ bool svg_data_type_iri::read (const QString &data)
           return false;
       }
       if (m_image_data)
-        *m_image_data = m_image_data->convertToFormat (QImage::Format_ARGB32);
+        *m_image_data = m_image_data->convertToFormat (QImage::Format_ARGB32_Premultiplied);
       return true;
     }
   else // try to treat as a link
@@ -133,7 +133,7 @@ bool svg_data_type_iri::read (const QString &data)
         }
 
       if (m_image_data)
-        *m_image_data = m_image_data->convertToFormat (QImage::Format_ARGB32);
+        *m_image_data = m_image_data->convertToFormat (QImage::Format_ARGB32_Premultiplied);
       return true;
     }
 }
