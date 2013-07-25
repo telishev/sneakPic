@@ -6,6 +6,7 @@
 #include "svg/attributes/svg_attribute_stroke_linejoin.h"
 #include "svg/attributes/svg_attribute_stroke_miterlimit.h"
 #include "svg/attributes/svg_attribute_stroke_width.h"
+#include "svg/attributes/svg_attributes_length_type_list.h"
 #include "svg/attributes/svg_attributes_number.h"
 #include "svg/attributes/svg_attributes_fill_stroke.h"
 #include "svg/attributes/svg_attributes_enum.h"
@@ -17,7 +18,6 @@
 #include "renderer/renderer_overlay_path.h"
 
 #include <memory>
-
 
 svg_base_shape_item::svg_base_shape_item (svg_document *document)
    : svg_graphics_item (document)
@@ -39,6 +39,8 @@ void svg_base_shape_item::set_item_style (renderer_base_shape_item *item) const
   const svg_attribute_opacity *opacity = get_computed_attribute<svg_attribute_opacity> ();
   const svg_attribute_stroke_opacity *stroke_opacity = get_computed_attribute<svg_attribute_stroke_opacity> ();
   const svg_attribute_fill_opacity *fill_opacity = get_computed_attribute<svg_attribute_fill_opacity> ();
+  const svg_attribute_stroke_dash_array *dash_array = get_computed_attribute<svg_attribute_stroke_dash_array> ();
+  const svg_attribute_stroke_dash_offset *dash_offset = get_computed_attribute<svg_attribute_stroke_dash_offset> ();
 
   fill->set_opacity (fill_opacity->value () * opacity->computed_opacity ());
   stroke->set_opacity (stroke_opacity->value () * opacity->computed_opacity ());
@@ -46,6 +48,7 @@ void svg_base_shape_item::set_item_style (renderer_base_shape_item *item) const
   item->set_stroke_linecap (stroke_linecap->get_stroke_linecap ());
   item->set_stroke_linejoin (stroke_linejoin->get_stroke_linejoin ());
   item->set_stroke_miterlimit (stroke_miterlimit->get_stroke_miterlimit ());
+  item->set_dash_array (dash_array->value (), dash_offset->value ());
   // For now display does the same stuff as visibility, though they little differ by specification
   item->set_stroke_width (stroke_width->get_stroke_width ());
   item->set_fill_server (fill.get ());

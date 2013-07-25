@@ -25,6 +25,7 @@ public:
   void set_stroke_linejoin (Qt::PenJoinStyle linejoin);
   void set_stroke_miterlimit (double miterlimit);
   void set_stroke_width (double width);
+  void set_dash_array (QList<double> dash_array, double offset);
 
   void set_stroke_server (const renderer_paint_server *server);
   void set_fill_server (const renderer_paint_server *server);

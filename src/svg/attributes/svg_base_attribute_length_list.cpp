@@ -9,6 +9,13 @@ void svg_base_attribute_length_list::fill_values (QList<double> &list) const
     list.push_back (m_value[i].value (item (), m_units_orientation));
 }
 
+QList <double> svg_base_attribute_length_list::value () const
+{
+  QList<double> list;
+  fill_values (list);
+  return list;
+}
+
 bool svg_base_attribute_length_list::read (const char *data, bool from_css)
 {
   while (*data)

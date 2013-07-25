@@ -57,7 +57,8 @@ DECLARE_ATTRIBUTE(DX                , "dx"                , SVG        , svg_att
 DECLARE_ATTRIBUTE(DY                , "dy"                , SVG        , svg_attribute_dy                 , NONE         )   \
 DECLARE_ATTRIBUTE(TEXT_ANCHOR       , "text-anchor"       , SVG        , svg_attribute_text_anchor        , INHERIT      )   \
 DECLARE_ATTRIBUTE(COLOR             , "color"             , SVG        , svg_attribute_color              , STYLE        )   \
-
+DECLARE_ATTRIBUTE(STROKE_DASH_ARRAY , "stroke-dasharray"  , SVG        , svg_attribute_stroke_dash_array  , STYLE        )   \
+DECLARE_ATTRIBUTE(STROKE_DASH_OFFSET, "stroke-dashoffset" , SVG        , svg_attribute_stroke_dash_offset , STYLE        )   \
 
 enum class svg_attribute_type
 {

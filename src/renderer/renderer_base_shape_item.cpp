@@ -13,6 +13,7 @@
 
 #pragma warning(push, 0)
 #include <SkCanvas.h>
+#include <SkDashPathEffect.h>
 #include <SkSurface.h>
 #include <SkDevice.h>
 #include <SkPoint.h>
@@ -67,6 +68,21 @@ void renderer_base_shape_item::set_stroke_linejoin (Qt::PenJoinStyle linejoin)
 void renderer_base_shape_item::set_stroke_miterlimit (double miterlimit)
 {
   m_stroke->setStrokeMiter (SkFloatToScalar (miterlimit));
+}
+
+void renderer_base_shape_item::set_dash_array (QList<double> dash_array, double offset)
+{
+  if (dash_array.size () == 0)
+    return;
+
+  SkScalar *dash_offsets = new SkScalar [dash_array.size ()];
+  for (int i = 0; i < dash_array.size (); i++)
+    {
+      dash_offsets[i] = SkFloatToScalar (dash_array[i]);
+    }
+  SkDashPathEffect *effect = new SkDashPathEffect (dash_offsets, dash_array.size (), SkFloatToScalar (offset));
+  m_stroke->setPathEffect (effect)->unref ();
+  FREE_ARRAY (dash_offsets);
 }
 
 void renderer_base_shape_item::set_stroke_width (double width)

@@ -45,6 +45,8 @@ svg_attribute_element_mapping::svg_attribute_element_mapping ()
   fill_presentation_attribute (svg_attribute_type::FONT_SIZE);
   fill_presentation_attribute (svg_attribute_type::TEXT_ANCHOR);
   fill_presentation_attribute (svg_attribute_type::COLOR);
+  fill_presentation_attribute (svg_attribute_type::STROKE_DASH_ARRAY);
+  fill_presentation_attribute (svg_attribute_type::STROKE_DASH_OFFSET);
 
   MAP_ATTRIBUTE  (SVG_VERSION        , SVG);
   MAP_ATTRIBUTE  (WIDTH              , IMAGE, RECT, SVG, USE);

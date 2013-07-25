@@ -16,6 +16,7 @@ public:
     : abstract_attribute (item) {  m_units_orientation = units_orientation_arg; }
 
   void fill_values (QList<double> &list) const;
+  QList <double> value () const;
 
   virtual bool read (const char *data, bool from_css = false) override;
 

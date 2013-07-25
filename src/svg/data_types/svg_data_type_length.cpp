@@ -71,10 +71,7 @@ bool svg_data_type_length::read_and_shift (const char *&data, bool is_css)
 
   m_units = string_to_enum<svg_length_units> (str.toUtf8 ().constData ());
   if (m_units == svg_length_units::INVALID)
-    {
-      m_units = svg_length_units::NO_UNITS;
-      return false;
-    }
+    m_units = svg_length_units::NO_UNITS;
   else
     data += strlen (enum_to_string (m_units));
 
