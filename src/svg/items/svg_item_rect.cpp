@@ -1,3 +1,5 @@
+#include "common/math_defs.h"
+
 #include "svg/items/svg_item_rect.h"
 
 #include "svg/attributes/svg_attributes_length_type.h"
@@ -40,8 +42,26 @@ QPainterPath svg_item_rect::get_path () const
   if (ry_val > height->value () / 2)
     ry_val = height->value () / 2;
 
+  double x_val = x->value ();
+  double y_val = y->value ();
+  double w_val = width->value ();
+  double h_val = height->value ();
+
   QPainterPath path;
-  path.addRoundedRect (x->value (), y->value (), width->value (), height->value (), rx_val, ry_val);
+  if (are_equal (rx_val, 0.0) && are_equal (ry_val, 0.0))
+    {
+      path.addRect (x_val, y_val, w_val, h_val);
+    }
+  else
+    {
+      // Warning AddRoundRect is not used because of non svg standard point iteration order
+      path.moveTo (x_val + rx_val, y_val);
+      path.arcTo (x_val + w_val - 2 * rx_val, y_val, 2 * rx_val, 2 * ry_val, 90, -90);
+      path.arcTo (x_val + w_val - 2 * rx_val, y_val + h_val - 2 * ry_val, 2 * rx_val, 2 * ry_val, 0, -90);
+      path.arcTo (x_val, y_val + h_val - 2 * ry_val, 2 * rx_val, 2 * ry_val, -90, -90);
+      path.arcTo (x_val, y_val, 2 * rx_val, 2 * ry_val, -180, -90);
+      path.closeSubpath ();
+    }
   return path;
 }
 
