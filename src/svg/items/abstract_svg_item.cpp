@@ -24,9 +24,7 @@
 #include "svg/svg_document.h"
 #include "svg/svg_namespaces.h"
 
-
-
-
+#include "svg/css/selectors_container.h"
 
 
 abstract_svg_item::abstract_svg_item (svg_document *document)
@@ -227,49 +225,9 @@ abstract_attribute *abstract_svg_item::get_attribute (const char *data) const
   return nullptr;
 }
 
-const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const char *data, const abstract_svg_item *item, svg_attribute_type attr_type) const
+const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const char *data, const abstract_svg_item *item, svg_attribute_type /*attr_type*/) const
 {
-  const abstract_attribute *attribute = nullptr;
-  /// 1. search in <style> child
-  attribute = find_attribute_in_style_item (data, item, attr_type);
-  if (attribute)
-    return attribute;
-
-  /// 2. search in parent selectors
-  if (!parent ())
-    return nullptr;
-
-  attribute = parent ()->find_attribute_in_selectors (data, item, attr_type);
-  if (attribute)
-    return attribute;
-
-  /// 3. search in sibling <defs> items
-  auto range = get_childs_by_name (svg_item_defs::static_type_name ());
-  for (auto it = range.first; it != range.second; it++)
-    {
-      const abstract_svg_item *child = it->second;
-      attribute = child->find_attribute_in_style_item (data, item, attr_type);
-      if (attribute)
-        return attribute;
-    }
-
-  /// 4. If not found return nullptr
-  return nullptr;
-}
-
-const abstract_attribute *abstract_svg_item::find_attribute_in_style_item (const char *data, const abstract_svg_item *item, svg_attribute_type attr_type) const
-{
-  const abstract_attribute *attribute = nullptr;
-  auto range = get_childs_by_name (svg_item_style::static_type_name ());
-  for (auto it = range.first; it != range.second; it++)
-    {
-      const svg_item_style *style = static_cast <const svg_item_style *> (it->second);
-      attribute = style->get_attribute (data, item);
-      if (attribute && attribute->type () == attr_type)
-        return attribute;
-    }
-
-  return attribute;
+  return m_document->selectors ()->get_attribute (data, item);
 }
 
 bool abstract_svg_item::is_cloned () const

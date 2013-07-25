@@ -9,16 +9,20 @@
 #include "svg/css/css_declaration.h"
 #include "svg/css/css_selector_reader.h"
 #include "svg/css/abstract_css_selector.h"
+#include "svg/css/selectors_container.h"
+
+#include "svg/svg_document.h"
 
 
 svg_item_style::svg_item_style (svg_document *document)
   : abstract_svg_item (document)
 {
-
+  document->selectors ()->add_style (this);
 }
 
 svg_item_style::~svg_item_style ()
 {
+  document ()->selectors ()->remove_style (this);
   for (auto &rule : m_rule_set)
     {
       FREE (rule.first);

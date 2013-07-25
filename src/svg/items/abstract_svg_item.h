@@ -117,7 +117,6 @@ private:
   abstract_attribute *get_attribute (const char *data) const;
   const abstract_attribute *get_computed_attribute (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type) const;
   const abstract_attribute *find_attribute_in_selectors (const char *data, const abstract_svg_item *item, svg_attribute_type attr_type) const;
-  const abstract_attribute *find_attribute_in_style_item (const char *data, const abstract_svg_item *item, svg_attribute_type attr_type) const;
   const abstract_svg_item *get_original_item () const;
   void create_id_by_attr ();
   void create_unique_name ();

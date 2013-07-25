@@ -10,6 +10,7 @@ class svg_item_svg;
 class renderer_items_container;
 class abstract_renderer_event;
 class rendered_items_cache;
+class selectors_container;
 
 template<typename T>
 class wait_queue;
@@ -24,6 +25,7 @@ class svg_document
   svg_item_factory      *m_item_factory;
   svg_attribute_factory *m_attribute_factory;
   svg_items_container   *m_item_container;
+  selectors_container   *m_selectors;
 
   abstract_svg_item *m_root;
   svg_item_svg *item_svg;
@@ -39,6 +41,7 @@ public:
   svg_attribute_factory *attribute_factory () const { return m_attribute_factory; }
   svg_items_container *item_container () const { return m_item_container; }
   abstract_svg_item *root () const { return m_root; }
+  selectors_container *selectors () const { return m_selectors; }
 
   bool get_doc_dimensions (double &width, double &height);
 

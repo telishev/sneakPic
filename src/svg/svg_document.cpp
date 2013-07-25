@@ -15,6 +15,8 @@
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_item_type.h"
 
+#include "svg/css/selectors_container.h"
+
 #include "svg/svg_namespaces.h"
 
 #include "svg/attributes/svg_attribute_type.h"
@@ -27,11 +29,13 @@
 
 
 
+
 svg_document::svg_document (wait_queue<abstract_renderer_event> *queue)
 {
   m_item_factory = new svg_item_factory (this);
   m_attribute_factory = new svg_attribute_factory (this);
   m_item_container = new svg_items_container;
+  m_selectors = new selectors_container;
   m_root = nullptr;
   item_svg = nullptr;
   m_queue = queue;
@@ -44,6 +48,7 @@ svg_document::~svg_document ()
   FREE (m_item_factory);
   FREE (m_attribute_factory);
   FREE (m_item_container);
+  FREE (m_selectors);
 }
 
 static inline QString get_namespace_name (const QXmlStreamNamespaceDeclarations &declarations, const QString &uri)
