@@ -76,6 +76,9 @@ void svg_painter::set_document (svg_document *document)
 unsigned int svg_painter::mouse_moved (const unsigned char *dragging_buttons, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
 {
   FIX_UNUSED (dragging_buttons, pos, modifiers);
+  if (!m_document)
+    return 0;
+
   if (drag_started)
     {
       QTransform last_inverted = m_last_transform.inverted ();
