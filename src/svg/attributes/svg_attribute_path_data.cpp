@@ -228,7 +228,7 @@ bool svg_attribute_path_data::read_curve_short (const char *&data, point_2d &/*s
       control2 += current_point;
     }
 
-  if (m_commands.size () < 6 || m_commands.back () != path_command::CURVE)
+  if (m_commands.empty () || m_commands.back () != path_command::CURVE)
     control1 = new_current_point;
   else
     {
@@ -289,7 +289,7 @@ bool svg_attribute_path_data::read_quadratic_short (const char *&data, point_2d 
       new_current_point += current_point;
     }
 
-  if (m_commands.size () < 4 || m_commands.back () != path_command::QUAD)
+  if (m_commands.empty () || m_commands.back () != path_command::QUAD)
     control1 = new_current_point;
   else
     {
@@ -301,7 +301,7 @@ bool svg_attribute_path_data::read_quadratic_short (const char *&data, point_2d 
   m_path_data.push_back (control1.y ());
   m_path_data.push_back (new_current_point.x ());
   m_path_data.push_back (new_current_point.y ());
-  m_commands.push_back (path_command::CURVE);
+  m_commands.push_back (path_command::QUAD);
 
   current_point = new_current_point;
   return true;
