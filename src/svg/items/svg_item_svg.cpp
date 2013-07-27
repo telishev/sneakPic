@@ -64,4 +64,3 @@ bool svg_item_svg::check_item ()
 
   return true;
 }
-

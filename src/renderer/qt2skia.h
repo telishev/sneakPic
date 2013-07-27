@@ -37,7 +37,9 @@ public:
   static SkBitmap image (const QImage &image_arg);
   static SkRect rect (const QRect &rect);
   static SkRect rect (const QRectF &rect);
+  static SkIRect Irect (const QRect &rect);
   static SkPath::FillType fill_rule (Qt::FillRule rule);
+  static SkIRect Irect (const QRectF &rect);
 };
 
 #endif // QT2SKIA_H

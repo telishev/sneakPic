@@ -17,6 +17,12 @@ void trim_whitespace_left (const char *&str);
 /// returns last non-whitespace character before str_end
 const char *trim_whitespace_right (const char *str_begin, const char *str_end);
 
+/// checks if target_str start with possible prefix
+bool starts_with (const char *target_str, const char *possible_prefix);
+
+/// checks if target_str start with possible prefix and if it is shifts target_str to position after that prefix
+bool starts_with_and_shift (const char *&target_str, const char *possible_prefix);
+
 /// Analog of isalpha function from ctype.h (for default locale)
 int is_alpha (const unsigned char c);
 

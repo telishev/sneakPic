@@ -3,6 +3,7 @@
 #include "svg/attributes/svg_attributes_length_type.h"
 #include "svg/attributes/svg_attributes_enum.h"
 #include "svg/attributes/svg_attribute_xlink_href.h"
+#include "svg/attributes/svg_attribute_preserve_aspect_ratio.h"
 
 #include "svg/svg_document.h"
 
@@ -41,9 +42,17 @@ renderer_graphics_item *svg_item_image::create_renderer_graphics_item () const
   const svg_attribute_y *y = get_computed_attribute<svg_attribute_y> ();
   const svg_attribute_width *width = get_computed_attribute<svg_attribute_width> ();
   const svg_attribute_height *height = get_computed_attribute<svg_attribute_height> ();
+  const auto *preserve_aspect_ratio = get_computed_attribute<svg_attribute_preserve_aspect_ratio> ();
+  QImage image = *xlink_href->get_image_data ();
+  QRectF viewport_rect (x->value (), y->value (), width->value (), height->value ());
+  QRectF src_rect (0.0, 0.0, image.width (), image.height ());
+  QRectF dest_rect = viewport_rect;
+  if (preserve_aspect_ratio)
+    dest_rect = preserve_aspect_ratio->get_desired_rect (src_rect, viewport_rect);
 
-  render_item->set_dimensions (x->value (), y->value (), width->value (), height->value ());
-  render_item->set_image_data (*xlink_href->get_image_data ());
+  render_item->set_src_rect (src_rect);
+  render_item->set_dest_rect (dest_rect);
+  render_item->set_image_data (image);
   return render_item;
 }
 

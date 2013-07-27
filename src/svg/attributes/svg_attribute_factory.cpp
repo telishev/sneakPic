@@ -30,6 +30,7 @@
 #include "svg/attributes/svg_attribute_font_size.h"
 #include "svg/attributes/svg_attribute_points.h"
 #include "svg/attributes/svg_attribute_color.h"
+#include "svg/attributes/svg_attribute_preserve_aspect_ratio.h"
 
 #include <QString>
 #include <memory>

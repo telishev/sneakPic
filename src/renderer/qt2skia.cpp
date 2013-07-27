@@ -65,6 +65,12 @@ SkPath qt2skia::path (const QPainterPath &qpath)
         }
     }
 
+ if (count == 1)
+   {
+     path.lineTo (qt2skia::point (qpath.elementAt (0)));
+     path.close ();
+   }
+
  if (   count > 3 
      && are_equal (qpath.elementAt (count - 1).x, qpath.elementAt (0).x) 
      && are_equal (qpath.elementAt (count - 1).y, qpath.elementAt (0).y)
@@ -103,4 +109,14 @@ SkRect qt2skia::rect (const QRect &rect)
 SkRect qt2skia::rect (const QRectF &rect)
 {
   return SkRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());
+}
+
+SkIRect qt2skia::Irect (const QRect &rect)
+{
+  return SkIRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());
+}
+
+SkIRect qt2skia::Irect (const QRectF &rect)
+{
+  return SkIRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());
 }

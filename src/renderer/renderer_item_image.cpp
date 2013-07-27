@@ -26,12 +26,14 @@ renderer_item_image::~renderer_item_image ()
 
 }
 
-void renderer_item_image::set_dimensions (double x, double y, double w, double h)
+void renderer_item_image::set_dest_rect (QRectF rect)
 {
-  m_x = x;
-  m_y = y;
-  m_width = w;
-  m_height =h;
+  m_dst_rect = rect;
+}
+
+void renderer_item_image::set_src_rect (QRectF rect)
+{
+  m_src_rect = rect;
 }
 
 void renderer_item_image::set_image_data (QImage &image_data)
@@ -49,16 +51,16 @@ void renderer_item_image::draw_graphics_item (SkCanvas &canvas, const renderer_c
   {
     if (!configure_painter_for_selection (paint))
       return;
-    canvas.drawRect (SkRect::MakeXYWH (m_x, m_y, m_width, m_height), paint);
+    canvas.drawRect (qt2skia::rect (m_dst_rect), paint);
   }
   else
     {
       if (!bitmap.isNull ())
-        canvas.drawBitmapRect (bitmap, SkRect::MakeXYWH (m_x, m_y, m_width, m_height), &paint);
+        canvas.drawBitmapRect (bitmap, &qt2skia::Irect (m_src_rect), qt2skia::rect (m_dst_rect), &paint);
     }
 }
 
 void renderer_item_image::update_bbox ()
 {
-  m_bbox = QRect (m_x, m_y, m_width, m_height);
+  m_bbox = m_dst_rect;
 }

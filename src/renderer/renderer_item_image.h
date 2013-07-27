@@ -12,7 +12,8 @@ class renderer_item_image : public renderer_graphics_item
 {
   QPainterPath m_path;
   QRectF m_bbox;
-  double m_x, m_y, m_width, m_height;
+  QRectF m_dst_rect;
+  QRectF m_src_rect;
   QImage m_image_data;
   display m_display;
 
@@ -23,7 +24,9 @@ public:
   virtual void draw_graphics_item (SkCanvas &canvas, const renderer_config *config) const override;
   virtual void update_bbox () override;
 
-  void set_dimensions (double x, double y, double w, double h);
+  void set_dest_rect (QRectF rect);
+  void set_src_rect (QRectF rect);
+  void set_source_rect (double x, double y, double w, double h);
   void set_image_data (QImage &image_data);
 };
 

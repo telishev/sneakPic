@@ -65,6 +65,22 @@ void trim_whitespace_left (const char *&str)
     str++;
 }
 
+bool starts_with (const char *target_str, const char *possible_prefix)
+{
+  if (possible_prefix == 0 || target_str == 0)
+    return false;
+  return strncmp (target_str, possible_prefix, strlen (possible_prefix)) == 0;
+}
+
+
+bool starts_with_and_shift (const char *&target_str, const char *possible_prefix)
+{
+  bool res = starts_with (target_str, possible_prefix);
+  if (res)
+    target_str += strlen (possible_prefix);
+  return res;
+}
+
 /// returns last non-whitespace character before str_end
 const char *trim_whitespace_right (const char *str_begin, const char *str_end)
 {
