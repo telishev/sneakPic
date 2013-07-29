@@ -1,14 +1,14 @@
 #ifndef SVG_BASE_SHAPE_ITEM_H
 #define SVG_BASE_SHAPE_ITEM_H
 
-#include "svg/items/svg_graphics_item.h"
+#include "svg/items/svg_base_graphics_item.h"
 
 class renderer_base_shape_item;
 class QPainterPath;
 class QTransform;
 class QRectF;
 
-class svg_base_shape_item : public svg_graphics_item
+class svg_base_shape_item : public svg_base_graphics_item
 {
 public:
   svg_base_shape_item (svg_document *document);

@@ -17,6 +17,7 @@
 #include "svg/svg_document.h"
 #include "svg/items/svg_items_container.h"
 #include "svg/items/abstract_svg_item.h"
+#include "svg/items/svg_graphics_item.h"
 
 #pragma warning(push, 0)
 #include <SkCanvas.h>
@@ -137,7 +138,11 @@ std::string overlay_renderer::add_item (const std::string &name, overlay_item_ty
   if (!svg_item)
     return std::string ();
 
-  abstract_renderer_item *overlay_item = svg_item->create_overlay_item (type);
+  svg_graphics_item *graphics_item = svg_item->to_graphics_item ();
+  if (!graphics_item)
+    return std::string ();
+
+  abstract_renderer_item *overlay_item = graphics_item->create_overlay_item (type);
   if (!overlay_item)
     return std::string ();
 

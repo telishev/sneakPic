@@ -103,7 +103,7 @@ bool svg_data_type_iri::read (const QString &data)
     }
   else // try to treat as a link
     {
-      QFileInfo file (QFileInfo (m_item->get_document_path ()).absoluteDir (), data);
+      QFileInfo file (QFileInfo (m_item->document ()->get_filename ()).absoluteDir (), data);
       m_iri_type = iri_type::media_resource;
       if (!file.exists ())
         return false;

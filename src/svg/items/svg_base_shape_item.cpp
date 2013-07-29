@@ -20,7 +20,7 @@
 #include <memory>
 
 svg_base_shape_item::svg_base_shape_item (svg_document *document)
-   : svg_graphics_item (document)
+   : svg_base_graphics_item (document)
 {
 }
 

@@ -1,14 +1,16 @@
 #ifndef SVG_ITEM_GROUP_TYPE_H
 #define SVG_ITEM_GROUP_TYPE_H
 
-#include "svg/items/abstract_svg_item.h"
+#include "svg/items/svg_graphics_item.h"
 
 class renderer_item_group;
 
-class svg_item_group_type : public abstract_svg_item
+class svg_item_group_type : public svg_graphics_item
 {
 public:
   svg_item_group_type (svg_document *document);
+
+  virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const override;
 
 protected:
   void update_group_item (renderer_item_group *renderer_item) const;

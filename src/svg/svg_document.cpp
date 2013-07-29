@@ -14,6 +14,7 @@
 #include "svg/items/svg_item_svg.h"
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_item_type.h"
+#include "svg/items/svg_graphics_item.h"
 
 #include "svg/css/selectors_container.h"
 
@@ -26,6 +27,7 @@
 #include "renderer/abstract_renderer_item.h"
 #include "renderer/rendered_items_cache.h"
 #include "attributes/abstract_attribute.h"
+
 
 
 
@@ -172,7 +174,10 @@ renderer_items_container *svg_document::create_rendered_items (rendered_items_ca
 
 void svg_document::create_renderer_item (renderer_items_container *renderer_items, abstract_svg_item *svg_item)
 {
-  abstract_renderer_item *renderer_item = svg_item->create_renderer_item ();
+  svg_graphics_item *graphics_item = svg_item->to_graphics_item ();
+  if (!graphics_item)
+    return;
+  abstract_renderer_item *renderer_item = graphics_item->create_renderer_item ();
   if (!renderer_item)
     return;
 

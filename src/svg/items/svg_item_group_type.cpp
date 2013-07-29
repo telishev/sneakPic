@@ -10,7 +10,7 @@
 
 
 svg_item_group_type::svg_item_group_type (svg_document *document)
-  : abstract_svg_item (document)
+  : svg_graphics_item (document)
 {
 
 }
@@ -26,4 +26,9 @@ void svg_item_group_type::update_group_item (renderer_item_group *renderer_item)
   renderer_item->set_transform (full_transform ());
   if (clip_path)
     renderer_item->set_clip_path (clip_path->get_clip_path ());
+}
+
+abstract_renderer_item *svg_item_group_type::create_overlay_item (overlay_item_type /*overlay_type*/) const
+{
+  return nullptr;
 }

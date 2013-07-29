@@ -18,13 +18,12 @@ virtual svg_namespaces_t namespace_type () const;  \
 private:                                           \
 
 class QXmlStreamWriter;
-class QTransform;
 
 class abstract_attribute;
 class svg_document;
 class svg_item_defs;
 class abstract_renderer_item;
-
+class svg_graphics_item;
 
 enum class svg_namespaces_t;
 enum class svg_item_type;
@@ -53,16 +52,12 @@ public:
   virtual const char *namespace_uri () const;
   virtual const char *namespace_name () const;
 
-  virtual abstract_renderer_item *create_renderer_item () const { return nullptr; }
-  virtual abstract_renderer_item *create_overlay_item (overlay_item_type /*overlay_type*/) const { return nullptr; }
-
   svg_document *document () const { return m_document; }
 
   void add_attribute (abstract_attribute *attribute);
   void remove_attribute (abstract_attribute *attribute);
 
   void write (QXmlStreamWriter &writer) const;
-
   virtual bool read_item (const QString &/*data*/) { return true; }
 
   bool has_name () const;
@@ -102,9 +97,8 @@ public:
   void get_used_namespaces (std::map<QString, QString> &map) const;
   void process_after_read ();
 
-  QTransform full_transform () const;
-
-  QString get_document_path () const;
+  virtual const svg_graphics_item *to_graphics_item () const { return nullptr; }
+  virtual svg_graphics_item *to_graphics_item () { return nullptr; }
 
 protected:
   virtual bool write_item (QString &/*data*/) const { return true; }

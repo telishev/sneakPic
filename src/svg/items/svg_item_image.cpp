@@ -18,7 +18,7 @@
 
 
 svg_item_image::svg_item_image (svg_document *document)
-  : svg_graphics_item (document)
+  : svg_base_graphics_item (document)
 {
 }
 

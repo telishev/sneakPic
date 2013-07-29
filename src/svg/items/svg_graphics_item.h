@@ -3,30 +3,21 @@
 
 #include "svg/items/abstract_svg_item.h"
 
-class renderer_graphics_item;
-class QPainterPath;
 class QTransform;
-class QRectF;
 
 class svg_graphics_item : public abstract_svg_item
 {
 public:
   svg_graphics_item (svg_document *document);
-  virtual ~svg_graphics_item () override;
+  ~svg_graphics_item ();
 
-protected:
-  QRectF exact_bbox (bool use_full_transform) const;
-  QRectF bbox_with_clip (bool use_full_transform) const;
-  QPainterPath get_path_for_clipping () const;
+  virtual const svg_graphics_item *to_graphics_item () const override { return this; }
+  virtual svg_graphics_item *to_graphics_item () override { return this; }
 
-  virtual QPainterPath get_boundaries () const = 0; // In this function path around item should be returned (even if it's raster image for example)
-  virtual abstract_renderer_item *create_renderer_item () const override;
-  virtual renderer_graphics_item *create_renderer_graphics_item () const = 0;
-  virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const override;
-  virtual abstract_renderer_item *create_outline_renderer () const {return 0; } // override and return renderer to make outline rendered
+  virtual abstract_renderer_item *create_renderer_item () const = 0;
+  virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const = 0;
 
-private:
-  void set_item_style (renderer_graphics_item *item) const;
+  QTransform full_transform () const;
 };
 
 #endif // SVG_GRAPHICS_ITEM_H

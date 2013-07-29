@@ -1,12 +1,12 @@
 #ifndef SVG_ITEM_IMAGE_H
 #define SVG_ITEM_IMAGE_H
 
-#include "svg/items/svg_graphics_item.h"
+#include "svg/items/svg_base_graphics_item.h"
 
 class QImage;
 class QPainterPath;
 
-class svg_item_image : public svg_graphics_item
+class svg_item_image : public svg_base_graphics_item
 {
   SVG_ITEM
 
