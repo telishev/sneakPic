@@ -3,10 +3,14 @@
 
 #include "svg/items/abstract_svg_item.h"
 
+#include <QRectF>
+
 class QTransform;
 
 class svg_graphics_item : public abstract_svg_item
 {
+protected:
+  QRectF m_bbox;
 public:
   svg_graphics_item (svg_document *document);
   ~svg_graphics_item ();
@@ -16,7 +20,9 @@ public:
 
   virtual abstract_renderer_item *create_renderer_item () const = 0;
   virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const = 0;
+  virtual void update_bbox () = 0;
 
+  QRectF bbox () const { return m_bbox; }
   QTransform full_transform () const;
 };
 

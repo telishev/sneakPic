@@ -121,7 +121,15 @@ bool svg_document::read_file (const QString &filename_arg)
   else
     return false;
 
-  return item_svg->check ();
+  if (!item_svg->check ())
+    return false;
+
+  svg_graphics_item *graphics_item = item_svg->to_graphics_item ();
+  if (!graphics_item)
+    return false;
+
+  graphics_item->update_bbox ();
+  return true;
 }
 
 QString svg_document::get_filename ()

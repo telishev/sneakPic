@@ -16,10 +16,9 @@ public:
 
   virtual abstract_renderer_item *create_renderer_item () const override;
   virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const override;
+  virtual void update_bbox () override;
 
 protected:
-  QRectF exact_bbox (bool use_full_transform) const;
-  QRectF bbox_with_clip (bool use_full_transform) const;
   QPainterPath get_path_for_clipping () const;
 
   virtual QPainterPath get_boundaries () const = 0; // In this function path around item should be returned (even if it's raster image for example)

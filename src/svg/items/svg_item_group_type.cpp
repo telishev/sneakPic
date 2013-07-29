@@ -7,6 +7,7 @@
 #include "svg/attributes/svg_attributes_enum.h"
 
 #include "svg/items/svg_item_clip_path.h"
+#include "svg_graphics_item.h"
 
 
 svg_item_group_type::svg_item_group_type (svg_document *document)
@@ -31,4 +32,20 @@ void svg_item_group_type::update_group_item (renderer_item_group *renderer_item)
 abstract_renderer_item *svg_item_group_type::create_overlay_item (overlay_item_type /*overlay_type*/) const
 {
   return nullptr;
+}
+
+void svg_item_group_type::update_bbox ()
+{
+  QRectF bbox;
+  for (abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
+    {
+      svg_graphics_item *graphics_item = child->to_graphics_item ();
+      if (!graphics_item)
+        continue;
+
+      graphics_item->update_bbox ();
+      bbox = bbox.united (graphics_item->bbox ());
+    }
+
+  m_bbox = bbox;
 }

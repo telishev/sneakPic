@@ -53,7 +53,7 @@ void svg_base_shape_item::set_item_style (renderer_base_shape_item *item) const
   item->set_stroke_width (stroke_width->get_stroke_width ());
   item->set_fill_server (fill.get ());
   item->set_stroke_server (stroke.get ());
-  item->set_bounding_box (exact_bbox (false));
+  item->set_bounding_box (m_bbox);
 }
 
 QPainterPath svg_base_shape_item::get_path_for_clipping () const
