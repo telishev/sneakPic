@@ -118,7 +118,7 @@ void main_window::open_file (const QString &filename)
 {
   m_painter->set_document (nullptr);
   FREE (m_doc);
-  
+
   m_doc = new svg_document;
   setWindowTitle ("Loading...");
   if (!m_doc->read_file (filename))
@@ -126,7 +126,7 @@ void main_window::open_file (const QString &filename)
       QMessageBox::warning (this, "Warning", "Cannot open document");
       return;
     }
-  
+
   renderer_items_container *renderer_items = m_doc->create_rendered_items (m_cache);
   m_queue->add_event (new event_container_changed (renderer_items));
   update_window_title ();

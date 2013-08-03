@@ -1,4 +1,4 @@
-DISTFILES += sneakPic.pro
+DISTFILES += sneakPic.pro skia.pri
 TARGET = sneakPic
 TEMPLATE = app
 QT += core widgets svg xml opengl
@@ -9,8 +9,6 @@ isEmpty ($$PROJ_DIR) {
 
 include (src/files.in)
 include (skia.pri)
-
-LIBS += -lopengl32
 
 # configuration
 
@@ -24,15 +22,19 @@ DEPENDPATH  += src
 VPATH += src
 
 # These are for gengetopt, version should be updated correctly later though
-DEFINES += "PACKAGE=\"sneakPic\""
-DEFINES += "VERSION=\"0.01\""
+DEFINES += 'PACKAGE=\\"sneakPic\\"'
+DEFINES += 'VERSION=\\"0.01\\"'
 
 UI_DIR = $$PROJ_DIR/src/ui
 
 win32:*msvc*{
   QMAKE_CXXFLAGS_DEBUG += /MP -wd4996 -we4062 /W4 /WX /Zc:wchar_t-
   QMAKE_CXXFLAGS_RELEASE += /MP -wd4996 /W4 /Ob2 /Oi /Ot /Oy /GS- /GF /Gy /WX /Zc:wchar_t-
+}
 
+*g++* {
+  QMAKE_CXXFLAGS_DEBUG += -std=c++11
+  QMAKE_CXXFLAGS_RELEASE += -std=c++11
 }
 
 Release {
@@ -40,6 +42,7 @@ Release {
   MOC_DIR = $$PROJ_DIR/build
   RCC_DIR = $$PROJ_DIR/build
   DESTDIR = $$PROJ_DIR/build
+  DEFINES += "SK_RELEASE"
 }
 
 Debug {
@@ -47,4 +50,5 @@ Debug {
   MOC_DIR = $$PROJ_DIR/build.dbg
   RCC_DIR = $$PROJ_DIR/build.dbg
   DESTDIR = $$PROJ_DIR/build.dbg
+  DEFINES += "SK_DEBUG"
 }

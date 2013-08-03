@@ -66,21 +66,21 @@ bool svg_data_type_iri::read (const QString &data_arg)
       m_data_type = string_to_enum <data_type> (data_with_offset.left (next_index).toLatin1 ().data ());
       if (m_data_type == data_type::unsupported)
         return false;
-      data_format data_format;
+      data_format format;
       if (data_with_offset[next_index] == ',')
-        data_format = data_format::percentencoding;
+        format = data_format::percentencoding;
       else
         {
           if (data_with_offset.startsWith ("base64,"))
             return false;
-          data_format = data_format::base64;
+          format = data_format::base64;
         }
 
       next_index = data_with_offset.indexOf (',');
       data_with_offset = data_with_offset.mid (next_index + 1);
       m_iri_type = iri_type::media_data;
 
-      switch (data_format)
+      switch (format)
       {
         case data_format::base64:
           raw_data = QByteArray::fromBase64 (data_with_offset.toLatin1 ());
@@ -89,16 +89,17 @@ bool svg_data_type_iri::read (const QString &data_arg)
           raw_data = QByteArray::fromPercentEncoding (data_with_offset.toLatin1 ());
           return false;
       }
+      QBuffer buffer(&raw_data);
       switch (m_data_type)
       {
         case data_type::image_jpeg:
         case data_type::image_jpg:
           m_image_data = new QImage ();
-          m_image_data->load (&QBuffer (&raw_data), "jpg");
+          m_image_data->load (&buffer, "jpg");
           break;
         case data_type::image_png:
           m_image_data = new QImage ();
-          m_image_data->load (&QBuffer (&raw_data), "png");
+          m_image_data->load (&buffer, "png");
           break;
         case data_type::unsupported:
           return false;
@@ -115,7 +116,7 @@ bool svg_data_type_iri::read (const QString &data_arg)
         return false;
 
       link_to_resource = data;
-      if (file.suffix () == "jpg" || file.suffix () == "jpeg") 
+      if (file.suffix () == "jpg" || file.suffix () == "jpeg")
         {
           m_image_data = new QImage ();
           if (m_image_data->load (file.absoluteFilePath (), "jpeg"))
@@ -144,7 +145,7 @@ bool svg_data_type_iri::read (const QString &data_arg)
     }
 }
 
-bool svg_data_type_iri::write (QString &data) const 
+bool svg_data_type_iri::write (QString &data) const
 {
   switch (m_iri_type)
     {

@@ -26,7 +26,7 @@ svg_base_graphics_item::~svg_base_graphics_item ()
 {
 }
 
-abstract_renderer_item *svg_base_graphics_item::create_overlay_item (overlay_item_type overlay_type) const 
+abstract_renderer_item *svg_base_graphics_item::create_overlay_item (overlay_item_type overlay_type) const
 {
   switch (overlay_type)
     {
@@ -44,15 +44,15 @@ abstract_renderer_item *svg_base_graphics_item::create_overlay_item (overlay_ite
   return nullptr;
 }
 
-void svg_base_graphics_item::set_item_style (renderer_graphics_item *item) const 
+void svg_base_graphics_item::set_item_style (renderer_graphics_item *item) const
 {
   const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path ();
-  const svg_attribute_visibility *visibility = get_computed_attribute<svg_attribute_visibility> ();
-  const svg_attribute_display *display = get_computed_attribute<svg_attribute_display> ();
+  const svg_attribute_visibility *attr_visibility = get_computed_attribute<svg_attribute_visibility> ();
+  const svg_attribute_display *attr_display = get_computed_attribute<svg_attribute_display> ();
   const svg_attribute_opacity *opacity = get_computed_attribute<svg_attribute_opacity> ();
 
   // For now display does the same stuff as visibility, though they little differ by specification
-  item->set_visibility (visibility->value () == visibility::VISIBLE && display->value () != display::NONE);
+  item->set_visibility (attr_visibility->value () == visibility::VISIBLE && attr_display->value () != display::NONE);
   item->set_transform (full_transform ());
   item->set_bounding_box (m_bbox);
   item->set_opacity (opacity->value ());
@@ -60,7 +60,7 @@ void svg_base_graphics_item::set_item_style (renderer_graphics_item *item) const
     item->set_clip_path (clip_path->get_clip_path ());
 }
 
-abstract_renderer_item *svg_base_graphics_item::create_renderer_item () const 
+abstract_renderer_item *svg_base_graphics_item::create_renderer_item () const
 {
   renderer_graphics_item *render_item = create_renderer_graphics_item ();
   if (!render_item)

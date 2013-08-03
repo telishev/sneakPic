@@ -6,7 +6,6 @@
 #include "common/memory_deallocation.h"
 #include "common/common_utils.h"
 
-#include "svg/attributes/abstract_attribute.h"
 #include "svg/attributes/svg_attribute_id.h"
 #include "svg/attributes/svg_attribute_factory.h"
 #include "svg/attributes/svg_attribute_class.h"
@@ -38,7 +37,7 @@ abstract_svg_item::~abstract_svg_item ()
     delete attribute.second;
 }
 
-void abstract_svg_item::write (QXmlStreamWriter &writer) const 
+void abstract_svg_item::write (QXmlStreamWriter &writer) const
 {
   if (is_cloned ())
     return;
@@ -88,12 +87,12 @@ void abstract_svg_item::remove_attribute (abstract_attribute *attribute)
   m_attributes.erase (attribute->type_name ());
 }
 
-const char *abstract_svg_item::namespace_uri () const 
+const char *abstract_svg_item::namespace_uri () const
 {
   return svg_namespaces::uri (namespace_type ());
 }
 
-const char * abstract_svg_item::namespace_name () const 
+const char * abstract_svg_item::namespace_name () const
 {
   return svg_namespaces::name (namespace_type ());
 }
@@ -241,7 +240,7 @@ abstract_svg_item *abstract_svg_item::create_clone ()
   clone->m_original_id = name ();
   clone->m_own_id = m_document->item_container ()->create_unique_name (clone->type_name ());
   clone->add_to_container ();
-  
+
   /// append cloned children to a clone
   for (abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
     {
@@ -297,7 +296,7 @@ void abstract_svg_item::get_used_namespaces (std::map<QString, QString> &map) co
 
   for (auto &attribute_pair : m_attributes)
     {
-      const abstract_attribute *attribute = attribute_pair.second; 
+      const abstract_attribute *attribute = attribute_pair.second;
       if (*attribute->namespace_uri ())
         map.insert (std::make_pair (attribute->namespace_uri (), attribute->namespace_name ()));
     }

@@ -1,5 +1,7 @@
 #ifndef QT2SKIA_H
 #define QT2SKIA_H
+#include <Qt>
+
 #pragma warning(push, 0)
 #include <SkPath.h>
 #pragma warning(pop)
@@ -18,11 +20,6 @@ class QBrush;
 class QImage;
 class QRect;
 class QRectF;
-
-namespace Qt
-{
-  enum FillRule : int;
-};
 
 typedef unsigned int SkColor;
 

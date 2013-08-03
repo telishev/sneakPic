@@ -4,7 +4,7 @@
 #include <QRectF>
 #include <QTransform>
 #include <QFuture>
-#include <QtConcurrent/QtConcurrent>
+#include <QtCore>
 
 #include "common/common_utils.h"
 
@@ -74,7 +74,7 @@ void svg_renderer::update_cache_item (const abstract_renderer_item *item, const 
             m_cache->add_bitmap (cur_id, bitmap_part, cfg.use_new_cache ());
           }
     }
-  
+
 }
 
 void svg_renderer::update_cache_items (const abstract_renderer_item *item, const render_cache_id &first,

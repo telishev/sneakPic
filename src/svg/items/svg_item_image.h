@@ -20,7 +20,7 @@ protected:
 
 protected:
   virtual bool check_item () override;
-  virtual QPainterPath svg_item_image::get_boundaries () const override;
+  virtual QPainterPath get_boundaries () const override;
   virtual renderer_graphics_item *create_renderer_graphics_item () const override;
 };
 

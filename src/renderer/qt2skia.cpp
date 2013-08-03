@@ -71,8 +71,8 @@ SkPath qt2skia::path (const QPainterPath &qpath)
      path.close ();
    }
 
- if (   count > 3 
-     && are_equal (qpath.elementAt (count - 1).x, qpath.elementAt (0).x) 
+ if (   count > 3
+     && are_equal (qpath.elementAt (count - 1).x, qpath.elementAt (0).x)
      && are_equal (qpath.elementAt (count - 1).y, qpath.elementAt (0).y)
     )
   path.close ();

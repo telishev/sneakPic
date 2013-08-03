@@ -23,3 +23,10 @@ win32:*msvc* {
   LIBS *=  usp10.lib skia_core.lib skia_images.lib skia_opts.lib skia_effects.lib skia_pdf.lib skia_opts_ssse3.lib \
            zlib.lib skia_skgpu.lib skia_utils.lib skia_ports.lib skia_animator.lib skia_sfnt.lib
 }
+*g++* {
+  LIBS *= -Wl,--start-group \
+            -lskia_images -lskia_opts_ssse3 -lskia_animator -lskia_skgpu -lskia_xml -lskia_core \
+            -lskia_effects -lskia_pdf -lskia_ports -lskia_utils -lskia_sfnt -lskia_opts -lskia_views \
+          -Wl,--end-group \
+          -lpthread -lgif -lpng -lz -lfontconfig -ldl -lfreetype -lGL -lGLU -lX11
+}

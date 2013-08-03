@@ -6,6 +6,8 @@
 
 #include "common/tree_structure.h"
 
+#include "svg/attributes/abstract_attribute.h"
+
 #define SVG_ITEM                                   \
 public:                                            \
 virtual svg_item_type type () const override;      \

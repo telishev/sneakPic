@@ -45,7 +45,7 @@ void renderer_item_image::draw_graphics_item (SkCanvas &canvas, const renderer_s
 {
   SkBitmap bitmap =  qt2skia::image (m_image_data);
   SkPaint paint;
-  
+
   paint.setAlpha ((int) (m_opacity * 255));
   if (config->render_for_selection ())
   {
@@ -56,7 +56,10 @@ void renderer_item_image::draw_graphics_item (SkCanvas &canvas, const renderer_s
   else
     {
       if (!bitmap.isNull ())
-        canvas.drawBitmapRect (bitmap, &qt2skia::Irect (m_src_rect), qt2skia::rect (m_dst_rect), &paint);
+      {
+        SkIRect irect = qt2skia::Irect (m_src_rect);
+        canvas.drawBitmapRect (bitmap, &irect, qt2skia::rect (m_dst_rect), &paint);
+      }
     }
 }
 

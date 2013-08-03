@@ -29,7 +29,7 @@ svg_base_shape_item::~svg_base_shape_item ()
 {
 }
 
-void svg_base_shape_item::set_item_style (renderer_base_shape_item *item) const 
+void svg_base_shape_item::set_item_style (renderer_base_shape_item *item) const
 {
   std::unique_ptr<renderer_paint_server> fill (get_computed_attribute<svg_attribute_fill> ()->create_paint_server ());
   std::unique_ptr<renderer_paint_server> stroke (get_computed_attribute<svg_attribute_stroke> ()->create_paint_server ());
@@ -75,13 +75,13 @@ QPainterPath svg_base_shape_item::get_path_for_clipping () const
   return path;
 }
 
-renderer_graphics_item *svg_base_shape_item::create_renderer_graphics_item () const 
+renderer_graphics_item *svg_base_shape_item::create_renderer_graphics_item () const
 {
   renderer_base_shape_item *render_item = new renderer_base_shape_item (name ().toStdString ());
 
   QPainterPath path = get_path ();
-  const svg_attribute_fill_rule *fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();
-  path.setFillRule (fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
+  const svg_attribute_fill_rule *attr_fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();
+  path.setFillRule (attr_fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
   set_item_style (render_item);
   /// must be last
   render_item->set_painter_path (path);
@@ -89,11 +89,11 @@ renderer_graphics_item *svg_base_shape_item::create_renderer_graphics_item () co
   return render_item;
 }
 
-QPainterPath svg_base_shape_item::get_boundaries () const 
+QPainterPath svg_base_shape_item::get_boundaries () const
 {
-  const svg_attribute_fill_rule *fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();
+  const svg_attribute_fill_rule *attr_fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();
   QPainterPath path = get_path ();
-  path.setFillRule (fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
+  path.setFillRule (attr_fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
   get_stroke (path);
   return path;
 }

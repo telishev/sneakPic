@@ -23,3 +23,4 @@ Makefile
 *.ncb
 *.idb
 *.obj
+*.pro.user

@@ -32,7 +32,7 @@ bool svg_item_text::read_item (const QString &data)
   return true;
 }
 
-QPainterPath svg_item_text::get_path () const 
+QPainterPath svg_item_text::get_path () const
 {
   QPainterPath path;
   const svg_attribute_font_family *font_family = get_computed_attribute <svg_attribute_font_family> ();
@@ -41,7 +41,7 @@ QPainterPath svg_item_text::get_path () const
   const svg_attribute_y *y = get_computed_attribute <svg_attribute_y> ();
   const svg_attribute_dx *dx = get_computed_attribute <svg_attribute_dx> ();
   const svg_attribute_dy *dy = get_computed_attribute <svg_attribute_dy> ();
-  const svg_attribute_text_anchor *text_anchor = get_computed_attribute <svg_attribute_text_anchor> ();
+  const svg_attribute_text_anchor *attr_text_anchor = get_computed_attribute <svg_attribute_text_anchor> ();
   double x_value = x->value ();
   double y_value = y->value ();
   QList<double> dx_value, dy_value;
@@ -70,7 +70,7 @@ QPainterPath svg_item_text::get_path () const
   QPointF transformed_point = transform.map (QPointF (x_value, y_value));
   x_value = transformed_point.x ();
   y_value = transformed_point.y ();
-  switch (text_anchor->value ())
+  switch (attr_text_anchor->value ())
     {
       case text_anchor::MIDDLE: x_value -= metrics.width (m_text) * 0.5; break;
       case text_anchor::END: x_value -= metrics.width (m_text); break;

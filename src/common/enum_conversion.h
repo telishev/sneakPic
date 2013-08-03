@@ -9,6 +9,7 @@
 /// const char *enum_to_string (E id);
 /// int enum_values_count (E);
 
+#include <string.h>
 #include <string>
 
 template <typename E>

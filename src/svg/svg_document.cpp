@@ -8,20 +8,20 @@
 
 #include "common/memory_deallocation.h"
 
+#include "svg/attributes/abstract_attribute.h"
+#include "svg/attributes/svg_attribute_type.h"
+#include "svg/attributes/svg_attribute_factory.h"
+
 #include "svg/items/svg_item_factory.h"
+#include "svg/items/svg_item_type.h"
 #include "svg/items/svg_items_container.h"
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_item_svg.h"
-#include "svg/items/abstract_svg_item.h"
-#include "svg/items/svg_item_type.h"
 #include "svg/items/svg_graphics_item.h"
 
 #include "svg/css/selectors_container.h"
 
 #include "svg/svg_namespaces.h"
-
-#include "svg/attributes/svg_attribute_type.h"
-#include "svg/attributes/svg_attribute_factory.h"
 
 #include "renderer/renderer_items_container.h"
 #include "renderer/abstract_renderer_item.h"

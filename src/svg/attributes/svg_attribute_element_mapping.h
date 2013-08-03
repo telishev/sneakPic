@@ -1,7 +1,7 @@
 #ifndef SVG_ATTRIBUTE_ELEMENT_MAPPING_H
 #define SVG_ATTRIBUTE_ELEMENT_MAPPING_H
 
-#include <unordered_set>
+#include <set>
 #include <vector>
 
 enum class svg_item_type;
@@ -9,7 +9,7 @@ enum class svg_attribute_type;
 
 class svg_attribute_element_mapping
 {
-  std::vector<std::unordered_set<svg_item_type>> m_map;
+  std::vector<std::set<svg_item_type>> m_map;
 public:
   static const svg_attribute_element_mapping *get ();
 

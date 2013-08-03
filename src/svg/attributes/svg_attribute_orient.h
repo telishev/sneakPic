@@ -6,6 +6,8 @@
 
 #include <QColor>
 
+class QPointF;
+
 class svg_attribute_orient : public abstract_attribute
 {
   SVG_ATTRIBUTE

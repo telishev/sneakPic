@@ -23,7 +23,7 @@ svg_item_marker::~svg_item_marker ()
 
 abstract_renderer_item *svg_item_marker::create_renderer_item_for_marker (QPointF target_point, QPointF bisector, QTransform transform, double stroke_width)
 {
-  auto marker_units = get_computed_attribute <svg_attribute_marker_units> ();
+  auto attr_marker_units = get_computed_attribute <svg_attribute_marker_units> ();
   auto refx = get_computed_attribute <svg_attribute_refx> ();
   auto refy = get_computed_attribute <svg_attribute_refy> ();
   auto marker_width = get_computed_attribute <svg_attribute_marker_width> ();
@@ -40,10 +40,10 @@ abstract_renderer_item *svg_item_marker::create_renderer_item_for_marker (QPoint
   renderer_graphics_item *renderer_item = static_cast<renderer_graphics_item *> (child_item->create_renderer_item ());
   renderer_item->update_bbox ();
   QRectF bbox = renderer_item->bounding_box ();
-  
 
-  QTransform add_transform, transform1;
-  if (marker_units->value () == marker_units::STROKE_WIDTH)
+
+  QTransform add_transform;
+  if (attr_marker_units->value () == marker_units::STROKE_WIDTH)
     multiplier = stroke_width;
   else
     multiplier = 1.0;
