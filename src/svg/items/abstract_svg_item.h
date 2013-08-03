@@ -65,7 +65,7 @@ public:
   bool has_name () const;
   QString name () const;
 
-  bool is_xml_class (const QString &class_name) const;
+  bool is_xml_class (const std::string &class_name) const;
 
   /// returns attribute for the current item
   template <typename T>

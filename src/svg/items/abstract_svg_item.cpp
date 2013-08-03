@@ -197,7 +197,7 @@ const abstract_attribute *abstract_svg_item::get_computed_attribute (const char 
   return nullptr;
 }
 
-bool abstract_svg_item::is_xml_class (const QString &class_name) const
+bool abstract_svg_item::is_xml_class (const std::string &class_name) const
 {
   const svg_attribute_class *attribute_class = get_computed_attribute<svg_attribute_class> ();
   return attribute_class->is_class (class_name);

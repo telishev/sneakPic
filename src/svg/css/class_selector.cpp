@@ -11,5 +11,5 @@ class_selector::class_selector (const std::string &class_name)
 
 bool class_selector::is_matched (const abstract_svg_item *item) const 
 {
-  return item->is_xml_class (QString::fromStdString (m_class_name));
+  return item->is_xml_class (m_class_name);
 }
