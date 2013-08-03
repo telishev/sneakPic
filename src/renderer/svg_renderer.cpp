@@ -4,7 +4,7 @@
 #include <QRectF>
 #include <QTransform>
 #include <QFuture>
-#include <QtCore>
+#include <QtConcurrent/QtConcurrentRun>
 
 #include "common/common_utils.h"
 
