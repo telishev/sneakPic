@@ -49,10 +49,9 @@ svg_data_type_length::~svg_data_type_length ()
 bool svg_data_type_length::read_and_shift (const char *&data, bool is_css)
 {
   CHECK (str_to_double (data, m_value));
-  QString str (data);
-  str = str.trimmed ();
+  trim_whitespace_left (data);
 
-  if (str.isEmpty ())
+  if (!*data)
     {
       m_units = svg_length_units::NO_UNITS;
       return true;
@@ -60,13 +59,10 @@ bool svg_data_type_length::read_and_shift (const char *&data, bool is_css)
 
   if (is_css)
     {
-      if (!str.startsWith ('~'))
-        return false;
+      if (*data == '~')
+        data++;
       else
-        {
-          str = str.mid (1);
-          data++;
-        }
+        return true;  
     }
 
   m_units = string_to_enum_and_shift <svg_length_units> (data);
