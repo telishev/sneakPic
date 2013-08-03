@@ -47,6 +47,10 @@ svg_attribute_element_mapping::svg_attribute_element_mapping ()
   fill_presentation_attribute (svg_attribute_type::COLOR);
   fill_presentation_attribute (svg_attribute_type::STROKE_DASH_ARRAY);
   fill_presentation_attribute (svg_attribute_type::STROKE_DASH_OFFSET);
+  fill_presentation_attribute (svg_attribute_type::MARKER_START);
+  fill_presentation_attribute (svg_attribute_type::MARKER_MID);
+  fill_presentation_attribute (svg_attribute_type::MARKER_END);
+  fill_presentation_attribute (svg_attribute_type::MARKER);
 
   MAP_ATTRIBUTE  (SVG_VERSION          , SVG);
   MAP_ATTRIBUTE  (WIDTH                , IMAGE, RECT, SVG, USE);
@@ -71,11 +75,21 @@ svg_attribute_element_mapping::svg_attribute_element_mapping ()
   MAP_ATTRIBUTE  (SPREAD_METHOD        , RADIAL_GRADIENT, LINEAR_GRADIENT);
   MAP_ATTRIBUTE  (GRADIENT_TRANSFORM   , RADIAL_GRADIENT, LINEAR_GRADIENT);
   MAP_ATTRIBUTE  (OFFSET               , STOP);
-  MAP_ATTRIBUTE  (VIEW_BOX             , SVG);
+  MAP_ATTRIBUTE  (VIEW_BOX             , SVG, MARKER);
   MAP_ATTRIBUTE  (POINTS               , POLYGON, POLYLINE);
   MAP_ATTRIBUTE  (DX                   , TEXT);
   MAP_ATTRIBUTE  (DY                   , TEXT);
   MAP_ATTRIBUTE  (PRESERVE_ASPECT_RATIO, IMAGE, SVG);
+  MAP_ATTRIBUTE  (MARKER_UNITS         , MARKER);
+  MAP_ATTRIBUTE  (MARKER_HEIGHT        , MARKER);
+  MAP_ATTRIBUTE  (MARKER_WIDTH         , MARKER);
+  MAP_ATTRIBUTE  (REFX                 , MARKER);
+  MAP_ATTRIBUTE  (REFY                 , MARKER);
+  MAP_ATTRIBUTE  (ORIENT               , MARKER);
+  MAP_ATTRIBUTE  (MARKER_START         , PATH, LINE, POLYLINE, POLYGON);
+  MAP_ATTRIBUTE  (MARKER_MID           , PATH, LINE, POLYLINE, POLYGON);
+  MAP_ATTRIBUTE  (MARKER_END           , PATH, LINE, POLYLINE, POLYGON);
+  MAP_ATTRIBUTE  (MARKER               , PATH, LINE, POLYLINE, POLYGON);
 
   check ();
 }

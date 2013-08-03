@@ -43,9 +43,15 @@ static inline int enum_values_count (data_type)
   return (int) data_type::unsupported;
 }
 
-bool svg_data_type_iri::read (const QString &data)
+bool svg_data_type_iri::read (const QString &data_arg)
 {
-  /// For now we only support local references in a form  #<elementID>
+  QString data = data_arg; // Maybe it's ineffective
+  if (data.startsWith ("url(") && data.endsWith (")"))
+    {
+      data = data.mid (4);
+      data.chop (1);
+    }
+
   if (data.startsWith ("#"))
     {
       m_iri_type = iri_type::document_fragment;

@@ -171,4 +171,23 @@ public:
   { m_value = text_anchor::START; }
 };
 
+enum class marker_units
+{
+  STROKE_WIDTH, 
+  USER_SPACE,
+
+  INVALID,
+};
+
+const char *enum_to_string (marker_units id);
+static inline int enum_values_count (marker_units) { return (int)marker_units::INVALID; }
+
+class svg_attribute_marker_units : public svg_base_attribute_enum<marker_units>
+{
+  SVG_ATTRIBUTE
+public:
+  svg_attribute_marker_units (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  { m_value = marker_units::STROKE_WIDTH; }
+};
+
 #endif // SVG_ATTRIBUTES_ENUM_H

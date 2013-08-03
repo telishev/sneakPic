@@ -60,6 +60,16 @@ DECLARE_ATTRIBUTE(COLOR                , "color"              , SVG        , svg
 DECLARE_ATTRIBUTE(STROKE_DASH_ARRAY    , "stroke-dasharray"   , SVG        , svg_attribute_stroke_dash_array    , STYLE        )   \
 DECLARE_ATTRIBUTE(STROKE_DASH_OFFSET   , "stroke-dashoffset"  , SVG        , svg_attribute_stroke_dash_offset   , STYLE        )   \
 DECLARE_ATTRIBUTE(PRESERVE_ASPECT_RATIO, "preserveAspectRatio", SVG        , svg_attribute_preserve_aspect_ratio, NONE         )   \
+DECLARE_ATTRIBUTE(MARKER_UNITS         , "markerUnits"        , SVG        , svg_attribute_marker_units         , NONE         )   \
+DECLARE_ATTRIBUTE(REFX                 , "refX"               , SVG        , svg_attribute_refx                 , NONE         )   \
+DECLARE_ATTRIBUTE(REFY                 , "refY"               , SVG        , svg_attribute_refy                 , NONE         )   \
+DECLARE_ATTRIBUTE(MARKER_WIDTH         , "markerWidth"        , SVG        , svg_attribute_marker_width         , NONE         )   \
+DECLARE_ATTRIBUTE(MARKER_HEIGHT        , "markerHeight"       , SVG        , svg_attribute_marker_height        , NONE         )   \
+DECLARE_ATTRIBUTE(ORIENT               , "orient"             , SVG        , svg_attribute_orient               , NONE         )   \
+DECLARE_ATTRIBUTE(MARKER_START         , "marker-start"       , SVG        , svg_attribute_marker_start         , STYLE        )   \
+DECLARE_ATTRIBUTE(MARKER_MID           , "marker-mid"         , SVG        , svg_attribute_marker_mid           , STYLE        )   \
+DECLARE_ATTRIBUTE(MARKER_END           , "marker-end"         , SVG        , svg_attribute_marker_end           , STYLE        )   \
+DECLARE_ATTRIBUTE(MARKER               , "marker"             , SVG        , svg_attribute_marker               , STYLE        )   \
 
 enum class svg_attribute_type
 {

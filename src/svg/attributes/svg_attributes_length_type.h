@@ -139,5 +139,41 @@ public:
     : svg_base_attribute_length (item, value, units, units_orientation::Y) {} // TODO: Checkout is units orientation really applied here
 };
 
+class svg_attribute_refx : public svg_base_attribute_length
+{
+  SVG_ATTRIBUTE
+
+public:
+  svg_attribute_refx(abstract_svg_item *item, double value = 0.0, svg_length_units units = svg_length_units::NO_UNITS)
+    : svg_base_attribute_length (item, value, units, units_orientation::X) {} // TODO: Checkout is units orientation really applied here
+};
+
+class svg_attribute_refy : public svg_base_attribute_length
+{
+  SVG_ATTRIBUTE
+
+public:
+  svg_attribute_refy(abstract_svg_item *item, double value = 0.0, svg_length_units units = svg_length_units::NO_UNITS)
+    : svg_base_attribute_length (item, value, units, units_orientation::Y) {} // TODO: Checkout is units orientation really applied here
+};
+
+class svg_attribute_marker_width : public svg_base_attribute_length
+{
+  SVG_ATTRIBUTE
+
+public:
+  svg_attribute_marker_width(abstract_svg_item *item, double value = 3.0, svg_length_units units = svg_length_units::NO_UNITS)
+    : svg_base_attribute_length (item, value, units, units_orientation::X) {} // TODO: Checkout is units orientation really applied here
+};
+
+class svg_attribute_marker_height : public svg_base_attribute_length
+{
+  SVG_ATTRIBUTE
+
+public:
+  svg_attribute_marker_height(abstract_svg_item *item, double value = 3.0, svg_length_units units = svg_length_units::NO_UNITS)
+    : svg_base_attribute_length (item, value, units, units_orientation::Y) {} // TODO: Checkout is units orientation really applied here
+};
+
 
 #endif // SVG_ATTRIBUTES_LENGTH_TYPE_H

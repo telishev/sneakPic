@@ -41,7 +41,7 @@ void renderer_item_image::set_image_data (QImage &image_data)
   m_image_data = image_data;
 }
 
-void renderer_item_image::draw_graphics_item (SkCanvas &canvas, const renderer_config *config) const
+void renderer_item_image::draw_graphics_item (SkCanvas &canvas, const renderer_state &/*state*/, const renderer_config *config) const
 {
   SkBitmap bitmap =  qt2skia::image (m_image_data);
   SkPaint paint;
@@ -62,5 +62,5 @@ void renderer_item_image::draw_graphics_item (SkCanvas &canvas, const renderer_c
 
 void renderer_item_image::update_bbox ()
 {
-  m_bbox = m_dst_rect;
+  m_bbox_computed = m_dst_rect;
 }

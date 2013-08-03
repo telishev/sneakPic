@@ -8,8 +8,11 @@
 #include "renderer_paint_server.h"
 #include "renderer/qt2skia.h"
 #include "renderer/rendered_items_cache.h"
-#include "renderer/renderer_state.h"
 #include "renderer/renderer_config.h"
+#include "renderer/renderer_items_container.h"
+#include "renderer/renderer_state.h"
+
+#include "svg/attributes/svg_attributes_marker_usage.h"
 
 #pragma warning(push, 0)
 #include <SkCanvas.h>
@@ -31,6 +34,17 @@ renderer_base_shape_item::renderer_base_shape_item (const std::string &name)
   m_stroke_server = nullptr;
   m_fill_server = nullptr;
 }
+
+void renderer_base_shape_item::add_marker (const svg_base_attribute_marker_usage *marker)
+{
+  if (!marker || !marker->is_specified ())
+    return;
+  else
+    {
+      markers_used.push_back (marker);
+    }
+}
+
 
 renderer_base_shape_item::~renderer_base_shape_item ()
 {
@@ -124,7 +138,27 @@ void renderer_base_shape_item::set_fill_server (const renderer_paint_server *ser
   m_fill_server = server->clone ();
 }
 
-void renderer_base_shape_item::draw_graphics_item (SkCanvas &canvas, const renderer_config *config)  const
+void renderer_base_shape_item::configure_markers ()
+{
+  for (size_t i = 0; i < markers_used.size (); i++)
+  {
+    std::vector<abstract_renderer_item *> marker_renderers = markers_used[i]->configure_markers_on_path_drawing (m_path, m_transform, m_stroke->getStrokeWidth ());
+    for (size_t j = 0; j < marker_renderers.size (); j++)
+      marker_renderer_items.push_back (marker_renderers[j]);
+  }
+}
+
+void renderer_base_shape_item::update_bbox ()
+{
+  m_bbox_computed = m_bbox;
+  for (size_t i = 0; i < marker_renderer_items.size (); i++)
+    {
+      marker_renderer_items[i]->update_bbox ();
+      m_bbox_computed = m_bbox_computed.united (marker_renderer_items[i]->bounding_box ());
+    }
+}
+
+void renderer_base_shape_item::draw_graphics_item (SkCanvas &canvas, const renderer_state &state, const renderer_config *config)  const
 {
   SkPath path = qt2skia::path (m_path);
   for (int i = 0; i < 2; i++)
@@ -133,4 +167,12 @@ void renderer_base_shape_item::draw_graphics_item (SkCanvas &canvas, const rende
       configure_painter (paint, i != 0, config->render_for_selection ());
       canvas.drawPath (path, paint);
     }
+
+  for (size_t i = 0; i < marker_renderer_items.size (); i++)
+  {
+    canvas.restore ();
+    SkPaint paint;
+    marker_renderer_items[i]->draw (canvas, state, config);
+    canvas.save ();
+  }
 }

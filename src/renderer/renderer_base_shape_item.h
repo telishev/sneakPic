@@ -8,6 +8,8 @@
 class renderer_paint_server;
 class SkPaint;
 
+class svg_base_attribute_marker_usage;
+
 class renderer_base_shape_item : public renderer_graphics_item
 {
 protected:
@@ -16,6 +18,8 @@ protected:
   SkPaint *m_fill;
   renderer_paint_server *m_stroke_server;
   renderer_paint_server *m_fill_server;
+  std::vector <const svg_base_attribute_marker_usage *> markers_used;
+  std::vector <abstract_renderer_item *> marker_renderer_items;
 
 public:
   renderer_base_shape_item (const std::string &name);
@@ -30,11 +34,14 @@ public:
   void set_stroke_server (const renderer_paint_server *server);
   void set_fill_server (const renderer_paint_server *server);
 
-  virtual void draw_graphics_item (SkCanvas &canvas, const renderer_config *config) const override;
-  virtual void update_bbox () override {}
+  virtual void draw_graphics_item (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
+  virtual void update_bbox () override;
 
   void set_painter_path (const QPainterPath &path) { m_path = path; }
   void set_bounding_box (const QRectF &rect) { m_bbox = rect; }
+  void configure_markers ();
+
+  void add_marker (const svg_base_attribute_marker_usage *marker);
 
 protected:
   bool configure_painter (SkPaint &paint, bool stroke, bool config_for_selection) const;

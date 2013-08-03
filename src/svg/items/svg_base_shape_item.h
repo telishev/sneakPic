@@ -3,10 +3,11 @@
 
 #include "svg/items/svg_base_graphics_item.h"
 
-class renderer_base_shape_item;
 class QPainterPath;
 class QTransform;
 class QRectF;
+
+class renderer_base_shape_item;
 
 class svg_base_shape_item : public svg_base_graphics_item
 {
@@ -18,7 +19,6 @@ public:
 
 protected:
   virtual renderer_graphics_item *create_renderer_graphics_item () const override;
-
   void set_item_style (renderer_base_shape_item *item) const;
   virtual QPainterPath get_path () const = 0;
   QPainterPath get_boundaries () const override;

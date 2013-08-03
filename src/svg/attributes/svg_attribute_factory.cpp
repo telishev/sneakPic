@@ -31,6 +31,8 @@
 #include "svg/attributes/svg_attribute_points.h"
 #include "svg/attributes/svg_attribute_color.h"
 #include "svg/attributes/svg_attribute_preserve_aspect_ratio.h"
+#include "svg/attributes/svg_attribute_orient.h"
+#include "svg/attributes/svg_attributes_marker_usage.h"
 
 #include <QString>
 #include <memory>

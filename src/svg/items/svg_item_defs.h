@@ -14,6 +14,4 @@ protected:
   virtual bool check_item () override { return true; }
 };
 
-
-
 #endif // SVG_ITEM_DEFS_H

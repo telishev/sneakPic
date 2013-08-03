@@ -89,3 +89,16 @@ const char *enum_to_string (text_anchor id)
 
   return "";
 }
+
+
+const char *enum_to_string (marker_units id)
+{
+  switch (id)
+    {
+    case marker_units::STROKE_WIDTH: return "strokeWidth";
+    case marker_units::USER_SPACE: return "userSpaceOnUse";
+    case marker_units::INVALID: return "";
+    }
+
+  return "";
+}

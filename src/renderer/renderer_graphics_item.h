@@ -13,6 +13,7 @@ class renderer_graphics_item : public abstract_renderer_item
 {
 protected:
   QRectF m_bbox;
+  QRectF m_bbox_computed;
   QPainterPath m_clip_path;
   bool m_has_clip_path;
   bool visible;
@@ -28,10 +29,10 @@ public:
   void set_display (display display) { m_display = display; }
   void set_opacity (double opacity_arg);
 
-  virtual void draw_graphics_item (SkCanvas &canvas, const renderer_config *config) const = 0;
+  virtual void draw_graphics_item (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const = 0;
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
-  virtual QRectF bounding_box () const override { return m_bbox; }
-  virtual void update_bbox () override = 0;
+  virtual QRectF bounding_box () const override { return m_bbox_computed; }
+  virtual void update_bbox () override { m_bbox_computed = m_bbox; };
 
   void set_bounding_box (const QRectF &rect) { m_bbox = rect; }
 };

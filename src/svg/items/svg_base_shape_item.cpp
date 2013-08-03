@@ -11,6 +11,7 @@
 #include "svg/attributes/svg_attributes_fill_stroke.h"
 #include "svg/attributes/svg_attributes_enum.h"
 #include "svg/attributes/svg_attribute_transform.h"
+#include "svg/attributes/svg_attributes_marker_usage.h"
 
 #include "svg/svg_document.h"
 
@@ -32,15 +33,19 @@ void svg_base_shape_item::set_item_style (renderer_base_shape_item *item) const
 {
   std::unique_ptr<renderer_paint_server> fill (get_computed_attribute<svg_attribute_fill> ()->create_paint_server ());
   std::unique_ptr<renderer_paint_server> stroke (get_computed_attribute<svg_attribute_stroke> ()->create_paint_server ());
-  const svg_attribute_stroke_width *stroke_width = get_computed_attribute<svg_attribute_stroke_width> ();
-  const svg_attribute_stroke_linecap *stroke_linecap = get_computed_attribute<svg_attribute_stroke_linecap> ();
-  const svg_attribute_stroke_linejoin *stroke_linejoin = get_computed_attribute<svg_attribute_stroke_linejoin> ();
-  const svg_attribute_stroke_miterlimit *stroke_miterlimit = get_computed_attribute<svg_attribute_stroke_miterlimit> ();
-  const svg_attribute_opacity *opacity = get_computed_attribute<svg_attribute_opacity> ();
-  const svg_attribute_stroke_opacity *stroke_opacity = get_computed_attribute<svg_attribute_stroke_opacity> ();
-  const svg_attribute_fill_opacity *fill_opacity = get_computed_attribute<svg_attribute_fill_opacity> ();
-  const svg_attribute_stroke_dash_array *dash_array = get_computed_attribute<svg_attribute_stroke_dash_array> ();
-  const svg_attribute_stroke_dash_offset *dash_offset = get_computed_attribute<svg_attribute_stroke_dash_offset> ();
+  auto stroke_width = get_computed_attribute<svg_attribute_stroke_width> ();
+  auto stroke_linecap = get_computed_attribute<svg_attribute_stroke_linecap> ();
+  auto stroke_linejoin = get_computed_attribute<svg_attribute_stroke_linejoin> ();
+  auto stroke_miterlimit = get_computed_attribute<svg_attribute_stroke_miterlimit> ();
+  auto opacity = get_computed_attribute<svg_attribute_opacity> ();
+  auto stroke_opacity = get_computed_attribute<svg_attribute_stroke_opacity> ();
+  auto fill_opacity = get_computed_attribute<svg_attribute_fill_opacity> ();
+  auto dash_array = get_computed_attribute<svg_attribute_stroke_dash_array> ();
+  auto dash_offset = get_computed_attribute<svg_attribute_stroke_dash_offset> ();
+  auto marker_start = get_computed_attribute<svg_attribute_marker_start> ();
+  auto marker_mid = get_computed_attribute<svg_attribute_marker_mid> ();
+  auto marker_end = get_computed_attribute<svg_attribute_marker_end> ();
+  auto marker = get_computed_attribute<svg_attribute_marker> ();
 
   fill->set_opacity (fill_opacity->value () * opacity->computed_opacity ());
   stroke->set_opacity (stroke_opacity->value () * opacity->computed_opacity ());
@@ -54,6 +59,10 @@ void svg_base_shape_item::set_item_style (renderer_base_shape_item *item) const
   item->set_fill_server (fill.get ());
   item->set_stroke_server (stroke.get ());
   item->set_bounding_box (m_bbox);
+  item->add_marker (marker_start);
+  item->add_marker (marker_mid);
+  item->add_marker (marker_end);
+  item->add_marker (marker);
 }
 
 QPainterPath svg_base_shape_item::get_path_for_clipping () const
@@ -76,6 +85,7 @@ renderer_graphics_item *svg_base_shape_item::create_renderer_graphics_item () co
   set_item_style (render_item);
   /// must be last
   render_item->set_painter_path (path);
+  render_item->configure_markers ();
   return render_item;
 }
 
@@ -108,7 +118,7 @@ bool svg_base_shape_item::get_stroke (QPainterPath &dst) const
   const svg_attribute_stroke_linejoin *stroke_linejoin = get_computed_attribute<svg_attribute_stroke_linejoin> ();
   const svg_attribute_stroke_miterlimit *stroke_miterlimit = get_computed_attribute<svg_attribute_stroke_miterlimit> ();
 
-    QPainterPath path = get_path ();
+  QPainterPath path = get_path ();
 
   if (path.isEmpty ())
     {

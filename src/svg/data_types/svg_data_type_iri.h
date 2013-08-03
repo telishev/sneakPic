@@ -43,7 +43,7 @@ public:
   svg_data_type_iri (abstract_svg_item *item);
   virtual ~svg_data_type_iri ();
 
-  bool read (const QString &data);
+  bool read (const QString &data_arg);
   bool write (QString &data) const;
 
   iri_type get_type () const; // Type should be checked before calling further getters

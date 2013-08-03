@@ -15,6 +15,7 @@ renderer_graphics_item::renderer_graphics_item (const std::string &name)
 {
   m_has_clip_path = false;
   m_opacity = 1.0;
+  m_display = display::INLINE;
   visible = true;
 }
 
@@ -50,7 +51,6 @@ void renderer_graphics_item::draw (SkCanvas &canvas, const renderer_state &state
     }
   canvas.setMatrix (qt2skia::matrix (item_transform));
 
-  draw_graphics_item (canvas, config);
-
+  draw_graphics_item (canvas, state, config);
   canvas.restore ();
 }

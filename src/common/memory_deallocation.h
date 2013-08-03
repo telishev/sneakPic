@@ -5,14 +5,14 @@
 do                 \
 {                  \
   delete DATA;     \
-  DATA = 0;        \
+  DATA = nullptr;  \
 } while (0)        \
 
 #define FREE_ARRAY(DATA) \
 do                       \
 {                        \
   delete[] DATA;         \
-  DATA = 0;              \
+  DATA = nullptr;        \
 } while (0)              \
 
 
