@@ -17,7 +17,7 @@ public:
 };
 
 #define DO_ON_EXIT(FUNC) \
-  scope_guard CONCATENATE(__do_on_exit_,__LINE__) (FUNC)
+  scope_guard CONCATENATE(__do_on_exit_,__LINE__) ([&] () { FUNC; })
 
 #define CHECK_RET(RESULT,RET) if (!RESULT) return RET;
 #define CHECK(RESULT) CHECK_RET (RESULT, false)

@@ -164,8 +164,9 @@ void svg_painter::resizeGL (int width, int height)
 
 void svg_painter::update_drawing (QTransform transform)
 {
-  DO_ON_EXIT ([&] () {m_cache->unlock ();});
   m_cache->lock ();
+  DO_ON_EXIT (m_cache->unlock ());
+
   double cache_zoom_x = m_cache->zoom_x ();
   double cache_zoom_y = m_cache->zoom_y ();
   double cur_zoom_x = transform.m11 ();
@@ -233,7 +234,7 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
   QTransform transform = m_cur_transform * scale_transform;
   QPointF scaled_pos = scale_transform.map (QPointF (pos));
   m_cache->lock ();
-  DO_ON_EXIT ([&] () {m_cache->unlock ();});
+  DO_ON_EXIT (m_cache->unlock ());
 
   //// find corresponding block in cache
   render_cache_id id = render_cache_id::get_id_by_pixel_pos (scaled_pos.x (), scaled_pos.y (), transform);
