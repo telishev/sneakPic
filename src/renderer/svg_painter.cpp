@@ -1,11 +1,25 @@
 #include "renderer/svg_painter.h"
 
+#pragma warning(push, 0)
+#include <SkCanvas.h>
+#include <SkSurface.h>
+#include <SkDevice.h>
+#pragma warning(pop)
+
+#include <QMessageBox>
+#include <QEvent>
+#include <QWheelEvent>
+#include <memory>
+
 #include "common/common_utils.h"
 #include "common/math_defs.h"
 
 #include "editor/items_selection.h"
 
 #include "gui/gl_widget.h"
+#include "gui/mouse_shortcuts_handler.h"
+#include "gui/shortcuts_config.h"
+#include "gui/settings.h"
 
 #include "renderer/abstract_renderer_item.h"
 #include "renderer/renderer_state.h"
@@ -17,40 +31,30 @@
 #include "renderer/event_transform_changed.h"
 #include "renderer/overlay_renderer.h"
 
-
 #include "svg/svg_document.h"
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_items_container.h"
 
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#pragma warning(pop)
 
-#include <QMessageBox>
-#include <memory>
-
-
-
-
-
-svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache, events_queue *queue)
+svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache,\
+                          events_queue *queue, settings_t *settings)
   : abstract_painter (glwidget, mouse_filter_object)
 {
   m_document = nullptr;
-  drag_started = false;
   m_cache = cache;
   m_queue = queue;
   m_overlay = new overlay_renderer (m_cache);
   m_selection = new items_selection (m_document);
+  m_settings = settings;
+  m_mouse_handler = create_mouse_shortcuts ();
 }
 
 svg_painter::~svg_painter ()
 {
   FREE (m_overlay);
   FREE (m_selection);
+  FREE (m_mouse_handler);
 }
 
 void svg_painter::reset_transform ()
@@ -73,64 +77,9 @@ void svg_painter::set_document (svg_document *document)
   reset_transform ();
 }
 
-unsigned int svg_painter::mouse_moved (const unsigned char *dragging_buttons, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
+unsigned int svg_painter::mouse_event (const mouse_event_t &m_event)
 {
-  FIX_UNUSED (dragging_buttons, pos, modifiers);
-  if (!m_document)
-    return 0;
-
-  if (drag_started)
-    {
-      QTransform last_inverted = m_last_transform.inverted ();
-      QPointF last_pos_local = last_inverted.map (QPointF (m_drag_start_pos));
-      QPointF cur_pos_local = last_inverted.map (QPointF (pos));
-      QPointF diff = cur_pos_local - last_pos_local;
-
-      m_cur_transform = QTransform (m_last_transform).translate (diff.x (), diff.y ());
-      send_changes (false);
-      glwidget ()->repaint ();
-    }
-  else
-    {
-      abstract_svg_item *current_item = get_current_item (pos);
-      std::string item_string = current_item ? current_item->name ().toStdString () : std::string ();
-      if (item_string != m_overlay->current_item ())
-        {
-          m_overlay->set_current_item (item_string);
-          glwidget ()->repaint ();
-        }
-    }
-
-  return 0;
-}
-
-unsigned int svg_painter::mouse_clicked (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
-{
-  FIX_UNUSED (button, pos, modifiers);
-  select_item (pos);
-  return 0;
-}
-
-unsigned int svg_painter::mouse_double_clicked (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
-{
-  FIX_UNUSED (button, pos, modifiers);
-  return 0;
-}
-
-unsigned int svg_painter::mouse_pressed (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
-{
-  FIX_UNUSED (button, pos, modifiers);
-  m_last_transform = m_cur_transform;
-  m_drag_start_pos = pos;
-  drag_started = true;
-  return 0;
-}
-
-unsigned int svg_painter::mouse_released (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
-{
-  FIX_UNUSED (button, pos, modifiers);
-  drag_started = false;
-  return 0;
+  return m_mouse_handler->process_mouse_event (m_event);
 }
 
 void svg_painter::draw ()
@@ -183,7 +132,7 @@ void svg_painter::wheelEvent (QWheelEvent *qevent)
       m_cur_transform.translate (vector.x (), vector.y ());
       send_changes (true);
 
-      glwidget ()->repaint ();
+      glwidget ()->update ();
       qevent->accept ();
     }
 }
@@ -201,7 +150,7 @@ bool svg_painter::keyReleaseEvent (QKeyEvent * qevent)
         return true;
       reset_transform ();
       set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
-      glwidget ()->repaint ();
+      glwidget ()->update ();
       qevent->accept ();
       return true;
     }
@@ -336,5 +285,49 @@ void svg_painter::select_item (const QPoint &pos)
     m_selection->add_item (item);
 
   m_overlay->selection_changed (m_selection);
-  glwidget ()->repaint ();
+  glwidget ()->update ();
+}
+
+#define ADD_SHORTCUT(ITEM,FUNC)\
+  handler->add_shortcut (cfg->shortcut_mouse (mouse_shortcut_enum::ITEM), MOUSE_FUNC (FUNC));
+
+mouse_shortcuts_handler *svg_painter::create_mouse_shortcuts ()
+{
+  mouse_shortcuts_handler *handler = new mouse_shortcuts_handler;
+  shortcuts_config *cfg = m_settings->shortcuts_cfg ();
+  ADD_SHORTCUT (SELECT_ITEM        , select_item (m_event.pos ()));
+  ADD_SHORTCUT (START_PAN          , start_pan (m_event.pos ()));
+  ADD_SHORTCUT (PAN_PICTURE        , pan_picture (m_event.pos ()));
+  ADD_SHORTCUT (FIND_CURRENT_OBJECT, find_current_object (m_event.pos ()));
+
+  return handler;
+}
+
+void svg_painter::start_pan (const QPoint &pos)
+{
+  m_last_transform = m_cur_transform;
+  m_drag_start_pos = pos;
+}
+
+void svg_painter::pan_picture (const QPoint &pos)
+{
+  QTransform last_inverted = m_last_transform.inverted ();
+  QPointF last_pos_local = last_inverted.map (QPointF (m_drag_start_pos));
+  QPointF cur_pos_local = last_inverted.map (QPointF (pos));
+  QPointF diff = cur_pos_local - last_pos_local;
+
+  m_cur_transform = QTransform (m_last_transform).translate (diff.x (), diff.y ());
+  send_changes (false);
+  glwidget ()->update ();
+}
+
+void svg_painter::find_current_object (const QPoint &pos)
+{
+  abstract_svg_item *current_item = get_current_item (pos);
+  std::string item_string = current_item ? current_item->name ().toStdString () : std::string ();
+  if (item_string != m_overlay->current_item ())
+    {
+      m_overlay->set_current_item (item_string);
+      glwidget ()->update ();
+    }
 }

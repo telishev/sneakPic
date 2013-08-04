@@ -20,19 +20,10 @@ gl_widget::gl_widget (QWidget *parent)
 
   m_mouse_filter_object = new mouse_filter (this);
   
-  connect (m_mouse_filter_object, SIGNAL (mouse_moved (const unsigned char *, const QPoint &, const Qt::KeyboardModifiers &)),
-            this, SLOT (mouse_moved (const unsigned char *, const QPoint &, const Qt::KeyboardModifiers &)));
-  connect (m_mouse_filter_object, SIGNAL (mouse_clicked (mouse_filter::mouse_button, const QPoint &, const Qt::KeyboardModifiers &)),
-            this, SLOT (mouse_clicked (mouse_filter::mouse_button, const QPoint &, const Qt::KeyboardModifiers &)));
-  connect (m_mouse_filter_object, SIGNAL (mouse_double_clicked (mouse_filter::mouse_button, const QPoint &, const Qt::KeyboardModifiers &)),
-            this, SLOT (mouse_double_clicked (mouse_filter::mouse_button, const QPoint &, const Qt::KeyboardModifiers &)));
-  connect (m_mouse_filter_object, SIGNAL (mouse_pressed (mouse_filter::mouse_button, const QPoint &, const Qt::KeyboardModifiers &)),
-            this, SLOT (mouse_pressed (mouse_filter::mouse_button, const QPoint &, const Qt::KeyboardModifiers &)));
-  connect (m_mouse_filter_object, SIGNAL (mouse_released (mouse_filter::mouse_button, const QPoint &, const Qt::KeyboardModifiers &)),
-            this, SLOT (mouse_released (mouse_filter::mouse_button, const QPoint &, const Qt::KeyboardModifiers &)));
+  connect (m_mouse_filter_object, SIGNAL (mouse_event_happened (const mouse_event_t &)), this, SLOT (mouse_event (const mouse_event_t &)));
 
-   setMouseTracking (true);
-   grabKeyboard ();
+  setMouseTracking (true);
+  grabKeyboard ();
 }
 
 gl_widget::~gl_widget ()
@@ -48,64 +39,6 @@ void gl_widget::paintEvent (QPaintEvent * /*qevent*/)
   m_cur_painter->draw ();
 }
 
-void gl_widget::mousePressEvent (QMouseEvent *qevent)
-{
-  m_mouse_filter_object->mouse_press_event (qevent);
-  qevent->accept ();
-}
-
-void gl_widget::mouseMoveEvent (QMouseEvent *qevent)
-{
-  m_mouse_filter_object->mouse_move_event (qevent);
-
-  qevent->accept ();
-}
-
-void gl_widget::mouseReleaseEvent (QMouseEvent *qevent)
-{
-  m_mouse_filter_object->mouse_release_event (qevent);
-
-  qevent->accept ();
-}
-
-void gl_widget::mouseDoubleClickEvent (QMouseEvent *qevent)
-{
-  m_mouse_filter_object->mouse_double_click_event (qevent);
-
-  qevent->accept ();
-}
-
-void gl_widget::mouse_moved (const unsigned char *dragging_buttons, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
-{
-  if (m_cur_painter)
-    m_cur_painter->mouse_moved (dragging_buttons, pos, modifiers);
-}
-
-void gl_widget::mouse_clicked (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
-{
-  if (m_cur_painter)
-    m_cur_painter->mouse_clicked (button, pos, modifiers);
-}
-
-void gl_widget::mouse_double_clicked (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
-{
-  if (m_cur_painter)
-    m_cur_painter->mouse_double_clicked (button, pos, modifiers);
-}
-
-void gl_widget::mouse_pressed (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
-{
-  if (m_cur_painter)
-    m_cur_painter->mouse_pressed (button, pos, modifiers);
-}
-
-void gl_widget::mouse_released (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers)
-{
-  if (m_cur_painter)
-    m_cur_painter->mouse_released (button, pos, modifiers);
-}
-
-/// analyse mouse wheel scrolling in GL area
 void gl_widget::wheelEvent (QWheelEvent *qevent)
 {
   if (m_cur_painter)
@@ -124,8 +57,27 @@ void gl_widget::leaveEvent (QEvent *qevent)
 void gl_widget::keyReleaseEvent(QKeyEvent * qevent)
 {
   if (m_cur_painter)
-  {
-    if (!m_cur_painter->keyReleaseEvent (qevent))
-      QWidget::keyReleaseEvent (qevent);
-  }
+    {
+      if (!m_cur_painter->keyReleaseEvent (qevent))
+        QWidget::keyReleaseEvent (qevent);
+    }
+}
+
+bool gl_widget::event (QEvent *qevent)
+{
+  if (m_mouse_filter_object->process_event (qevent))
+    {
+      qevent->accept ();
+      return true;
+    }
+
+  return QWidget::event (qevent);
+}
+
+void gl_widget::mouse_event (const mouse_event_t &m_event)
+{
+  if (!m_cur_painter)
+    return;
+
+  m_cur_painter->mouse_event (m_event);
 }

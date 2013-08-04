@@ -32,7 +32,7 @@
 
 
 
-svg_document::svg_document (wait_queue<abstract_renderer_event> *queue)
+svg_document::svg_document (settings_t *settings)
 {
   m_item_factory = new svg_item_factory (this);
   m_attribute_factory = new svg_attribute_factory (this);
@@ -40,8 +40,8 @@ svg_document::svg_document (wait_queue<abstract_renderer_event> *queue)
   m_selectors = new selectors_container;
   m_root = nullptr;
   item_svg = nullptr;
-  m_queue = queue;
   m_last_overlay_num = 0;
+  m_settings = settings;
 }
 
 svg_document::~svg_document ()

@@ -18,6 +18,7 @@
 
 #include "svg/svg_document.h"
 
+
 #pragma warning(push, 0)
 #include <SkCanvas.h>
 #include <SkSurface.h>
@@ -40,7 +41,7 @@ int start_console_processing (cl_arguments *args)
   QString input_file_name = args->get_target_files () [0]; // TODO:Process all
   QString png_output_file_name = args->get_render_png ();
   QString svg_output_file_name = args->get_save ();
-  svg_document *doc = new svg_document;
+  svg_document *doc = new svg_document (nullptr);
   double width, height;
   // Our first task is process .svg file in any mode
   if (!doc->read_file (input_file_name))

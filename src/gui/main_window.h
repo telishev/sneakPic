@@ -13,6 +13,7 @@ class svg_painter;
 class rendered_items_cache;
 class renderer_thread;
 class events_queue;
+class settings_t;
 
 
 class main_window : public QMainWindow
@@ -21,7 +22,8 @@ class main_window : public QMainWindow
 
   Ui_main_window *ui;
   svg_document *m_doc;
-  QSettings *m_settings;
+  QSettings *m_qsettings;
+  settings_t *m_settings;
   svg_painter *m_painter;
   rendered_items_cache *m_cache;
   renderer_thread *m_renderer_thread;

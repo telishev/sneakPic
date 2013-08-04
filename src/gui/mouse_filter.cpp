@@ -1,10 +1,3 @@
-/// \file  gui/mouse_filter.cpp
-/// \brief This class eliminates small cursor positioning mistakes, e.g. 1-2 pixels accidental move when user presses mouse button.
-///        All mouse events  should be provided in  this class by  class methods calling.  Any mouse state should be took from this
-///        class by calling it's methods.
-
-
-
 #include "gui/mouse_filter.h"
 
 #include <stdlib.h>
@@ -15,9 +8,9 @@
  #include <sys/time.h>
 #endif // !_WIN32
 
-#include <stdlib.h>
+#include <QMouseEvent>
+#include "mouse_shortcut.h"
 
-// Utility function.
 static inline unsigned int get_time ()
 {
 #ifdef _WIN32
@@ -29,71 +22,31 @@ static inline unsigned int get_time ()
 #endif // !_WIN32
 }
 
-// Utility function.
-static inline
-mouse_filter::mouse_button qt_mouse_button_2_mouse_filter_button (Qt::MouseButton qmousebutton)
-{
-  switch (qmousebutton)
-    {
-    case Qt::LeftButton:
-      return mouse_filter::BUTTON_LEFT;
-    case Qt::RightButton:
-      return mouse_filter::BUTTON_RIGHT;
-    case Qt::MidButton:
-      return mouse_filter::BUTTON_MIDDLE;
-    default:
-      return mouse_filter::BUTTON_UNKNOWN;
-    }
-
-  return mouse_filter::BUTTON_UNKNOWN;
-}
-
-
-
-// Initializing Constructor.
-mouse_filter::mouse_filter (QObject *parent, int _use_is_started_lr_click /*=0*/, int move_threshold /*= 2*/, unsigned int time_to_move /*= 400*/)
+mouse_filter::mouse_filter (QObject *parent, int move_threshold, unsigned int time_to_move)
   : QObject (parent),
     move_threshold (move_threshold),
-    time_to_move (time_to_move),
-    use_is_started_lr_click (_use_is_started_lr_click)
+    time_to_move (time_to_move)
 {
-  memset (pressed, 0, BUTTONS_COUNT * sizeof (unsigned char));
-  memset (dragged, 0, BUTTONS_COUNT * sizeof (unsigned char));
+  memset (pressed, 0, (int)mouse_button::BUTTONS_COUNT * sizeof (unsigned char));
+  memset (dragged, 0, (int)mouse_button::BUTTONS_COUNT * sizeof (unsigned char));
 
   unsigned int i;
-  for (i = 0; i < BUTTONS_COUNT; i++)
+  for (i = 0; i < (int)mouse_button::BUTTONS_COUNT; i++)
     start_point[i] = QPoint (-1, -1);
 
-  memset (start_time, 0, BUTTONS_COUNT * sizeof (unsigned int));
-  is_started_lr_click = 0;
+  memset (start_time, 0, (int)mouse_button::BUTTONS_COUNT * sizeof (unsigned int));
 }
 
-// Destructor.
 mouse_filter::~mouse_filter ()
 {
-  move_threshold = -1;
-  time_to_move = (unsigned int) -1;
-
-  memset (pressed, 0, BUTTONS_COUNT * sizeof (unsigned char));
-  memset (dragged, 0, BUTTONS_COUNT * sizeof (unsigned char));
-
-  unsigned int i;
-  for (i = 0; i < BUTTONS_COUNT; i++)
-    start_point[i] = QPoint (-1, -1);
-
-  memset (start_time, 0, BUTTONS_COUNT * sizeof (unsigned int));
 }
 
-// Handler for \a QWidget::mouseMoveEvent().
-// \sa mouse_press_event(), mouse_release_event(), mouse_double_click_event()
 void mouse_filter::mouse_move_event (QMouseEvent *qevent)
 {
-  if (is_started_lr_click && use_is_started_lr_click)
-    return;
 
   unsigned int i, time = get_time ();
 
-  for (i = 0; i < BUTTONS_COUNT; i++)
+  for (i = 0; i < (int)mouse_button::BUTTONS_COUNT; i++)
     {
       if (pressed[i] && !dragged[i])
         {
@@ -102,58 +55,51 @@ void mouse_filter::mouse_move_event (QMouseEvent *qevent)
               || abs (qevent->y () - start_point[i].y ()) >= move_threshold)
             {
               dragged[i] = 1;
-              emit mouse_pressed ((mouse_button) i, start_point[i], qevent->modifiers ());
+              emit_mouse_event (start_point[i], qevent->modifiers (), mouse_event_type::DRAG_START, (mouse_button) i);
             }
         }
     }
 
-  emit mouse_moved (dragged, qevent->pos (), qevent->modifiers ());
+  mouse_button last_dragged = last_dragged_button ();
+  if (last_dragged != mouse_button::NO_BUTTON)
+    emit_mouse_event (qevent->pos (), qevent->modifiers (), mouse_event_type::DRAG, last_dragged);
+  else
+    emit_mouse_event (qevent->pos (), qevent->modifiers (), mouse_event_type::MOVE, mouse_button::NO_BUTTON);
 }
 
 // Handler for \a QWidget::mousePressEvent().
 // \sa mouse_move_event(), mouse_release_event(), mouse_double_click_event()
 void mouse_filter::mouse_press_event (QMouseEvent *qevent)
 {
-  unsigned int i;
-  if ((i = qt_mouse_button_2_mouse_filter_button (qevent->button ())) != (unsigned int)BUTTON_UNKNOWN)
-    {
-      pressed[i] = 1;
-      start_point[i] = qevent->pos ();
-      start_time[i]  = get_time ();
-    }
+  mouse_button button = to_mouse_button (qevent->button ());
+  if (button == mouse_button::NO_BUTTON)
+    return;
 
-  if (use_is_started_lr_click && pressed[mouse_filter::BUTTON_RIGHT] && pressed[mouse_filter::BUTTON_LEFT])
-    is_started_lr_click = 1;
+  int i = (int)button;
+  pressed[i] = 1;
+  start_point[i] = qevent->pos ();
+  start_time[i]  = get_time ();
 }
 
 // Handler for \a QWidget::mouseReleaseEvent().
 // \sa mouse_press_event(), mouse_move_event(), mouse_double_click_event()
 void mouse_filter::mouse_release_event (QMouseEvent *qevent)
 {
-  unsigned int i;
-  if ((i = qt_mouse_button_2_mouse_filter_button (qevent->button ())) != (unsigned int)BUTTON_UNKNOWN)
+  mouse_button button = to_mouse_button (qevent->button ());
+  if (button == mouse_button::NO_BUTTON)
+    return;
+
+  int i = (int)button;
+  if (dragged[i])
     {
-      if (is_started_lr_click && use_is_started_lr_click)
-        {
-          dragged[i] = 0;
-          pressed[i] = 0;
-          if (!pressed[mouse_filter::BUTTON_RIGHT] && !pressed[mouse_filter::BUTTON_LEFT])
-            {
-              is_started_lr_click = 0;
-              emit mouse_lr_clicked ();
-            }
-        }
-      else if (dragged[i])
-        {
-          emit mouse_released ((mouse_button)i, qevent->pos (), qevent->modifiers ());
-          dragged[i] = 0;
-          pressed[i] = 0;
-        }
-      else if (pressed[i])
-        {
-          emit mouse_clicked ((mouse_button)i, start_point[i], qevent->modifiers ());
-          pressed[i] = 0;
-        }
+      emit_mouse_event (qevent->pos (), qevent->modifiers (), mouse_event_type::DRAG_END, button);
+      dragged[i] = 0;
+      pressed[i] = 0;
+    }
+  else if (pressed[i])
+    {
+      emit_mouse_event (start_point[i], qevent->modifiers (), mouse_event_type::CLICK, button);
+      pressed[i] = 0;
     }
 }
 
@@ -161,10 +107,96 @@ void mouse_filter::mouse_release_event (QMouseEvent *qevent)
 // \sa mouse_press_event(), mouse_move_event(), mouse_release_event()
 void mouse_filter::mouse_double_click_event (QMouseEvent *qevent)
 {
-  unsigned int i;
-  if ((i = qt_mouse_button_2_mouse_filter_button (qevent->button ())) != (unsigned int)BUTTON_UNKNOWN)
-    emit mouse_double_clicked ((mouse_button)i, qevent->pos (), qevent->modifiers ());
+  mouse_button button = to_mouse_button (qevent->button ());
+  if (button == mouse_button::NO_BUTTON)
+    return;
+
+ emit_mouse_event (qevent->pos (), qevent->modifiers (), mouse_event_type::DOUBLECLICK, button);
 }
 
+mouse_button mouse_filter::to_mouse_button (Qt::MouseButton qmousebutton) const
+{
+  switch (qmousebutton)
+    {
+    case Qt::LeftButton:
+      return mouse_button::BUTTON_LEFT;
+    case Qt::RightButton:
+      return mouse_button::BUTTON_RIGHT;
+    case Qt::MidButton:
+      return mouse_button::BUTTON_MIDDLE;
+    default:
+      return mouse_button::NO_BUTTON;
+    }
 
+  return mouse_button::NO_BUTTON;
+}
+
+bool mouse_filter::process_event (QEvent *qevent)
+{
+  switch (qevent->type ())
+    {
+    case QEvent::MouseButtonPress:
+      mouse_press_event (static_cast<QMouseEvent *> (qevent));
+      return true;
+    case QEvent::MouseButtonRelease:
+      mouse_release_event (static_cast<QMouseEvent *> (qevent));
+      return true;
+    case QEvent::MouseButtonDblClick:
+      mouse_double_click_event (static_cast<QMouseEvent *> (qevent));
+      return true;
+    case QEvent::MouseMove:
+      mouse_move_event (static_cast<QMouseEvent *> (qevent));
+      return true;
+    default:
+      return false;
+    }
+}
+
+keyboard_modifier mouse_filter::to_keyboard_modifier (Qt::KeyboardModifiers modifiers) const
+{
+  bool has_shift = modifiers.testFlag (Qt::ShiftModifier);
+  bool has_alt = modifiers.testFlag (Qt::AltModifier);
+  bool has_control = modifiers.testFlag (Qt::ControlModifier);
+  if (has_shift && has_alt && has_control)
+    return keyboard_modifier::CTRL_ALT_SHIFT;
+  if (has_shift && has_alt)
+    return keyboard_modifier::SHIFT_ALT;
+  if (has_alt && has_control)
+    return keyboard_modifier::CTRL_ALT;
+  if (has_shift && has_control)
+    return keyboard_modifier::CTRL_SHIFT;
+  if (has_shift)
+    return keyboard_modifier::SHIFT;
+  if (has_alt)
+    return keyboard_modifier::ALT;
+  if (has_control)
+    return keyboard_modifier::CTRL;
+
+  return keyboard_modifier::NO_MODIFIERS;
+}
+
+void mouse_filter::emit_mouse_event (const QPoint &pos, Qt::KeyboardModifiers modifiers, mouse_event_type event_type, mouse_button button)
+{
+  mouse_event_t ev (pos, to_keyboard_modifier (modifiers), event_type, button);
+  emit mouse_event_happened (ev);
+}
+
+mouse_button mouse_filter::last_dragged_button () const
+{
+  mouse_button last_button = mouse_button::NO_BUTTON;
+  unsigned int last_time = 0;
+  for (int i = 0; i < (int)mouse_button::BUTTONS_COUNT; i++)
+    {
+      if (!dragged[i])
+        continue;
+
+      if (start_time[i] > last_time)
+        {
+          last_time = start_time[i];
+          last_button = (mouse_button)i;
+        }
+    }
+
+  return last_button;
+}
 

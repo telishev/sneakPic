@@ -4,6 +4,8 @@
 
 #include "ui/ui_main_window.h"
 
+#include "gui/settings.h"
+
 #include "common/memory_deallocation.h"
 
 #include "renderer/svg_painter.h"
@@ -28,10 +30,11 @@ main_window::main_window ()
   init_clear ();
   ui = new Ui_main_window;
   ui->setupUi (this);
-  m_settings = new QSettings ("SneakPic");
+  m_qsettings = new QSettings ("SneakPic");
+  m_settings = new settings_t;
   m_cache = new rendered_items_cache;
   m_queue = new events_queue;
-  m_painter = new svg_painter (ui->glwidget, ui->glwidget->mouse_filter_object (), m_cache, m_queue);
+  m_painter = new svg_painter (ui->glwidget, ui->glwidget->mouse_filter_object (), m_cache, m_queue, m_settings);
   m_renderer_thread = new renderer_thread (new svg_renderer (m_cache, m_queue), m_queue, this);
   m_renderer_thread->start ();
   ui->glwidget->set_painter (m_painter);
@@ -54,10 +57,11 @@ main_window::~main_window ()
   FREE (m_renderer_thread);
   FREE (m_queue);
   FREE (ui);
-  FREE (m_settings);
+  FREE (m_qsettings);
   FREE (m_painter);
   FREE (m_cache);
   FREE (m_doc);
+  FREE (m_settings);
   init_clear ();
 }
 
@@ -72,13 +76,13 @@ void main_window::open_file_clicked ()
   if (filename.isEmpty ())
     return;
 
-  m_settings->setValue ("last_file", filename);
+  m_qsettings->setValue ("last_file", filename);
   open_file (filename);
 }
 
 void main_window::open_last_file_clicked ()
 {
-  QString last_file = m_settings->value ("last_file").toString ();
+  QString last_file = m_qsettings->value ("last_file").toString ();
   if (last_file.isEmpty ())
     return;
 
@@ -101,7 +105,7 @@ void main_window::save_file_clicked ()
 
 QString main_window::get_last_file_open_dir () const
 {
-  QString last_filename = m_settings->value ("last_file").toString ();
+  QString last_filename = m_qsettings->value ("last_file").toString ();
   if (last_filename.isEmpty ())
     return QString ();
 
@@ -119,7 +123,7 @@ void main_window::open_file (const QString &filename)
   m_painter->set_document (nullptr);
   FREE (m_doc);
 
-  m_doc = new svg_document;
+  m_doc = new svg_document (m_settings);
   setWindowTitle ("Loading...");
   if (!m_doc->read_file (filename))
     {

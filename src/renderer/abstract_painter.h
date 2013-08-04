@@ -9,6 +9,9 @@
 class gl_widget;
 class QWheelEvent;
 class QEvent;
+class QKeyEvent;
+
+class mouse_event_t;
 
 enum configure_type
 {
@@ -29,11 +32,7 @@ public:
   virtual ~abstract_painter ();
 
   /// mouse events
-  virtual unsigned int mouse_moved (const unsigned char *dragging_buttons, const QPoint &pos, const Qt::KeyboardModifiers &modifiers) = 0;
-  virtual unsigned int mouse_clicked (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers) = 0;
-  virtual unsigned int mouse_double_clicked (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers) = 0;
-  virtual unsigned int mouse_pressed (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers) = 0;
-  virtual unsigned int mouse_released (mouse_filter::mouse_button button, const QPoint &pos, const Qt::KeyboardModifiers &modifiers) = 0;
+  virtual unsigned int mouse_event (const mouse_event_t &m_event) = 0;
 
   virtual void draw () = 0;
   /// must check for config_needed values and configure only parts that needs reconfigure

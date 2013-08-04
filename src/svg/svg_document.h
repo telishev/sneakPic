@@ -11,10 +11,7 @@ class renderer_items_container;
 class abstract_renderer_event;
 class rendered_items_cache;
 class selectors_container;
-
-template<typename T>
-class wait_queue;
-
+class settings_t;
 class QXmlStreamReader;
 
 #include <QString>
@@ -26,15 +23,15 @@ class svg_document
   svg_attribute_factory *m_attribute_factory;
   svg_items_container   *m_item_container;
   selectors_container   *m_selectors;
+  settings_t            *m_settings;
 
   abstract_svg_item *m_root;
   svg_item_svg *item_svg;
   QString filename;
   int m_last_overlay_num;
 
-  wait_queue<abstract_renderer_event> *m_queue;
 public:
-  svg_document (wait_queue<abstract_renderer_event> *queue = nullptr);
+  svg_document (settings_t *settings);
   ~svg_document ();
 
   svg_item_factory *item_factory () const { return m_item_factory; }
@@ -54,6 +51,8 @@ public:
   void create_renderer_item (renderer_items_container *renderer_items, abstract_svg_item *svg_item);
 
   QString create_overlay_name ();
+
+  settings_t *settings () const { return m_settings; }
 
 private:
   abstract_svg_item *process_new_item (QXmlStreamReader &reader, abstract_svg_item *cur_item);
