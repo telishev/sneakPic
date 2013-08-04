@@ -291,12 +291,11 @@ void svg_painter::select_item (const QPoint &pos)
 }
 
 #define ADD_SHORTCUT(ITEM,FUNC)\
-  handler->add_shortcut (cfg->shortcut_mouse (mouse_shortcut_enum::ITEM), MOUSE_FUNC (FUNC));
+  handler->add_shortcut (mouse_shortcut_enum::ITEM, MOUSE_FUNC (FUNC));
 
 mouse_shortcuts_handler *svg_painter::create_mouse_shortcuts ()
 {
-  mouse_shortcuts_handler *handler = new mouse_shortcuts_handler;
-  shortcuts_config *cfg = m_settings->shortcuts_cfg ();
+  mouse_shortcuts_handler *handler = new mouse_shortcuts_handler (m_settings->shortcuts_cfg ());
   ADD_SHORTCUT (SELECT_ITEM        , select_item (m_event.pos ()));
   ADD_SHORTCUT (START_PAN          , start_pan (m_event.pos ()));
   ADD_SHORTCUT (PAN_PICTURE        , pan_picture (m_event.pos ()));
