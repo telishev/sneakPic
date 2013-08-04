@@ -29,6 +29,7 @@ protected:
   virtual void wheelEvent (QWheelEvent *qevent) override;
   virtual void leaveEvent (QEvent *qevent) override;
   virtual void keyReleaseEvent (QKeyEvent * qevent) override;
+  virtual void resizeEvent (QResizeEvent *qevent) override;
   virtual bool event (QEvent *qevent) override;
 };
 

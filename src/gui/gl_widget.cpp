@@ -58,9 +58,19 @@ void gl_widget::keyReleaseEvent(QKeyEvent * qevent)
 {
   if (m_cur_painter)
     {
-      if (!m_cur_painter->keyReleaseEvent (qevent))
-        QWidget::keyReleaseEvent (qevent);
+      if (m_cur_painter->keyReleaseEvent (qevent))
+        return;
     }
+
+  QWidget::keyReleaseEvent (qevent);
+}
+
+void gl_widget::resizeEvent (QResizeEvent *qevent)
+{
+  if (m_cur_painter)
+    m_cur_painter->resizeEvent (qevent);
+
+  QWidget::resizeEvent (qevent);
 }
 
 bool gl_widget::event (QEvent *qevent)

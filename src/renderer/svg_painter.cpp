@@ -157,9 +157,10 @@ bool svg_painter::keyReleaseEvent (QKeyEvent * qevent)
   return false;
 }
 
-void svg_painter::resizeGL (int width, int height)
+void svg_painter::resizeEvent (QResizeEvent * /*qevent*/)
 {
-  FIX_UNUSED (width, height);
+  send_changes (false);
+  glwidget ()->update ();
 }
 
 void svg_painter::update_drawing (QTransform transform)

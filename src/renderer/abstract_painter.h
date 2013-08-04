@@ -10,6 +10,7 @@ class gl_widget;
 class QWheelEvent;
 class QEvent;
 class QKeyEvent;
+class QResizeEvent;
 
 class mouse_event_t;
 
@@ -44,7 +45,7 @@ public:
   virtual bool keyReleaseEvent (QKeyEvent *qevent) = 0;
   virtual bool event (QEvent *qevent) = 0;
 
-  virtual void resizeGL (int width, int height) = 0;
+  virtual void resizeEvent (QResizeEvent *qevent) = 0;
 
   gl_widget *glwidget () const { return m_glwidget; }
 
