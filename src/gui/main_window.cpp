@@ -81,8 +81,8 @@ void main_window::save_recent_menu ()
 void main_window::update_recent_menu ()
 {
   m_recent_menu.clear ();
-  FREE (m_signal_mapper);
-  m_signal_mapper = new QSignalMapper;
+  m_signal_mapper->deleteLater ();
+  m_signal_mapper = new QSignalMapper (this);
   int size = (int) m_recent_files.size ();
 
   for (int i = size - 1; i >= 0; i--)
@@ -101,7 +101,6 @@ main_window::~main_window ()
   save_recent_menu ();
   m_renderer_thread->set_exit_needed ();
   m_renderer_thread->wait ();
-  FREE (m_signal_mapper);
   FREE (m_renderer_thread);
   FREE (m_queue);
   FREE (ui);
