@@ -6,6 +6,7 @@
 
 #include "gui/settings.h"
 
+#include "common/common_utils.h"
 #include "common/memory_deallocation.h"
 
 #include "renderer/svg_painter.h"
@@ -25,6 +26,7 @@
 #include <QSettings>
 #include <QTimer>
 
+#define RECENT_FILES_NUMBER 10
 
 main_window::main_window ()
 {
@@ -38,23 +40,68 @@ main_window::main_window ()
   m_painter = new svg_painter (ui->glwidget, ui->glwidget->mouse_filter_object (), m_cache, m_queue, m_settings, this->statusBar ());
   m_renderer_thread = new renderer_thread (new svg_renderer (m_cache, m_queue), m_queue, this);
   m_renderer_thread->start ();
+  m_signal_mapper = nullptr;
   ui->glwidget->set_painter (m_painter);
   update_timer = new QTimer (this);
   update_timer->setInterval (50);
   update_timer->start ();
 
-  update_window_title ();
+  update_window_title ();  
+  ui->openRecentAct->setMenu (&m_recent_menu);
+  load_recent_menu ();
+  update_recent_menu ();
 
   connect (ui->openFileAct    , SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
   connect (ui->saveAsAct      , SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
-  connect (ui->openLastFileAct, SIGNAL (triggered ()), this, SLOT (open_last_file_clicked ()));
   connect (update_timer       , SIGNAL (timeout ())  , this, SLOT (update_timeout ()));
+}
+
+void main_window::load_recent_menu ()
+{
+  int size = m_qsettings->beginReadArray ("recent_menu");
+  for (int i = 0; i < size; i++)
+    {
+      m_qsettings->setArrayIndex(i);
+      m_recent_files.push_back (m_qsettings->value ("name").toString ());
+    }
+  m_qsettings->endArray ();
+}
+
+void main_window::save_recent_menu ()
+{
+  m_qsettings->beginWriteArray ("recent_menu", (int) m_recent_files.size ());
+  for (unsigned int i = 0; i < m_recent_files.size (); i++)
+    {
+      m_qsettings->setArrayIndex(i);
+      m_qsettings->setValue ("name", m_recent_files[i]);
+    }
+  m_qsettings->endArray ();
+}
+
+void main_window::update_recent_menu ()
+{
+  m_recent_menu.clear ();
+  FREE (m_signal_mapper);
+  m_signal_mapper = new QSignalMapper;
+  int size = (int) m_recent_files.size ();
+
+  for (int i = size - 1; i >= 0; i--)
+    {
+      QAction *action = m_recent_menu.addAction (QString ("%1.%2")
+          .arg (size - i)
+          .arg (QFileInfo (m_recent_files[i]).fileName ()), 
+        m_signal_mapper, SLOT (map ()), size - i <= 10 ? QKeySequence (Qt::CTRL + Qt::Key_0 + (size - i) % 10) : QKeySequence ());
+      m_signal_mapper->setMapping (action, m_recent_files[i]);
+    }
+   connect(m_signal_mapper, SIGNAL (mapped (QString)), this, SLOT (open_file (QString)));
 }
 
 main_window::~main_window ()
 {
+  save_recent_menu ();
   m_renderer_thread->set_exit_needed ();
   m_renderer_thread->wait ();
+  FREE (m_signal_mapper);
   FREE (m_renderer_thread);
   FREE (m_queue);
   FREE (ui);
@@ -77,17 +124,23 @@ void main_window::open_file_clicked ()
   if (filename.isEmpty ())
     return;
 
-  m_qsettings->setValue ("last_file", filename);
   open_file (filename);
 }
 
-void main_window::open_last_file_clicked ()
+void main_window::add_file_to_recent (QString file_path)
 {
-  QString last_file = m_qsettings->value ("last_file").toString ();
-  if (last_file.isEmpty ())
-    return;
+  for (unsigned int i = 0; i < m_recent_files.size (); i++)
+    {
+      if (file_path == m_recent_files[i])
+        {
+          m_recent_files.erase (m_recent_files.begin () + i);
+          break;
+        }
+    }
+  if (m_recent_files.size () == RECENT_FILES_NUMBER)
+    m_recent_files.erase (m_recent_files.begin ());
 
-  open_file (last_file);
+  m_recent_files.push_back (file_path);
 }
 
 void main_window::keyPressEvent(QKeyEvent * qevent)
@@ -128,10 +181,11 @@ void main_window::update_window_title ()
   setWindowTitle (QString ("sneakPic%1").arg (m_doc ? QString (" - %1").arg (m_doc->get_filename ()) : ""));
 }
 
-void main_window::open_file (const QString &filename)
+void main_window::open_file (const QString filename)
 {
   m_painter->set_document (nullptr);
   FREE (m_doc);
+  DO_ON_EXIT (update_window_title ());
 
   m_doc = new svg_document (m_settings);
   setWindowTitle ("Loading...");
@@ -143,8 +197,9 @@ void main_window::open_file (const QString &filename)
 
   renderer_items_container *renderer_items = m_doc->create_rendered_items (m_cache);
   m_queue->add_event (new event_container_changed (renderer_items));
-  update_window_title ();
   m_painter->set_document (m_doc);
+  add_file_to_recent (filename);
+  update_recent_menu ();
   ui->glwidget->repaint ();
 }
 

@@ -46,8 +46,9 @@
      <string>File</string>
     </property>
     <addaction name="openFileAct"/>
+    <addaction name="openRecentAct"/>
+    <addaction name="separator"/>
     <addaction name="saveAsAct"/>
-    <addaction name="openLastFileAct"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -68,12 +69,9 @@
     <string>Ctrl+Shift+S</string>
    </property>
   </action>
-  <action name="openLastFileAct">
+  <action name="openRecentAct">
    <property name="text">
-    <string>Open Last</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+1</string>
+    <string>Open Recent</string>
    </property>
   </action>
  </widget>
