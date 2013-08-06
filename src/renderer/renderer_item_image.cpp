@@ -65,5 +65,5 @@ void renderer_item_image::draw_graphics_item (SkCanvas &canvas, const renderer_s
 
 void renderer_item_image::update_bbox ()
 {
-  m_bbox_computed = m_dst_rect;
+  m_bbox_computed = m_bbox;
 }

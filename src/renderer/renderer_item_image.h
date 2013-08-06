@@ -11,7 +11,6 @@ enum class display;
 class renderer_item_image : public renderer_graphics_item
 {
   QPainterPath m_path;
-  QRectF m_bbox;
   QRectF m_dst_rect;
   QRectF m_src_rect;
   QImage m_image_data;
