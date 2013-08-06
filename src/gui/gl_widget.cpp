@@ -23,7 +23,6 @@ gl_widget::gl_widget (QWidget *parent)
   connect (m_mouse_filter_object, SIGNAL (mouse_event_happened (const mouse_event_t &)), this, SLOT (mouse_event (const mouse_event_t &)));
 
   setMouseTracking (true);
-  grabKeyboard ();
 }
 
 gl_widget::~gl_widget ()
@@ -54,15 +53,10 @@ void gl_widget::leaveEvent (QEvent *qevent)
   qevent->accept ();
 }
 
-void gl_widget::keyReleaseEvent(QKeyEvent * qevent)
+void gl_widget::keyPressEvent(QKeyEvent * qevent)
 {
   if (m_cur_painter)
-    {
-      if (m_cur_painter->keyReleaseEvent (qevent))
-        return;
-    }
-
-  QWidget::keyReleaseEvent (qevent);
+    m_cur_painter->keyPressEvent (qevent);
 }
 
 void gl_widget::resizeEvent (QResizeEvent *qevent)

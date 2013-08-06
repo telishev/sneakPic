@@ -12,7 +12,7 @@ class gl_widget : public QWidget, protected QGLFunctions
 {
   Q_OBJECT
 
-    mouse_filter *m_mouse_filter_object;
+  mouse_filter *m_mouse_filter_object;
   abstract_painter *m_cur_painter;
 public:
   gl_widget (QWidget *parent);
@@ -20,6 +20,7 @@ public:
 
   void set_painter (abstract_painter *painter) { m_cur_painter = painter; }
   mouse_filter *mouse_filter_object () const { return m_mouse_filter_object; }
+  void keyPressEvent (QKeyEvent * qevent) override;
 
 private slots:
   void mouse_event (const mouse_event_t &m_event);
@@ -28,7 +29,6 @@ protected:
   virtual void paintEvent (QPaintEvent *qevent) override;
   virtual void wheelEvent (QWheelEvent *qevent) override;
   virtual void leaveEvent (QEvent *qevent) override;
-  virtual void keyReleaseEvent (QKeyEvent * qevent) override;
   virtual void resizeEvent (QResizeEvent *qevent) override;
   virtual bool event (QEvent *qevent) override;
 };

@@ -42,7 +42,7 @@ public:
   /// \note event functions should return false if event was not processed; If you do not kwno how to process event, do nothing and return false
   virtual void wheelEvent (QWheelEvent *qevent) = 0;
   virtual void leaveEvent (QEvent *qevent) = 0;
-  virtual bool keyReleaseEvent (QKeyEvent *qevent) = 0;
+  virtual void keyPressEvent (QKeyEvent *qevent) = 0;
   virtual bool event (QEvent *qevent) = 0;
 
   virtual void resizeEvent (QResizeEvent *qevent) = 0;

@@ -41,6 +41,7 @@ private slots:
   void update_timeout ();
 
 private:
+  void keyPressEvent(QKeyEvent * qevent);
   void update_window_title ();
   void init_clear ();
   QString get_last_file_open_dir () const;

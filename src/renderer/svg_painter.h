@@ -3,6 +3,7 @@
 
 #include "renderer/abstract_painter.h"
 
+#include <QLabel>
 #include <QTransform>
 
 class svg_document;
@@ -17,12 +18,16 @@ class items_selection;
 class mouse_shortcuts_handler;
 class settings_t;
 
+class QStatusBar;
+
 
 class svg_painter : public abstract_painter
 {
   QTransform m_cur_transform;
   QTransform m_last_transform;
+  QLabel zoom_inscription;
   QPoint m_drag_start_pos;
+  QStatusBar *m_status_bar;
   svg_document *m_document;
   rendered_items_cache *m_cache;
   events_queue *m_queue;
@@ -32,7 +37,7 @@ class svg_painter : public abstract_painter
   settings_t *m_settings;
 
 public:
-  svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache, events_queue *queue, settings_t *settings);
+  svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache, events_queue *queue, settings_t *settings, QStatusBar *status_bar);
   ~svg_painter ();
 
   void set_document (svg_document *document);
@@ -45,7 +50,7 @@ public:
   virtual void leaveEvent (QEvent *qevent) override;
   virtual void resizeEvent (QResizeEvent *qevent) override;
   virtual bool event (QEvent * /*qevent*/) override { return false; }
-  virtual bool keyReleaseEvent (QKeyEvent *qevent) override;
+  virtual void keyPressEvent (QKeyEvent *qevent) override;
 
   settings_t *settings () const { return m_settings; }
 
@@ -59,6 +64,7 @@ private:
   void draw_overlay (QPainter &painter);
   void draw_page (QPainter &painter);
   void select_item (const QPoint &pos);
+  void update_status_bar_widgets ();
 
   mouse_shortcuts_handler *create_mouse_shortcuts ();
   void start_pan (const QPoint &pos);

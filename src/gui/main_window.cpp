@@ -19,9 +19,10 @@
 #include "svg/svg_document.h"
 
 #include <QFileDialog>
-#include <QSettings>
 #include <QFileInfo>
+#include <QKeyEvent>
 #include <QMessageBox>
+#include <QSettings>
 #include <QTimer>
 
 
@@ -34,7 +35,7 @@ main_window::main_window ()
   m_settings = new settings_t;
   m_cache = new rendered_items_cache;
   m_queue = new events_queue;
-  m_painter = new svg_painter (ui->glwidget, ui->glwidget->mouse_filter_object (), m_cache, m_queue, m_settings);
+  m_painter = new svg_painter (ui->glwidget, ui->glwidget->mouse_filter_object (), m_cache, m_queue, m_settings, this->statusBar ());
   m_renderer_thread = new renderer_thread (new svg_renderer (m_cache, m_queue), m_queue, this);
   m_renderer_thread->start ();
   ui->glwidget->set_painter (m_painter);
@@ -89,6 +90,15 @@ void main_window::open_last_file_clicked ()
   open_file (last_file);
 }
 
+void main_window::keyPressEvent(QKeyEvent * qevent)
+{
+  ui->glwidget->keyPressEvent (qevent);
+
+  if (qevent->isAccepted ())
+    return;
+
+  QWidget::keyPressEvent (qevent);
+}
 
 void main_window::save_file_clicked ()
 {

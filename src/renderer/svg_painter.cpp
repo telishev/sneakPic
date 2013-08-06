@@ -6,10 +6,13 @@
 #include <SkDevice.h>
 #pragma warning(pop)
 
-#include <QMessageBox>
-#include <QEvent>
-#include <QWheelEvent>
 #include <memory>
+
+#include <QEvent>
+#include <QLocale>
+#include <QMessageBox>
+#include <QStatusBar>
+#include <QWheelEvent>
 
 #include "common/common_utils.h"
 #include "common/math_defs.h"
@@ -38,7 +41,7 @@
 
 
 svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache,\
-                          events_queue *queue, settings_t *settings)
+                          events_queue *queue, settings_t *settings, QStatusBar *status_bar)
   : abstract_painter (glwidget, mouse_filter_object)
 {
   m_document = nullptr;
@@ -48,6 +51,9 @@ svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_
   m_selection = new items_selection (m_document);
   m_settings = settings;
   m_mouse_handler = create_mouse_shortcuts ();
+  m_status_bar = status_bar;
+  m_status_bar->addPermanentWidget (&zoom_inscription);
+  update_status_bar_widgets ();
 }
 
 svg_painter::~svg_painter ()
@@ -57,6 +63,11 @@ svg_painter::~svg_painter ()
   FREE (m_mouse_handler);
 }
 
+void svg_painter::update_status_bar_widgets ()
+{
+  zoom_inscription.setText (QString ("%1 %2 ").arg ( QLocale ().toString (m_cur_transform.m11 () * 100, 'f', 2)).arg (QLocale ().percent ()));
+}
+
 void svg_painter::reset_transform ()
 {
   double doc_width, doc_height;
@@ -64,6 +75,7 @@ void svg_painter::reset_transform ()
   double scale = qMin (glwidget ()->width () / doc_width, glwidget ()->height () / doc_height);
   m_cur_transform = QTransform::fromScale (scale, scale);
   send_changes (true);
+  update_status_bar_widgets ();
 }
 
 void svg_painter::set_document (svg_document *document)
@@ -131,6 +143,7 @@ void svg_painter::wheelEvent (QWheelEvent *qevent)
       QPointF vector = event_pos_local_after - event_pos_local_before;
       m_cur_transform.translate (vector.x (), vector.y ());
       send_changes (true);
+      update_status_bar_widgets ();
 
       glwidget ()->update ();
       qevent->accept ();
@@ -142,19 +155,17 @@ void svg_painter::leaveEvent (QEvent *qevent)
   FIX_UNUSED (qevent);
 }
 
-bool svg_painter::keyReleaseEvent (QKeyEvent * qevent)
+void svg_painter::keyPressEvent (QKeyEvent * qevent)
 {
   if (qevent->key () == Qt::Key_1 && qevent->modifiers () == Qt::NoModifier)
     {
       if (!m_document)
-        return true;
+        return;
       reset_transform ();
       set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
       glwidget ()->update ();
       qevent->accept ();
-      return true;
     }
-  return false;
 }
 
 void svg_painter::resizeEvent (QResizeEvent * /*qevent*/)
