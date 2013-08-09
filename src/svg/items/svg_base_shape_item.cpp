@@ -120,7 +120,7 @@ bool svg_base_shape_item::get_stroke (QPainterPath &dst) const
 
   QPainterPath path = get_path ();
 
-  if (path.isEmpty ())
+  if (path.isEmpty () && !path.currentPosition ().isNull ())
     {
       dst = QPainterPath ();
       double stroke_width_value = stroke_width->get_stroke_width ();
