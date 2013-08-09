@@ -167,11 +167,10 @@ void main_window::save_file_clicked ()
 
 QString main_window::get_last_file_open_dir () const
 {
-  QString last_filename = m_qsettings->value ("last_file").toString ();
-  if (last_filename.isEmpty ())
+  if (m_recent_files.size () == 0)
     return QString ();
 
-  QFileInfo last_file (last_filename);
+  QFileInfo last_file (m_recent_files[0]);
   return last_file.dir ().path ();
 }
 
