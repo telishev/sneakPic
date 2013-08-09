@@ -65,7 +65,7 @@ bool svg_data_type_length::read_and_shift (const char *&data, bool is_css)
         return true;  
     }
 
-  m_units = string_to_enum_and_shift <svg_length_units> (data);
+  m_units = process_string_before_delimiter_to_enum <svg_length_units> (data, ',');
   if (m_units == svg_length_units::INVALID)
     m_units = svg_length_units::NO_UNITS;
 

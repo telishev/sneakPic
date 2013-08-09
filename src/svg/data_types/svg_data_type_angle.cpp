@@ -2,8 +2,9 @@
 
 #include "common/common_utils.h"
 #include "common/debug_utils.h"
-#include "common/enum_conversion.h"
 #include "common/string_utils.h"
+#include "common/enum_conversion.h"
+#include "common/memory_deallocation.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -57,7 +58,14 @@ bool svg_data_type_angle::read_and_shift (const char *&data, bool is_css)
         }
     }
 
-  m_units = string_to_enum_and_shift <svg_angle_units> (data);
+  const char *new_data_pos = strchr (data, ',');
+  int str_len = new_data_pos - data;
+  char *enum_str = new char[str_len];
+  strncpy (enum_str, data, str_len - 1);
+  enum_str[str_len - 1] = '\0';
+  m_units = string_to_enum <svg_angle_units> (enum_str);
+  data = new_data_pos;
+  FREE_ARRAY (enum_str);
   if (m_units == svg_angle_units::INVALID)
     m_units = svg_angle_units::NO_UNITS;
 

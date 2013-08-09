@@ -71,7 +71,7 @@ bool svg_attribute_preserve_aspect_ratio::read (const char *data, bool /*from_cs
     return false;
   data++;
 
-  m_x_align = string_to_enum_and_shift <perserve_aspect_ratio_align> (data);
+  m_x_align = process_string_fixed_length_to_enum <perserve_aspect_ratio_align> (data, 3);
   if (   m_x_align == perserve_aspect_ratio_align::INVALID // consistency check
       || m_x_align == perserve_aspect_ratio_align::NONE)
     return false;
@@ -80,8 +80,8 @@ bool svg_attribute_preserve_aspect_ratio::read (const char *data, bool /*from_cs
     return false;
   data++;
 
-  m_y_align = string_to_enum_and_shift <perserve_aspect_ratio_align> (data);
-
+  
+  m_y_align = process_string_fixed_length_to_enum <perserve_aspect_ratio_align> (data, 3);
   if (   m_y_align == perserve_aspect_ratio_align::INVALID // consistency check
       || m_y_align == perserve_aspect_ratio_align::NONE)
     return false;

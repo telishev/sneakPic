@@ -1,47 +1,108 @@
-/// \file common/enum_conversion.h
+/// \file string/enum_conversion.h
 /// \brief contains functions to convert string to enums
 
 #ifndef ENUM_CONVERSION_H
 #define ENUM_CONVERSION_H
 
 
-/// to use conversion functions you must implement the following functions:
+/// to use conversion functions you must implement the following function:
 /// const char *enum_to_string (E id);
+/// if your enum does not specify simple continuous 0,..., N - 1, N sequence but rather have some ruptures in it (like 0, 1, 4)
+/// or starts not from 0 but from higher value then you should also specify:
 /// int enum_values_count (E);
+/// which should return maximum possible value of enum plus 1
+/// negative values in enums, for now unsupported
 
+#include "common/memory_deallocation.h"
+
+#include <unordered_map>
 #include <string.h>
-#include <string>
 
-template <typename E>
-E string_to_enum (const char *string)
+inline int enum_values_count (int)
 {
-  for (int i = 0; i < enum_values_count (E ()); i++)
-    if (!strcmp (string, enum_to_string ((E)i)))
-      return (E)i;
-
-  return (E)enum_values_count (E ());
+  return -1;
 }
 
 template <typename E>
-E string_to_enum_and_shift (const char *&string)
+class enum_helper
 {
-  E result = (E)enum_values_count (E ());
-  for (int i = 0; i < enum_values_count (E ()); i++)
-    {
-      const char *enum_str = enum_to_string ((E)i);
-      if (*enum_str && !strncmp (string, enum_str, strlen (enum_str)))
-        {
-          result = (E)i;
-          break;
-        }
-    }
+  std::unordered_map<std::string, E> enum_map;
+  int count;
+public:
+  enum_helper ()
+  {
+    count = enum_values_count (E ());
+    int i = 0;
+    while ((count < 0) || (i < count))
+      {
+        const char *enum_value = enum_to_string ((E)i);
+        if (*enum_value)
+          enum_map.insert (std::make_pair (std::string (enum_value), (E)i));
+        else if (count < 0)
+          {
+            count = i;
+            break;
+          }
+        i++;
+      }
+  }
 
-  string += strlen (enum_to_string (result));
-  return result;
+  E get_enum_value (const char *string)
+  {
+    typename std::unordered_map<std::string, E>::const_iterator it = enum_map.find (std::string (string));
+    if (it != enum_map.end ())
+      return (*it).second;
+    else
+      return (E) count;
+  }
+
+  static enum_helper self;
+};
+
+template <typename E>
+enum_helper<E> enum_helper<E>::self;
+
+template <typename E>
+static E string_to_enum (const char *string)
+{
+  return enum_helper<E>::self.get_enum_value (string);
 }
 
 template <typename E>
-E string_to_enum (const std::string &str)
+static E process_string_fixed_length_to_enum (const char *&string, int length)
+{
+  char *string_in_question = 0; 
+  string_in_question = new char[length + 1];
+  strncpy (string_in_question, string, length);
+  string_in_question[length] = '\0';
+  const char *trimmed_string_in_question = string_in_question;
+  
+  E res = enum_helper<E>::self.get_enum_value (trimmed_string_in_question);
+  FREE_ARRAY (string_in_question);
+  string += length;
+  return res;
+}
+
+template <typename E>
+static E process_string_before_delimiter_to_enum (const char *&string, const char delimiter = ',')
+{
+  const char *next_delimiter_pos = strchr (string, delimiter);
+  if (!next_delimiter_pos)
+    next_delimiter_pos = string + strlen (string);
+  trim_whitespace_left (string);
+  const char *last_pos = trim_whitespace_right (string, string + strlen (string));
+  int len = last_pos - string;
+
+  E res = process_string_fixed_length_to_enum<E> (string, len);
+  if (*next_delimiter_pos)
+    next_delimiter_pos++;
+  
+  string = next_delimiter_pos;
+  return res;
+}
+
+template <typename E>
+static E string_to_enum (const std::string &str)
 {
   return string_to_enum<E> (str.c_str ());
 }
