@@ -13,6 +13,8 @@ public:
   virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const override;
   virtual void update_bbox () override;
 
+  virtual bool can_be_selected () const override { return false; }
+
 protected:
   void update_group_item (renderer_item_group *renderer_item) const;
 };

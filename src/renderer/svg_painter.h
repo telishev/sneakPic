@@ -17,6 +17,9 @@ class overlay_renderer;
 class items_selection;
 class mouse_shortcuts_handler;
 class settings_t;
+class svg_page_renderer;
+class current_item_outline_renderer;
+class rubberband_selection;
 
 class QStatusBar;
 
@@ -28,12 +31,16 @@ class svg_painter : public abstract_painter
   QLabel zoom_inscription;
   QPoint m_drag_start_pos;
   QStatusBar *m_status_bar;
+
   svg_document *m_document;
   rendered_items_cache *m_cache;
   events_queue *m_queue;
   overlay_renderer *m_overlay;
   items_selection *m_selection;
+  svg_page_renderer *m_page_renderer;
+  current_item_outline_renderer *m_item_outline;
   mouse_shortcuts_handler *m_mouse_handler;
+  rubberband_selection *m_rubberband;
   settings_t *m_settings;
 
 public:
@@ -63,13 +70,18 @@ private:
   void draw_base (QPainter &painter);
   void draw_overlay (QPainter &painter);
   void draw_page (QPainter &painter);
-  void select_item (const QPoint &pos);
+  void select_item (const QPoint &pos, bool clear_selection);
   void update_status_bar_widgets ();
 
   mouse_shortcuts_handler *create_mouse_shortcuts ();
   void start_pan (const QPoint &pos);
   void pan_picture (const QPoint &pos);
   void find_current_object (const QPoint &pos);
+
+  void start_rubberband_selection (const QPoint &pos);
+  void move_rubberband_selection (const QPoint &pos);
+  void end_rubberband_selection (const mouse_event_t &event);
 };
 
 #endif // SVG_PAINTER_H
+

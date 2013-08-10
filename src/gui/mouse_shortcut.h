@@ -29,8 +29,10 @@ enum keyboard_modifier
   CTRL_ALT_SHIFT = 0x80,
 
   ALL = 0xff,
+  NONE = 0x0,
 };
 Q_DECLARE_FLAGS (keyboard_modifiers, keyboard_modifier);
+Q_DECLARE_OPERATORS_FOR_FLAGS (keyboard_modifiers)
 
 enum class mouse_button
 {

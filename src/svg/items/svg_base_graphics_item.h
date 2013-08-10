@@ -17,6 +17,7 @@ public:
   virtual abstract_renderer_item *create_renderer_item () const override;
   virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const override;
   virtual void update_bbox () override;
+  virtual bool can_be_selected () const override { return true; }
 
 protected:
   QPainterPath get_path_for_clipping () const;

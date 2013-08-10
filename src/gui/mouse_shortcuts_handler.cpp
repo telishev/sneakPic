@@ -24,7 +24,7 @@ bool mouse_shortcuts_handler::process_mouse_event (const mouse_event_t &m_event)
   for (int i = 0; i < (int)mouse_shortcut_enum::COUNT; i++)
     {
       mouse_shortcut shortcut = m_cfg->shortcut_mouse ((mouse_shortcut_enum)i);
-      if (shortcut.is_applicable (m_event))
+      if (shortcut.is_applicable (m_event) && m_shortcuts[i])
         {
           m_shortcuts[i] (m_event);
           return true;

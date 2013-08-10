@@ -38,8 +38,7 @@ overlay_renderer::overlay_renderer (rendered_items_cache *cache)
   m_document = nullptr;
   m_container = nullptr;
   m_renderer = new svg_renderer (nullptr, nullptr);
-  m_root = nullptr;
-  m_page_item = nullptr;
+  memset (m_root_items, 0, sizeof (m_root_items));
   m_cache = cache;
 }
 
@@ -53,53 +52,15 @@ void overlay_renderer::set_document (svg_document *document)
 {
   FREE (m_container);
   m_container = new renderer_items_container;
-  m_root = new renderer_overlay_root ("#overlay_root");
-  m_container->add_item (m_root);
-  m_container->set_root (m_root->name ());
+  char buf[16];
+  for (int i = 0; i < (int)overlay_layer_type::COUNT; i++)
+    {
+      m_root_items[i] = new renderer_overlay_root (std::string ("#overlay_root") + itoa (i, buf, 10));
+      m_container->add_item (m_root_items[i]);
+    }
+
   m_document = document;
-  m_current_item = std::string ();
-  m_selection.clear ();
-
-  m_page_item = new renderer_page ("#page_item");
-  double width, height;
-  m_document->get_doc_dimensions (width, height);
-  m_page_item->set_height (height);
-  m_page_item->set_width (width);
 }
-
-void overlay_renderer::set_current_item (const std::string &id)
-{
-  if (!m_current_item.empty ())
-    {
-      m_root->erase_child (m_current_item);
-      m_container->remove_item (m_current_item);
-      m_current_item = std::string ();
-    }
-
-  if (id.empty ())
-    return;
-
-  m_current_item = add_item (id, overlay_item_type::CURRENT_ITEM);
-}
-
-void overlay_renderer::selection_changed (const items_selection *selection)
-{
-  for (const std::string &item : m_selection)
-    {
-      m_root->erase_child (item);
-      m_container->remove_item (item);
-    }
-
-  m_selection.clear ();
-
-  for (const std::string &item : selection->selection ())
-    {
-      std::string new_item = add_item (item, overlay_item_type::SELECTION);
-      if (!new_item.empty ())
-        m_selection.insert (new_item);
-    }
-}
-
 
 void overlay_renderer::draw (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform)
 {
@@ -117,36 +78,31 @@ void overlay_renderer::draw (QPainter &painter, const QRect &rect_to_draw, const
   canvas.drawBitmap (m_cache->get_current_screen (), 0, 0);
   m_cache->unlock ();
 
-  m_renderer->draw_to_bitmap (rect_to_draw, transform, m_container->root (), &bitmap);
+  m_renderer->draw_to_bitmap (rect_to_draw, transform, root (overlay_layer_type::BASE), &bitmap);
   QImage img = qt2skia::qimage (bitmap);
   painter.drawImage (rect_to_draw, img);
 }
 
 void overlay_renderer::draw_page (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform)
 {
-  if (!m_page_item)
-    return;
-
-  std::unique_ptr<SkBitmap> bitmap (m_renderer->draw_to_bitmap (rect_to_draw, transform, m_page_item));
+  std::unique_ptr<SkBitmap> bitmap (m_renderer->draw_to_bitmap (rect_to_draw, transform, root (overlay_layer_type::PAGE)));
   QImage img = qt2skia::qimage (*bitmap);
   painter.drawImage (rect_to_draw, img);
 }
 
-std::string overlay_renderer::add_item (const std::string &name, overlay_item_type type)
+void overlay_renderer::add_overlay_item (overlay_layer_type type, abstract_renderer_item *item)
 {
-  abstract_svg_item *svg_item = m_document->item_container ()->get_item (QString::fromStdString (name));
-  if (!svg_item)
-    return std::string ();
+  m_container->add_item (item);
+  m_container->add_child (root (type)->name (), item->name ());
+}
 
-  svg_graphics_item *graphics_item = svg_item->to_graphics_item ();
-  if (!graphics_item)
-    return std::string ();
+void overlay_renderer::remove_overlay_item (overlay_layer_type type, const std::string &item)
+{
+  root (type)->erase_child (item);
+  m_container->remove_item (item);
+}
 
-  abstract_renderer_item *overlay_item = graphics_item->create_overlay_item (type);
-  if (!overlay_item)
-    return std::string ();
-
-  m_container->add_item (overlay_item);
-  m_container->add_child (m_root->name (), overlay_item->name ());
-  return overlay_item->name ();
+abstract_renderer_item *overlay_renderer::root (overlay_layer_type type) const
+{
+  return m_root_items[(int)type];
 }

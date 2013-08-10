@@ -21,6 +21,7 @@ public:
   virtual abstract_renderer_item *create_renderer_item () const = 0;
   virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const = 0;
   virtual void update_bbox () = 0;
+  virtual bool can_be_selected () const = 0;
 
   QRectF bbox () const { return m_bbox; }
   QTransform full_transform () const;

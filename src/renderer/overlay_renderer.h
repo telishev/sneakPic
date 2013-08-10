@@ -8,6 +8,7 @@ class renderer_overlay_root;
 class renderer_page;
 class items_selection;
 class rendered_items_cache;
+class abstract_renderer_item;
 
 class QPainter;
 class QRect;
@@ -18,32 +19,41 @@ class QTransform;
 
 enum class overlay_item_type;
 
+enum class overlay_layer_type
+{
+  PAGE, ///< under svg image (for drawing page borders)
+  BASE, ///< over svg image (for overlay items that changes not very often, uses the cache)
+  TEMP, ///< over base overlay (for temporary items, don't use the cache)
+
+  COUNT,
+};
+
 class overlay_renderer
 {
   svg_renderer *m_renderer;
-  renderer_items_container *m_container;
   svg_document *m_document;
-  renderer_overlay_root *m_root;
-  renderer_page *m_page_item;
   rendered_items_cache *m_cache;
-  std::set<std::string> m_selection;
 
-  std::string m_current_item;
+  renderer_items_container *m_container;
+  abstract_renderer_item *m_root_items[overlay_layer_type::COUNT];
 public:
   overlay_renderer (rendered_items_cache *cache);
   ~overlay_renderer ();
 
   void set_document (svg_document *document);
-  void set_current_item (const std::string &id);
-  void selection_changed (const items_selection *selection);
-
-  std::string current_item () const { return m_current_item; }
 
   void draw (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform);
   void draw_page (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform);
 
+  renderer_items_container *container () const { return m_container; }
+  svg_document *document () const { return m_document; }
+
+  void add_overlay_item (overlay_layer_type type, abstract_renderer_item *item);
+  void remove_overlay_item (overlay_layer_type type, const std::string &item);
+
 private:
   std::string add_item (const std::string &name, overlay_item_type type);
+  abstract_renderer_item *root (overlay_layer_type type) const;
 };
 
 #endif // OVERLAY_RENDERER_H

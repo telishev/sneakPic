@@ -1,19 +1,20 @@
 #ifndef ITEMS_SELECTION_H
 #define ITEMS_SELECTION_H
 
-#include <string>
+#include "renderer/overlay_items_container.h"
+
 #include <set>
 
 class abstract_svg_item;
 class svg_document;
+class QRectF;
 
-class items_selection
+class items_selection : public overlay_items_container
 {
   typedef std::set<std::string> set_type;
   set_type m_selection;
-  const svg_document *m_document;
 public:
-  items_selection (const svg_document *document);
+  items_selection (overlay_renderer *overlay);
   ~items_selection ();
 
   int selected_count () const;
@@ -23,6 +24,14 @@ public:
   void add_item (const std::string &item_name);
 
   void clear ();
+
+  void add_items_for_rect (const QRectF &rect);
+
+protected:
+  virtual std::vector<abstract_renderer_item *> create_overlay_item (const std::string &object) const override;
+
+private:
+  void add_items_for_rect (const QRectF &rect, const abstract_svg_item *root);
 };
 
 #endif // ITEMS_SELECTION_H

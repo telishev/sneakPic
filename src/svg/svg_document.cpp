@@ -93,8 +93,12 @@ bool svg_document::read_file (const QString &filename_arg)
               if (!cur_item)
                 DEBUG_PAUSE ("cur_item must not be nullptr");
 
-              svg_character_data *data = new svg_character_data (this, reader.text ().toUtf8 ().constData ());
-              cur_item->insert_child (nullptr, data);
+              QString char_data = reader.text ().toString ().trimmed ();
+              if (!char_data.isEmpty ())
+                {
+                  svg_character_data *data = new svg_character_data (this, reader.text ().toUtf8 ().constData ());
+                  cur_item->insert_child (nullptr, data);
+                }
               break;
             }
           case QXmlStreamReader::EndElement:
