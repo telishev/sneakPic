@@ -31,6 +31,7 @@ DECLARE_ITEM(MARKER          , "marker"         , SVG         , svg_item_marker 
 enum class svg_item_type
 {
   UNKNOWN,
+  CHARACTER_DATA,
 #define DECLARE_ITEM(ENUM,NAME,NAMESPACE,CLASS) ENUM,
   DECLARE_SVG_ITEM
 #undef DECLARE_ITEM

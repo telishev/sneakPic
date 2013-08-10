@@ -18,11 +18,15 @@
 #include "svg/items/svg_items_container.h"
 #include "svg/items/svg_item_style.h"
 #include "svg/items/svg_item_defs.h"
+#include "svg/items/svg_item_type.h"
+#include "svg/items/svg_character_data.h"
 
 #include "svg/svg_document.h"
 #include "svg/svg_namespaces.h"
 
 #include "svg/css/selectors_container.h"
+
+
 
 
 abstract_svg_item::abstract_svg_item (svg_document *document)
@@ -42,11 +46,14 @@ void abstract_svg_item::write (QXmlStreamWriter &writer) const
   if (is_cloned ())
     return;
 
+  if (is_character_data ())
+    {
+      const svg_character_data *data = static_cast<const svg_character_data *> (this);
+      writer.writeCharacters (data->char_data ());
+      return;
+    }
+
   writer.writeStartElement (namespace_uri (), type_name ());
-  QString item_data;
-  write_item (item_data);
-  if (!item_data.isEmpty ())
-    writer.writeCharacters (item_data);
 
   for (auto &attribute_pair : m_attributes)
     {
@@ -313,6 +320,11 @@ void abstract_svg_item::process_after_read ()
   create_id_by_attr ();
   if (has_name ())
     add_to_container ();
+}
+
+bool abstract_svg_item::is_character_data () const
+{
+  return type () == svg_item_type::CHARACTER_DATA; 
 }
 
 

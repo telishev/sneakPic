@@ -12,6 +12,7 @@
 #include "svg/css/selectors_container.h"
 
 #include "svg/svg_document.h"
+#include "svg_character_data.h"
 
 
 svg_item_style::svg_item_style (svg_document *document)
@@ -28,11 +29,6 @@ svg_item_style::~svg_item_style ()
       FREE (rule.first);
       FREE (rule.second);
     }
-}
-
-bool svg_item_style::read_item (const QString &data)
-{
-  return read_item (data.toUtf8 ().constData ());
 }
 
 bool svg_item_style::read_item (const char *data)
@@ -75,16 +71,15 @@ const abstract_attribute *svg_item_style::get_attribute (const std::string &str,
   return nullptr;
 }
 
-bool svg_item_style::write_item (QString &data) const
+void svg_item_style::item_read_complete ()
 {
-  for (auto rule : m_rule_set)
+  for (const abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
     {
-      abstract_css_selector *selector = rule.first;
-      css_declaration *declaration = rule.second;
+      if (!child->is_character_data ())
+        continue;
 
-      std::string str = selector->to_string () + "{" + declaration->to_string () + "}";
-      data += QString::fromStdString (str);
+      const svg_character_data *data = static_cast<const svg_character_data *> (child);
+      read_item (data->char_data ());
     }
-
-  return true;
 }
+

@@ -60,7 +60,7 @@ public:
   void remove_attribute (abstract_attribute *attribute);
 
   void write (QXmlStreamWriter &writer) const;
-  virtual bool read_item (const QString &/*data*/) { return true; }
+  virtual void item_read_complete () {}
 
   bool has_name () const;
   QString name () const;
@@ -102,8 +102,9 @@ public:
   virtual const svg_graphics_item *to_graphics_item () const { return nullptr; }
   virtual svg_graphics_item *to_graphics_item () { return nullptr; }
 
+  bool is_character_data () const;
+
 protected:
-  virtual bool write_item (QString &/*data*/) const { return true; }
   virtual bool check_item () = 0;
 
 private:

@@ -20,12 +20,10 @@ public:
   /// finds attribute from the matching selector
   const abstract_attribute *get_attribute (const std::string &str, const abstract_svg_item *item_to_match) const;
 
-protected:
-  virtual bool check_item () override { return true; }
+  virtual void item_read_complete () override;
 
 protected:
-  virtual bool read_item (const QString &data) override;
-  virtual bool write_item (QString &data) const override;
+  virtual bool check_item () override { return true; }
 
 private:
   bool read_item (const char *data);

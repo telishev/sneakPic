@@ -5,11 +5,13 @@
 #include "svg/attributes/svg_attributes_length_type_list.h"
 
 #include "svg/items/svg_item_text.h"
+#include "svg/items/svg_character_data.h"
 
 #include <QFont>
 #include <QFontMetrics>
 #include <QPainterPath>
 #include <QTransform>
+
 
 svg_item_text::svg_item_text (svg_document *document)
   : svg_base_shape_item (document)
@@ -25,11 +27,19 @@ bool svg_item_text::check_item ()
   return true;
 }
 
-bool svg_item_text::read_item (const QString &data)
+void svg_item_text::item_read_complete ()
 {
-  m_text = data;
+  for (const abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
+    {
+      if (!child->is_character_data ())
+        continue;
+
+      const svg_character_data *data = static_cast<const svg_character_data *> (child);
+      m_text += data->char_data ();
+    }
+
   m_text = m_text.trimmed ();
-  return true;
+  return;
 }
 
 QPainterPath svg_item_text::get_path () const

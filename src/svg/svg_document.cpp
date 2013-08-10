@@ -7,6 +7,7 @@
 #include <QXmlStreamReader>
 
 #include "common/memory_deallocation.h"
+#include "common/debug_utils.h"
 
 #include "svg/attributes/abstract_attribute.h"
 #include "svg/attributes/svg_attribute_type.h"
@@ -18,6 +19,7 @@
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_item_svg.h"
 #include "svg/items/svg_graphics_item.h"
+#include "svg/items/svg_character_data.h"
 
 #include "svg/css/selectors_container.h"
 
@@ -27,8 +29,6 @@
 #include "renderer/abstract_renderer_item.h"
 #include "renderer/rendered_items_cache.h"
 #include "attributes/abstract_attribute.h"
-
-
 
 
 
@@ -93,7 +93,8 @@ bool svg_document::read_file (const QString &filename_arg)
               if (!cur_item)
                 DEBUG_PAUSE ("cur_item must not be nullptr");
 
-              cur_item->read_item (reader.text ().toString ());
+              svg_character_data *data = new svg_character_data (this, reader.text ().toUtf8 ().constData ());
+              cur_item->insert_child (nullptr, data);
               break;
             }
           case QXmlStreamReader::EndElement:
@@ -101,6 +102,7 @@ bool svg_document::read_file (const QString &filename_arg)
               if (!cur_item)
                 DEBUG_PAUSE ("cur_item must not be nullptr");
 
+              cur_item->item_read_complete ();
               cur_item = cur_item->parent ();
               break;
             }

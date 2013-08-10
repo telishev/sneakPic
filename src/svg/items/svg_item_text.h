@@ -19,7 +19,7 @@ public:
   virtual ~svg_item_text () override;
 
 protected:
-  virtual bool read_item (const QString &data);
+  virtual void item_read_complete () override;
   virtual bool check_item () override;
   virtual QPainterPath get_path () const override;
 
