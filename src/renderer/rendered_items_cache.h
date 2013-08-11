@@ -24,7 +24,7 @@ class rendered_items_cache
   QMutex *m_mutex;
   bool m_pending_changes;
 
-  SkBitmap *m_current_screen;
+  std::map<int, SkBitmap> m_current_screen_map;
 
 public:
   rendered_items_cache ();
@@ -50,8 +50,8 @@ public:
   void add_selection_mapping (int id, const std::string &name);
   void remove_selection_mapping (int id);
 
-  void set_current_screen (const SkBitmap &bitmap);
-  SkBitmap get_current_screen () const; 
+  void set_current_screen (const SkBitmap &bitmap, int cache_object_id);
+  SkBitmap get_current_screen (int cache_object_id) const; 
 
   /// call this functions only after calling lock
   std::string get_selection_name (int id) const;

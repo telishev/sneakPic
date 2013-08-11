@@ -64,7 +64,6 @@ public:
 private:
   void reset_transform ();
   void send_changes (bool interrrupt_rendering);
-  void get_cache_id (const QTransform &transform, render_cache_id &first, render_cache_id &last, const QRectF &rect) const;
   abstract_svg_item *get_current_item (const QPoint &pos);
   void update_drawing (QTransform transform);
   void draw_base (QPainter &painter);
@@ -81,7 +80,10 @@ private:
   void start_rubberband_selection (const QPoint &pos);
   void move_rubberband_selection (const QPoint &pos);
   void end_rubberband_selection (const mouse_event_t &event);
+  void create_overlay_containers ();
+  void remove_overlay_containers ();
 };
 
 #endif // SVG_PAINTER_H
+
 

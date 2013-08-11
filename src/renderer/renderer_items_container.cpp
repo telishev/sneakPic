@@ -11,7 +11,7 @@
 
 renderer_items_container::renderer_items_container ()
 {
-  m_last_id = render_cache_id::OBJECTS_ID_COUNT;
+  m_last_id = (int)render_cache_type::OBJECTS_ID_COUNT;
   m_cache = nullptr;
 }
 

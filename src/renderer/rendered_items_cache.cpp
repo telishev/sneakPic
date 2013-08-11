@@ -23,8 +23,6 @@ rendered_items_cache::rendered_items_cache ()
   m_next_zoom_cache = new std::map<render_cache_id, SkBitmap>;
   m_pending_changes = false;
   m_zoom_y = m_zoom_x = 1.0;
-  m_current_screen = new SkBitmap;
-
 }
 
 rendered_items_cache::~rendered_items_cache ()
@@ -46,7 +44,7 @@ SkBitmap rendered_items_cache::bitmap (const render_cache_id &id) const
 void rendered_items_cache::add_bitmap (const render_cache_id &id, const SkBitmap &bitmap, bool next_cache)
 {
   QMutexLocker lock (m_mutex);
-  DEBUG_ASSERT (id.id () != render_cache_id::INVALID);
+  DEBUG_ASSERT (id.object_type () != (int)render_cache_type::INVALID);
   auto cache_to_use = next_cache ? m_next_zoom_cache : m_cache;
   (*cache_to_use)[id] = bitmap;
   m_pending_changes = true;
@@ -168,12 +166,16 @@ void rendered_items_cache::remove_from_cache (const render_cache_id &id)
   m_cache->erase (id);
 }
 
-void rendered_items_cache::set_current_screen (const SkBitmap &bitmap)
+void rendered_items_cache::set_current_screen (const SkBitmap &bitmap, int cache_object_id)
 {
-  *m_current_screen = bitmap;
+  m_current_screen_map[cache_object_id] = bitmap;
 }
 
-SkBitmap rendered_items_cache::get_current_screen () const
+SkBitmap rendered_items_cache::get_current_screen (int cache_object_id) const
 {
-  return *m_current_screen;
+  auto it = m_current_screen_map.find (cache_object_id);
+  if (it == m_current_screen_map.end ())
+    return SkBitmap ();
+
+  return it->second;
 }

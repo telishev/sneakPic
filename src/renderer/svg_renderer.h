@@ -34,6 +34,8 @@ public:
   SkBitmap *draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const abstract_renderer_item *item);
   void draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const abstract_renderer_item *item, SkBitmap *bitmap);
 
+  void update_drawing (const QTransform &transform, const QRectF &rect_to_update, int cache_object_type);
+
 private:
   bool is_something_cached ( const render_cache_id &first, const render_cache_id &last, renderer_config &cfg);
   void update_cache_item (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform,

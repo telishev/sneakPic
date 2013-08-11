@@ -20,6 +20,8 @@
 #include <SkCanvas.h>
 #include <SkSurface.h>
 #include <SkDevice.h>
+#include "common/math_defs.h"
+#include "qt2skia.h"
 #pragma warning(pop)
 
 
@@ -68,7 +70,7 @@ void svg_renderer::update_cache_item (const abstract_renderer_item *item, const 
       for (int i = 0; i < total_x; i++)
         for (int j = 0; j < total_y; j++)
           {
-            render_cache_id cur_id (cache_id.x () + i, cache_id.y () + j, cache_id.id ());
+            render_cache_id cur_id (cache_id.x () + i, cache_id.y () + j, cache_id.object_type ());
             SkBitmap bitmap_part;
             DEBUG_ASSERT (bitmap.extractSubset (&bitmap_part, SkIRect::MakeXYWH (i * block_size, j * block_size, block_size, block_size)));
             m_cache->add_bitmap (cur_id, bitmap_part, cfg.use_new_cache ());
@@ -80,7 +82,7 @@ void svg_renderer::update_cache_item (const abstract_renderer_item *item, const 
 void svg_renderer::update_cache_items (const abstract_renderer_item *item, const render_cache_id &first,
                                        const render_cache_id &last, QTransform transform, renderer_config &cfg)
 {
-  DEBUG_ASSERT (first.id () == last.id ());
+  DEBUG_ASSERT (first.object_type () == last.object_type ());
 
   /// if nothing is cached, render everything in one pass
   if (!is_something_cached (first, last, cfg))
@@ -93,7 +95,7 @@ void svg_renderer::update_cache_items (const abstract_renderer_item *item, const
   for (int x = first.x (); x <= last.x (); x++)
     for (int y = first.y (); y <= last.y (); y++)
       {
-        render_cache_id id (x, y, first.id ());
+        render_cache_id id (x, y, first.object_type ());
         if (m_cache->is_cached (id, cfg.use_new_cache ()))
           continue;
 
@@ -110,7 +112,7 @@ bool svg_renderer::is_something_cached (const render_cache_id &first, const rend
   for (int x = first.x (); x <= last.x (); x++)
     for (int y = first.y (); y <= last.y (); y++)
       {
-        render_cache_id id (x, y, first.id ());
+        render_cache_id id (x, y, first.object_type ());
         if (m_cache->is_cached (id, cfg.use_new_cache ()))
           return true;
       }
@@ -144,4 +146,47 @@ void svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransform &
   renderer.draw_item (item, canvas, state, cfg);
 }
 
+void svg_renderer::update_drawing (const QTransform &transform, const QRectF &rect_to_update, int cache_object_type)
+{
+  m_cache->lock ();
+  DO_ON_EXIT (m_cache->unlock ());
 
+  double cache_zoom_x = m_cache->zoom_x ();
+  double cache_zoom_y = m_cache->zoom_y ();
+  double cur_zoom_x = transform.m11 ();
+  double cur_zoom_y = transform.m22 ();
+  QRectF rect_to_draw = rect_to_update;
+  QTransform real_transform = transform;
+
+  SkBitmap bitmap;
+  bitmap.setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
+  bitmap.allocPixels ();
+  SkDevice device (bitmap);
+  SkCanvas canvas (&device);
+
+  if (!are_equal (cache_zoom_x, cur_zoom_x) || !are_equal (cache_zoom_y, cur_zoom_y))
+    {
+      QTransform scale_transform = QTransform::fromScale (cache_zoom_x / cur_zoom_x, cache_zoom_y / cur_zoom_y);
+      real_transform = real_transform * scale_transform;
+      canvas.setMatrix (qt2skia::matrix (scale_transform.inverted ()));
+      rect_to_draw = scale_transform.mapRect (rect_to_draw);
+    }
+
+  canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
+
+  std::pair<render_cache_id, render_cache_id> it_pair = render_cache_id::get_id_for_rect (real_transform, rect_to_draw, cache_object_type);
+
+  for (int x = it_pair.first.x (); x <= it_pair.second.x (); x++)
+    for (int y = it_pair.first.y (); y <= it_pair.second.y (); y++)
+      {
+        render_cache_id cur_id (x, y, cache_object_type);
+        SkBitmap bitmap = m_cache->bitmap (cur_id);
+        if (bitmap.empty ())
+          continue;
+
+        QRectF pixel_rect = cur_id.pixel_rect (real_transform);
+        canvas.drawBitmap (bitmap, SkFloatToScalar (pixel_rect.x ()), SkFloatToScalar (pixel_rect.y ()));
+      }
+
+  m_cache->set_current_screen (bitmap, cache_object_type);
+}

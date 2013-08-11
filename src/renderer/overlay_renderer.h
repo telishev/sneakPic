@@ -32,7 +32,9 @@ class overlay_renderer
 {
   svg_renderer *m_renderer;
   svg_document *m_document;
-  rendered_items_cache *m_cache;
+  rendered_items_cache *m_base_cache;
+  rendered_items_cache *m_overlay_cache;
+  bool overlay_changed[overlay_layer_type::COUNT];
 
   renderer_items_container *m_container;
   abstract_renderer_item *m_root_items[overlay_layer_type::COUNT];

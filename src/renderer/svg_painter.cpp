@@ -54,9 +54,7 @@ svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_
   m_cache = cache;
   m_queue = queue;
   m_overlay = new overlay_renderer (m_cache);
-  m_selection = new items_selection (m_overlay);
-  m_item_outline = new current_item_outline_renderer (m_overlay);
-  m_rubberband = new rubberband_selection (m_overlay);
+  create_overlay_containers ();
   m_settings = settings;
   m_mouse_handler = create_mouse_shortcuts ();
   m_status_bar = status_bar;
@@ -66,12 +64,9 @@ svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_
 
 svg_painter::~svg_painter ()
 {
-  FREE (m_selection);
   FREE (m_mouse_handler);
-
-  FREE (m_item_outline);
-  FREE (m_rubberband);
   /// must be after all overlay containers
+  remove_overlay_containers ();
   FREE (m_overlay);
 }
 
@@ -96,9 +91,9 @@ void svg_painter::set_document (svg_document *document)
   if (!m_document)
     return;
 
-  FREE (m_page_renderer);
+  remove_overlay_containers ();
   m_overlay->set_document (document);
-  m_page_renderer = new svg_page_renderer (m_overlay);
+  create_overlay_containers ();
   set_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED, 1);
   reset_transform ();
 }
@@ -190,63 +185,17 @@ void svg_painter::resizeEvent (QResizeEvent * /*qevent*/)
 
 void svg_painter::update_drawing (QTransform transform)
 {
-  m_cache->lock ();
-  DO_ON_EXIT (m_cache->unlock ());
-
-  double cache_zoom_x = m_cache->zoom_x ();
-  double cache_zoom_y = m_cache->zoom_y ();
-  double cur_zoom_x = transform.m11 ();
-  double cur_zoom_y = transform.m22 ();
-  QRectF rect_to_draw = QRectF (glwidget ()->rect ());
-
-  SkBitmap bitmap;
-  bitmap.setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
-  bitmap.allocPixels ();
-  SkDevice device (bitmap);
-  SkCanvas canvas (&device);
-
-  if (!are_equal (cache_zoom_x, cur_zoom_x) || !are_equal (cache_zoom_y, cur_zoom_y))
-    {
-      QTransform scale_transform = QTransform::fromScale (cache_zoom_x / cur_zoom_x, cache_zoom_y / cur_zoom_y);
-      transform = transform * scale_transform;
-      canvas.setMatrix (qt2skia::matrix (scale_transform.inverted ()));
-      rect_to_draw = scale_transform.mapRect (rect_to_draw);
-    }
-
-  canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
-
-  render_cache_id id_first, id_last;
-  get_cache_id (transform, id_first, id_last, rect_to_draw);
-
-  for (int x = id_first.x (); x <= id_last.x (); x++)
-    for (int y = id_first.y (); y <= id_last.y (); y++)
-      {
-        render_cache_id cur_id (x, y, render_cache_id::ROOT_ITEM);
-        SkBitmap bitmap = m_cache->bitmap (cur_id);
-        if (bitmap.empty ())
-          continue;
-
-        QRectF pixel_rect = cur_id.pixel_rect (transform);
-        canvas.drawBitmap (bitmap, SkFloatToScalar (pixel_rect.x ()), SkFloatToScalar (pixel_rect.y ()));
-      }
-
-  m_cache->set_current_screen (bitmap);
+  svg_renderer renderer (m_cache, m_queue);
+  renderer.update_drawing (transform, QRectF (glwidget ()->rect ()), (int)render_cache_type::ROOT_ITEM);
 }
 
 void svg_painter::send_changes (bool interrrupt_rendering)
 {
-  render_cache_id id_first, id_last;
-  get_cache_id (m_cur_transform, id_first, id_last, glwidget ()->rect ());
-  int queue_id = m_queue->add_event (new event_transform_changed (id_first, id_last, m_cur_transform, interrrupt_rendering));
+  
+  auto object_pair = render_cache_id::get_id_for_rect (m_cur_transform, glwidget ()->rect (), (int)render_cache_type::ROOT_ITEM);
+  int queue_id = m_queue->add_event (new event_transform_changed (object_pair.first, object_pair.second, m_cur_transform, interrrupt_rendering));
   m_queue->wait_for_id (queue_id, 50);
   set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
-}
-
-void svg_painter::get_cache_id (const QTransform &transform, render_cache_id &first, render_cache_id &last, const QRectF &rect) const
-{
-  first = render_cache_id::get_id_by_pixel_pos (rect.x (), rect.y (), transform);
-  last = render_cache_id::get_id_by_pixel_pos (rect.x () + rect.width (),
-      rect.y () + rect.height (), transform);
 }
 
 abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
@@ -263,8 +212,7 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
   DO_ON_EXIT (m_cache->unlock ());
 
   //// find corresponding block in cache
-  render_cache_id id = render_cache_id::get_id_by_pixel_pos (scaled_pos.x (), scaled_pos.y (), transform);
-  id.set_id (render_cache_id::ROOT_ITEM_SELECTION);
+  render_cache_id id = render_cache_id::get_id_by_pixel_pos (scaled_pos.x (), scaled_pos.y (), transform, (int)render_cache_type::ROOT_ITEM_SELECTION);
   SkBitmap bitmap = m_cache->bitmap (id);
   if (bitmap.empty ())
     return nullptr;
@@ -289,7 +237,7 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
 void svg_painter::draw_base (QPainter &painter)
 {
   m_cache->lock ();
-  QImage img = qt2skia::qimage (m_cache->get_current_screen ());
+  QImage img = qt2skia::qimage (m_cache->get_current_screen ((int)render_cache_type::ROOT_ITEM));
   painter.drawImage (img.rect (), img);
   m_cache->unlock ();
 }
@@ -394,4 +342,18 @@ void svg_painter::end_rubberband_selection (const mouse_event_t &event)
   m_selection->add_items_for_rect (m_rubberband->selection_rect ());
   m_rubberband->end_selection ();
   glwidget ()->update ();
+}
+
+void svg_painter::create_overlay_containers ()
+{
+  m_selection = new items_selection (m_overlay);
+  m_item_outline = new current_item_outline_renderer (m_overlay);
+  m_rubberband = new rubberband_selection (m_overlay);
+}
+
+void svg_painter::remove_overlay_containers ()
+{
+  FREE (m_selection);
+  FREE (m_item_outline);
+  FREE (m_rubberband);
 }

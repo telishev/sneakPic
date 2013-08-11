@@ -13,6 +13,7 @@
 #include "renderer/renderer_page.h"
 #include "renderer/overlay_item_type.h"
 #include "renderer/rendered_items_cache.h"
+#include "renderer/render_cache_id.h"
 
 #include "svg/svg_document.h"
 #include "svg/items/svg_items_container.h"
@@ -33,19 +34,22 @@
 
 
 
+
 overlay_renderer::overlay_renderer (rendered_items_cache *cache)
 {
   m_document = nullptr;
   m_container = nullptr;
-  m_renderer = new svg_renderer (nullptr, nullptr);
+  m_overlay_cache = new rendered_items_cache;
+  m_renderer = new svg_renderer (m_overlay_cache, nullptr);
   memset (m_root_items, 0, sizeof (m_root_items));
-  m_cache = cache;
+  m_base_cache = cache;
 }
 
 overlay_renderer::~overlay_renderer ()
 {
   FREE (m_container);
   FREE (m_renderer);
+  FREE (m_overlay_cache);
 }
 
 void overlay_renderer::set_document (svg_document *document)
@@ -74,9 +78,9 @@ void overlay_renderer::draw (QPainter &painter, const QRect &rect_to_draw, const
   SkDevice device (bitmap);
   SkCanvas canvas (&device);
 
-  m_cache->lock ();
-  canvas.drawBitmap (m_cache->get_current_screen (), 0, 0);
-  m_cache->unlock ();
+  m_base_cache->lock ();
+  canvas.drawBitmap (m_base_cache->get_current_screen ((int)render_cache_type::ROOT_ITEM), 0, 0);
+  m_base_cache->unlock ();
 
   m_renderer->draw_to_bitmap (rect_to_draw, transform, root (overlay_layer_type::BASE), &bitmap);
   QImage img = qt2skia::qimage (bitmap);
@@ -94,12 +98,14 @@ void overlay_renderer::add_overlay_item (overlay_layer_type type, abstract_rende
 {
   m_container->add_item (item);
   m_container->add_child (root (type)->name (), item->name ());
+  overlay_changed[(int)type] = true;
 }
 
 void overlay_renderer::remove_overlay_item (overlay_layer_type type, const std::string &item)
 {
   root (type)->erase_child (item);
   m_container->remove_item (item);
+  overlay_changed[(int)type] = true;
 }
 
 abstract_renderer_item *overlay_renderer::root (overlay_layer_type type) const

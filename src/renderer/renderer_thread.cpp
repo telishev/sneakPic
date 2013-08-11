@@ -86,7 +86,7 @@ void renderer_thread::container_changed (renderer_items_container *container)
 
 void renderer_thread::redraw ()
 {
-  if (!m_container || m_first_id_to_change.id () == render_cache_id::INVALID)
+  if (!m_container || m_first_id_to_change.object_type () == (int)render_cache_type::INVALID)
     return;
 
   m_queue->reset_interrupt ();
@@ -104,8 +104,8 @@ void renderer_thread::redraw ()
 
   /// then, render image for fast selection
   cfg.set_render_for_selection (true);
-  render_cache_id first (m_first_id_to_change.x (), m_first_id_to_change.y (), render_cache_id::ROOT_ITEM_SELECTION);
-  render_cache_id last (m_last_id_to_change.x (), m_last_id_to_change.y (), render_cache_id::ROOT_ITEM_SELECTION);
+  render_cache_id first (m_first_id_to_change.x (), m_first_id_to_change.y (), (int)render_cache_type::ROOT_ITEM_SELECTION);
+  render_cache_id last (m_last_id_to_change.x (), m_last_id_to_change.y (), (int)render_cache_type::ROOT_ITEM_SELECTION);
   m_renderer->update_cache_items (m_container->root (), first, last, m_last_transform, cfg);
 }
 
