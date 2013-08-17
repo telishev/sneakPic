@@ -32,7 +32,7 @@ void renderer_overlay_path::draw (SkCanvas &canvas, const renderer_state &state,
 
   SkPaint paint;
   paint.setColor (qt2skia::color (QColor ("slateblue")));
-  double stroke_width = 2.0 / qMax (state.transform ().m11 (), state.transform ().m22 ());
+  double stroke_width = 0.0;
   paint.setStrokeWidth (stroke_width);
   paint.setStyle (SkPaint::kStroke_Style);
   paint.setAntiAlias (true);

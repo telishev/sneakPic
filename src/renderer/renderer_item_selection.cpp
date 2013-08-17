@@ -30,12 +30,12 @@ void renderer_item_selection::draw (SkCanvas &canvas, const renderer_state &stat
   canvas.setMatrix (qt2skia::matrix (state.transform ()));
 
   SkPaint paint;
-  double stroke_width = 1.0 / qMax (state.transform ().m11 (), state.transform ().m22 ());
-  paint.setStrokeWidth (stroke_width);
+  paint.setStrokeWidth (0.0);
   paint.setStyle (SkPaint::kStroke_Style);
   paint.setAntiAlias (false);
   paint.setColor (SK_ColorWHITE);
   paint.setXfermodeMode (SkXfermode::kDifference_Mode);
+  double stroke_width = 1.0 / qMax (state.transform ().m11 (), state.transform ().m22 ());
   SkScalar dash_offsets[] = { SkFloatToScalar (4 * stroke_width), SkFloatToScalar (4 * stroke_width) };
   SkDashPathEffect *effect = new SkDashPathEffect (dash_offsets, 2, 0);
   paint.setPathEffect (effect)->unref ();
