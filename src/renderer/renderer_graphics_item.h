@@ -31,8 +31,8 @@ public:
 
   virtual void draw_graphics_item (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const = 0;
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
-  virtual QRectF bounding_box () const override { return m_bbox_computed; }
-  virtual void update_bbox () override { m_bbox_computed = m_bbox; };
+  virtual QRectF bounding_box_impl () const override { return m_bbox_computed; }
+  virtual void update_bbox_impl () override { m_bbox_computed = m_bbox; };
 
   void set_bounding_box (const QRectF &rect) { m_bbox = rect; }
 };

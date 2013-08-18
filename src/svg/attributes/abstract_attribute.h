@@ -1,6 +1,10 @@
 #ifndef ABSTRACT_ATTRIBUTE_H
 #define ABSTRACT_ATTRIBUTE_H
 
+#include "svg/undoable.h"
+
+#include <string>
+
 #define SVG_ATTRIBUTE                                           \
 public:                                                         \
   static const char *static_type_name ();                       \
@@ -26,13 +30,14 @@ enum class svg_namespaces_t;
 enum class svg_attribute_type;
 enum class svg_inherit_type;
 
-class abstract_attribute
+class abstract_attribute : public undoable
 {
-  abstract_svg_item *m_item;
+  svg_document *m_document;
+  int m_item_id;
   bool m_is_inherited;
 public:
-  abstract_attribute (abstract_svg_item *item) { m_item = item; m_is_inherited = false; }
-  virtual ~abstract_attribute () {}
+  abstract_attribute (svg_document *document);
+  virtual ~abstract_attribute ();
 
   virtual bool read (const char *data, bool from_css = false) = 0;
   virtual bool write (QString &data, bool to_css = false) const = 0;
@@ -45,11 +50,21 @@ public:
   virtual svg_attribute_type type () const = 0;
   virtual svg_inherit_type inherit_type () const = 0;
 
-  bool is_empty () const { return m_item == nullptr; }
+  virtual abstract_attribute *clone (svg_document *document) const;
 
-  abstract_svg_item *item () const { return m_item; }
+  bool is_empty () const;
+
+  void set_item (int item_id);
+  svg_document *document () const { return m_document; }
+  int item_id () const { return m_item_id; }
+  abstract_svg_item *item () const;
   void set_is_inherited (bool value) { m_is_inherited = value; }
   bool is_inherited () const { return m_is_inherited; }
+
+  virtual abstract_state_t *create_state () override;
+  virtual void load_from_state (const abstract_state_t *state) override;
+
+  void register_change ();
 };
 
 #endif // ABSTRACT_ATTRIBUTE_H

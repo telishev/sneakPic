@@ -63,7 +63,7 @@ void renderer_item_image::draw_graphics_item (SkCanvas &canvas, const renderer_s
     }
 }
 
-void renderer_item_image::update_bbox ()
+void renderer_item_image::update_bbox_impl ()
 {
   m_bbox_computed = m_bbox;
 }

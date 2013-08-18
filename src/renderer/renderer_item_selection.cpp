@@ -44,7 +44,7 @@ void renderer_item_selection::draw (SkCanvas &canvas, const renderer_state &stat
   canvas.restore ();
 }
 
-void renderer_item_selection::update_bbox ()
+void renderer_item_selection::update_bbox_impl ()
 {
 
 }

@@ -28,12 +28,12 @@ void renderer_overlay_root::draw (SkCanvas &canvas, const renderer_state &state,
     }
 }
 
-QRectF renderer_overlay_root::bounding_box () const 
+QRectF renderer_overlay_root::bounding_box_impl () const 
 {
   return m_bbox;
 }
 
-void renderer_overlay_root::update_bbox ()
+void renderer_overlay_root::update_bbox_impl ()
 {
   QRectF new_box;
   for (const std::string &child_name : m_children)

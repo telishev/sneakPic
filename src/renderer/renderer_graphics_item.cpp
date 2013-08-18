@@ -39,7 +39,7 @@ void renderer_graphics_item::draw (SkCanvas &canvas, const renderer_state &state
     return;
 
   QTransform item_transform = transform () * state.transform ();
-  QRectF transformed_rect = state.transform ().mapRect (bounding_box ());
+  QRectF transformed_rect = state.transform ().mapRect (bounding_box_impl ());
   if (!state.rect ().intersects (transformed_rect.toRect ()))
     return;
 

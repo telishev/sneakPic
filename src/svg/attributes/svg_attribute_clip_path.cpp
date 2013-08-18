@@ -6,8 +6,8 @@
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_item_clip_path.h"
 
-svg_attribute_clip_path::svg_attribute_clip_path (abstract_svg_item *item)
-  : abstract_attribute (item), m_iri (item)
+svg_attribute_clip_path::svg_attribute_clip_path (svg_document *document)
+  : abstract_attribute (document), m_iri (document)
 {
 
 }

@@ -18,7 +18,7 @@ public:
   virtual ~svg_item_style () override;
 
   /// finds attribute from the matching selector
-  const abstract_attribute *get_attribute (const std::string &str, const abstract_svg_item *item_to_match) const;
+  const abstract_attribute *get_style_attribute (const std::string &str, const abstract_svg_item *item_to_match) const;
 
   virtual void item_read_complete () override;
 

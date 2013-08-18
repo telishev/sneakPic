@@ -60,7 +60,7 @@ void svg_base_graphics_item::set_item_style (renderer_graphics_item *item) const
     item->set_clip_path (clip_path->get_clip_path ());
 }
 
-abstract_renderer_item *svg_base_graphics_item::create_renderer_item () const
+abstract_renderer_item *svg_base_graphics_item::create_renderer_item_impl () const
 {
   renderer_graphics_item *render_item = create_renderer_graphics_item ();
   if (!render_item)
@@ -70,7 +70,7 @@ abstract_renderer_item *svg_base_graphics_item::create_renderer_item () const
   return render_item;
 }
 
-void svg_base_graphics_item::update_bbox ()
+void svg_base_graphics_item::update_bbox_impl ()
 {
   const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path ();
   QPainterPath path = get_boundaries ();

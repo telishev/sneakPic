@@ -18,6 +18,7 @@ abstract_renderer_item::abstract_renderer_item (const std::string &name)
   m_name = name;
   m_container = nullptr;
   m_unique_id = -1;
+  m_bbox_valid = false;
 }
 
 abstract_renderer_item::~abstract_renderer_item ()
@@ -42,4 +43,33 @@ bool abstract_renderer_item::configure_painter_for_selection (SkPaint &paint) co
   paint.setColor (qt2skia::color (color));
   paint.setShader (nullptr);
   return true;
+}
+
+QRectF abstract_renderer_item::bounding_box () const
+{
+  return bounding_box_impl ();
+}
+
+void abstract_renderer_item::update_bbox ()
+{
+  if (m_bbox_valid)
+    return;
+
+  update_bbox_impl ();
+  m_bbox_valid = true;
+}
+
+void abstract_renderer_item::invalidate_bbox ()
+{
+  m_bbox_valid = false;
+  if (!m_container)
+    return;
+
+  for (abstract_renderer_item *cur_item = this; cur_item; cur_item = cur_item->parent ())
+    cur_item->m_bbox_valid = false;
+}
+
+abstract_renderer_item *abstract_renderer_item::parent () const
+{
+  return m_container->item (m_parent);
 }

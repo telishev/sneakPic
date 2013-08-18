@@ -1,7 +1,7 @@
 #include "svg/attributes/svg_attribute_stroke_linejoin.h"
 
-svg_attribute_stroke_linejoin::svg_attribute_stroke_linejoin (abstract_svg_item *item)
-  : abstract_attribute (item)
+svg_attribute_stroke_linejoin::svg_attribute_stroke_linejoin (svg_document *document)
+  : abstract_attribute (document)
 {
   m_linejoin = Qt::PenJoinStyle::SvgMiterJoin;
 }

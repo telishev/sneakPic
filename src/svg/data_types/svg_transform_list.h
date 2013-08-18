@@ -13,6 +13,7 @@ public:
   bool write (QString &data) const;
 
   QTransform transform () const { return m_transform; }
+  void set_transform (const QTransform &transform) { m_transform = transform; }
 
 private:
   bool get_transfrom_data (const char *data, std::vector<double> &dest) const;

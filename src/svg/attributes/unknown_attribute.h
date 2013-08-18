@@ -12,8 +12,8 @@ class unknown_attribute : public abstract_attribute
   std::string m_namespace_name;
   QString m_value;
 public:
-  unknown_attribute (abstract_svg_item *item, const char *local_name, const char *namespace_uri, const char *namespace_name)
-    : abstract_attribute (item)
+  unknown_attribute (svg_document *document, const char *local_name, const char *namespace_uri, const char *namespace_name)
+    : abstract_attribute (document)
   {
     m_name = local_name;
     m_namespace_uri = namespace_uri;

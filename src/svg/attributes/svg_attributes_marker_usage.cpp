@@ -4,6 +4,7 @@
 #include <QString>
 
 #include "common/math_defs.h"
+#include "common/memory_deallocation.h"
 #include "common/string_utils.h"
 
 #include "svg/items/abstract_svg_item.h"
@@ -15,7 +16,7 @@ bool svg_base_attribute_marker_usage::read (const char *data, bool /*from_css*/ 
   if (strcmp (data, "none") == 0)
     m_element = nullptr;
 
-  m_element = new svg_data_type_iri (item ());
+  m_element = new svg_data_type_iri (document ());
   m_element->read (QString (data));
   if (m_element->get_type () != iri_type::document_fragment)
     FREE (m_element);

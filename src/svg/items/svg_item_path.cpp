@@ -16,8 +16,8 @@ svg_item_path::~svg_item_path ()
 
 bool svg_item_path::check_item ()
 {
-  const svg_attribute_path_data *path_data = get_attribute<svg_attribute_path_data> ();
-  if (!path_data)
+  const svg_attribute_path_data *path_data = get_computed_attribute<svg_attribute_path_data> ();
+  if (path_data->is_empty ())
     return true;
 
   return true;
@@ -25,7 +25,7 @@ bool svg_item_path::check_item ()
 
 QPainterPath svg_item_path::get_path () const 
 {
-  const svg_attribute_path_data *path_data = get_attribute<svg_attribute_path_data> ();
+  const svg_attribute_path_data *path_data = get_computed_attribute<svg_attribute_path_data> ();
 
   if (!path_data)
     return QPainterPath ();

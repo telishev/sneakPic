@@ -4,8 +4,8 @@
 
 #include <QString>
 
-svg_attribute_class::svg_attribute_class (abstract_svg_item *item)
-  : abstract_attribute (item)
+svg_attribute_class::svg_attribute_class (svg_document *document)
+  : abstract_attribute (document)
 {
 
 }

@@ -24,11 +24,15 @@
 #include "svg/css/selectors_container.h"
 
 #include "svg/svg_namespaces.h"
+#include "svg/undo_handler.h"
+#include "svg/undoable_items_container.h"
+#include "svg/changed_items_container.h"
 
 #include "renderer/renderer_items_container.h"
 #include "renderer/abstract_renderer_item.h"
 #include "renderer/rendered_items_cache.h"
-#include "attributes/abstract_attribute.h"
+#include "renderer/events_queue.h"
+#include "renderer/event_items_changed.h"
 
 
 
@@ -38,19 +42,26 @@ svg_document::svg_document (settings_t *settings)
   m_attribute_factory = new svg_attribute_factory (this);
   m_item_container = new svg_items_container;
   m_selectors = new selectors_container;
+  m_changed_items = new changed_items_container (this);
   m_root = nullptr;
-  item_svg = nullptr;
+  m_item_svg = nullptr;
   m_last_overlay_num = 0;
   m_settings = settings;
+  m_queue = nullptr;
+  m_undo_handler = new undo_handler (this);
+  m_undoable_items_container = new undoable_items_container_t (this);
+  m_signals_enabled = false;
 }
 
 svg_document::~svg_document ()
 {
-  FREE (m_root);
   FREE (m_item_factory);
   FREE (m_attribute_factory);
   FREE (m_item_container);
   FREE (m_selectors);
+  FREE (m_changed_items);
+  FREE (m_undo_handler);
+  FREE (m_undoable_items_container);
 }
 
 static inline QString get_namespace_name (const QXmlStreamNamespaceDeclarations &declarations, const QString &uri)
@@ -64,9 +75,9 @@ static inline QString get_namespace_name (const QXmlStreamNamespaceDeclarations 
 
 bool svg_document::read_file (const QString &filename_arg)
 {
-  filename = filename_arg;
+  m_filename = filename_arg;
 
-  QFile file (filename);
+  QFile file (m_filename);
   if (!file.open (QIODevice::ReadOnly))
     return false;
 
@@ -97,7 +108,7 @@ bool svg_document::read_file (const QString &filename_arg)
               if (!char_data.isEmpty ())
                 {
                   svg_character_data *data = new svg_character_data (this, reader.text ().toUtf8 ().constData ());
-                  cur_item->insert_child (nullptr, data);
+                  cur_item->push_back (data);
                 }
               break;
             }
@@ -123,30 +134,32 @@ bool svg_document::read_file (const QString &filename_arg)
     return false;
 
   if (m_root->type () == svg_item_type::SVG)
-    item_svg = static_cast<svg_item_svg *> (m_root);
+    m_item_svg = static_cast<svg_item_svg *> (m_root);
   else
     return false;
 
-  if (!item_svg->check ())
+  if (!m_item_svg->check ())
     return false;
 
-  svg_graphics_item *graphics_item = item_svg->to_graphics_item ();
+  svg_graphics_item *graphics_item = m_item_svg->to_graphics_item ();
   if (!graphics_item)
     return false;
 
+  m_undo_handler->clear ();
   graphics_item->update_bbox ();
+  m_signals_enabled = true;
   return true;
 }
 
 QString svg_document::get_filename ()
 {
-  return filename;
+  return m_filename;
 }
 
 bool svg_document::write_file (const QString &filename_arg)
 {
-  filename = filename_arg;
-  QFile file (filename);
+  m_filename = filename_arg;
+  QFile file (m_filename);
   if (!file.open (QIODevice::WriteOnly))
     return false;
 
@@ -165,11 +178,11 @@ bool svg_document::write_file (const QString &filename_arg)
 
 bool svg_document::get_doc_dimensions (double &width, double &height)
 {
-  if (!item_svg)
+  if (!m_item_svg)
     return false;
 
-  width = item_svg->width ();
-  height = item_svg->height ();
+  width = m_item_svg->width ();
+  height = m_item_svg->height ();
   return true;
 }
 
@@ -180,8 +193,8 @@ renderer_items_container *svg_document::create_rendered_items (rendered_items_ca
   if (cache)
     cache->clear_selection_mapping ();
 
-  create_renderer_item (renderer_items, item_svg);
-  renderer_items->set_root (item_svg->name ().toStdString ());
+  create_renderer_item (renderer_items, m_item_svg);
+  renderer_items->set_root (m_item_svg->name ());
   renderer_items->root ()->update_bbox ();
   return renderer_items;
 }
@@ -196,11 +209,9 @@ void svg_document::create_renderer_item (renderer_items_container *renderer_item
     return;
 
   renderer_items->add_item (renderer_item);
-  if (svg_item->parent ())
-    renderer_items->add_child (svg_item->parent ()->name ().toStdString (), svg_item->name ().toStdString ());
 
-  for (abstract_svg_item *child = svg_item->first_child (); child; child = child->next_sibling ())
-    create_renderer_item (renderer_items, child);
+  for (int i = 0; i < svg_item->children_count (); i++)
+    create_renderer_item (renderer_items, svg_item->child (i));
 }
 
 abstract_svg_item *svg_document::process_new_item (QXmlStreamReader &reader, abstract_svg_item *cur_item)
@@ -209,6 +220,13 @@ abstract_svg_item *svg_document::process_new_item (QXmlStreamReader &reader, abs
   QString name = reader.name ().toString ();
   QString namespace_name = get_namespace_name (reader.namespaceDeclarations (), namespace_uri);
   abstract_svg_item *child_item = m_item_factory->create_item (name, namespace_uri, namespace_name);
+  if (cur_item)
+    cur_item->push_back (child_item);
+  else
+    {
+      m_undoable_items_container->add_item (child_item);
+      m_root = child_item;
+    }
 
   QXmlStreamAttributes attributes = reader.attributes ();
 
@@ -223,21 +241,50 @@ abstract_svg_item *svg_document::process_new_item (QXmlStreamReader &reader, abs
       if (attribute->inherit_type () != svg_inherit_type::NONE && attributes[i].value () == "inherit")
         attribute->set_is_inherited (true);
 
-      if (attribute->read (attributes[i].value ().toLatin1 ().constData ()))
+      if (  attribute->read (attributes[i].value ().toLatin1 ().constData ())
+          || attribute->type () == svg_attribute_type::UNKNOWN)
         child_item->add_attribute (attribute);
       else
         FREE (attribute);
     }
 
   child_item->process_after_read ();
-  if (cur_item)
-    cur_item->insert_child (nullptr, child_item);
-  else
-    m_root = child_item;
   return child_item;
 }
 
 QString svg_document::create_overlay_name ()
 {
   return QString ("#overlay%1").arg (m_last_overlay_num++);
+}
+
+void svg_document::apply_changes ()
+{
+  if (!m_queue)
+    return;
+
+  m_undo_handler->create_undo ();
+  send_items_change ();
+}
+
+bool svg_document::signals_enabled () const
+{
+  return m_signals_enabled;
+}
+
+void svg_document::undo ()
+{
+  m_undo_handler->undo (1);
+  send_items_change ();
+}
+
+void svg_document::redo ()
+{
+  m_undo_handler->redo (1);
+  send_items_change ();
+}
+
+void svg_document::send_items_change ()
+{
+  m_queue->add_event_and_wait (m_changed_items->create_changed_items_event ());
+  emit items_changed ();
 }

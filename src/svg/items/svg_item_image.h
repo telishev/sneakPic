@@ -15,10 +15,6 @@ public:
   virtual ~svg_item_image () override;
 
 protected:
-  double m_x, m_y;
-  double m_width, m_height;
-
-protected:
   virtual bool check_item () override;
   virtual QPainterPath get_boundaries () const override;
   virtual renderer_graphics_item *create_renderer_graphics_item () const override;

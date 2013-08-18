@@ -41,7 +41,7 @@ void renderer_overlay_path::draw (SkCanvas &canvas, const renderer_state &state,
   canvas.restore ();
 }
 
-void renderer_overlay_path::update_bbox ()
+void renderer_overlay_path::update_bbox_impl ()
 {
   m_bbox = m_path.controlPointRect ();
   double adjust_value = 1.0;

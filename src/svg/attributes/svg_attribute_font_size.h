@@ -11,7 +11,7 @@ class svg_attribute_font_size : public abstract_attribute
 private:
   svg_data_type_length m_font_size;
 public:
-  svg_attribute_font_size (abstract_svg_item *item);
+  svg_attribute_font_size (svg_document *document);
   virtual ~svg_attribute_font_size ();
   
   double value () const {return m_font_size.value (item (), units_orientation::OTHER); }

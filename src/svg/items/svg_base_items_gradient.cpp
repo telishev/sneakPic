@@ -6,6 +6,7 @@
 #include "svg/items/svg_item_stop.h"
 #include "svg/attributes/svg_attribute_xlink_href.h"
 #include "svg/attributes/svg_attribute_gradient_transform.h"
+#include "svg/items/svg_item_type.h"
 
 
 renderer_paint_server *svg_base_items_gradient::create_paint_server () const
@@ -38,14 +39,25 @@ bool svg_base_items_gradient::fill_gradient (renderer_base_gradient_item *gradie
   gradient->set_spread (spread_method->value ());
   gradient->set_transform (transform->transform ());
 
-  auto stops = get_childs_by_name (svg_item_stop::static_type_name ());
-  if (stops.first == stops.second && href)
-    stops = href->get_childs_by_name (svg_item_stop::static_type_name ());
-  for (auto it = stops.first; it != stops.second; ++it)
-    {
-      const svg_item_stop *cur_stop = static_cast<const svg_item_stop *>(it->second);
-      gradient->add_stop (cur_stop->offset (), cur_stop->color ());
-    }
+  if (!add_stops_to_gradient (this, gradient))
+    add_stops_to_gradient (href, gradient);
 
   return true;
+}
+
+bool svg_base_items_gradient::add_stops_to_gradient (const abstract_svg_item *parent, renderer_base_gradient_item *gradient) const
+{
+  bool stops_found = false;
+  for (int i = 0; i < parent->children_count (); i++)
+    {
+      const abstract_svg_item *child = parent->child (i);
+      if (child->type () != svg_item_type::STOP)
+        continue;
+
+      const svg_item_stop *cur_stop = static_cast<const svg_item_stop *>(child);
+      gradient->add_stop (cur_stop->offset (), cur_stop->color ());
+      stops_found = true;
+    }
+
+  return stops_found;
 }

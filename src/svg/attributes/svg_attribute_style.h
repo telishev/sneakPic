@@ -13,7 +13,7 @@ class svg_attribute_style : public abstract_attribute
 
   css_declaration *declaration;
 public:
-  svg_attribute_style (abstract_svg_item *item);
+  svg_attribute_style (svg_document *document);
   virtual ~svg_attribute_style ();
 
   abstract_attribute *get_attribute (const std::string &str) const;

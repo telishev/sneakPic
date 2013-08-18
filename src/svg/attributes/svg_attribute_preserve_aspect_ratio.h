@@ -33,7 +33,7 @@ class svg_attribute_preserve_aspect_ratio : public abstract_attribute
   perserve_aspect_ratio_behaviour m_behaviour;
 
 public:
-  svg_attribute_preserve_aspect_ratio (abstract_svg_item *item);
+  svg_attribute_preserve_aspect_ratio (svg_document *document);
   virtual ~svg_attribute_preserve_aspect_ratio ();
 
   // returned rectangle is the destination rectangle for rendering, original_rect can be changed (cut) by function

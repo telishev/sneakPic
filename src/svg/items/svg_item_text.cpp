@@ -27,23 +27,20 @@ bool svg_item_text::check_item ()
   return true;
 }
 
-void svg_item_text::item_read_complete ()
-{
-  for (const abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
-    {
-      if (!child->is_character_data ())
-        continue;
-
-      const svg_character_data *data = static_cast<const svg_character_data *> (child);
-      m_text += data->char_data ();
-    }
-
-  m_text = m_text.trimmed ();
-  return;
-}
-
 QPainterPath svg_item_text::get_path () const
 {
+  QString text;
+  for (int i = 0; i < children_count (); i++)
+    {
+      if (!child (i)->is_character_data ())
+        continue;
+
+      const svg_character_data *data = static_cast<const svg_character_data *> (child (i));
+      text += data->char_data ();
+    }
+
+  text = text.trimmed ();
+
   QPainterPath path;
   const svg_attribute_font_family *font_family = get_computed_attribute <svg_attribute_font_family> ();
   const svg_attribute_font_size *font_size = get_computed_attribute <svg_attribute_font_size> ();
@@ -82,11 +79,11 @@ QPainterPath svg_item_text::get_path () const
   y_value = transformed_point.y ();
   switch (attr_text_anchor->value ())
     {
-      case text_anchor::MIDDLE: x_value -= metrics.width (m_text) * 0.5; break;
-      case text_anchor::END: x_value -= metrics.width (m_text); break;
+      case text_anchor::MIDDLE: x_value -= metrics.width (text) * 0.5; break;
+      case text_anchor::END: x_value -= metrics.width (text); break;
       default: break; // do nothing
     };
-  path.addText (x_value, y_value, font, m_text);
+  path.addText (x_value, y_value, font, text);
   path = transform.inverted ().map (path);
   return path;
 }

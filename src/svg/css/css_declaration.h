@@ -5,14 +5,15 @@
 #include <string>
 
 class abstract_attribute;
-class abstract_svg_item;
+class svg_document;
 
 class css_declaration
 {
   std::map<std::string, abstract_attribute *> m_attributes;
-  abstract_svg_item *m_item;
+  svg_document *m_document;
+  int m_item_id;
 public:
-  css_declaration (abstract_svg_item *item);
+  css_declaration (svg_document *document, int item_id);
   ~css_declaration ();
 
   bool parse (const char *str);

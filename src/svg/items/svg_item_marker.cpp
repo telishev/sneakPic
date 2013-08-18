@@ -32,14 +32,14 @@ abstract_renderer_item *svg_item_marker::create_renderer_item_for_marker (QPoint
   auto view_box = get_computed_attribute <svg_attribute_view_box> ();
   double multiplier;
 
-  svg_graphics_item *child_item = first_child ()->to_graphics_item ();
+  svg_graphics_item *child_item = child (0)->to_graphics_item ();
   if (!child_item)
     return nullptr;
 
   child_item->update_bbox ();
   renderer_graphics_item *renderer_item = static_cast<renderer_graphics_item *> (child_item->create_renderer_item ());
-  renderer_item->update_bbox ();
-  QRectF bbox = renderer_item->bounding_box ();
+  renderer_item->update_bbox_impl ();
+  QRectF bbox = renderer_item->bounding_box_impl ();
 
 
   QTransform add_transform;

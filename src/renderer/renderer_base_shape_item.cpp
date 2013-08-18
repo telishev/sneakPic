@@ -148,7 +148,7 @@ void renderer_base_shape_item::configure_markers ()
   }
 }
 
-void renderer_base_shape_item::update_bbox ()
+void renderer_base_shape_item::update_bbox_impl ()
 {
   m_bbox_computed = m_bbox;
   for (size_t i = 0; i < marker_renderer_items.size (); i++)

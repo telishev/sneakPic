@@ -12,7 +12,7 @@ class svg_attribute_stroke_linejoin : public abstract_attribute
 
   Qt::PenJoinStyle m_linejoin;
 public:
-  svg_attribute_stroke_linejoin (abstract_svg_item *item);
+  svg_attribute_stroke_linejoin (svg_document *document);
   virtual ~svg_attribute_stroke_linejoin ();
 
   Qt::PenJoinStyle get_stroke_linejoin () const { return m_linejoin; }

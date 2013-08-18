@@ -7,21 +7,25 @@
 #include <QtConcurrent/QtConcurrentRun>
 
 #include "common/common_utils.h"
+#include "common/debug_utils.h"
+#include "common/math_defs.h"
+
 
 #include "renderer/abstract_renderer_item.h"
 #include "renderer/renderer_state.h"
 #include "renderer/rendered_items_cache.h"
 #include "renderer/render_cache_id.h"
+#include "renderer/qt2skia.h"
 #include "renderer/renderer_config.h"
 
 #include "svg/items/abstract_svg_item.h"
+
+
 
 #pragma warning(push, 0)
 #include <SkCanvas.h>
 #include <SkSurface.h>
 #include <SkDevice.h>
-#include "common/math_defs.h"
-#include "qt2skia.h"
 #pragma warning(pop)
 
 
@@ -174,7 +178,7 @@ void svg_renderer::update_drawing (const QTransform &transform, const QRectF &re
 
   canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
-  std::pair<render_cache_id, render_cache_id> it_pair = render_cache_id::get_id_for_rect (real_transform, rect_to_draw, cache_object_type);
+  std::pair<render_cache_id, render_cache_id> it_pair = render_cache_id::get_id_for_pixel_rect (real_transform, rect_to_draw, cache_object_type);
 
   for (int x = it_pair.first.x (); x <= it_pair.second.x (); x++)
     for (int y = it_pair.first.y (); y <= it_pair.second.y (); y++)

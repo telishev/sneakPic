@@ -18,9 +18,9 @@ svg_items_container::~svg_items_container ()
 
 void svg_items_container::add_item (abstract_svg_item *item)
 {
-  QString id = item->name ();
-  extract_number (id.toUtf8 ().constData ());
-  DEBUG_ASSERT (!id.isEmpty ());
+  std::string id = item->name ();
+  extract_number (id.c_str ());
+  DEBUG_ASSERT (!id.empty ());
   DEBUG_ASSERT (!contains (id));
 
   m_map.insert (std::make_pair (id, item));
@@ -28,13 +28,13 @@ void svg_items_container::add_item (abstract_svg_item *item)
 
 void svg_items_container::remove_item (abstract_svg_item *item)
 {
-  QString id = item->name ();
-  DEBUG_ASSERT (!id.isEmpty ());
+  std::string id = item->name ();
+  DEBUG_ASSERT (!id.empty ());
   DEBUG_ASSERT (contains (id));
   m_map.erase (id);
 }
 
-abstract_svg_item *svg_items_container::get_item (const QString &id) const
+abstract_svg_item *svg_items_container::get_item (const std::string &id) const
 {
   auto it = m_map.find (id);
   if (it == m_map.end ())
@@ -43,15 +43,16 @@ abstract_svg_item *svg_items_container::get_item (const QString &id) const
   return it->second;
 }
 
-bool svg_items_container::contains (const QString &id) const
+bool svg_items_container::contains (const std::string &id) const
 {
   return m_map.find (id) != m_map.end ();
 }
 
-QString svg_items_container::create_unique_name (const char *item_id)
+std::string svg_items_container::create_unique_name (const char *item_id)
 {
   max_id++;
-  return QString (item_id) + QString::number (max_id);
+  char buf[64];
+  return std::string (item_id) + itoa (max_id, buf, 10);
 }
 
 void svg_items_container::extract_number (const char *data)

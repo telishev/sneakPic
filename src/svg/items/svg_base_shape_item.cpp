@@ -77,7 +77,7 @@ QPainterPath svg_base_shape_item::get_path_for_clipping () const
 
 renderer_graphics_item *svg_base_shape_item::create_renderer_graphics_item () const
 {
-  renderer_base_shape_item *render_item = new renderer_base_shape_item (name ().toStdString ());
+  renderer_base_shape_item *render_item = new renderer_base_shape_item (name ());
 
   QPainterPath path = get_path ();
   const svg_attribute_fill_rule *attr_fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();

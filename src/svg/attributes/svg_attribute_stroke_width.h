@@ -12,7 +12,7 @@ class svg_attribute_stroke_width : public abstract_attribute
 
   svg_data_type_length m_stroke_width;
 public:
-  svg_attribute_stroke_width (abstract_svg_item *item);
+  svg_attribute_stroke_width (svg_document *document);
   virtual ~svg_attribute_stroke_width ();
 
   double get_stroke_width () const { return m_stroke_width.value (item (), units_orientation::OTHER); }

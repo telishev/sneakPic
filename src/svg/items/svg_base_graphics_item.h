@@ -14,9 +14,9 @@ public:
   svg_base_graphics_item (svg_document *document);
   virtual ~svg_base_graphics_item () override;
 
-  virtual abstract_renderer_item *create_renderer_item () const override;
+  virtual abstract_renderer_item *create_renderer_item_impl () const override;
   virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const override;
-  virtual void update_bbox () override;
+  virtual void update_bbox_impl () override;
   virtual bool can_be_selected () const override { return true; }
 
 protected:

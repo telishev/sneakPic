@@ -3,6 +3,8 @@
 
 #include "svg/items/svg_item_group_type.h"
 
+class use_item_watcher;
+
 class svg_item_use : public svg_item_group_type
 {
   SVG_ITEM
@@ -12,10 +14,15 @@ public:
   virtual ~svg_item_use () override;
 
   bool update_children_tree ();
-  virtual abstract_renderer_item *create_renderer_item () const override;
+  virtual abstract_renderer_item *create_renderer_item_impl () const override;
+
+  void unlink ();
 
 protected:
   virtual bool check_item () override;
+  void base_transform_changed (const abstract_attribute *before, const abstract_attribute *after);
+
+  friend class use_item_watcher;
 };
 
 

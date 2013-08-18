@@ -11,8 +11,8 @@ public:
   ~renderer_overlay_root ();
 
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
-  virtual QRectF bounding_box () const override;
-  virtual void update_bbox () override;
+  virtual QRectF bounding_box_impl () const override;
+  virtual void update_bbox_impl () override;
 };
 
 #endif // RENDERER_OVERLAY_ROOT_H

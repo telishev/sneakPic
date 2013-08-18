@@ -3,8 +3,8 @@
 
 #include <QString>
 
-svg_attribute_font_size::svg_attribute_font_size (abstract_svg_item *item)
-  : abstract_attribute (item)
+svg_attribute_font_size::svg_attribute_font_size (svg_document *document)
+  : abstract_attribute (document)
 {
   m_font_size.set_value (12.0); // as medium
 }

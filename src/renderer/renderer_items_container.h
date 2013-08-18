@@ -29,6 +29,8 @@ public:
 
   void add_child (const std::string &parent, const std::string &child);
 
+  void change_item (abstract_renderer_item *item);
+
   void set_cache (rendered_items_cache *cache) { m_cache = cache; }
 };
 

@@ -60,7 +60,9 @@ template<typename T>
 void svg_attribute_factory::support_attribute ()
 {
   std::string type_name = T::static_type_name ();
-  m_map.insert (make_pair (type_name, [] (abstract_svg_item *item) { return new T (item); } ));
+  svg_attribute_type type = T::static_type ();
+  m_string_map.insert (std::make_pair (type_name, [&] () { return new T (m_document); } ));
+  m_type_map.insert (std::make_pair (type, [&] () { return new T (m_document); } ));
 }
 
 svg_attribute_factory::svg_attribute_factory (svg_document *document)
@@ -81,20 +83,49 @@ svg_attribute_factory::~svg_attribute_factory ()
 abstract_attribute *svg_attribute_factory::create_attribute (abstract_svg_item *item, const char *localName, const char *namespaceURI, const char *prefix) const
 {
   std::string item_id = localName;
-  auto it_pair = m_map.equal_range (item_id);
+  auto it_pair = m_string_map.equal_range (item_id);
   const svg_attribute_element_mapping *mapping = svg_attribute_element_mapping::get ();
 
   for (auto it = it_pair.first; it != it_pair.second; ++it)
     {
-      std::unique_ptr<abstract_attribute> attribute (it->second (item));
+      std::unique_ptr<abstract_attribute> attribute (it->second ());
       if (*namespaceURI && strcmp (attribute->namespace_uri (), namespaceURI))
         continue;
 
       if (!mapping->can_be_specified (item->type (), attribute->type ()))
         continue;
 
+      attribute->set_item (item->undo_id ());
       return attribute.release ();
     }
 
-  return new unknown_attribute (item, localName, namespaceURI, prefix);
+  return new unknown_attribute (m_document, localName, namespaceURI, prefix);
+}
+
+abstract_attribute *svg_attribute_factory::create_attribute (int item_id, svg_attribute_type type)
+{
+  if (type == svg_attribute_type::UNKNOWN)
+    return new unknown_attribute (m_document, "", "", "");
+
+  abstract_attribute *attribute = m_type_map[type] ();
+  attribute->set_item (item_id);
+  return attribute;
+}
+
+abstract_attribute * svg_attribute_factory::create_attribute (const char *localName, svg_item_type type) const
+{
+  std::string item_id = localName;
+  auto it_pair = m_string_map.equal_range (item_id);
+  const svg_attribute_element_mapping *mapping = svg_attribute_element_mapping::get ();
+
+  for (auto it = it_pair.first; it != it_pair.second; ++it)
+    {
+      std::unique_ptr<abstract_attribute> attribute (it->second ());
+      if (!mapping->can_be_specified (type, attribute->type ()))
+        continue;
+
+      return attribute.release ();
+    }
+
+  return new unknown_attribute (m_document, localName, "", "");
 }

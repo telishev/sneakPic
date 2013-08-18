@@ -9,8 +9,8 @@
 #include <QRect>
 #include <QString>
 
-svg_attribute_preserve_aspect_ratio::svg_attribute_preserve_aspect_ratio (abstract_svg_item *item)
-  : abstract_attribute (item)
+svg_attribute_preserve_aspect_ratio::svg_attribute_preserve_aspect_ratio (svg_document *document)
+  : abstract_attribute (document)
 {
   m_defer = false;
   m_x_align = perserve_aspect_ratio_align::NONE;

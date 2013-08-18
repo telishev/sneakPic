@@ -37,7 +37,7 @@ renderer_graphics_item *svg_item_image::create_renderer_graphics_item () const
   if (!xlink_href->has_image_data ())
     return 0;
 
-  renderer_item_image *render_item = new renderer_item_image (name ().toStdString ());
+  renderer_item_image *render_item = new renderer_item_image (name ());
   const svg_attribute_x *x = get_computed_attribute <svg_attribute_x> ();
   const svg_attribute_y *y = get_computed_attribute<svg_attribute_y> ();
   const svg_attribute_width *width = get_computed_attribute<svg_attribute_width> ();

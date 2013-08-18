@@ -22,9 +22,11 @@ svg_item_stop::~svg_item_stop ()
 double svg_item_stop::offset () const
 {
   double my_offset = get_computed_attribute<svg_attribute_offset> ()->offset ();
+  
   /// offset must be greater than previous offsets
-  for (const abstract_svg_item *sibling = prev_sibling (); sibling; sibling = sibling->prev_sibling ())
+  for (int sibling_index = child_index () - 1; sibling_index >= 0;  sibling_index--)
     {
+      const abstract_svg_item *sibling = parent ()->child (sibling_index);
       if (sibling->type () != svg_item_type::STOP)
         continue;
 

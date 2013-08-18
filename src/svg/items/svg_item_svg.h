@@ -17,7 +17,7 @@ public:
   double height () const;
 
   virtual void update_renderer_item ();
-  virtual abstract_renderer_item *create_renderer_item () const;
+  virtual abstract_renderer_item *create_renderer_item_impl () const;
 
 protected:
   virtual bool check_item () override;

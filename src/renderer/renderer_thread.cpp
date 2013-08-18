@@ -113,3 +113,16 @@ void renderer_thread::small_wait ()
 {
   sleep_ms (1);
 }
+
+void renderer_thread::invalidate_rect (const QRectF &rect)
+{
+  QRectF pixel_rect = m_last_transform.mapRect (rect);
+  auto object_pair = render_cache_id::get_id_for_pixel_rect (m_last_transform, pixel_rect, (int)render_cache_type::ROOT_ITEM);
+  rendered_items_cache *cache = m_renderer->cache ();
+  for (int x = object_pair.first.x (); x <= object_pair.second.x (); x++)
+    for (int y = object_pair.first.y (); y <= object_pair.second.y (); y++)
+      {
+        cache->remove_from_cache (render_cache_id (x, y, (int)render_cache_type::ROOT_ITEM));
+        cache->remove_from_cache (render_cache_id (x, y, (int)render_cache_type::ROOT_ITEM_SELECTION));
+      }
+}

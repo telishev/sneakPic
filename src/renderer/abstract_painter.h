@@ -6,6 +6,8 @@
 
 #include "gui/mouse_filter.h"
 
+#include <QObject>
+
 class gl_widget;
 class QWheelEvent;
 class QEvent;
@@ -22,8 +24,10 @@ enum configure_type
   CONFIGURE_TYPE__COUNT,
 };
 
-class abstract_painter
+class abstract_painter : public QObject
 {
+  Q_OBJECT
+
   gl_widget          *m_glwidget;
   const mouse_filter *m_mouse_filter_object;
   int m_config_needed[CONFIGURE_TYPE__COUNT];

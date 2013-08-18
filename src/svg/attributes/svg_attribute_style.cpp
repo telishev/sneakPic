@@ -8,10 +8,10 @@
 
 
 
-svg_attribute_style::svg_attribute_style (abstract_svg_item *item)
-  : abstract_attribute (item)
+svg_attribute_style::svg_attribute_style (svg_document *document)
+  : abstract_attribute (document)
 {
-  declaration = new css_declaration (item);
+  declaration = nullptr;
 }
 
 svg_attribute_style::~svg_attribute_style ()
@@ -21,16 +21,22 @@ svg_attribute_style::~svg_attribute_style ()
 
 bool svg_attribute_style::read (const char *data, bool /*from_css*/)
 {
+  FREE (declaration);
+  declaration = new css_declaration (document (), item_id ());
   return declaration->parse (data);
 }
 
 bool svg_attribute_style::write (QString &data, bool /*to_css*/) const 
 {
-  data = QString::fromStdString (declaration->to_string ());
+  if (declaration)
+    data = QString::fromStdString (declaration->to_string ());
   return true;
 }
 
 abstract_attribute *svg_attribute_style::get_attribute (const std::string &str) const
 {
-  return declaration->get_attribute (str);
+  if (declaration)
+    return declaration->get_attribute (str);
+  else
+    return nullptr;
 }

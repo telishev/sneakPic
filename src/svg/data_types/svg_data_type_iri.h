@@ -5,6 +5,7 @@
 #include <QString>
 
 class abstract_svg_item;
+class svg_document;
 
 enum class iri_type
 {
@@ -32,7 +33,7 @@ enum class data_format
 
 class svg_data_type_iri
 {
-  abstract_svg_item *m_item;
+  svg_document *m_document;
   QString m_element_id;
   QImage *m_image_data;
   data_type m_data_type;
@@ -40,7 +41,7 @@ class svg_data_type_iri
   QByteArray raw_data;
   QString link_to_resource;
 public:
-  svg_data_type_iri (abstract_svg_item *item);
+  svg_data_type_iri (svg_document *document);
   virtual ~svg_data_type_iri ();
 
   bool read (const QString &data_arg);

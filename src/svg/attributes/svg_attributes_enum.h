@@ -13,7 +13,7 @@ class svg_base_attribute_enum : public abstract_attribute
 protected:
   T m_value;
 public:
-  svg_base_attribute_enum (abstract_svg_item *item) : abstract_attribute (item) { m_value = T (); }
+  svg_base_attribute_enum (svg_document *document) : abstract_attribute (document) { m_value = T (); }
   virtual ~svg_base_attribute_enum () {}
 
   virtual bool read (const char *data, bool /*from_css*/ = false) override
@@ -46,7 +46,7 @@ class svg_attribute_gradient_units : public svg_base_attribute_enum<gradient_uni
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_gradient_units (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  svg_attribute_gradient_units (svg_document *document) : svg_base_attribute_enum (document)
   { m_value = gradient_units::OBJECT_BOUNDING_BOX; }
 };
 
@@ -66,7 +66,7 @@ class svg_attribute_spread_method : public svg_base_attribute_enum<spread_method
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_spread_method (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  svg_attribute_spread_method (svg_document *document) : svg_base_attribute_enum (document)
   { m_value = spread_method::PAD; }
 };
 
@@ -84,7 +84,7 @@ class svg_attribute_fill_rule : public svg_base_attribute_enum<fill_rule>
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_fill_rule (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  svg_attribute_fill_rule (svg_document *document) : svg_base_attribute_enum (document)
   { m_value = fill_rule::NON_ZERO; }
 };
 
@@ -93,7 +93,7 @@ class svg_attribute_clip_rule : public svg_base_attribute_enum<fill_rule>
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_clip_rule (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  svg_attribute_clip_rule (svg_document *document) : svg_base_attribute_enum (document)
   { m_value = fill_rule::NON_ZERO; }
 };
 
@@ -113,7 +113,7 @@ class svg_attribute_visibility : public svg_base_attribute_enum<visibility>
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_visibility (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  svg_attribute_visibility (svg_document *document) : svg_base_attribute_enum (document)
   { m_value = visibility::VISIBLE; }
 };
 
@@ -147,7 +147,7 @@ class svg_attribute_display : public svg_base_attribute_enum<display>
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_display (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  svg_attribute_display (svg_document *document) : svg_base_attribute_enum (document)
   { m_value = display::INLINE; }
 };
 
@@ -167,7 +167,7 @@ class svg_attribute_text_anchor : public svg_base_attribute_enum<text_anchor>
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_text_anchor (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  svg_attribute_text_anchor (svg_document *document) : svg_base_attribute_enum (document)
   { m_value = text_anchor::START; }
 };
 
@@ -186,7 +186,7 @@ class svg_attribute_marker_units : public svg_base_attribute_enum<marker_units>
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_marker_units (abstract_svg_item *item) : svg_base_attribute_enum (item)
+  svg_attribute_marker_units (svg_document *document) : svg_base_attribute_enum (document)
   { m_value = marker_units::STROKE_WIDTH; }
 };
 

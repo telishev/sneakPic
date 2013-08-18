@@ -10,7 +10,7 @@ class svg_base_attribute_string : public abstract_attribute
 protected:
   QString m_value;
 public:
-  svg_base_attribute_string (abstract_svg_item *item) : abstract_attribute (item) { m_value = 0.0; }
+  svg_base_attribute_string (svg_document *document) : abstract_attribute (document) { m_value = 0.0; }
 
   QString value () const { return m_value; }
 
@@ -22,7 +22,7 @@ class svg_attribute_font_family : public svg_base_attribute_string
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_font_family (abstract_svg_item *item) : svg_base_attribute_string (item) { m_value = QString (); }
+  svg_attribute_font_family (svg_document *document) : svg_base_attribute_string (document) { m_value = QString (); }
 
   double computed_opacity () const;
 };

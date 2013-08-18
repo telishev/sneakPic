@@ -21,7 +21,7 @@ QRectF render_cache_id::pixel_rect (const QTransform &transform) const
   return QRectF (start_x, start_y, block_size, block_size);
 }
 
-std::pair<render_cache_id, render_cache_id> render_cache_id::get_id_for_rect (const QTransform &transform, const QRectF &rect, int object_type)
+std::pair<render_cache_id, render_cache_id> render_cache_id::get_id_for_pixel_rect (const QTransform &transform, const QRectF &rect, int object_type)
 {
   render_cache_id first = get_id_by_pixel_pos (rect.x (), rect.y (), transform, object_type);
   render_cache_id last = get_id_by_pixel_pos (rect.x () + rect.width (), rect.y () + rect.height (), transform, object_type);

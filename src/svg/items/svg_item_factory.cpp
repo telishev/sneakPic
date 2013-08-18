@@ -41,7 +41,8 @@ template<typename T>
 void svg_item_factory::support_item ()
 {
   QString item_id = create_unique_item_name (T::static_type_name (), T::static_ns_URI ());
-  m_map.insert (make_pair (item_id.toStdString (), [&] () { return new T (m_document); } ));
+  m_string_map[item_id.toStdString ()] =  [&] () { return new T (m_document); };
+  m_type_map[T::static_type ()] = [&] () { return new T (m_document); };
 }
 
 svg_item_factory::svg_item_factory (svg_document *document)
@@ -62,11 +63,16 @@ svg_item_factory::~svg_item_factory ()
 abstract_svg_item *svg_item_factory::create_item (const QString &localName, const QString &namespaceURI, const QString &prefix) const
 {
   QString item_id = create_unique_item_name (localName, namespaceURI);
-  auto it = m_map.find (item_id.toStdString ());
-  if (it == m_map.end ())
+  auto it = m_string_map.find (item_id.toStdString ());
+  if (it == m_string_map.end ())
     return new unknown_item (m_document, localName, namespaceURI, prefix);
 
   return it->second ();
+}
+
+abstract_svg_item *svg_item_factory::create_item (svg_item_type type)
+{
+  return m_type_map[type] ();
 }
 
 QString svg_item_factory::create_unique_item_name (const QString &localName, const QString &namespaceURI) const

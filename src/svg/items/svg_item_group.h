@@ -13,7 +13,7 @@ public:
   svg_item_group (svg_document *document);
   virtual ~svg_item_group () override;
 
-  virtual abstract_renderer_item *create_renderer_item () const override;
+  virtual abstract_renderer_item *create_renderer_item_impl () const override;
 
 protected:
   virtual bool check_item () override { return true; }

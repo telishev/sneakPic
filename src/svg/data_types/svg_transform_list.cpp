@@ -17,6 +17,7 @@ bool svg_transform_list::read (const char *data)
 {
   trim_whitespace_left (data);
   std::vector<double> transform_data;
+  m_transform = QTransform ();
   while (*data)
     {
       transform_data.clear ();

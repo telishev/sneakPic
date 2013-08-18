@@ -11,7 +11,7 @@ class svg_attribute_xlink_href : public abstract_attribute
 
   svg_data_type_iri m_iri;
 public:
-  svg_attribute_xlink_href (abstract_svg_item *item);
+  svg_attribute_xlink_href (svg_document *document);
   virtual ~svg_attribute_xlink_href ();
 
   virtual bool read (const char *data, bool from_css = false) override;

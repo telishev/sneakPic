@@ -5,8 +5,8 @@
 #include "svg/items/svg_items_container.h"
 #include "svg/items/abstract_svg_item.h"
 
-svg_attribute_xlink_href::svg_attribute_xlink_href (abstract_svg_item *item)
-  : abstract_attribute (item), m_iri (item)
+svg_attribute_xlink_href::svg_attribute_xlink_href (svg_document *document)
+  : abstract_attribute (document), m_iri (document)
 {
 
 }

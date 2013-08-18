@@ -11,7 +11,7 @@ class svg_attribute_clip_path : public abstract_attribute
   SVG_ATTRIBUTE
   svg_data_type_iri m_iri;
 public:
-  svg_attribute_clip_path (abstract_svg_item *item);
+  svg_attribute_clip_path (svg_document *document);
   virtual ~svg_attribute_clip_path ();
 
   virtual bool read (const char *data, bool from_css = false) override;

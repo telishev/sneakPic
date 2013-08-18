@@ -8,8 +8,8 @@
 #include "svg/items/abstract_svg_item.h"
 
 
-svg_attribute_transform::svg_attribute_transform (abstract_svg_item *item)
-  : abstract_attribute (item)
+svg_attribute_transform::svg_attribute_transform (svg_document *document)
+  : abstract_attribute (document)
 {
 
 }
@@ -37,4 +37,10 @@ QTransform svg_attribute_transform::computed_transform () const
 void svg_attribute_transform::set_additional_transform (const QTransform &additional_transform)
 {
   m_additional_transform = additional_transform;
+}
+
+void svg_attribute_transform::set_transform (const QTransform &transform)
+{
+  m_transform.set_transform (transform);
+  m_additional_transform = QTransform ();
 }

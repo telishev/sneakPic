@@ -12,8 +12,8 @@ protected:
   QList <svg_data_type_length> m_value;
   units_orientation m_units_orientation;
 public:
-  svg_base_attribute_length_list (abstract_svg_item *item, units_orientation units_orientation_arg = units_orientation::OTHER)
-    : abstract_attribute (item) {  m_units_orientation = units_orientation_arg; }
+  svg_base_attribute_length_list (svg_document *document, units_orientation units_orientation_arg = units_orientation::OTHER)
+    : abstract_attribute (document) {  m_units_orientation = units_orientation_arg; }
 
   void fill_values (QList<double> &list) const;
   QList <double> value () const;

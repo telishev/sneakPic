@@ -11,7 +11,7 @@ public:
   svg_item_group_type (svg_document *document);
 
   virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const override;
-  virtual void update_bbox () override;
+  virtual void update_bbox_impl () override;
 
   virtual bool can_be_selected () const override { return false; }
 

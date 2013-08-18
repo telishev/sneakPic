@@ -12,11 +12,14 @@
 #include "svg/svg_document.h"
 
 #include "svg/items/abstract_svg_item.h"
+#include "svg/items/svg_item_type.h"
+#include "svg/undoable_items_container.h"
 
 
-css_declaration::css_declaration (abstract_svg_item *item)
+css_declaration::css_declaration (svg_document *document, int item_id)
 {
-  m_item = item;
+  m_document = document;
+  m_item_id = item_id;
 }
 
 css_declaration::~css_declaration ()
@@ -46,16 +49,17 @@ bool css_declaration::parse (const char *str)
 
 bool css_declaration::create_attribute (const std::string &name, const std::string &value)
 {
-  svg_attribute_factory *factory = m_item->document ()->attribute_factory ();
+  svg_attribute_factory *factory = m_document->attribute_factory ();
 
   std::string real_name = from_escaped_string (name);
   std::string real_value = from_escaped_string (value);
 
   /// TODO: do something with namespaces
-  std::unique_ptr <abstract_attribute> attribute (factory->create_attribute (m_item, real_name.c_str (), "", ""));
+  std::unique_ptr <abstract_attribute> attribute (factory->create_attribute (real_name.c_str (), svg_item_type::STYLE));
   if (!attribute)
     return false;
 
+  attribute->set_item (m_item_id);
   if (!attribute->read (real_value.c_str (), true))
     return false;
 

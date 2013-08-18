@@ -30,15 +30,23 @@ renderer_item_group::~renderer_item_group ()
 
 }
 
+static inline QRect bounding_rect (const QRectF &rect)
+{
+  int left = floor (rect.left ()), right = ceil (rect.right ());
+  int top = floor (rect.top ()), bottom = ceil (rect.bottom ());
+  return QRect (left, top, right - left, bottom - top);
+}
+
 void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
 {
   if ((config && config->is_interrupted ()) || m_display == display::NONE)
     return;
 
-  QRectF transformed_rect = state.transform ().mapRect (bounding_box ());
-  QRect result_rect = state.rect ().intersected (transformed_rect.toRect ());
+  QRectF transformed_rect = state.transform ().mapRect (bounding_box_impl ());
+  QRect result_rect = state.rect ().intersected (bounding_rect (transformed_rect));
   if (result_rect.isNull ())
     return;
+
 
   SkBitmap bitmap;
   bitmap.setConfig (SkBitmap::kARGB_8888_Config, result_rect.width (), result_rect.height ());
@@ -79,12 +87,12 @@ void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, c
   return;
 }
 
-QRectF renderer_item_group::bounding_box () const 
+QRectF renderer_item_group::bounding_box_impl () const 
 {
   return m_bbox;
 }
 
-void renderer_item_group::update_bbox ()
+void renderer_item_group::update_bbox_impl ()
 {
   QRectF new_box;
   for (const std::string &child_name : m_children)

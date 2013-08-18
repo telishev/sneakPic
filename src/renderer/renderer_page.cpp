@@ -35,12 +35,12 @@ void renderer_page::draw (SkCanvas &canvas, const renderer_state &state, const r
     }
 }
 
-QRectF renderer_page::bounding_box () const 
+QRectF renderer_page::bounding_box_impl () const 
 {
   return QRectF (0, 0, m_width, m_height);
 }
 
-void renderer_page::update_bbox ()
+void renderer_page::update_bbox_impl ()
 {
 
 }

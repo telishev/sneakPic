@@ -4,11 +4,11 @@
 class abstract_svg_item;
 
 #include <map>
-#include <QString>
+#include <string>
 
 class svg_items_container
  {
-  typedef std::map<QString, abstract_svg_item *> map_type;
+  typedef std::map<std::string, abstract_svg_item *> map_type;
 
   map_type m_map;
   int max_id;
@@ -19,11 +19,11 @@ public:
   void add_item (abstract_svg_item *item);
   void remove_item (abstract_svg_item *item);
 
-  abstract_svg_item *get_item (const QString &id) const;
-  bool contains (const QString &id) const;
+  abstract_svg_item *get_item (const std::string &id) const;
+  bool contains (const std::string &id) const;
 
   /// creates unique name in a form "item_id"number
-  QString create_unique_name (const char *item_id);
+  std::string create_unique_name (const char *item_id);
 
   const map_type &get_items () const { return m_map; }
 

@@ -13,7 +13,7 @@ class svg_attribute_transform : public abstract_attribute
   /// TODO: remove this hack for "use" item
   QTransform m_additional_transform;
 public:
-  svg_attribute_transform (abstract_svg_item *item);
+  svg_attribute_transform (svg_document *document);
   virtual ~svg_attribute_transform ();
 
   virtual bool read (const char *data, bool from_css = false) override;
@@ -21,6 +21,8 @@ public:
 
   QTransform computed_transform () const;
   void set_additional_transform (const QTransform &additional_transform);
+
+  void set_transform (const QTransform &transform);
 };
 
 

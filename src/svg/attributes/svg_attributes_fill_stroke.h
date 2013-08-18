@@ -26,7 +26,7 @@ protected:
   paint_server_type m_server_type;
 
 public:
-  svg_paint_server (abstract_svg_item *item);
+  svg_paint_server (svg_document *document);
   ~svg_paint_server ();
 
   virtual bool read (const char *data, bool from_css = false) override;
@@ -44,7 +44,7 @@ class svg_attribute_fill : public svg_paint_server
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_fill (abstract_svg_item *item) : svg_paint_server (item)
+  svg_attribute_fill (svg_document *document) : svg_paint_server (document)
   {
     m_color = Qt::black;
     m_server_type = svg_paint_server::paint_server_type::COLOR;
@@ -56,7 +56,7 @@ class svg_attribute_stroke : public svg_paint_server
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_stroke (abstract_svg_item *item) : svg_paint_server (item) {}
+  svg_attribute_stroke (svg_document *document) : svg_paint_server (document) {}
   virtual abstract_svg_item *get_item () const override { return item (); } 
 };
 

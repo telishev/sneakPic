@@ -16,6 +16,8 @@
 
 #include "common/common_utils.h"
 #include "common/math_defs.h"
+#include "common/memory_deallocation.h"
+#include "common/debug_utils.h"
 
 #include "editor/items_selection.h"
 
@@ -65,8 +67,6 @@ svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_
 svg_painter::~svg_painter ()
 {
   FREE (m_mouse_handler);
-  /// must be after all overlay containers
-  remove_overlay_containers ();
   FREE (m_overlay);
 }
 
@@ -91,11 +91,11 @@ void svg_painter::set_document (svg_document *document)
   if (!m_document)
     return;
 
-  remove_overlay_containers ();
   m_overlay->set_document (document);
   create_overlay_containers ();
   set_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED, 1);
   reset_transform ();
+  connect (m_document, &svg_document::items_changed, this, &svg_painter::items_changed);
 }
 
 unsigned int svg_painter::mouse_event (const mouse_event_t &m_event)
@@ -192,9 +192,8 @@ void svg_painter::update_drawing (QTransform transform)
 void svg_painter::send_changes (bool interrrupt_rendering)
 {
   
-  auto object_pair = render_cache_id::get_id_for_rect (m_cur_transform, glwidget ()->rect (), (int)render_cache_type::ROOT_ITEM);
-  int queue_id = m_queue->add_event (new event_transform_changed (object_pair.first, object_pair.second, m_cur_transform, interrrupt_rendering));
-  m_queue->wait_for_id (queue_id, 50);
+  auto object_pair = render_cache_id::get_id_for_pixel_rect (m_cur_transform, glwidget ()->rect (), (int)render_cache_type::ROOT_ITEM);
+  m_queue->add_event_and_wait (new event_transform_changed (object_pair.first, object_pair.second, m_cur_transform, interrrupt_rendering));
   set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
 }
 
@@ -231,7 +230,7 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
   if (selected_item_name.empty ())
     return nullptr;
 
-  return m_document->item_container ()->get_item (QString::fromStdString (selected_item_name));
+  return m_document->item_container ()->get_item (selected_item_name);
 }
 
 void svg_painter::draw_base (QPainter &painter)
@@ -252,11 +251,14 @@ void svg_painter::draw_page (QPainter &painter)
   m_overlay->draw_page (painter, glwidget ()->rect (), m_cur_transform);
 }
 
+#include "svg/attributes/svg_attribute_transform.h"
+
 void svg_painter::select_item (const QPoint &pos, bool clear_selection)
 {
   if (clear_selection)
     m_selection->clear ();
   abstract_svg_item *item = get_current_item (pos);
+  
   if (item)
     m_selection->add_item (item);
 
@@ -303,7 +305,7 @@ void svg_painter::pan_picture (const QPoint &pos)
 void svg_painter::find_current_object (const QPoint &pos)
 {
   abstract_svg_item *current_item = get_current_item (pos);
-  std::string item_string = current_item ? current_item->name ().toStdString () : std::string ();
+  std::string item_string = current_item ? current_item->name () : std::string ();
   if (item_string != m_item_outline->current_item ())
     {
       m_item_outline->set_current_item (item_string);
@@ -349,11 +351,11 @@ void svg_painter::create_overlay_containers ()
   m_selection = new items_selection (m_overlay);
   m_item_outline = new current_item_outline_renderer (m_overlay);
   m_rubberband = new rubberband_selection (m_overlay);
+  m_page_renderer = new svg_page_renderer (m_overlay);
 }
 
-void svg_painter::remove_overlay_containers ()
+void svg_painter::items_changed ()
 {
-  FREE (m_selection);
-  FREE (m_item_outline);
-  FREE (m_rubberband);
+  m_overlay->items_changed ();
+  glwidget ()->update ();
 }

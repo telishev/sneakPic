@@ -12,8 +12,8 @@ public:
   ~renderer_page ();
 
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
-  virtual QRectF bounding_box () const override;
-  virtual void update_bbox () override;
+  virtual QRectF bounding_box_impl () const override;
+  virtual void update_bbox_impl () override;
 
   void set_height (double height) { m_height = height;}
   void set_width (double width) { m_width = width; }

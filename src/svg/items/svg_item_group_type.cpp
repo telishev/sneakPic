@@ -27,6 +27,9 @@ void svg_item_group_type::update_group_item (renderer_item_group *renderer_item)
   renderer_item->set_transform (full_transform ());
   if (clip_path)
     renderer_item->set_clip_path (clip_path->get_clip_path ());
+
+  for (int i = 0; i < children_count (); i++)
+    renderer_item->push_back_child (child (i)->name ());
 }
 
 abstract_renderer_item *svg_item_group_type::create_overlay_item (overlay_item_type /*overlay_type*/) const
@@ -34,12 +37,12 @@ abstract_renderer_item *svg_item_group_type::create_overlay_item (overlay_item_t
   return nullptr;
 }
 
-void svg_item_group_type::update_bbox ()
+void svg_item_group_type::update_bbox_impl ()
 {
   QRectF bbox;
-  for (abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
+  for (int i = 0; i < children_count (); i++)
     {
-      svg_graphics_item *graphics_item = child->to_graphics_item ();
+      svg_graphics_item *graphics_item = child (i)->to_graphics_item ();
       if (!graphics_item)
         continue;
 

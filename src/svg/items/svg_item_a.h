@@ -11,7 +11,7 @@ public:
   svg_item_a (svg_document *document);
   virtual ~svg_item_a () override;
 
-  virtual abstract_renderer_item *create_renderer_item () const;
+  virtual abstract_renderer_item *create_renderer_item_impl () const;
 
 protected:
   bool check_item ();

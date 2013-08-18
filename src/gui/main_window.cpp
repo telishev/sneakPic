@@ -54,6 +54,8 @@ main_window::main_window ()
   connect (ui->openFileAct    , SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
   connect (ui->saveAsAct      , SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
   connect (update_timer       , SIGNAL (timeout ())  , this, SLOT (update_timeout ()));
+  connect (ui->actionUndo     , SIGNAL (triggered ()), this, SLOT (undo ()));
+  connect (ui->actionRedo     , SIGNAL (triggered ()), this, SLOT (redo ()));
 }
 
 void main_window::load_recent_menu ()
@@ -186,6 +188,7 @@ void main_window::open_file (const QString filename)
   DO_ON_EXIT (update_window_title ());
 
   m_doc = new svg_document (m_settings);
+  m_doc->set_queue (m_queue);
   setWindowTitle ("Loading...");
   if (!m_doc->read_file (filename))
     {
@@ -208,4 +211,16 @@ void main_window::update_timeout ()
       m_painter->set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
       ui->glwidget->repaint ();
     }
+}
+
+void main_window::undo ()
+{
+  if (m_doc)
+    m_doc->undo ();
+}
+
+void main_window::redo ()
+{
+  if (m_doc)
+    m_doc->redo ();
 }

@@ -16,6 +16,8 @@ public:
   renderer_paint_server *create_paint_server () const;
   bool fill_gradient (renderer_base_gradient_item *gradient) const;
 
+  bool add_stops_to_gradient (const abstract_svg_item *parent, renderer_base_gradient_item *gradient) const;
+
 protected:
   virtual renderer_base_gradient_item *create_gradient () const = 0;
 };

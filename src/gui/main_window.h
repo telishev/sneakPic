@@ -44,6 +44,8 @@ private slots:
   void save_file_clicked ();
   void update_timeout ();
   void open_file (const QString filename);
+  void undo ();
+  void redo ();
 
 private:
   void add_file_to_recent (QString file_path);

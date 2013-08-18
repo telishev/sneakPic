@@ -21,7 +21,7 @@ public:
   ~renderer_item_image ();
 
   virtual void draw_graphics_item (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
-  virtual void update_bbox () override;
+  virtual void update_bbox_impl () override;
 
   void set_dest_rect (QRectF rect);
   void set_src_rect (QRectF rect);

@@ -38,8 +38,8 @@ public:
       }
   }
 
-  virtual QRectF bounding_box () const override { return m_rect; }
-  virtual void update_bbox () override {}
+  virtual QRectF bounding_box_impl () const override { return m_rect; }
+  virtual void update_bbox_impl () override {}
 };
 
 rubberband_selection::rubberband_selection (overlay_renderer *overlay)

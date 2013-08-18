@@ -23,17 +23,18 @@ svg_item_clip_path::~svg_item_clip_path ()
 QPainterPath svg_item_clip_path::get_clip_path () const
 {
   QPainterPath path;
-  for (const abstract_svg_item *child = first_child (); child; child = child->next_sibling ())
+  for (int i = 0; i < children_count (); i++)
     {
-      if (child->type () == svg_item_type::USE)
+      const abstract_svg_item *cur_child = child (i);
+      if (cur_child->type () == svg_item_type::USE)
         {
-          QPainterPath child_path = get_single_child_path (child->first_child ());
-          const svg_attribute_transform *transform = child->get_computed_attribute<svg_attribute_transform> ();
+          QPainterPath child_path = get_single_child_path (cur_child->child (0));
+          const svg_attribute_transform *transform = cur_child->get_computed_attribute<svg_attribute_transform> ();
           child_path = transform->computed_transform ().map (child_path);
           path.addPath (child_path);
         }
       else
-        path.addPath (get_single_child_path (child));
+        path.addPath (get_single_child_path (cur_child));
     }
 
   const svg_attribute_clip_path *clip_path_attr = get_computed_attribute<svg_attribute_clip_path> ();

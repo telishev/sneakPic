@@ -16,8 +16,6 @@ class tree_structure
 
   T *m_first_child;
   T *m_last_child;
-
-  std::multimap<std::string, const T *> m_child_map;
 public:
   tree_structure ()
   {
@@ -63,8 +61,6 @@ public:
 
     if (prev == m_last_child)
       m_last_child = new_child;
-
-    m_child_map.insert (std::make_pair (new_child->type_name (), new_child));
   }
 
   void remove_child (T *child)
@@ -88,11 +84,7 @@ public:
     child->set_parent (nullptr);
     child->set_next_sibling (nullptr);
     child->set_prev_sibling (nullptr);
-    m_child_map.erase (child->name ());
   }
-
-  auto get_childs_by_name (const char *name) ->decltype (m_child_map.equal_range (name)) { return m_child_map.equal_range (name); }
-  auto get_childs_by_name (const char *name) const ->decltype (m_child_map.equal_range (name)) { return m_child_map.equal_range (name); }
 
 private:
   void set_parent (T *parent) { m_parent = parent; }

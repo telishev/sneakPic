@@ -21,6 +21,8 @@ public:
   overlay_items_container (overlay_renderer *overlay, overlay_layer_type layer_type);
   ~overlay_items_container ();
 
+  void update_items ();
+
 protected:
   svg_document *document () const;
   void add_svg_item (const std::string &object);

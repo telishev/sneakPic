@@ -15,7 +15,7 @@ class svg_attribute_orient : public abstract_attribute
   svg_data_type_angle m_angle;
   bool m_auto;
 public:
-  svg_attribute_orient (abstract_svg_item *item);
+  svg_attribute_orient (svg_document *document);
   virtual ~svg_attribute_orient ();
 
   double value (QPointF bisector) const;

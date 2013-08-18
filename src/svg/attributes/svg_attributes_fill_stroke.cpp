@@ -13,8 +13,8 @@
 
 
 
-svg_paint_server::svg_paint_server (abstract_svg_item *item)
-  : abstract_attribute (item), m_iri (item)
+svg_paint_server::svg_paint_server (svg_document *document)
+  : abstract_attribute (document), m_iri (document)
 {
   m_server_type = paint_server_type::NONE;
 }

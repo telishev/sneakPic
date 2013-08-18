@@ -38,9 +38,9 @@ void svg_item_svg::update_renderer_item ()
 
 }
 
-abstract_renderer_item *svg_item_svg::create_renderer_item () const
+abstract_renderer_item *svg_item_svg::create_renderer_item_impl () const
 {
-  renderer_item_svg *render_item = new renderer_item_svg (name ().toStdString ());
+  renderer_item_svg *render_item = new renderer_item_svg (name ());
 
   update_group_item (render_item);
   return render_item;
@@ -52,13 +52,7 @@ bool svg_item_svg::check_item ()
   if (!view_box->is_empty ())
     {
       QRectF viewport = QRectF (0, 0, width (), height ());
-      svg_attribute_transform *transform = get_attribute<svg_attribute_transform> ();
-      if (!transform)
-        {
-          transform = new svg_attribute_transform (this);
-          add_attribute (transform);
-        }
-
+      auto transform = get_attribute_for_change<svg_attribute_transform> ();
       transform->set_additional_transform (view_box->get_transform (viewport));
     }
 

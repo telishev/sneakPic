@@ -32,6 +32,10 @@ public:
   void transform_changed (const render_cache_id &first, const render_cache_id &last, const QTransform &transform);
   void container_changed (renderer_items_container *container);
 
+  renderer_items_container *container () const { return m_container; }
+
+  void invalidate_rect (const QRectF &rect);
+
 protected:
   virtual void run () override;
 

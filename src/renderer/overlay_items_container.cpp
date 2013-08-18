@@ -13,11 +13,13 @@
 overlay_items_container::overlay_items_container (overlay_renderer *overlay, overlay_layer_type layer_type)
 {
   m_overlay = overlay;
+  m_overlay->add_overlay_container (this);
   m_layer_type = layer_type;
 }
 
 overlay_items_container::~overlay_items_container ()
 {
+  m_overlay->remove_overlay_container (this);
   clear_items ();
 }
 
@@ -62,7 +64,7 @@ void overlay_items_container::clear_items ()
 std::vector<abstract_renderer_item *> overlay_items_container::create_overlay_for_item (const std::string &object, overlay_item_type overlay_type) const
 {
   std::vector<abstract_renderer_item *> result;
-  abstract_svg_item *svg_item = m_overlay->document ()->item_container ()->get_item (QString::fromStdString (object));
+  abstract_svg_item *svg_item = m_overlay->document ()->item_container ()->get_item (object);
   if (!svg_item)
     return result;
 
@@ -79,4 +81,18 @@ std::vector<abstract_renderer_item *> overlay_items_container::single_item_vecto
   std::vector<abstract_renderer_item *> result;
   result.push_back (item);
   return result;
+}
+
+void overlay_items_container::update_items ()
+{
+  auto m_map_copy = m_obj_map;
+  std::string cur_object;
+  for (const auto &item_pair : m_map_copy)
+    {
+      if (item_pair.first == cur_object)
+        continue;
+
+      cur_object = item_pair.first;
+      svg_item_changed (cur_object);
+    }
 }

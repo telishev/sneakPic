@@ -22,6 +22,7 @@ public:
   ~events_queue ();
 
   int add_event (abstract_renderer_event *ev);
+  int add_event_and_wait (abstract_renderer_event *ev, unsigned long ms = 50);
 
   abstract_renderer_event *pull_event ();
   void timed_wait (unsigned long time);

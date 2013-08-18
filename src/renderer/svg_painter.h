@@ -26,6 +26,8 @@ class QStatusBar;
 
 class svg_painter : public abstract_painter
 {
+  Q_OBJECT
+
   QTransform m_cur_transform;
   QTransform m_last_transform;
   QLabel zoom_inscription;
@@ -61,6 +63,9 @@ public:
 
   settings_t *settings () const { return m_settings; }
 
+private slots:
+  void items_changed ();
+
 private:
   void reset_transform ();
   void send_changes (bool interrrupt_rendering);
@@ -81,7 +86,6 @@ private:
   void move_rubberband_selection (const QPoint &pos);
   void end_rubberband_selection (const mouse_event_t &event);
   void create_overlay_containers ();
-  void remove_overlay_containers ();
 };
 
 #endif // SVG_PAINTER_H

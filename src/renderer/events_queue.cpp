@@ -41,6 +41,13 @@ int events_queue::add_event (abstract_renderer_event *ev)
   return m_last_queue_id;
 }
 
+int events_queue::add_event_and_wait (abstract_renderer_event *ev, unsigned long ms)
+{
+  int event_id = add_event (ev);
+  wait_for_id (event_id, ms);
+  return event_id;
+}
+
 abstract_renderer_event *events_queue::pull_event ()
 {
   if (!m_queue.isEmpty ())

@@ -21,7 +21,7 @@ items_selection::~items_selection ()
 
 void items_selection::add_item (const abstract_svg_item *item)
 {
-  return add_item (item->name ().toStdString ());
+  return add_item (item->name ());
 }
 
 void items_selection::add_item (const std::string &item_name)
@@ -59,8 +59,8 @@ void items_selection::add_items_for_rect (const QRectF &rect, const abstract_svg
   if (!graphics_item->bbox ().intersects (rect))
     return;
 
-  for (const abstract_svg_item *child = root->first_child (); child; child = child->next_sibling ())
-    add_items_for_rect (rect, child);
+  for (int i = 0; i < root->children_count (); i++)
+    add_items_for_rect (rect, root->child (i));
 }
 
 std::vector<abstract_renderer_item *> items_selection::create_overlay_item (const std::string &object) const 
