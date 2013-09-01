@@ -126,7 +126,7 @@ bool svg_base_shape_item::get_stroke (QPainterPath &dst) const
       double stroke_width_value = stroke_width->get_stroke_width ();
       if (stroke_linecap->get_stroke_linecap () == Qt::PenCapStyle::RoundCap)
         dst.addEllipse (QPointF (path.elementAt (0)), stroke_width_value, stroke_width_value);
-      else if (stroke_linecap->get_stroke_linecap () == Qt::PenCapStyle::RoundCap)
+      else if (stroke_linecap->get_stroke_linecap () == Qt::PenCapStyle::SquareCap)
         dst.addRect (path.elementAt (0).x - stroke_width_value * 0.5,
                      path.elementAt (0).y - stroke_width_value * 0.5,
                      stroke_width_value,

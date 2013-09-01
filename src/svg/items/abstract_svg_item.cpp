@@ -645,7 +645,7 @@ void abstract_svg_item::signal_attribute_change_end (const abstract_attribute *a
   if (!m_document->signals_enabled ())
     return;
 
-  m_document->changed_items ()->attribute_change_start (name (), attribute);
+  m_document->changed_items ()->attribute_change_end (name (), attribute);
   auto container = m_document->get_undoable_items_container ();
   if (m_observers)
     {
@@ -655,7 +655,7 @@ void abstract_svg_item::signal_attribute_change_end (const abstract_attribute *a
           if (!observer)
             continue;
 
-          observer->attribute_change_start (name (), attribute);
+          observer->attribute_change_end (name (), attribute);
         }
     }
 }
