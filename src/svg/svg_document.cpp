@@ -41,12 +41,12 @@ svg_document::svg_document (settings_t *settings)
   m_item_container = new svg_items_container;
   m_selectors = new selectors_container;
   m_changed_items = new changed_items_container (m_item_container);
+  m_undo_handler = new undo_handler;
   m_root = nullptr;
   m_last_overlay_num = 0;
   m_settings = settings;
   m_queue = nullptr;
-  m_undo_handler = new undo_handler (this);
-  m_signals_enabled = false;
+  set_signals_enabled (false);
 }
 
 svg_document::~svg_document ()
@@ -140,7 +140,7 @@ bool svg_document::read_file (const QString &filename_arg)
   m_item_container->set_root (m_root->name ());
   m_undo_handler->clear ();
   graphics_item->update_bbox ();
-  m_signals_enabled = true;
+  set_signals_enabled (true);
   return true;
 }
 
@@ -252,6 +252,12 @@ void svg_document::apply_changes ()
 bool svg_document::signals_enabled () const
 {
   return m_signals_enabled;
+}
+
+void svg_document::set_signals_enabled (bool enable)
+{
+  m_signals_enabled = enable;
+  m_undo_handler->set_signals_enabled (enable);
 }
 
 void svg_document::undo ()

@@ -2,21 +2,18 @@
 
 #include "common/memory_deallocation.h"
 
-#include "svg/svg_document.h"
-
-
 #include "svg/undo/single_undo_item_builder.h"
 #include "svg/undo/single_undo_item.h"
 #include "svg/undo/undoable_items_container.h"
 #include "svg/undo/undoable.h"
 
 
-undo_handler::undo_handler (svg_document *document)
+undo_handler::undo_handler ()
 {
-  m_document = document;
   m_items_container = new undoable_items_container_t;
   m_builder = new single_undo_item_builder (m_items_container);
   m_cur_undo_position = 0;
+  m_signals_enabled = true;
 }
 
 undo_handler::~undo_handler ()
@@ -62,7 +59,7 @@ void undo_handler::redo (int positions)
 
 void undo_handler::register_item (undoable *item)
 {
-  if (!m_document->signals_enabled ())
+  if (!m_signals_enabled)
     return;
 
   m_builder->register_item (item);
@@ -107,7 +104,7 @@ int undo_handler::assign_id (undoable *item)
 
 void undo_handler::register_new_item (undoable *item)
 {
-  if (!m_document->signals_enabled ())
+  if (!m_signals_enabled)
     return;
 
   m_builder->register_new_item (item);

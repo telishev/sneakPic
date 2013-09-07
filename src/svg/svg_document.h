@@ -67,6 +67,7 @@ public:
 
   void apply_changes ();
   bool signals_enabled () const;
+  void set_signals_enabled (bool enable);
 
   void undo ();
   void redo ();
