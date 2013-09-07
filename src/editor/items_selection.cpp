@@ -3,8 +3,8 @@
 #include <QRectF>
 
 #include "svg/items/abstract_svg_item.h"
-#include "svg/svg_document.h"
 #include "svg/items/svg_graphics_item.h"
+#include "svg/items/svg_items_container.h"
 
 #include "renderer/overlay_item_type.h"
 #include "renderer/overlay_renderer.h"
@@ -38,7 +38,7 @@ void items_selection::clear ()
 
 void items_selection::add_items_for_rect (const QRectF &rect)
 {
-  add_items_for_rect (rect, document ()->root ());
+  add_items_for_rect (rect, svg_container ()->get_root ());
 }
 
 void items_selection::add_items_for_rect (const QRectF &rect, const abstract_svg_item *root)

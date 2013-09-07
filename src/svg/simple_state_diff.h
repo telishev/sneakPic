@@ -1,7 +1,7 @@
 #ifndef SIMPLE_STATE_DIFF_H
 #define SIMPLE_STATE_DIFF_H
 
-#include "svg/undoable.h"
+#include "svg/undo/undoable.h"
 
 template<typename T>
 class simple_state_diff : public abstract_state_diff_t

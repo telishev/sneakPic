@@ -6,16 +6,11 @@
 
 #include "svg/items/svg_items_container.h"
 #include "svg/items/svg_graphics_item.h"
-#include "svg/items/svg_item_svg.h"
 
 
-#include "svg/svg_document.h"
-
-
-
-changed_items_container::changed_items_container (svg_document *document)
+changed_items_container::changed_items_container (svg_items_container *container)
 {
-  m_document = document;
+  m_container = container;
 }
 
 changed_items_container::~changed_items_container ()
@@ -76,7 +71,7 @@ event_items_changed *changed_items_container::create_changed_items_event ()
   for (const std::string &item_name : m_layout_changed_items)
     invalidate_bbox (item_name);
 
-  m_document->root_svg_item ()->update_bbox ();
+  m_container->get_root ()->to_graphics_item ()->update_bbox ();
 
   for (const std::string &item_name : m_changed_items)
     {
@@ -125,8 +120,7 @@ void changed_items_container::invalidate_bbox (const std::string &item_name)
 
 svg_graphics_item *changed_items_container::get_graphics_item (const std::string &item_name) const
 {
-  svg_items_container *container = m_document->item_container ();
-  abstract_svg_item *item = container->get_item (item_name);
+  abstract_svg_item *item = m_container->get_item (item_name);
   return item ? item->to_graphics_item () : nullptr;
 }
 

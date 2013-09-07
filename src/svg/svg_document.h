@@ -13,7 +13,6 @@ class rendered_items_cache;
 class selectors_container;
 class settings_t;
 class events_queue;
-class undoable_items_container_t;
 class undo_handler;
 class changed_items_container;
 class QXmlStreamReader;
@@ -32,12 +31,10 @@ class svg_document : public QObject
   selectors_container   *m_selectors;
   settings_t            *m_settings;
   events_queue          *m_queue;
-  undoable_items_container_t *m_undoable_items_container;
   undo_handler          *m_undo_handler;
   changed_items_container *m_changed_items;
 
   abstract_svg_item *m_root;
-  svg_item_svg *m_item_svg;
   QString m_filename;
   int m_last_overlay_num;
   bool m_signals_enabled;
@@ -53,13 +50,8 @@ public:
   selectors_container *selectors () const { return m_selectors; }
 
   settings_t *settings () const { return m_settings; }
-  svg_item_svg *root_svg_item () const { return m_item_svg; }
-  undoable_items_container_t *get_undoable_items_container () const { return m_undoable_items_container; }
   undo_handler *get_undo_handler () const { return m_undo_handler; }
   changed_items_container *changed_items () const { return m_changed_items; }
-
-
-  bool get_doc_dimensions (double &width, double &height);
 
   bool read_file (const QString &filename_arg);
   bool write_file (const QString &filename);

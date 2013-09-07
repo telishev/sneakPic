@@ -16,8 +16,8 @@
 class use_item_watcher : public simple_item_observer<use_item_watcher>
 {
 public:
-  use_item_watcher (svg_document *document, const std::string &parent)
-    : simple_item_observer (document, parent) {}
+  use_item_watcher (svg_items_container *container, const std::string &parent)
+    : simple_item_observer (container, parent) {}
 
 //   virtual void attribute_change_start (const std::string &/*sender*/, const abstract_attribute *atribute) override
 //   {
@@ -64,7 +64,7 @@ bool svg_item_use::update_children_tree ()
     {
       abstract_svg_item *clone = item_ref->create_clone ();
       push_back (clone);
-      observe_item (clone, new use_item_watcher (document (), name ()));
+      observe_item (clone, new use_item_watcher (document ()->item_container (), name ()));
     }
 
   return true;

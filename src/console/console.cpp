@@ -17,6 +17,7 @@
 #include "renderer/renderer_config.h"
 
 #include "svg/svg_document.h"
+#include "svg/svg_utils.h"
 
 
 #pragma warning(push, 0)
@@ -50,7 +51,7 @@ int start_console_processing (cl_arguments *args)
       return 1;
     }
   
-  doc->get_doc_dimensions (width, height);
+  svg_utils::get_doc_dimensions (doc, width, height);
 
   if (!png_output_file_name.isEmpty ())
     render_to_image (doc, png_output_file_name, qRound (width), qRound (height));

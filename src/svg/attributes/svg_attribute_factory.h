@@ -30,8 +30,6 @@ public:
 private:
   template<typename T>
   void support_attribute ();
-
-  std::string create_unique_attribute_name (const char *localName, const char *namespaceURI) const;
 };
 
 #endif // SVG_ATTRIBUTE_FACTORY_H

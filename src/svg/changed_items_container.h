@@ -6,7 +6,7 @@
 #include <unordered_set>
 
 class event_items_changed;
-class svg_document;
+class svg_items_container;
 class svg_graphics_item;
 
 class changed_items_container : svg_item_observer
@@ -15,9 +15,9 @@ class changed_items_container : svg_item_observer
   std::unordered_set<std::string> m_layout_changed_items;
   std::unordered_set<std::string> m_removed_items;
 
-  svg_document *m_document;
+  svg_items_container *m_container;
 public:
-  changed_items_container (svg_document *document);
+  changed_items_container (svg_items_container *container);
   ~changed_items_container ();
 
   virtual void child_added (const std::string &parent, const std::string &child_name, int insert_pos) override;

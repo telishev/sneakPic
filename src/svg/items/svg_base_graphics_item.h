@@ -20,8 +20,6 @@ public:
   virtual bool can_be_selected () const override { return true; }
 
 protected:
-  QPainterPath get_path_for_clipping () const;
-
   virtual QPainterPath get_boundaries () const = 0; // In this function path around item should be returned (even if it's raster image for example)
   virtual renderer_graphics_item *create_renderer_graphics_item () const = 0;
   virtual abstract_renderer_item *create_outline_renderer () const {return 0; } // override and return renderer to make outline rendered

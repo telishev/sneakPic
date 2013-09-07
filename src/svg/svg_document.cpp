@@ -17,15 +17,13 @@
 #include "svg/items/svg_item_type.h"
 #include "svg/items/svg_items_container.h"
 #include "svg/items/abstract_svg_item.h"
-#include "svg/items/svg_item_svg.h"
 #include "svg/items/svg_graphics_item.h"
 #include "svg/items/svg_character_data.h"
 
 #include "svg/css/selectors_container.h"
 
 #include "svg/svg_namespaces.h"
-#include "svg/undo_handler.h"
-#include "svg/undoable_items_container.h"
+#include "svg/undo/undo_handler.h"
 #include "svg/changed_items_container.h"
 
 #include "renderer/renderer_items_container.h"
@@ -42,14 +40,12 @@ svg_document::svg_document (settings_t *settings)
   m_attribute_factory = new svg_attribute_factory (this);
   m_item_container = new svg_items_container;
   m_selectors = new selectors_container;
-  m_changed_items = new changed_items_container (this);
+  m_changed_items = new changed_items_container (m_item_container);
   m_root = nullptr;
-  m_item_svg = nullptr;
   m_last_overlay_num = 0;
   m_settings = settings;
   m_queue = nullptr;
   m_undo_handler = new undo_handler (this);
-  m_undoable_items_container = new undoable_items_container_t (this);
   m_signals_enabled = false;
 }
 
@@ -61,7 +57,6 @@ svg_document::~svg_document ()
   FREE (m_selectors);
   FREE (m_changed_items);
   FREE (m_undo_handler);
-  FREE (m_undoable_items_container);
 }
 
 static inline QString get_namespace_name (const QXmlStreamNamespaceDeclarations &declarations, const QString &uri)
@@ -133,18 +128,16 @@ bool svg_document::read_file (const QString &filename_arg)
   if (reader.hasError () || !m_root)
     return false;
 
-  if (m_root->type () == svg_item_type::SVG)
-    m_item_svg = static_cast<svg_item_svg *> (m_root);
-  else
+  DEBUG_ASSERT (m_root->type () == svg_item_type::SVG);
+
+  if (!m_root->check ())
     return false;
 
-  if (!m_item_svg->check ())
-    return false;
-
-  svg_graphics_item *graphics_item = m_item_svg->to_graphics_item ();
+  svg_graphics_item *graphics_item = m_root->to_graphics_item ();
   if (!graphics_item)
     return false;
 
+  m_item_container->set_root (m_root->name ());
   m_undo_handler->clear ();
   graphics_item->update_bbox ();
   m_signals_enabled = true;
@@ -176,16 +169,6 @@ bool svg_document::write_file (const QString &filename_arg)
   return false;
 }
 
-bool svg_document::get_doc_dimensions (double &width, double &height)
-{
-  if (!m_item_svg)
-    return false;
-
-  width = m_item_svg->width ();
-  height = m_item_svg->height ();
-  return true;
-}
-
 renderer_items_container *svg_document::create_rendered_items (rendered_items_cache *cache)
 {
   renderer_items_container *renderer_items = new renderer_items_container;
@@ -193,8 +176,8 @@ renderer_items_container *svg_document::create_rendered_items (rendered_items_ca
   if (cache)
     cache->clear_selection_mapping ();
 
-  create_renderer_item (renderer_items, m_item_svg);
-  renderer_items->set_root (m_item_svg->name ());
+  create_renderer_item (renderer_items, m_root);
+  renderer_items->set_root (m_root->name ());
   renderer_items->root ()->update_bbox ();
   return renderer_items;
 }
@@ -224,7 +207,7 @@ abstract_svg_item *svg_document::process_new_item (QXmlStreamReader &reader, abs
     cur_item->push_back (child_item);
   else
     {
-      m_undoable_items_container->add_item (child_item);
+      m_undo_handler->add_item (child_item);
       m_root = child_item;
     }
 

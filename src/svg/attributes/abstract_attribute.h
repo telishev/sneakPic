@@ -1,7 +1,7 @@
 #ifndef ABSTRACT_ATTRIBUTE_H
 #define ABSTRACT_ATTRIBUTE_H
 
-#include "svg/undoable.h"
+#include "svg/undo/undoable.h"
 
 #include <string>
 

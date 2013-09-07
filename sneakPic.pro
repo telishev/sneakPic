@@ -30,6 +30,9 @@ UI_DIR = $$PROJ_DIR/src/ui
 win32:*msvc*{
   QMAKE_CXXFLAGS_DEBUG += /MP -wd4996 -we4062 /W4 /WX /Zc:wchar_t-
   QMAKE_CXXFLAGS_RELEASE += /MP -wd4996 /W4 /Ob2 /Oi /Ot /Oy /GS- /GF /Gy /WX /Zc:wchar_t-
+  QMAKE_LFLAGS_DEBUG += /INCREMENTAL
+  QMAKE_LFLAGS_RELEASE += /INCREMENTAL
+  DEFINES += "_VARIADIC_MAX=10"
 }
 
 *g++* {
@@ -51,4 +54,5 @@ Debug {
   RCC_DIR = $$PROJ_DIR/build.dbg
   DESTDIR = $$PROJ_DIR/build.dbg
   DEFINES += "SK_DEBUG"
+
 }

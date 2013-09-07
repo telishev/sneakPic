@@ -2,7 +2,6 @@
 
 #include "common/string_utils.h"
 
-#include "svg/css/css_declaration.h"
 
 #include "svg/items/abstract_svg_item.h"
 

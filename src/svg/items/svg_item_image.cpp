@@ -5,8 +5,6 @@
 #include "svg/attributes/svg_attribute_xlink_href.h"
 #include "svg/attributes/svg_attribute_preserve_aspect_ratio.h"
 
-#include "svg/svg_document.h"
-
 #include "renderer/renderer_item_image.h"
 #include "renderer/renderer_overlay_path.h"
 #include "renderer/overlay_item_type.h"

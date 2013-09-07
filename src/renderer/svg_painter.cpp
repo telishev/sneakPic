@@ -42,6 +42,7 @@
 #include "svg/svg_document.h"
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_items_container.h"
+#include "svg/svg_utils.h"
 
 
 
@@ -78,7 +79,7 @@ void svg_painter::update_status_bar_widgets ()
 void svg_painter::reset_transform ()
 {
   double doc_width, doc_height;
-  m_document->get_doc_dimensions (doc_width, doc_height);
+  svg_utils::get_doc_dimensions (m_document, doc_width, doc_height);
   double scale = qMin (glwidget ()->width () / doc_width, glwidget ()->height () / doc_height);
   m_cur_transform = QTransform::fromScale (scale, scale);
   send_changes (true);
@@ -91,8 +92,12 @@ void svg_painter::set_document (svg_document *document)
   if (!m_document)
     return;
 
-  m_overlay->set_document (document);
+  m_overlay->set_svg_container (document->item_container ());
+  double width, height;
+  svg_utils::get_doc_dimensions (document, width, height);
   create_overlay_containers ();
+  m_page_renderer->set_dimensions (width, height);
+
   set_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED, 1);
   reset_transform ();
   connect (m_document, &svg_document::items_changed, this, &svg_painter::items_changed);

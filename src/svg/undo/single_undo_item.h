@@ -5,7 +5,7 @@
 #include <utility>
 
 class abstract_state_diff_t;
-class svg_document;
+class undoable_items_container_t;
 enum class diff_direction_t;
 
 class single_undo_item
@@ -22,10 +22,10 @@ class single_undo_item
     item_and_diff (const item_and_diff &rhs);
   };
 
-  svg_document *m_document;
+  undoable_items_container_t *m_items_container;
   std::vector<item_and_diff> m_diff_map;
 public:
-  single_undo_item (svg_document *document);
+  single_undo_item (undoable_items_container_t *items_container);
   ~single_undo_item ();
 
   void undo ();

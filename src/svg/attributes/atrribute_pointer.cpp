@@ -1,13 +1,8 @@
 #include "svg/attributes/atrribute_pointer.h"
 
-#include "common/memory_deallocation.h"
 
-#include "svg/attributes/svg_attribute_factory.h"
-#include "svg/attributes/abstract_attribute.h"
 
 #include "svg/items/abstract_svg_item.h"
-
-#include "svg/svg_document.h"
 
 
 abstract_attribute_pointer::abstract_attribute_pointer (abstract_attribute *attribute, abstract_svg_item *item)

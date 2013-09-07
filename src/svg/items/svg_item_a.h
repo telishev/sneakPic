@@ -11,10 +11,10 @@ public:
   svg_item_a (svg_document *document);
   virtual ~svg_item_a () override;
 
-  virtual abstract_renderer_item *create_renderer_item_impl () const;
+  virtual abstract_renderer_item *create_renderer_item_impl () const override;
 
 protected:
-  bool check_item ();
+  virtual bool check_item () override;
 };
 
 #endif // SVG_ITEM_A_H

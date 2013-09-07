@@ -1,7 +1,7 @@
 #ifndef SVG_ITEM_OBSERVER_H
 #define SVG_ITEM_OBSERVER_H
 
-#include "svg/undoable.h"
+#include "svg/undo/undoable.h"
 
 #include <string>
 

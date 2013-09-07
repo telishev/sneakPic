@@ -8,7 +8,7 @@
 
 #include "svg/attributes/abstract_attribute.h"
 #include "svg/attributes/atrribute_pointer.h"
-#include "svg/undoable.h"
+#include "svg/undo/undoable.h"
 
 #define SVG_ITEM                                   \
 public:                                            \
@@ -129,7 +129,6 @@ protected:
   virtual void load_from_state (const abstract_state_t *state) override;
 
 private:
-  QString full_name (const QString &namespace_name, const QString &local_name) const;
   void add_to_container ();
   void remove_from_container ();
   const abstract_attribute *get_computed_attribute (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type) const;
@@ -137,7 +136,6 @@ private:
   const abstract_svg_item *get_original_item () const;
   void create_id_by_attr ();
   void create_unique_name ();
-  abstract_svg_item *get_cloned_child (const std::string &child_original) const;
   abstract_attribute *get_attribute_for_change (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type, const abstract_attribute *default_val);
   abstract_attribute *get_attribute (const char *data, bool get_clone_attributes) const;
 

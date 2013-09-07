@@ -1,7 +1,5 @@
 #include "svg/attributes/svg_attribute_xlink_href.h"
 
-#include "svg/svg_document.h"
-
 #include "svg/items/svg_items_container.h"
 #include "svg/items/abstract_svg_item.h"
 

@@ -21,7 +21,7 @@ protected:
   virtual renderer_graphics_item *create_renderer_graphics_item () const override;
   void set_item_style (renderer_base_shape_item *item) const;
   virtual QPainterPath get_path () const = 0;
-  QPainterPath get_boundaries () const override;
+  virtual QPainterPath get_boundaries () const override;
   bool get_stroke (QPainterPath &dst) const;
   abstract_renderer_item *create_outline_renderer () const override;
 };

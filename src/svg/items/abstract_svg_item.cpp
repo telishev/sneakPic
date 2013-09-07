@@ -24,11 +24,10 @@
 #include "svg/svg_document.h"
 #include "svg/svg_namespaces.h"
 #include "svg/svg_item_observer.h"
-#include "svg/undoable_items_container.h"
 
 #include "svg/css/selectors_container.h"
 #include "svg/changed_items_container.h"
-#include "svg/undo_handler.h"
+#include "svg/undo/undo_handler.h"
 #include "svg/simple_item_observer.h"
 
 class svg_item_state : public abstract_state_t
@@ -47,12 +46,10 @@ public:
   std::vector<int> m_created_observers;
 
   svg_item_type m_type;
-  int m_undo_id;
 
   virtual undoable * create_new_item () override
   {
     abstract_svg_item *item =  m_document->item_factory ()->create_item (m_type);
-    item->set_undo_id (m_undo_id);
     return item;
   }
 
@@ -72,12 +69,12 @@ public:
 class cloned_item_observer : public simple_item_observer<cloned_item_observer>
 {
 public:
-  cloned_item_observer (svg_document *document, const std::string &parent)
-    : simple_item_observer (document, parent) {}
+  cloned_item_observer (svg_items_container *container, const std::string &parent)
+    : simple_item_observer (container, parent) {}
 
   virtual void child_added (const std::string &/*parent*/, const std::string &child_name, int insert_pos) override
   {
-    abstract_svg_item *child = document ()->item_container ()->get_item (child_name);
+    abstract_svg_item *child = container ()->get_item (child_name);
     parent ()->insert_child (insert_pos, child->create_clone ());
   }
 
@@ -112,28 +109,26 @@ abstract_svg_item::abstract_svg_item (svg_document *document)
   m_children = nullptr;
   m_created_observers = nullptr;
   m_parent = -1;
-  m_document->get_undoable_items_container ()->assign_id (this);
+  m_document->get_undo_handler ()->assign_id (this);
 }
 
 abstract_svg_item::~abstract_svg_item ()
 {
   remove_from_container ();
-  auto container = m_document->get_undoable_items_container ();
+  auto handler = m_document->get_undo_handler ();
   for (auto &attribute : m_attributes)
-     container->remove_item (attribute.second);
+     handler->remove_item (attribute.second);
 
   if (m_observers)
     {
-      auto container = m_document->get_undoable_items_container ();
       for (int id : *m_observers)
-        container->remove_item (id);
+        handler->remove_item (id);
     }
 
   if (m_created_observers)
     {
-      
       for (int id : *m_created_observers)
-        container->remove_item (id);
+        handler->remove_item (id);
     }
 
   FREE (m_observers);
@@ -182,7 +177,7 @@ void abstract_svg_item::add_attribute (abstract_attribute *attribute)
       return;
     }
 
-  int id = document ()->get_undoable_items_container ()->add_item (attribute);
+  int id = document ()->get_undo_handler ()->add_item (attribute);
 
   m_attributes.insert (std::make_pair (attribute->type_name (), id));
 }
@@ -196,7 +191,7 @@ void abstract_svg_item::remove_attribute (abstract_attribute *attribute)
     }
 
   m_attributes.erase (attribute->type_name ());
-  document ()->get_undoable_items_container ()->remove_item (attribute->undo_id ());
+  document ()->get_undo_handler ()->remove_item (attribute->undo_id ());
 }
 
 const char *abstract_svg_item::namespace_uri () const
@@ -207,14 +202,6 @@ const char *abstract_svg_item::namespace_uri () const
 const char * abstract_svg_item::namespace_name () const
 {
   return svg_namespaces::name (namespace_type ());
-}
-
-QString abstract_svg_item::full_name (const QString &namespace_name, const QString &local_name) const
-{
-  if (namespace_name.isEmpty ())
-    return local_name;
-
-  return namespace_name + ":" + local_name;
 }
 
 bool abstract_svg_item::has_name () const
@@ -364,7 +351,7 @@ abstract_svg_item *abstract_svg_item::create_clone ()
       clone->push_back (cloned_child);
     }
 
-  clone->observe_item (this, new cloned_item_observer (m_document, clone->m_own_id));
+  clone->observe_item (this, new cloned_item_observer (m_document->item_container (), clone->m_own_id));
   return clone;
 }
 
@@ -454,7 +441,7 @@ abstract_svg_item *abstract_svg_item::parent () const
   if (m_parent < 0)
     return nullptr;
 
-  return static_cast<abstract_svg_item *> (m_document->get_undoable_items_container ()->get_item (m_parent));
+  return static_cast<abstract_svg_item *> (m_document->get_undo_handler ()->get_item (m_parent));
 }
 
 abstract_svg_item *abstract_svg_item::child (int index) const
@@ -462,7 +449,7 @@ abstract_svg_item *abstract_svg_item::child (int index) const
   if (!m_children)
     return nullptr;
 
-  return static_cast<abstract_svg_item *> (m_document->get_undoable_items_container ()->get_item ((*m_children)[index]));
+  return static_cast<abstract_svg_item *> (m_document->get_undo_handler ()->get_item ((*m_children)[index]));
 }
 
 void abstract_svg_item::push_back (abstract_svg_item *new_child)
@@ -475,7 +462,7 @@ void abstract_svg_item::insert_child (int position, abstract_svg_item *new_child
   register_item_change ();
   if (!m_children)
     m_children = new std::vector<int>;
-  int id = m_document->get_undoable_items_container ()->add_item (new_child);
+  int id = m_document->get_undo_handler ()->add_item (new_child);
   m_children->insert (m_children->begin () + position, id);
   new_child->m_parent = undo_id ();
   signal_child_inserted (new_child->name (), position);
@@ -488,7 +475,7 @@ void abstract_svg_item::remove_child (abstract_svg_item *child)
   signal_child_removed (child->name (), child->child_index ());
   child->signal_item_removed ();
   m_children->erase (std::remove (m_children->begin (), m_children->end (), child->undo_id ()), m_children->end ());
-  m_document->get_undoable_items_container ()->remove_item (child->undo_id ());
+  m_document->get_undo_handler ()->remove_item (child->undo_id ());
 }
 
 void abstract_svg_item::move_child (int position, abstract_svg_item *child)
@@ -505,21 +492,6 @@ void abstract_svg_item::move_child (int position, abstract_svg_item *child)
   m_children->insert (m_children->begin () + new_pos, child->undo_id ());
 
   signal_child_moved (child->name (), prev_pos, position);
-}
-
-abstract_svg_item *abstract_svg_item::get_cloned_child (const std::string &child_original) const
-{
-  /// TODO: make it faster
-  if (child_original.empty ())
-    return nullptr;
-
-  for (int i = 0; i < children_count (); i++)
-    {
-      if (child (i)->m_original_id == child_original)
-        return child (i);
-    }
-
-  return nullptr;
 }
 
 abstract_attribute *abstract_svg_item::get_attribute_for_change (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type, const abstract_attribute *default_val)
@@ -546,12 +518,12 @@ void abstract_svg_item::signal_child_inserted (const std::string &child, int pos
     return;
 
   m_document->changed_items ()->child_added (name (), child, position);
-  auto container = m_document->get_undoable_items_container ();
+  auto handler = m_document->get_undo_handler ();
   if (m_observers)
     {
       for (int id : *m_observers)
         {
-          svg_item_observer *observer = static_cast<svg_item_observer *> (container->get_item (id));
+          svg_item_observer *observer = static_cast<svg_item_observer *> (handler->get_item (id));
           if (!observer)
             continue;
 
@@ -566,12 +538,12 @@ void abstract_svg_item::signal_child_removed (const std::string &child_name, int
     return;
 
   m_document->changed_items ()->child_removed (name (), child_name, pos);
-  auto container = m_document->get_undoable_items_container ();
+  auto handler = m_document->get_undo_handler ();
   if (m_observers)
     {
       for (int id : *m_observers)
         {
-          svg_item_observer *observer = static_cast<svg_item_observer *> (container->get_item (id));
+          svg_item_observer *observer = static_cast<svg_item_observer *> (handler->get_item (id));
           if (!observer)
             continue;
 
@@ -586,12 +558,12 @@ void abstract_svg_item::signal_item_removed ()
     return;
 
   m_document->changed_items ()->item_removed (name ());
-  auto container = m_document->get_undoable_items_container ();
+  auto handler = m_document->get_undo_handler ();
   if (m_observers)
     {
       for (int id : *m_observers)
         {
-          svg_item_observer *observer = static_cast<svg_item_observer *> (container->get_item (id));
+          svg_item_observer *observer = static_cast<svg_item_observer *> (handler->get_item (id));
           if (!observer)
             continue;
 
@@ -606,12 +578,12 @@ void abstract_svg_item::signal_child_moved (const std::string &child_name, int o
     return;
 
   m_document->changed_items ()->child_moved (name (), child_name, old_pos, new_pos);
-  auto container = m_document->get_undoable_items_container ();
+  auto handler = m_document->get_undo_handler ();
   if (m_observers)
     {
       for (int id : *m_observers)
         {
-          svg_item_observer *observer = static_cast<svg_item_observer *> (container->get_item (id));
+          svg_item_observer *observer = static_cast<svg_item_observer *> (handler->get_item (id));
           if (!observer)
             continue;
 
@@ -626,12 +598,12 @@ void abstract_svg_item::signal_attribute_change_start (const abstract_attribute 
     return;
 
   m_document->changed_items ()->attribute_change_start (name (), attribute);
-  auto container = m_document->get_undoable_items_container ();
+  auto handler = m_document->get_undo_handler ();
   if (m_observers)
     {
       for (int id : *m_observers)
         {
-          svg_item_observer *observer = static_cast<svg_item_observer *> (container->get_item (id));
+          svg_item_observer *observer = static_cast<svg_item_observer *> (handler->get_item (id));
           if (!observer)
             continue;
 
@@ -646,7 +618,7 @@ void abstract_svg_item::signal_attribute_change_end (const abstract_attribute *a
     return;
 
   m_document->changed_items ()->attribute_change_end (name (), attribute);
-  auto container = m_document->get_undoable_items_container ();
+  auto container = m_document->get_undo_handler ();
   if (m_observers)
     {
       for (int id : *m_observers)
@@ -667,7 +639,6 @@ abstract_state_t *abstract_svg_item::create_state ()
   state->m_attributes = m_attributes;
   state->m_original_id = m_original_id;
   state->m_own_id = m_own_id;
-  state->m_undo_id = undo_id ();
   if (m_children)
     state->m_children = *m_children;
   state->m_parent = m_parent;
@@ -743,7 +714,7 @@ void abstract_svg_item::add_observer (svg_item_observer *observer)
   if (!m_observers)
     m_observers = new std::vector<int>;
 
-  int id = m_document->get_undoable_items_container ()->add_item (observer);
+  int id = m_document->get_undo_handler ()->add_item (observer);
   m_observers->push_back (id);
 }
 
@@ -763,11 +734,6 @@ void abstract_svg_item::erase_created_observer (svg_item_observer *observer)
 
 abstract_attribute *abstract_svg_item::get_attribute_by_id (int id) const
 {
-  return static_cast<abstract_attribute *> (m_document->get_undoable_items_container ()->get_item (id));
-}
-
-abstract_svg_item *abstract_svg_item::get_item_by_id (int id) const
-{
-  return static_cast<abstract_svg_item *> (m_document->get_undoable_items_container ()->get_item (id));
+  return static_cast<abstract_attribute *> (m_document->get_undo_handler ()->get_item (id));
 }
 

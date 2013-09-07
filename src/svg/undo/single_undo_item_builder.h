@@ -7,14 +7,14 @@
 class abstract_state_t;
 class single_undo_item;
 class undoable;
-class svg_document;
+class undoable_items_container_t;
 
 class single_undo_item_builder
 {
-  svg_document *m_document;
+  undoable_items_container_t *m_items_container;
   std::unordered_map<int, std::unique_ptr<abstract_state_t>> m_changed_items;
 public:
-  single_undo_item_builder (svg_document *document);
+  single_undo_item_builder (undoable_items_container_t *items_container);
   ~single_undo_item_builder ();
 
   single_undo_item *create_undo ();

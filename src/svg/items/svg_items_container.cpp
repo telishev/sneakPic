@@ -64,5 +64,15 @@ void svg_items_container::extract_number (const char *data)
     return;
 
   int number = atoi (data);
-  max_id = qMax (max_id, number);
+  max_id = std::max (max_id, number);
+}
+
+void svg_items_container::set_root (const std::string &root_id)
+{
+  m_root = root_id;
+}
+
+abstract_svg_item *svg_items_container::get_root () const
+{
+  return get_item (m_root);
 }

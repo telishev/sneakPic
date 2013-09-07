@@ -1,22 +1,28 @@
-#include "svg/undo_handler.h"
+#include "svg/undo/undo_handler.h"
 
 #include "common/memory_deallocation.h"
 
-#include "svg/single_undo_item_builder.h"
-#include "svg/single_undo_item.h"
 #include "svg/svg_document.h"
+
+
+#include "svg/undo/single_undo_item_builder.h"
+#include "svg/undo/single_undo_item.h"
+#include "svg/undo/undoable_items_container.h"
+#include "svg/undo/undoable.h"
 
 
 undo_handler::undo_handler (svg_document *document)
 {
   m_document = document;
-  m_builder = new single_undo_item_builder (m_document);
+  m_items_container = new undoable_items_container_t;
+  m_builder = new single_undo_item_builder (m_items_container);
   m_cur_undo_position = 0;
 }
 
 undo_handler::~undo_handler ()
 {
   FREE (m_builder);
+  FREE (m_items_container);
 }
 
 void undo_handler::create_undo ()
@@ -62,15 +68,47 @@ void undo_handler::register_item (undoable *item)
   m_builder->register_item (item);
 }
 
+void undo_handler::clear ()
+{
+  m_builder->clear ();
+}
+
+undoable *undo_handler::get_item (int id) const
+{
+  return m_items_container->get_item (id);
+}
+
+int undo_handler::add_item (undoable *item)
+{
+  int id = m_items_container->add_item (item);
+  m_builder->register_new_item (item);
+  return id;
+}
+
+void undo_handler::remove_item (undoable *item)
+{
+  if (!item)
+    return;
+
+  register_item (item);
+  m_items_container->remove_item (item->undo_id ());
+}
+
+void undo_handler::remove_item (int id)
+{
+  undoable *item = m_items_container->get_item (id);
+  return remove_item (item);
+}
+
+int undo_handler::assign_id (undoable *item)
+{
+  return m_items_container->assign_id (item);
+}
+
 void undo_handler::register_new_item (undoable *item)
 {
   if (!m_document->signals_enabled ())
     return;
 
   m_builder->register_new_item (item);
-}
-
-void undo_handler::clear ()
-{
-  m_builder->clear ();
 }

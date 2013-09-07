@@ -19,9 +19,13 @@
 #include <consoleapi.h>
 #endif // _WINDOWS
 
+#include "gtest/gtest.h"
+
 
 int main (int argc, char **argv)
 {
+  ::testing::InitGoogleTest (&argc, argv);
+  return RUN_ALL_TESTS ();
   QApplication app (argc, argv);
   std::unique_ptr<main_window> mainWin;
   std::unique_ptr<cl_arguments> args (new cl_arguments);

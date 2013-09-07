@@ -11,11 +11,9 @@
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_overlay_root.h"
 #include "renderer/renderer_page.h"
-#include "renderer/overlay_item_type.h"
 #include "renderer/rendered_items_cache.h"
 #include "renderer/render_cache_id.h"
 
-#include "svg/svg_document.h"
 #include "svg/items/svg_items_container.h"
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_graphics_item.h"
@@ -37,7 +35,6 @@
 
 overlay_renderer::overlay_renderer (rendered_items_cache *cache)
 {
-  m_document = nullptr;
   m_container = nullptr;
   m_overlay_cache = new rendered_items_cache;
   m_renderer = new svg_renderer (m_overlay_cache, nullptr);
@@ -53,7 +50,7 @@ overlay_renderer::~overlay_renderer ()
   FREE (m_overlay_cache);
 }
 
-void overlay_renderer::set_document (svg_document *document)
+void overlay_renderer::set_svg_container (svg_items_container *svg_container)
 {
   remove_overlay_containers ();
   FREE (m_container);
@@ -65,7 +62,7 @@ void overlay_renderer::set_document (svg_document *document)
       m_container->add_item (m_root_items[i]);
     }
 
-  m_document = document;
+  m_svg_container = svg_container;
 }
 
 void overlay_renderer::draw (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform)

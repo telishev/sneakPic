@@ -5,13 +5,11 @@
 
 #include <QColor>
 
-class css_declaration;
 
 class svg_attribute_color : public abstract_attribute
 {
   SVG_ATTRIBUTE
 
-  css_declaration *declaration;
   QColor m_color;
 public:
   svg_attribute_color (svg_document *document);

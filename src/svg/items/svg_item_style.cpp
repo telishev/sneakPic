@@ -40,7 +40,7 @@ bool svg_item_style::read_item (const char *data)
       CHECK (extract_chunk ('{', data, selectors_string));
       CHECK (extract_chunk ('}', data, declaration_string));
 
-      std::unique_ptr <css_declaration> declaration (new css_declaration (document (), undo_id ()));
+      std::unique_ptr <css_declaration> declaration (new css_declaration (document ()->attribute_factory (), undo_id ()));
       std::unique_ptr <abstract_css_selector> selector (css_selector_reader::create_selector (selectors_string.c_str ()));
       CHECK (declaration->parse (declaration_string.c_str ()));
       if (!selector)

@@ -12,6 +12,7 @@ class svg_items_container
 
   map_type m_map;
   int max_id;
+  std::string m_root;
 public:
   svg_items_container ();
   ~svg_items_container ();
@@ -25,7 +26,8 @@ public:
   /// creates unique name in a form "item_id"number
   std::string create_unique_name (const char *item_id);
 
-  const map_type &get_items () const { return m_map; }
+  void set_root (const std::string &root_id);
+  abstract_svg_item *get_root () const;
 
 private:
   /// tries to get some number from a string and update max_id with it to prevent id collisions

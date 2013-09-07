@@ -3,8 +3,6 @@
 #include "renderer/overlay_renderer.h"
 #include "renderer/abstract_renderer_item.h"
 
-#include "svg/svg_document.h"
-
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_items_container.h"
 #include "svg/items/svg_graphics_item.h"
@@ -23,9 +21,9 @@ overlay_items_container::~overlay_items_container ()
   clear_items ();
 }
 
-svg_document *overlay_items_container::document () const
+svg_items_container *overlay_items_container::svg_container () const
 {
-  return m_overlay->document ();
+  return m_overlay->svg_container ();
 }
 
 void overlay_items_container::add_svg_item (const std::string &object)
@@ -64,7 +62,7 @@ void overlay_items_container::clear_items ()
 std::vector<abstract_renderer_item *> overlay_items_container::create_overlay_for_item (const std::string &object, overlay_item_type overlay_type) const
 {
   std::vector<abstract_renderer_item *> result;
-  abstract_svg_item *svg_item = m_overlay->document ()->item_container ()->get_item (object);
+  abstract_svg_item *svg_item = m_overlay->svg_container ()->get_item (object);
   if (!svg_item)
     return result;
 
