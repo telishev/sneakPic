@@ -18,8 +18,6 @@
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_config.h"
 
-#include "svg/items/abstract_svg_item.h"
-
 
 
 #pragma warning(push, 0)

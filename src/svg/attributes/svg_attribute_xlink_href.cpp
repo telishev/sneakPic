@@ -2,9 +2,10 @@
 
 #include "svg/items/svg_items_container.h"
 #include "svg/items/abstract_svg_item.h"
+#include "svg/svg_document.h"
 
 svg_attribute_xlink_href::svg_attribute_xlink_href (svg_document *document)
-  : abstract_attribute (document), m_iri (document)
+  : abstract_attribute (document), m_iri (document->get_filename ())
 {
 
 }
@@ -39,7 +40,7 @@ QImage *svg_attribute_xlink_href::get_image_data () const
   return m_iri.get_image_data ();
 }
 
-abstract_svg_item *svg_attribute_xlink_href::get_fragment () const
+std::string svg_attribute_xlink_href::get_fragment_name () const
 {
-  return m_iri.get_fragment ();
+  return m_iri.get_fragment_name ();
 }

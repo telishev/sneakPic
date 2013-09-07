@@ -1,5 +1,9 @@
 #include "svg/items/svg_base_shape_item.h"
 
+#include <memory>
+
+#include "common/math_defs.h"
+
 #include "renderer/renderer_paint_server.h"
 
 #include "svg/attributes/svg_attribute_stroke_linecap.h"
@@ -15,10 +19,13 @@
 
 #include "svg/svg_document.h"
 
+#include "svg/items/svg_items_container.h"
+#include "svg/items/svg_item_marker.h"
+#include "svg/items/svg_item_type.h"
+
 #include "renderer/renderer_base_shape_item.h"
 #include "renderer/renderer_overlay_path.h"
 
-#include <memory>
 
 svg_base_shape_item::svg_base_shape_item (svg_document *document)
    : svg_base_graphics_item (document)
@@ -42,10 +49,6 @@ void svg_base_shape_item::set_item_style (renderer_base_shape_item *item) const
   auto fill_opacity = get_computed_attribute<svg_attribute_fill_opacity> ();
   auto dash_array = get_computed_attribute<svg_attribute_stroke_dash_array> ();
   auto dash_offset = get_computed_attribute<svg_attribute_stroke_dash_offset> ();
-  auto marker_start = get_computed_attribute<svg_attribute_marker_start> ();
-  auto marker_mid = get_computed_attribute<svg_attribute_marker_mid> ();
-  auto marker_end = get_computed_attribute<svg_attribute_marker_end> ();
-  auto marker = get_computed_attribute<svg_attribute_marker> ();
 
   fill->set_opacity (fill_opacity->value () * opacity->computed_opacity ());
   stroke->set_opacity (stroke_opacity->value () * opacity->computed_opacity ());
@@ -59,10 +62,8 @@ void svg_base_shape_item::set_item_style (renderer_base_shape_item *item) const
   item->set_fill_server (fill.get ());
   item->set_stroke_server (stroke.get ());
   item->set_bounding_box (m_bbox);
-  item->add_marker (marker_start);
-  item->add_marker (marker_mid);
-  item->add_marker (marker_end);
-  item->add_marker (marker);
+
+  configure_markers (item);
 }
 
 QPainterPath svg_base_shape_item::get_path_for_clipping () const
@@ -82,10 +83,8 @@ renderer_graphics_item *svg_base_shape_item::create_renderer_graphics_item () co
   QPainterPath path = get_path ();
   const svg_attribute_fill_rule *attr_fill_rule = get_computed_attribute<svg_attribute_fill_rule> ();
   path.setFillRule (attr_fill_rule->value () == fill_rule::EVEN_ODD ? Qt::OddEvenFill : Qt::WindingFill);
-  set_item_style (render_item);
-  /// must be last
   render_item->set_painter_path (path);
-  render_item->configure_markers ();
+  set_item_style (render_item);
   return render_item;
 }
 
@@ -142,4 +141,61 @@ bool svg_base_shape_item::get_stroke (QPainterPath &dst) const
   stroker.setWidth (stroke_width->get_stroke_width ());
   dst = stroker.createStroke (path);
   return true;
+}
+
+void svg_base_shape_item::configure_markers_on_path_drawing (renderer_base_shape_item *base_item,
+  const svg_base_attribute_marker_usage *marker, const QPainterPath &path, const QTransform &transform, double stroke_width) const
+{
+  abstract_svg_item *item = document ()->item_container ()->get_item (marker->fragment_name ());
+  if (item->type () != svg_item_type::MARKER)
+    return;
+
+  svg_item_marker *marker_item = static_cast <svg_item_marker *> (item);
+  QPointF first_vector, second_vector;
+  int focused_index;
+
+  for (int i = 0; i < path.elementCount (); i++)
+    {
+      focused_index = i;
+      if (!marker->is_point_applicable (i, path))
+        continue;
+
+      if (path.elementAt (focused_index).type == QPainterPath::CurveToDataElement)
+        continue;
+
+      if (path.elementAt (focused_index).type == QPainterPath::CurveToElement)
+        focused_index += 2;
+
+      if (path.elementAt (focused_index).isMoveTo () || i == 0)
+        first_vector = QPointF (0.0, 0.0);
+      else
+        first_vector = path.elementAt (focused_index) - path.elementAt (focused_index - 1);
+
+      if (focused_index == path.elementCount () - 1)
+        second_vector = QPointF (0.0, 0.0);
+      else 
+        second_vector = path.elementAt (focused_index + 1) - path.elementAt (focused_index);
+      
+      if (are_equal (first_vector.x (), second_vector.x ()) && are_equal (first_vector.y (), second_vector.y ()))
+        continue;
+
+      abstract_renderer_item *item = marker_item->create_renderer_item_for_marker (path.elementAt (focused_index), first_vector + second_vector, transform, stroke_width);
+      if (item != nullptr)
+        base_item->add_marker (item);
+    }
+}
+
+void svg_base_shape_item::configure_markers (renderer_base_shape_item *item) const
+{
+  QTransform transform = full_transform ();
+  auto marker_start = get_computed_attribute<svg_attribute_marker_start> ();
+  auto marker_mid = get_computed_attribute<svg_attribute_marker_mid> ();
+  auto marker_end = get_computed_attribute<svg_attribute_marker_end> ();
+  auto marker = get_computed_attribute<svg_attribute_marker> ();
+  auto stroke_width = get_computed_attribute<svg_attribute_stroke_width> ();
+
+  configure_markers_on_path_drawing (item, marker_start, item->painter_path (), transform, stroke_width->get_stroke_width ());
+  configure_markers_on_path_drawing (item, marker_mid, item->painter_path (), transform, stroke_width->get_stroke_width ());
+  configure_markers_on_path_drawing (item, marker_end, item->painter_path (), transform, stroke_width->get_stroke_width ());
+  configure_markers_on_path_drawing (item, marker, item->painter_path (), transform, stroke_width->get_stroke_width ());
 }

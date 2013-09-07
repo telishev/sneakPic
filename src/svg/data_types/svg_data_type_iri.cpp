@@ -1,7 +1,5 @@
 #include "svg/data_types/svg_data_type_iri.h"
 
-#include "svg/svg_document.h"
-
 #include "svg/items/svg_items_container.h"
 #include "svg/items/abstract_svg_item.h"
 
@@ -12,9 +10,9 @@
 #include <QFileInfo>
 #include <QDir>
 
-svg_data_type_iri::svg_data_type_iri (svg_document *document)
+svg_data_type_iri::svg_data_type_iri (const QString &svg_name)
 {
-  m_document = document;
+  m_svg_name = svg_name;
   m_image_data = 0;
   m_iri_type = iri_type::document_fragment;
   m_data_type = data_type::unsupported;
@@ -110,7 +108,7 @@ bool svg_data_type_iri::read (const QString &data_arg)
     }
   else // try to treat as a link
     {
-      QFileInfo file (QFileInfo (m_document->get_filename ()).absoluteDir (), data);
+      QFileInfo file (QFileInfo (m_svg_name).absoluteDir (), data);
       m_iri_type = iri_type::media_resource;
       if (!file.exists ())
         return false;
@@ -164,12 +162,9 @@ bool svg_data_type_iri::write (QString &data) const
   return false;
 }
 
-abstract_svg_item *svg_data_type_iri::get_fragment () const
+std::string svg_data_type_iri::get_fragment_name () const
 {
-  if (!m_document)
-    return nullptr;
-
-  return m_document->item_container ()->get_item (m_element_id.toStdString ());
+  return m_element_id.toStdString ();
 }
 
 iri_type svg_data_type_iri::get_type () const

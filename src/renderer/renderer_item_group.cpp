@@ -2,8 +2,6 @@
 
 #include "svg/attributes/svg_attributes_enum.h"
 
-#include "svg/items/abstract_svg_item.h"
-
 #include "renderer/renderer_state.h"
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_items_container.h"

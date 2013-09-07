@@ -6,8 +6,11 @@
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_item_clip_path.h"
 
+#include "svg/svg_document.h"
+#include "svg/items/svg_items_container.h"
+
 svg_attribute_clip_path::svg_attribute_clip_path (svg_document *document)
-  : abstract_attribute (document), m_iri (document)
+  : abstract_attribute (document), m_iri (document->get_filename ())
 {
 
 }
@@ -45,7 +48,7 @@ bool svg_attribute_clip_path::write (QString &data, bool /*to_css*/) const
 
 const svg_item_clip_path *svg_attribute_clip_path::clip_path () const
 {
-  const abstract_svg_item *path = m_iri.get_fragment ();
+  const abstract_svg_item *path = document ()->item_container ()->get_item (m_iri.get_fragment_name ());
   if (!path || path->type () != svg_item_type::CLIP_PATH)
     return nullptr;
 

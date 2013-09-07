@@ -2,6 +2,7 @@
 
 #include "common/memory_deallocation.h"
 #include "common/debug_utils.h"
+#include "common/math_defs.h"
 
 #include <QPainter>
 
@@ -11,8 +12,6 @@
 #include "renderer/renderer_config.h"
 #include "renderer/renderer_items_container.h"
 #include "renderer/renderer_state.h"
-
-#include "svg/attributes/svg_attributes_marker_usage.h"
 
 #pragma warning(push, 0)
 #include <SkCanvas.h>
@@ -35,16 +34,10 @@ renderer_base_shape_item::renderer_base_shape_item (const std::string &name)
   m_fill_server = nullptr;
 }
 
-void renderer_base_shape_item::add_marker (const svg_base_attribute_marker_usage *marker)
+void renderer_base_shape_item::add_marker (abstract_renderer_item *marker)
 {
-  if (!marker || !marker->is_specified ())
-    return;
-  else
-    {
-      markers_used.push_back (marker);
-    }
+  marker_renderer_items.push_back (marker);
 }
-
 
 renderer_base_shape_item::~renderer_base_shape_item ()
 {
@@ -138,16 +131,6 @@ void renderer_base_shape_item::set_fill_server (const renderer_paint_server *ser
   m_fill_server = server->clone ();
 }
 
-void renderer_base_shape_item::configure_markers ()
-{
-  for (size_t i = 0; i < markers_used.size (); i++)
-  {
-    std::vector<abstract_renderer_item *> marker_renderers = markers_used[i]->configure_markers_on_path_drawing (m_path, m_transform, m_stroke->getStrokeWidth ());
-    for (size_t j = 0; j < marker_renderers.size (); j++)
-      marker_renderer_items.push_back (marker_renderers[j]);
-  }
-}
-
 void renderer_base_shape_item::update_bbox_impl ()
 {
   m_bbox_computed = m_bbox;
@@ -176,3 +159,4 @@ void renderer_base_shape_item::draw_graphics_item (SkCanvas &canvas, const rende
     canvas.save ();
   }
 }
+

@@ -59,7 +59,7 @@ bool svg_item_use::update_children_tree ()
   auto transform = get_attribute_for_change<svg_attribute_transform> ();
   transform->set_additional_transform (QTransform::fromTranslate (x->value (), y->value ()));
 
-  abstract_svg_item *item_ref = href->get_fragment ();
+  abstract_svg_item *item_ref = document ()->item_container ()->get_item (href->get_fragment_name ());
   if (item_ref)
     {
       abstract_svg_item *clone = item_ref->create_clone ();

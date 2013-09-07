@@ -8,13 +8,16 @@
 #include "renderer/renderer_paint_server.h"
 
 #include "svg/items/svg_base_items_gradient.h"
+#include "svg/items/svg_items_container.h"
+#include "svg/svg_document.h"
+
 
 #include <memory>
 
 
 
 svg_paint_server::svg_paint_server (svg_document *document)
-  : abstract_attribute (document), m_iri (document)
+  : abstract_attribute (document), m_iri (document->get_filename ())
 {
   m_server_type = paint_server_type::NONE;
 }
@@ -93,7 +96,9 @@ renderer_paint_server *svg_paint_server::create_paint_server () const
     case paint_server_type::IRI:
       {
         /// TODO: support other paint servers
-        const svg_base_items_gradient *base_gradient = dynamic_cast<const svg_base_items_gradient *> (m_iri.get_fragment ());
+        std::string fragment_name = m_iri.get_fragment_name ();
+
+        const svg_base_items_gradient *base_gradient = dynamic_cast<const svg_base_items_gradient *> (document ()->item_container ()->get_item (fragment_name));
         if (!base_gradient)
           return new renderer_painter_server_none;
 

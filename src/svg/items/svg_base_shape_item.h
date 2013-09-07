@@ -8,6 +8,7 @@ class QTransform;
 class QRectF;
 
 class renderer_base_shape_item;
+class svg_base_attribute_marker_usage;
 
 class svg_base_shape_item : public svg_base_graphics_item
 {
@@ -24,6 +25,9 @@ protected:
   virtual QPainterPath get_boundaries () const override;
   bool get_stroke (QPainterPath &dst) const;
   abstract_renderer_item *create_outline_renderer () const override;
+  void configure_markers_on_path_drawing (renderer_base_shape_item *base_item,
+    const svg_base_attribute_marker_usage *marker, const QPainterPath &path, const QTransform &transform, double stroke_width) const;
+  void configure_markers (renderer_base_shape_item *item) const;
 };
 
 #endif // SVG_BASE_SHAPE_ITEM_H

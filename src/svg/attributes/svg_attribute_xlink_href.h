@@ -4,6 +4,8 @@
 #include "svg/attributes/abstract_attribute.h"
 #include "svg/data_types/svg_data_type_iri.h"
 
+#include <string>
+
 
 class svg_attribute_xlink_href : public abstract_attribute
 {
@@ -17,7 +19,7 @@ public:
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 
-  abstract_svg_item *get_fragment () const;
+  std::string get_fragment_name () const;
   bool has_image_data () const;
   QImage *get_image_data () const;
   iri_type get_data_type () const;

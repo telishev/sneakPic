@@ -18,7 +18,6 @@ protected:
   SkPaint *m_fill;
   renderer_paint_server *m_stroke_server;
   renderer_paint_server *m_fill_server;
-  std::vector <const svg_base_attribute_marker_usage *> markers_used;
   std::vector <abstract_renderer_item *> marker_renderer_items;
 
 public:
@@ -39,9 +38,12 @@ public:
 
   void set_painter_path (const QPainterPath &path) { m_path = path; }
   void set_bounding_box (const QRectF &rect) { m_bbox = rect; }
-  void configure_markers ();
 
-  void add_marker (const svg_base_attribute_marker_usage *marker);
+  const QPainterPath & painter_path () { return m_path; }
+
+  void add_marker (abstract_renderer_item *marker);
+  std::vector<abstract_renderer_item *> configure_markers_on_path_drawing (
+    const svg_base_attribute_marker_usage *marker, const QPainterPath &path, const QTransform &transform, double stroke_width) const;
 
 protected:
   bool configure_painter (SkPaint &paint, bool stroke, bool config_for_selection) const;
