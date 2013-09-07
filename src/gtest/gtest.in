@@ -1,0 +1,8 @@
+THIS_DIR = $$PROJ_DIR/src/gtest
+
+INCLUDEPATH += $$THIS_DIR
+
+SOURCES += $$THIS_DIR/gmock-gtest-all.cc
+HEADERS += $$THIS_DIR/gtest/gtest.h
+HEADERS += $$THIS_DIR/gmock/gmock.h
+
