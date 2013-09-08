@@ -12,8 +12,7 @@
 
 
 
-svg_attribute_path_data::svg_attribute_path_data (svg_document *document)
-  : abstract_attribute (document)
+svg_attribute_path_data::svg_attribute_path_data ()
 {
 
 }

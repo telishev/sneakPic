@@ -5,8 +5,7 @@
 
 #include <QString>
 
-svg_attribute_points::svg_attribute_points (svg_document *document)
-  : abstract_attribute (document)
+svg_attribute_points::svg_attribute_points ()
 {
   
 }

@@ -8,17 +8,19 @@
 class event_items_changed;
 class svg_items_container;
 class svg_graphics_item;
+class undo_handler;
 
-class changed_items_container : svg_item_observer
+class items_edit_handler_t : public svg_item_observer
 {
   std::unordered_set<std::string> m_changed_items;
   std::unordered_set<std::string> m_layout_changed_items;
   std::unordered_set<std::string> m_removed_items;
 
   svg_items_container *m_container;
+  undo_handler        *m_undo_handler;
 public:
-  changed_items_container (svg_items_container *container);
-  ~changed_items_container ();
+  items_edit_handler_t (svg_items_container *container);
+  ~items_edit_handler_t ();
 
   virtual void child_added (const std::string &parent, const std::string &child_name, int insert_pos) override;
   virtual void child_removed (const std::string &parent, const std::string &child_name, int pos) override;
@@ -35,6 +37,8 @@ public:
   void set_item_changed (const std::string &item);
   void set_item_layout_changed (const std::string &item);
   void set_item_removed (const std::string &item);
+
+  undo_handler *get_undo_handler () const { return m_undo_handler; }
 
 private:
   void clear ();

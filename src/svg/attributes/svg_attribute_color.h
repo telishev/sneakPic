@@ -12,7 +12,7 @@ class svg_attribute_color : public abstract_attribute
 
   QColor m_color;
 public:
-  svg_attribute_color (svg_document *document);
+  svg_attribute_color ();
   virtual ~svg_attribute_color ();
 
   QColor value () const { return m_color; }

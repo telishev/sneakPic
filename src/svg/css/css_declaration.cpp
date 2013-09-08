@@ -1,6 +1,7 @@
 #include "svg/css/css_declaration.h"
 
 #include <memory>
+#include <QString>
 
 #include "common/memory_deallocation.h"
 #include "common/string_utils.h"
@@ -9,13 +10,11 @@
 #include "svg/attributes/abstract_attribute.h"
 #include "svg/attributes/svg_attribute_factory.h"
 
-#include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_item_type.h"
 
 
-css_declaration::css_declaration (svg_attribute_factory *factory, int item_id)
+css_declaration::css_declaration (int item_id)
 {
-  m_factory = factory;
   m_item_id = item_id;
 }
 
@@ -50,7 +49,7 @@ bool css_declaration::create_attribute (const std::string &name, const std::stri
   std::string real_value = from_escaped_string (value);
 
   /// TODO: do something with namespaces
-  std::unique_ptr <abstract_attribute> attribute (m_factory->create_attribute (real_name.c_str (), svg_item_type::STYLE));
+  std::unique_ptr <abstract_attribute> attribute (svg_attribute_factory::get ()->create_attribute (real_name.c_str (), svg_item_type::STYLE));
   if (!attribute)
     return false;
 
@@ -95,4 +94,12 @@ abstract_attribute *css_declaration::get_attribute (const std::string &str) cons
     return nullptr;
 
   return it->second;
+}
+
+void css_declaration::set_edit_handler (items_edit_handler_t *edit_handler)
+{
+  for (auto &attribute_pair : m_attributes)
+    {
+      attribute_pair.second->set_edit_handler (edit_handler);
+    }
 }

@@ -8,6 +8,7 @@
 
 #include "svg/attributes/svg_attribute_clip_path.h"
 #include "svg/attributes/svg_attribute_transform.h"
+#include "svg/svg_document.h"
 
 svg_item_clip_path::svg_item_clip_path (svg_document *document)
   : abstract_svg_item (document)
@@ -38,7 +39,7 @@ QPainterPath svg_item_clip_path::get_clip_path () const
     }
 
   const svg_attribute_clip_path *clip_path_attr = get_computed_attribute<svg_attribute_clip_path> ();
-  const svg_item_clip_path *clip_path = clip_path_attr->clip_path ();
+  const svg_item_clip_path *clip_path = clip_path_attr->clip_path (document ()->item_container ());
   if (clip_path)
     path = path.intersected (clip_path->get_clip_path ());
 
@@ -58,7 +59,7 @@ QPainterPath svg_item_clip_path::get_single_child_path (const abstract_svg_item 
 
   QPainterPath path = base_shape->get_path_for_clipping ();
   const svg_attribute_clip_path *clip_path_attr = child->get_computed_attribute<svg_attribute_clip_path> ();
-  const svg_item_clip_path *clip_path = clip_path_attr->clip_path ();
+  const svg_item_clip_path *clip_path = clip_path_attr->clip_path (document ()->item_container ());
   if (clip_path)
     path = path.intersected (clip_path->get_clip_path ());
 

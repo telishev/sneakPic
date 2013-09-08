@@ -11,7 +11,7 @@ class svg_attribute_view_box : public abstract_attribute
   SVG_ATTRIBUTE
   double m_x, m_y, m_width, m_height;
 public:
-  svg_attribute_view_box (svg_document *document);
+  svg_attribute_view_box ();
   virtual ~svg_attribute_view_box ();
 
   virtual bool read (const char *data, bool from_css = false) override;

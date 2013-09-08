@@ -4,7 +4,9 @@
 
 #include "svg/items/abstract_svg_item.h"
 
-#include "svg/attributes/unknown_attribute.h"
+#include "svg/attributes/svg_attribute_type.h"
+#include "svg/svg_namespaces.h"
+
 #include "svg/attributes/svg_attribute_id.h"
 #include "svg/attributes/svg_attribute_version.h"
 #include "svg/attributes/svg_attribute_path_data.h"
@@ -51,7 +53,7 @@
   svg_inherit_type CLASS::inherit_type () const { return static_inherit_type (); }                 \
   svg_inherit_type CLASS::static_inherit_type () { return svg_inherit_type::INHERIT_TYPE; }        \
   const abstract_attribute *CLASS::default_value ()                                                \
- { static const CLASS def_value (nullptr); return &def_value; }                                    \
+ { static const CLASS def_value; return &def_value; }                                              \
                                                                                                   
   DECLARE_SVG_ATTRIBUTES
 #undef DECLARE_ATTRIBUTE
@@ -61,14 +63,13 @@ void svg_attribute_factory::support_attribute ()
 {
   std::string type_name = T::static_type_name ();
   svg_attribute_type type = T::static_type ();
-  m_string_map.insert (std::make_pair (type_name, [&] () { return new T (m_document); } ));
-  m_type_map.insert (std::make_pair (type, [&] () { return new T (m_document); } ));
+  m_string_map.insert (std::make_pair (type_name, [&] () { return new T (); } ));
+  m_type_map.insert (std::make_pair (type, [&] () { return new T (); } ));
+  m_type_to_string_map[type] = type_name;
 }
 
-svg_attribute_factory::svg_attribute_factory (svg_document *document)
+svg_attribute_factory::svg_attribute_factory ()
 {
-  m_document = document;
-
 #define DECLARE_ATTRIBUTE(ENUM,NAME,NAMESPACE,CLASS,STYLABLE) support_attribute<CLASS> ();
 
   DECLARE_SVG_ATTRIBUTES
@@ -80,7 +81,7 @@ svg_attribute_factory::~svg_attribute_factory ()
 
 }
 
-abstract_attribute *svg_attribute_factory::create_attribute (abstract_svg_item *item, const char *localName, const char *namespaceURI, const char *prefix) const
+abstract_attribute *svg_attribute_factory::create_attribute (abstract_svg_item *item, const char *localName, const char *namespaceURI) const
 {
   std::string item_id = localName;
   auto it_pair = m_string_map.equal_range (item_id);
@@ -99,14 +100,11 @@ abstract_attribute *svg_attribute_factory::create_attribute (abstract_svg_item *
       return attribute.release ();
     }
 
-  return new unknown_attribute (m_document, localName, namespaceURI, prefix);
+  return nullptr;
 }
 
 abstract_attribute *svg_attribute_factory::create_attribute (int item_id, svg_attribute_type type)
 {
-  if (type == svg_attribute_type::UNKNOWN)
-    return new unknown_attribute (m_document, "", "", "");
-
   abstract_attribute *attribute = m_type_map[type] ();
   attribute->set_item (item_id);
   return attribute;
@@ -127,5 +125,16 @@ abstract_attribute * svg_attribute_factory::create_attribute (const char *localN
       return attribute.release ();
     }
 
-  return new unknown_attribute (m_document, localName, "", "");
+  return nullptr;
+}
+
+svg_attribute_factory *svg_attribute_factory::get ()
+{
+  static svg_attribute_factory instance;
+  return &instance;
+}
+
+std::string svg_attribute_factory::attribute_name (svg_attribute_type type) const
+{
+  return m_type_to_string_map.at (type);
 }

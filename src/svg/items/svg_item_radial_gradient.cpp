@@ -23,9 +23,9 @@ bool svg_item_radial_gradient::check_item ()
 
 renderer_base_gradient_item *svg_item_radial_gradient::create_gradient () const 
 {
-  static const svg_attribute_cx default_cx (nullptr, 0.5);
-  static const svg_attribute_cy default_cy (nullptr, 0.5);
-  static const svg_attribute_r default_r (nullptr, 0.5);
+  static const svg_attribute_cx default_cx (0.5);
+  static const svg_attribute_cy default_cy (0.5);
+  static const svg_attribute_r default_r (0.5);
   const svg_attribute_cx *cx = get_computed_attribute<svg_attribute_cx> (&default_cx);
   const svg_attribute_cy *cy = get_computed_attribute<svg_attribute_cy> (&default_cy);
   const svg_attribute_r   *r = get_computed_attribute<svg_attribute_r> (&default_r);

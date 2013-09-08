@@ -25,20 +25,20 @@ private:
 };
 
 template <typename T>
-class atrribute_pointer : public abstract_attribute_pointer
+class attribute_pointer : public abstract_attribute_pointer
 {
 public:
-  atrribute_pointer (T *attribute, abstract_svg_item *item)
+  attribute_pointer (T *attribute, abstract_svg_item *item)
     : abstract_attribute_pointer (attribute, item)
   {
   }
 
-  atrribute_pointer (atrribute_pointer<T> &&rhs)
+  attribute_pointer (attribute_pointer<T> &&rhs)
     : abstract_attribute_pointer (std::move (rhs))
   {
   }
 
-  ~atrribute_pointer () {}
+  ~attribute_pointer () {}
 
   T *operator-> () { return static_cast<T *> (m_cur_attribute); }
 

@@ -2,24 +2,27 @@
 #define SELECTORS_CONTAINER_H
 
 #include <unordered_set>
+#include <unordered_map>
 #include <string>
 
-class svg_item_style;
+class abstract_css_selector;
+class css_declaration;
 class abstract_svg_item;
 class abstract_attribute;
 
 class selectors_container
 {
-  std::unordered_set<svg_item_style *> m_style_set;
+  std::vector<std::pair <abstract_css_selector *, css_declaration *>> m_rule_set;
 
 public:
   selectors_container ();
   ~selectors_container ();
 
-  void add_style (svg_item_style *style);
-  void remove_style (svg_item_style *style);
+  bool empty () const { return m_rule_set.empty (); }
+  void add_rule_set (abstract_css_selector *selector, css_declaration *declaration);
 
   const abstract_attribute *get_attribute (const std::string &str, const abstract_svg_item *item_to_match) const;
+  void get_attributes_for_item (const abstract_svg_item *item_to_match, std::unordered_map<std::string, abstract_attribute *> &result);
 };
 
 #endif // SELECTORS_CONTAINER_H

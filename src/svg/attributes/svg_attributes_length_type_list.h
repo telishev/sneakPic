@@ -10,8 +10,7 @@ class svg_attribute_dx : public svg_base_attribute_length_list
   SVG_ATTRIBUTE
 
 public:
-  svg_attribute_dx(svg_document *document)
-    : svg_base_attribute_length_list (document, units_orientation::X) {}
+  svg_attribute_dx () : svg_base_attribute_length_list (units_orientation::X) {}
 };
 
 class svg_attribute_dy : public svg_base_attribute_length_list
@@ -19,8 +18,7 @@ class svg_attribute_dy : public svg_base_attribute_length_list
   SVG_ATTRIBUTE
 
 public:
-  svg_attribute_dy(svg_document *document)
-    : svg_base_attribute_length_list (document, units_orientation::Y) {}
+  svg_attribute_dy () : svg_base_attribute_length_list (units_orientation::Y) {}
 };
 
 class svg_attribute_stroke_dash_array : public svg_base_attribute_length_list
@@ -28,8 +26,7 @@ class svg_attribute_stroke_dash_array : public svg_base_attribute_length_list
   SVG_ATTRIBUTE
 
 public:
-  svg_attribute_stroke_dash_array(svg_document *document)
-    : svg_base_attribute_length_list (document, units_orientation::OTHER) {}
+  svg_attribute_stroke_dash_array () : svg_base_attribute_length_list (units_orientation::OTHER) {}
 
   virtual bool read (const char *data, bool from_css = false) override
   { 

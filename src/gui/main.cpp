@@ -24,8 +24,10 @@
 
 int main (int argc, char **argv)
 {
+#if 0
   ::testing::InitGoogleTest (&argc, argv);
   return RUN_ALL_TESTS ();
+#endif
   QApplication app (argc, argv);
   std::unique_ptr<main_window> mainWin;
   std::unique_ptr<cl_arguments> args (new cl_arguments);

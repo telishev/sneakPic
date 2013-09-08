@@ -7,6 +7,7 @@
 #include "svg/data_types/svg_data_type_iri.h"
 
 class abstract_svg_item;
+class svg_items_container;
 class renderer_paint_server;
 
 class svg_paint_server : public abstract_attribute
@@ -26,15 +27,15 @@ protected:
   paint_server_type m_server_type;
 
 public:
-  svg_paint_server (svg_document *document);
+  svg_paint_server ();
   ~svg_paint_server ();
 
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 
-  renderer_paint_server *create_paint_server () const;
+  renderer_paint_server *create_paint_server (const svg_items_container *container) const;
 
-  bool need_to_render () const;
+  bool need_to_render (const svg_items_container *container) const;
 
   virtual abstract_svg_item *get_item () const = 0;
 };
@@ -44,7 +45,7 @@ class svg_attribute_fill : public svg_paint_server
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_fill (svg_document *document) : svg_paint_server (document)
+  svg_attribute_fill ()
   {
     m_color = Qt::black;
     m_server_type = svg_paint_server::paint_server_type::COLOR;
@@ -56,7 +57,7 @@ class svg_attribute_stroke : public svg_paint_server
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_stroke (svg_document *document) : svg_paint_server (document) {}
+  svg_attribute_stroke () {}
   virtual abstract_svg_item *get_item () const override { return item (); } 
 };
 

@@ -14,9 +14,9 @@ protected:
   svg_data_type_length m_value;
   units_orientation m_units_orientation;
 public:
-  svg_base_attribute_length (svg_document *document, double value = 0.0, svg_length_units units = svg_length_units::NO_UNITS, 
+  svg_base_attribute_length (double value = 0.0, svg_length_units units = svg_length_units::NO_UNITS, 
                              units_orientation units_orientation_arg = units_orientation::OTHER)
-    : abstract_attribute (document) { m_value.set_value (value, units); m_units_orientation = units_orientation_arg; }
+    { m_value.set_value (value, units); m_units_orientation = units_orientation_arg; }
 
   double value () const { return m_value.value (item (), m_units_orientation); }
   svg_length_units units_type () const { return m_value.units_type (); }

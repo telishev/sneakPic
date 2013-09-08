@@ -7,7 +7,8 @@
 #include "svg/attributes/svg_attributes_enum.h"
 
 #include "svg/items/svg_item_clip_path.h"
-#include "svg_graphics_item.h"
+#include "svg/items/svg_graphics_item.h"
+#include "svg/svg_document.h"
 
 
 svg_item_group_type::svg_item_group_type (svg_document *document)
@@ -20,7 +21,7 @@ void svg_item_group_type::update_group_item (renderer_item_group *renderer_item)
 {
   const svg_attribute_opacity *opacity = get_computed_attribute<svg_attribute_opacity> ();
   const svg_attribute_display *display = get_computed_attribute<svg_attribute_display> ();
-  const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path ();
+  const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path (document ()->item_container ());
  
   renderer_item->set_opacity (opacity->computed_opacity ());
   renderer_item->set_display (display->value ());

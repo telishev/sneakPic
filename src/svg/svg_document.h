@@ -2,7 +2,6 @@
 #define SVG_DOCUMENT_H
 
 class svg_item_factory;
-class svg_attribute_factory;
 class svg_items_container;
 
 class abstract_svg_item;
@@ -14,7 +13,7 @@ class selectors_container;
 class settings_t;
 class events_queue;
 class undo_handler;
-class changed_items_container;
+class items_edit_handler_t;
 class QXmlStreamReader;
 
 #include <QString>
@@ -26,13 +25,9 @@ class svg_document : public QObject
   Q_OBJECT
 
   svg_item_factory      *m_item_factory;
-  svg_attribute_factory *m_attribute_factory;
   svg_items_container   *m_item_container;
-  selectors_container   *m_selectors;
-  settings_t            *m_settings;
   events_queue          *m_queue;
-  undo_handler          *m_undo_handler;
-  changed_items_container *m_changed_items;
+  items_edit_handler_t  *m_items_edit_handler;
 
   abstract_svg_item *m_root;
   QString m_filename;
@@ -40,18 +35,15 @@ class svg_document : public QObject
   bool m_signals_enabled;
 
 public:
-  svg_document (settings_t *settings);
+  svg_document ();
   ~svg_document ();
 
   svg_item_factory *item_factory () const { return m_item_factory; }
-  svg_attribute_factory *attribute_factory () const { return m_attribute_factory; }
   svg_items_container *item_container () const { return m_item_container; }
   abstract_svg_item *root () const { return m_root; }
-  selectors_container *selectors () const { return m_selectors; }
 
-  settings_t *settings () const { return m_settings; }
-  undo_handler *get_undo_handler () const { return m_undo_handler; }
-  changed_items_container *changed_items () const { return m_changed_items; }
+  undo_handler *get_undo_handler () const;
+  items_edit_handler_t *items_edit_handler () const { return m_items_edit_handler; }
 
   bool read_file (const QString &filename_arg);
   bool write_file (const QString &filename);
@@ -61,7 +53,7 @@ public:
   renderer_items_container *create_rendered_items (rendered_items_cache *cache);
   void create_renderer_item (renderer_items_container *renderer_items, abstract_svg_item *svg_item);
 
-  QString create_overlay_name ();
+  std::string create_overlay_name ();
 
   void set_queue (events_queue *queue) { m_queue = queue; }
 
@@ -75,7 +67,6 @@ public:
 signals:
   void items_changed ();
 private:
-  abstract_svg_item *process_new_item (QXmlStreamReader &reader, abstract_svg_item *cur_item);
   void send_items_change ();
 };
 

@@ -1,68 +1,72 @@
 #include "svg/changed_items_container.h"
 
 #include "common/debug_utils.h"
+#include "common/memory_deallocation.h"
 
 #include "renderer/event_items_changed.h"
 
 #include "svg/items/svg_items_container.h"
 #include "svg/items/svg_graphics_item.h"
 
+#include "svg/undo/undo_handler.h"
 
-changed_items_container::changed_items_container (svg_items_container *container)
+
+items_edit_handler_t::items_edit_handler_t (svg_items_container *container)
 {
   m_container = container;
+  m_undo_handler = new undo_handler;
 }
 
-changed_items_container::~changed_items_container ()
+items_edit_handler_t::~items_edit_handler_t ()
 {
-
+  FREE (m_undo_handler);
 }
 
-void changed_items_container::child_added (const std::string &parent, const std::string &child_name, int /*insert_pos*/)
+void items_edit_handler_t::child_added (const std::string &parent, const std::string &child_name, int /*insert_pos*/)
 {
   m_changed_items.insert (child_name);
   m_layout_changed_items.insert (parent);
 }
 
-void changed_items_container::child_removed (const std::string &parent, const std::string &child_name, int /*pos*/)
+void items_edit_handler_t::child_removed (const std::string &parent, const std::string &child_name, int /*pos*/)
 {
   m_removed_items.insert (child_name);
   m_layout_changed_items.insert (parent);
 }
 
-void changed_items_container::child_moved (const std::string &parent, const std::string &/*child_name*/, int /*old_pos*/, int /*new_pos*/)
+void items_edit_handler_t::child_moved (const std::string &parent, const std::string &/*child_name*/, int /*old_pos*/, int /*new_pos*/)
 {
   m_layout_changed_items.insert (parent);
 }
 
-void changed_items_container::attribute_change_start (const std::string &parent, const abstract_attribute * /*computed_attribute*/)
+void items_edit_handler_t::attribute_change_start (const std::string &parent, const abstract_attribute * /*computed_attribute*/)
 {
   ///TODO: change children too
   m_changed_items.insert (parent);
 }
 
-void changed_items_container::attribute_change_end (const std::string &/*parent*/, const abstract_attribute * /*computed_attribute*/)
+void items_edit_handler_t::attribute_change_end (const std::string &/*parent*/, const abstract_attribute * /*computed_attribute*/)
 {
 }
 
-void changed_items_container::item_removed (const std::string &/*parent*/)
+void items_edit_handler_t::item_removed (const std::string &/*parent*/)
 {
   /// handled in child_removed
 }
 
 
-abstract_state_t *changed_items_container::create_state ()
+abstract_state_t *items_edit_handler_t::create_state ()
 {
   DEBUG_PAUSE ("Not really undoable");
   return nullptr;
 }
 
-void changed_items_container::load_from_state (const abstract_state_t * /*state*/)
+void items_edit_handler_t::load_from_state (const abstract_state_t * /*state*/)
 {
   DEBUG_PAUSE ("Not really undoable");
 }
 
-event_items_changed *changed_items_container::create_changed_items_event ()
+event_items_changed *items_edit_handler_t::create_changed_items_event ()
 {
   event_items_changed *ev = new event_items_changed;
   for (const std::string &item_name : m_changed_items)
@@ -102,14 +106,14 @@ event_items_changed *changed_items_container::create_changed_items_event ()
   return ev;
 }
 
-void changed_items_container::clear ()
+void items_edit_handler_t::clear ()
 {
   m_changed_items.clear ();
   m_layout_changed_items.clear ();
   m_removed_items.clear ();
 }
 
-void changed_items_container::invalidate_bbox (const std::string &item_name)
+void items_edit_handler_t::invalidate_bbox (const std::string &item_name)
 {
   svg_graphics_item *graphics_item = get_graphics_item (item_name);
   if (!graphics_item)
@@ -118,23 +122,23 @@ void changed_items_container::invalidate_bbox (const std::string &item_name)
   graphics_item->invalidate_bbox ();
 }
 
-svg_graphics_item *changed_items_container::get_graphics_item (const std::string &item_name) const
+svg_graphics_item *items_edit_handler_t::get_graphics_item (const std::string &item_name) const
 {
   abstract_svg_item *item = m_container->get_item (item_name);
   return item ? item->to_graphics_item () : nullptr;
 }
 
-void changed_items_container::set_item_changed (const std::string &item)
+void items_edit_handler_t::set_item_changed (const std::string &item)
 {
   m_changed_items.insert (item);
 }
 
-void changed_items_container::set_item_layout_changed (const std::string &item)
+void items_edit_handler_t::set_item_layout_changed (const std::string &item)
 {
   m_layout_changed_items.insert (item);
 }
 
-void changed_items_container::set_item_removed (const std::string &item)
+void items_edit_handler_t::set_item_removed (const std::string &item)
 {
   m_removed_items.insert (item);
 }

@@ -4,10 +4,11 @@
 #include <unordered_map>
 #include <QString>
 #include <utility>
+#include <functional>
 #include <map>
 
 #include "svg/attributes/abstract_attribute.h"
-#include "svg/attributes/atrribute_pointer.h"
+#include "svg/attributes/attribute_pointer.h"
 #include "svg/undo/undoable.h"
 
 #define SVG_ITEM                                   \
@@ -77,20 +78,17 @@ public:
   void remove_attribute (abstract_attribute *attribute);
 
   void write (QXmlStreamWriter &writer) const;
-  virtual void item_read_complete () {}
 
   bool has_name () const;
   std::string name () const;
 
-  bool is_xml_class (const std::string &class_name) const;
-
   /// returns attribute for the current item
   template <typename T>
-  atrribute_pointer<T> get_attribute_for_change ()
+  attribute_pointer<T> get_attribute_for_change ()
   {
     signal_attribute_change_start (get_computed_attribute<T> ());
     abstract_attribute *attribute = get_attribute_for_change (T::static_type_name (), T::static_inherit_type (), T::static_type (), T::default_value ());
-    return std::move (atrribute_pointer<T> (static_cast<T *>(attribute), this));
+    return std::move (attribute_pointer<T> (static_cast<T *>(attribute), this));
   }
 
   /// returns attribute with respect to styling and css
@@ -104,6 +102,8 @@ public:
 
     return static_cast<const T *>(attribute);
   }
+
+  bool has_attribute (const std::string &type_name) const;
 
   /// checks for correctness
   bool check ();
@@ -132,7 +132,6 @@ private:
   void add_to_container ();
   void remove_from_container ();
   const abstract_attribute *get_computed_attribute (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type) const;
-  const abstract_attribute *find_attribute_in_selectors (const char *data, const abstract_svg_item *item, svg_attribute_type attr_type) const;
   const abstract_svg_item *get_original_item () const;
   void create_id_by_attr ();
   void create_unique_name ();
@@ -149,6 +148,7 @@ private:
   void add_observer (svg_item_observer *observer);
   abstract_attribute *get_attribute_by_id (int id) const;
   abstract_svg_item *get_item_by_id (int id) const;
+  void send_to_listeners (std::function< void (svg_item_observer *)> func);
 
   friend class cloned_item_observer;
   friend class abstract_attribute_pointer;

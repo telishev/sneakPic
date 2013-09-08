@@ -14,7 +14,7 @@ class svg_attribute_points : public abstract_attribute
 private:
   QList <QPointF> m_point_list;
 public:
-  svg_attribute_points (svg_document *document);
+  svg_attribute_points ();
   virtual ~svg_attribute_points ();
 
   QList <QPointF> value () const { return m_point_list; };

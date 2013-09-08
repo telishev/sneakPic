@@ -1,7 +1,6 @@
 #include "svg/data_types/svg_data_type_iri.h"
 
 #include "svg/items/svg_items_container.h"
-#include "svg/items/abstract_svg_item.h"
 
 #include "common/enum_conversion.h"
 
@@ -10,9 +9,8 @@
 #include <QFileInfo>
 #include <QDir>
 
-svg_data_type_iri::svg_data_type_iri (const QString &svg_name)
+svg_data_type_iri::svg_data_type_iri ()
 {
-  m_svg_name = svg_name;
   m_image_data = 0;
   m_iri_type = iri_type::document_fragment;
   m_data_type = data_type::unsupported;
@@ -108,37 +106,8 @@ bool svg_data_type_iri::read (const QString &data_arg)
     }
   else // try to treat as a link
     {
-      QFileInfo file (QFileInfo (m_svg_name).absoluteDir (), data);
       m_iri_type = iri_type::media_resource;
-      if (!file.exists ())
-        return false;
-
       link_to_resource = data;
-      if (file.suffix () == "jpg" || file.suffix () == "jpeg")
-        {
-          m_image_data = new QImage ();
-          if (m_image_data->load (file.absoluteFilePath (), "jpeg"))
-            m_data_type = data_type::image_jpeg;
-          else
-            {
-              FREE (m_image_data);
-              return false;
-            }
-        }
-      else if (file.suffix () == "png")
-        {
-          m_image_data = new QImage ();
-          if (m_image_data->load (file.absoluteFilePath (), "png"))
-            m_data_type = data_type::image_png;
-          else
-            {
-              FREE (m_image_data);
-              return false;
-            }
-        }
-
-      if (m_image_data)
-        *m_image_data = m_image_data->convertToFormat (QImage::Format_ARGB32_Premultiplied);
       return true;
     }
 }
@@ -177,10 +146,48 @@ data_type svg_data_type_iri::get_data_type () const
   return m_data_type;
 }
 
-QImage *svg_data_type_iri::get_image_data () const
+QImage *svg_data_type_iri::get_image_data (const QString &svg_name) const
 {
+  load_linked_image (svg_name);
+
   if (!m_image_data)
     return nullptr;
 
   return m_image_data;
+}
+
+void svg_data_type_iri::load_linked_image (const QString &svg_name) const
+{
+  if (m_image_data || link_to_resource.isEmpty ())
+    return;
+
+  QFileInfo file (QFileInfo (svg_name).absoluteDir (), link_to_resource);
+  if (!file.exists ())
+    return;
+
+  if (file.suffix () == "jpg" || file.suffix () == "jpeg")
+    {
+      m_image_data = new QImage ();
+      if (m_image_data->load (file.absoluteFilePath (), "jpeg"))
+        m_data_type = data_type::image_jpeg;
+      else
+        {
+          FREE (m_image_data);
+          return;
+        }
+    }
+  else if (file.suffix () == "png")
+    {
+      m_image_data = new QImage ();
+      if (m_image_data->load (file.absoluteFilePath (), "png"))
+        m_data_type = data_type::image_png;
+      else
+        {
+          FREE (m_image_data);
+          return;
+        }
+    }
+
+  if (m_image_data)
+    *m_image_data = m_image_data->convertToFormat (QImage::Format_ARGB32_Premultiplied);
 }

@@ -187,7 +187,7 @@ void main_window::open_file (const QString filename)
   FREE (m_doc);
   DO_ON_EXIT (update_window_title ());
 
-  m_doc = new svg_document (m_settings);
+  m_doc = new svg_document ();
   m_doc->set_queue (m_queue);
   setWindowTitle ("Loading...");
   if (!m_doc->read_file (filename))

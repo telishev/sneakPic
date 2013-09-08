@@ -8,8 +8,6 @@
 class renderer_paint_server;
 class SkPaint;
 
-class svg_base_attribute_marker_usage;
-
 class renderer_base_shape_item : public renderer_graphics_item
 {
 protected:
@@ -42,8 +40,6 @@ public:
   const QPainterPath & painter_path () { return m_path; }
 
   void add_marker (abstract_renderer_item *marker);
-  std::vector<abstract_renderer_item *> configure_markers_on_path_drawing (
-    const svg_base_attribute_marker_usage *marker, const QPainterPath &path, const QTransform &transform, double stroke_width) const;
 
 protected:
   bool configure_painter (SkPaint &paint, bool stroke, bool config_for_selection) const;

@@ -5,28 +5,23 @@
 
 #include <vector>
 
-class css_declaration;
-class abstract_css_selector;
+class selectors_container;
 
 class svg_item_style : public abstract_svg_item
 {
   SVG_ITEM
 
-  std::vector<std::pair <abstract_css_selector *, css_declaration *>> m_rule_set;
 public:
   svg_item_style (svg_document *document);
   virtual ~svg_item_style () override;
 
-  /// finds attribute from the matching selector
-  const abstract_attribute *get_style_attribute (const std::string &str, const abstract_svg_item *item_to_match) const;
-
-  virtual void item_read_complete () override;
+  void add_style_to_container (selectors_container *container);
 
 protected:
   virtual bool check_item () override { return true; }
 
 private:
-  bool read_item (const char *data);
+  bool read_item (const char *data, selectors_container *container);
 
 };
 

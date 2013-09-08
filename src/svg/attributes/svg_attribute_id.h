@@ -10,7 +10,7 @@ class svg_attribute_id : public abstract_attribute
   SVG_ATTRIBUTE
   std::string m_id;
 public:
-  svg_attribute_id (svg_document *document) : abstract_attribute (document) {}
+  svg_attribute_id () {}
   virtual ~svg_attribute_id () {}
 
   virtual bool read (const char *data, bool /*from_css*/ = false) override { m_id = data; return true; }

@@ -11,7 +11,7 @@ class svg_attribute_stroke_linecap : public abstract_attribute
 
   Qt::PenCapStyle m_linecap;
 public:
-  svg_attribute_stroke_linecap (svg_document *document);
+  svg_attribute_stroke_linecap ();
   virtual ~svg_attribute_stroke_linecap ();
 
   Qt::PenCapStyle get_stroke_linecap () const { return m_linecap; }

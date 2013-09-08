@@ -3,8 +3,7 @@
 #include <QLineF>
 #include <QPointF>
 
-svg_attribute_orient::svg_attribute_orient (svg_document *document)
-  : abstract_attribute (document)
+svg_attribute_orient::svg_attribute_orient ()
 {
   m_angle.set_value (0.0);
   m_auto = true;

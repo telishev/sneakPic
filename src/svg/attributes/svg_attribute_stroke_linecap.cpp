@@ -1,7 +1,6 @@
 #include "svg/attributes/svg_attribute_stroke_linecap.h"
 
-svg_attribute_stroke_linecap::svg_attribute_stroke_linecap (svg_document *document)
-  : abstract_attribute (document)
+svg_attribute_stroke_linecap::svg_attribute_stroke_linecap ()
 {
   m_linecap = Qt::PenCapStyle::FlatCap;
 }

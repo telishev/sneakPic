@@ -126,6 +126,6 @@ void svg_attribute_element_mapping::fill_all_items (svg_attribute_type type)
 void svg_attribute_element_mapping::check ()
 {
   for (size_t i = 0; i < m_map.size (); i++)
-    if (m_map[i].empty () && i != (int)svg_attribute_type::UNKNOWN)
+    if (m_map[i].empty ())
       DEBUG_PAUSE ("One of the attributes is empty");
 }

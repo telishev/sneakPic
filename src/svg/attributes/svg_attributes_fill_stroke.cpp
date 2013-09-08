@@ -9,15 +9,12 @@
 
 #include "svg/items/svg_base_items_gradient.h"
 #include "svg/items/svg_items_container.h"
-#include "svg/svg_document.h"
-
 
 #include <memory>
 
 
 
-svg_paint_server::svg_paint_server (svg_document *document)
-  : abstract_attribute (document), m_iri (document->get_filename ())
+svg_paint_server::svg_paint_server ()
 {
   m_server_type = paint_server_type::NONE;
 }
@@ -84,7 +81,7 @@ bool svg_paint_server::write (QString &data, bool /*to_css*/) const
   return false;
 }
 
-renderer_paint_server *svg_paint_server::create_paint_server () const
+renderer_paint_server *svg_paint_server::create_paint_server (const svg_items_container *container) const
 {
   switch (m_server_type)
     {
@@ -98,7 +95,7 @@ renderer_paint_server *svg_paint_server::create_paint_server () const
         /// TODO: support other paint servers
         std::string fragment_name = m_iri.get_fragment_name ();
 
-        const svg_base_items_gradient *base_gradient = dynamic_cast<const svg_base_items_gradient *> (document ()->item_container ()->get_item (fragment_name));
+        const svg_base_items_gradient *base_gradient = dynamic_cast<const svg_base_items_gradient *> (container->get_item (fragment_name));
         if (!base_gradient)
           return new renderer_painter_server_none;
 
@@ -109,8 +106,8 @@ renderer_paint_server *svg_paint_server::create_paint_server () const
   return new renderer_painter_server_none;
 }
 
-bool svg_paint_server::need_to_render () const
+bool svg_paint_server::need_to_render (const svg_items_container *container) const
 {
-  std::unique_ptr<renderer_paint_server> server (create_paint_server ());
+  std::unique_ptr<renderer_paint_server> server (create_paint_server (container));
   return server->need_to_render ();
 }

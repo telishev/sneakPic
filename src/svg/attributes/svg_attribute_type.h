@@ -73,7 +73,6 @@ DECLARE_ATTRIBUTE(MARKER               , "marker"             , SVG        , svg
 
 enum class svg_attribute_type
 {
-  UNKNOWN,
 #define DECLARE_ATTRIBUTE(ENUM,NAME,NAMESPACE,CLASS,INHERIT_TYPE) ENUM,
   DECLARE_SVG_ATTRIBUTES
 #undef DECLARE_ATTRIBUTE
@@ -83,7 +82,7 @@ enum class svg_attribute_type
 static inline int enum_values_count (svg_attribute_type)
 {
 #define DECLARE_ATTRIBUTE(ENUM,NAME,NAMESPACE,CLASS,INHERIT_TYPE) +1
-  return DECLARE_SVG_ATTRIBUTES + 1;
+  return DECLARE_SVG_ATTRIBUTES;
 #undef DECLARE_ATTRIBUTE
 }
 

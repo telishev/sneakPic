@@ -5,8 +5,7 @@
 
 #include "svg/items/abstract_svg_item.h"
 
-svg_attribute_color::svg_attribute_color (svg_document *document)
-  : abstract_attribute (document)
+svg_attribute_color::svg_attribute_color ()
 {
 }
 

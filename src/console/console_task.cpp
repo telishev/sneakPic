@@ -26,5 +26,6 @@ void console_task::cleanup ()
 
 void console_task::run ()
 {
-  app->exit (start_console_processing (args));
+  console_renderer renderer;
+  app->exit (renderer.start_console_processing (args));
 }

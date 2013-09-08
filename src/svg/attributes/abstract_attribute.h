@@ -21,7 +21,7 @@ public:                                                         \
   static const abstract_attribute *default_value ();            \
 private:                                                        \
 
-class svg_document;
+class items_edit_handler_t;
 class abstract_svg_item;
 
 class QString;
@@ -32,11 +32,11 @@ enum class svg_inherit_type;
 
 class abstract_attribute : public undoable
 {
-  svg_document *m_document;
+  items_edit_handler_t *m_edit_handler;
   int m_item_id;
   bool m_is_inherited;
 public:
-  abstract_attribute (svg_document *document);
+  abstract_attribute ();
   virtual ~abstract_attribute ();
 
   virtual bool read (const char *data, bool from_css = false) = 0;
@@ -50,12 +50,12 @@ public:
   virtual svg_attribute_type type () const = 0;
   virtual svg_inherit_type inherit_type () const = 0;
 
-  virtual abstract_attribute *clone (svg_document *document) const;
+  virtual abstract_attribute *clone () const;
 
   bool is_empty () const;
 
   void set_item (int item_id);
-  svg_document *document () const { return m_document; }
+  void set_edit_handler (items_edit_handler_t *edit_handler) { m_edit_handler = edit_handler; }
   int item_id () const { return m_item_id; }
   abstract_svg_item *item () const;
   void set_is_inherited (bool value) { m_is_inherited = value; }

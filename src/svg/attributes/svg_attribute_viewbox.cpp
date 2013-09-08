@@ -7,8 +7,7 @@
 #include <QRectF>
 
 
-svg_attribute_view_box::svg_attribute_view_box (svg_document *document)
-  : abstract_attribute (document)
+svg_attribute_view_box::svg_attribute_view_box ()
 {
   m_x = 0.0;
   m_y = 0.0;

@@ -9,7 +9,7 @@ class svg_attribute_version : public abstract_attribute
 
   QString version;
 public:
-  svg_attribute_version (svg_document *document) : abstract_attribute (document) {}
+  svg_attribute_version () {}
   virtual ~svg_attribute_version () {}
 
   virtual bool read (const char *data, bool /*from_css*/ = false) override { version = data; return true; }

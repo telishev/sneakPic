@@ -33,14 +33,14 @@ enum class data_format
 class svg_data_type_iri
 {
   QString m_element_id;
-  QImage *m_image_data;
-  data_type m_data_type;
+  mutable QImage *m_image_data;
+  mutable data_type m_data_type;
   iri_type m_iri_type;
   QByteArray raw_data;
   QString link_to_resource;
-  QString m_svg_name;
+
 public:
-  svg_data_type_iri (const QString &svg_name);
+  svg_data_type_iri ();
   virtual ~svg_data_type_iri ();
 
   bool read (const QString &data_arg);
@@ -49,9 +49,11 @@ public:
   iri_type get_type () const; // Type should be checked before calling further getters
   data_type get_data_type () const;
 
-  bool has_image_data () const;
   std::string get_fragment_name () const;
-  QImage *get_image_data () const;
+  QImage *get_image_data (const QString &svg_name) const;
+
+private:
+  void load_linked_image (const QString &svg_name) const;
 };
 
 #endif // DATA_TYPE_IRI_H

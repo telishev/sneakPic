@@ -25,7 +25,7 @@ class svg_attribute_path_data : public abstract_attribute
   std::vector<double> m_path_data;
   std::vector<path_command> m_commands;
 public:
-  svg_attribute_path_data (svg_document *document);
+  svg_attribute_path_data ();
   virtual ~svg_attribute_path_data ();
 
   virtual bool read (const char *data, bool from_css = false) override;

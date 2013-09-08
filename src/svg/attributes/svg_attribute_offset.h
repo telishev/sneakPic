@@ -9,7 +9,7 @@ class svg_attribute_offset : public abstract_attribute
 
   double m_offset;
 public:
-  svg_attribute_offset (svg_document *document) : abstract_attribute (document) { m_offset = 0.0; }
+  svg_attribute_offset ()  { m_offset = 0.0; }
   virtual ~svg_attribute_offset () {}
 
   virtual bool read (const char *data, bool /*from_css*/ = false) override;

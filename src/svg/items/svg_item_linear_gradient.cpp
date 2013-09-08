@@ -23,7 +23,7 @@ bool svg_item_linear_gradient::check_item ()
 
 renderer_base_gradient_item *svg_item_linear_gradient::create_gradient () const 
 {
-  static const svg_attribute_x2 default_x2 (nullptr, 1.0);
+  static const svg_attribute_x2 default_x2 (1.0);
   const svg_attribute_x1 *x1 = get_computed_attribute<svg_attribute_x1> ();
   const svg_attribute_y1 *y1 = get_computed_attribute<svg_attribute_y1> ();
   const svg_attribute_x2 *x2 = get_computed_attribute<svg_attribute_x2> (&default_x2);

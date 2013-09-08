@@ -4,8 +4,7 @@
 #include "svg/items/abstract_svg_item.h"
 #include "svg/svg_document.h"
 
-svg_attribute_xlink_href::svg_attribute_xlink_href (svg_document *document)
-  : abstract_attribute (document), m_iri (document->get_filename ())
+svg_attribute_xlink_href::svg_attribute_xlink_href ()
 {
 
 }
@@ -30,14 +29,10 @@ iri_type svg_attribute_xlink_href::get_data_type () const
   return m_iri.get_type ();
 }
 
-bool svg_attribute_xlink_href::has_image_data () const
-{
-  return (m_iri.get_image_data () != nullptr); // For now this method is most adequate
-}
 
-QImage *svg_attribute_xlink_href::get_image_data () const
+QImage *svg_attribute_xlink_href::get_image_data (const QString &svg_name) const
 {
-  return m_iri.get_image_data ();
+  return m_iri.get_image_data (svg_name);
 }
 
 std::string svg_attribute_xlink_href::get_fragment_name () const

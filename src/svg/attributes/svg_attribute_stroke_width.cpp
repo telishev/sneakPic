@@ -1,7 +1,6 @@
 #include "svg/attributes/svg_attribute_stroke_width.h"
 
-svg_attribute_stroke_width::svg_attribute_stroke_width (svg_document *document)
-  : abstract_attribute (document)
+svg_attribute_stroke_width::svg_attribute_stroke_width ()
 {
   m_stroke_width.set_value (1.0);
 }

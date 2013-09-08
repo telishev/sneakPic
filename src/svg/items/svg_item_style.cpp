@@ -12,26 +12,31 @@
 #include "svg/css/selectors_container.h"
 
 #include "svg/svg_document.h"
-#include "svg_character_data.h"
+#include "svg/items/svg_character_data.h"
 
 
 svg_item_style::svg_item_style (svg_document *document)
   : abstract_svg_item (document)
 {
-  document->selectors ()->add_style (this);
 }
 
 svg_item_style::~svg_item_style ()
 {
-  document ()->selectors ()->remove_style (this);
-  for (auto &rule : m_rule_set)
+}
+
+void svg_item_style::add_style_to_container (selectors_container *container)
+{
+  for (int i = 0; i < children_count (); i++)
     {
-      FREE (rule.first);
-      FREE (rule.second);
+      if (!child (i)->is_character_data ())
+        continue;
+
+      const svg_character_data *data = static_cast<const svg_character_data *> (child (i));
+      read_item (data->char_data (), container);
     }
 }
 
-bool svg_item_style::read_item (const char *data)
+bool svg_item_style::read_item (const char *data, selectors_container *container)
 {
   CHECK (skip_comments_and_whitespaces (data));
   while (*data)
@@ -40,46 +45,16 @@ bool svg_item_style::read_item (const char *data)
       CHECK (extract_chunk ('{', data, selectors_string));
       CHECK (extract_chunk ('}', data, declaration_string));
 
-      std::unique_ptr <css_declaration> declaration (new css_declaration (document ()->attribute_factory (), undo_id ()));
+      std::unique_ptr <css_declaration> declaration (new css_declaration (undo_id ()));
       std::unique_ptr <abstract_css_selector> selector (css_selector_reader::create_selector (selectors_string.c_str ()));
       CHECK (declaration->parse (declaration_string.c_str ()));
       if (!selector)
         return false;
 
-      m_rule_set.push_back (std::make_pair (selector.release (), declaration.release ()));
+      container->add_rule_set (selector.release (), declaration.release ());
     }
 
   return true;
 }
 
-const abstract_attribute *svg_item_style::get_style_attribute (const std::string &str, const abstract_svg_item *item_to_match) const
-{
-  for (auto rule : m_rule_set)
-    {
-      abstract_css_selector *selector = rule.first;
-      css_declaration *declaration = rule.second;
-      const abstract_attribute *attribute = declaration->get_attribute (str);
-      if (!attribute)
-        continue;
-
-      /// TODO: in fact, we need to assemble all matching selectors,
-      /// choose one with the most specificity or importance etc, but its too cumbersome to do right now
-      if (selector->is_matched (item_to_match))
-        return attribute;
-    }
-
-  return nullptr;
-}
-
-void svg_item_style::item_read_complete ()
-{
-  for (int i = 0; i < children_count (); i++)
-    {
-      if (!child (i)->is_character_data ())
-        continue;
-
-      const svg_character_data *data = static_cast<const svg_character_data *> (child (i));
-      read_item (data->char_data ());
-    }
-}
 

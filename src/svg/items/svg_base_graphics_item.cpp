@@ -36,7 +36,7 @@ abstract_renderer_item *svg_base_graphics_item::create_overlay_item (overlay_ite
       }
     case overlay_item_type::SELECTION:
       {
-        renderer_item_selection *selection = new renderer_item_selection (document ()->create_overlay_name ().toStdString ());
+        renderer_item_selection *selection = new renderer_item_selection (document ()->create_overlay_name ());
         selection->set_bbox (m_bbox);
         return selection;
       }
@@ -46,7 +46,7 @@ abstract_renderer_item *svg_base_graphics_item::create_overlay_item (overlay_ite
 
 void svg_base_graphics_item::set_item_style (renderer_graphics_item *item) const
 {
-  const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path ();
+  const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path (document ()->item_container ());
   const svg_attribute_visibility *attr_visibility = get_computed_attribute<svg_attribute_visibility> ();
   const svg_attribute_display *attr_display = get_computed_attribute<svg_attribute_display> ();
   const svg_attribute_opacity *opacity = get_computed_attribute<svg_attribute_opacity> ();
@@ -72,7 +72,7 @@ abstract_renderer_item *svg_base_graphics_item::create_renderer_item_impl () con
 
 void svg_base_graphics_item::update_bbox_impl ()
 {
-  const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path ();
+  const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path (document ()->item_container ());
   QPainterPath path = get_boundaries ();
 
   if (clip_path)

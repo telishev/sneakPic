@@ -2,8 +2,7 @@
 
 #include "common/string_utils.h"
 
-svg_attribute_stroke_miterlimit::svg_attribute_stroke_miterlimit (svg_document *document)
-  : abstract_attribute (document)
+svg_attribute_stroke_miterlimit::svg_attribute_stroke_miterlimit ()
 {
   m_miterlimit = 4.0;
 }

@@ -7,17 +7,10 @@
 #include "common/common_utils.h"
 
 #include "svg/attributes/svg_attribute_id.h"
-#include "svg/attributes/svg_attribute_factory.h"
-#include "svg/attributes/svg_attribute_class.h"
-#include "svg/attributes/svg_attribute_style.h"
 #include "svg/attributes/svg_attribute_type.h"
-#include "svg/attributes/svg_attribute_transform.h"
-#include "svg/attributes/svg_attribute_element_mapping.h"
 
 #include "svg/items/svg_item_factory.h"
 #include "svg/items/svg_items_container.h"
-#include "svg/items/svg_item_style.h"
-#include "svg/items/svg_item_defs.h"
 #include "svg/items/svg_item_type.h"
 #include "svg/items/svg_character_data.h"
 
@@ -25,7 +18,6 @@
 #include "svg/svg_namespaces.h"
 #include "svg/svg_item_observer.h"
 
-#include "svg/css/selectors_container.h"
 #include "svg/changed_items_container.h"
 #include "svg/undo/undo_handler.h"
 #include "svg/simple_item_observer.h"
@@ -178,6 +170,7 @@ void abstract_svg_item::add_attribute (abstract_attribute *attribute)
     }
 
   int id = document ()->get_undo_handler ()->add_item (attribute);
+  attribute->set_edit_handler (m_document->items_edit_handler ());
 
   m_attributes.insert (std::make_pair (attribute->type_name (), id));
 }
@@ -248,13 +241,15 @@ void abstract_svg_item::remove_from_container ()
 
 const abstract_attribute *abstract_svg_item::get_computed_attribute (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type) const
 {
+  const abstract_svg_item *cur_item = is_cloned () ? get_original_item () : this;
+  if (!cur_item)
+    return nullptr;
+
   /// 1. search in own attributes
-  const svg_attribute_element_mapping *mapping = svg_attribute_element_mapping::get ();
-  bool can_be_specified = mapping->can_be_specified (type (), attr_type);
-  const abstract_attribute *attribute = get_attribute (data, true);
+  const abstract_attribute *attribute = cur_item->get_attribute (data, true);
 
   if (attribute && attribute->is_inherited ())
-    return parent () ? parent ()->get_computed_attribute (data, inherit_type, attr_type) : nullptr;
+    return cur_item->parent () ? cur_item->parent ()->get_computed_attribute (data, inherit_type, attr_type) : nullptr;
 
   if (attribute && attribute->type () == attr_type)
     return attribute;
@@ -262,30 +257,7 @@ const abstract_attribute *abstract_svg_item::get_computed_attribute (const char 
   if (inherit_type == svg_inherit_type::NONE)
     return nullptr;
 
-  if (inherit_type == svg_inherit_type::STYLE && can_be_specified)
-    {
-      /// 2. Search in "style" attribute
-      const svg_attribute_style *style = get_computed_attribute<svg_attribute_style> ();
-      if (style)
-        attribute = style->get_attribute (data);
-      if (attribute && attribute->type () == attr_type)
-        return attribute;
-
-      /// 3. Search in selectors
-      /// css selectors for cloned items works as they were applied to an original item
-      if (is_cloned ())
-        {
-          const abstract_svg_item *original_item = get_original_item ();
-          if (original_item)
-            attribute = original_item->find_attribute_in_selectors (data, original_item, attr_type);
-        }
-      else
-        attribute = find_attribute_in_selectors (data, this, attr_type);
-      if (attribute)
-        return attribute;
-    }
-
-  /// 4. Inherit from parent
+  /// 2. Inherit from parent
   if (parent ())
     {
       attribute = parent ()->get_computed_attribute (data, inherit_type, attr_type);
@@ -293,15 +265,10 @@ const abstract_attribute *abstract_svg_item::get_computed_attribute (const char 
         return attribute;
     }
 
-  /// 5. If still not found, return nullptr
+  /// 3. If still not found, return nullptr
   return nullptr;
 }
 
-bool abstract_svg_item::is_xml_class (const std::string &class_name) const
-{
-  const svg_attribute_class *attribute_class = get_computed_attribute<svg_attribute_class> ();
-  return attribute_class->is_class (class_name);
-}
 
 abstract_attribute *abstract_svg_item::get_attribute (const char *data, bool get_clone_attributes) const
 {
@@ -324,11 +291,6 @@ abstract_attribute *abstract_svg_item::get_attribute (const char *data, bool get
 
 
   return nullptr;
-}
-
-const abstract_attribute *abstract_svg_item::find_attribute_in_selectors (const char *data, const abstract_svg_item *item, svg_attribute_type /*attr_type*/) const
-{
-  return m_document->selectors ()->get_attribute (data, item);
 }
 
 bool abstract_svg_item::is_cloned () const
@@ -507,129 +469,40 @@ abstract_attribute *abstract_svg_item::get_attribute_for_change (const char *dat
   if (!computed || computed->type () != attr_type)
     computed = default_val;
 
-  attribute = computed->clone (m_document);
+  attribute = computed->clone ();
+  attribute->set_edit_handler (m_document->items_edit_handler ());
   add_attribute (attribute);
   return attribute;
 }
 
 void abstract_svg_item::signal_child_inserted (const std::string &child, int position)
 {
-  if (!m_document->signals_enabled ())
-    return;
-
-  m_document->changed_items ()->child_added (name (), child, position);
-  auto handler = m_document->get_undo_handler ();
-  if (m_observers)
-    {
-      for (int id : *m_observers)
-        {
-          svg_item_observer *observer = static_cast<svg_item_observer *> (handler->get_item (id));
-          if (!observer)
-            continue;
-
-          observer->child_added (name (), child, position);
-        }
-    }
+  send_to_listeners ([&] (svg_item_observer *observer) { observer->child_added (name (), child, position); });
 }
 
 void abstract_svg_item::signal_child_removed (const std::string &child_name, int pos)
 {
-  if (!m_document->signals_enabled ())
-    return;
-
-  m_document->changed_items ()->child_removed (name (), child_name, pos);
-  auto handler = m_document->get_undo_handler ();
-  if (m_observers)
-    {
-      for (int id : *m_observers)
-        {
-          svg_item_observer *observer = static_cast<svg_item_observer *> (handler->get_item (id));
-          if (!observer)
-            continue;
-
-          observer->child_removed (name (), child_name, pos);
-        }
-    }
+  send_to_listeners ([&] (svg_item_observer *observer) { observer->child_removed (name (), child_name, pos); });
 }
 
 void abstract_svg_item::signal_item_removed ()
 {
-  if (!m_document->signals_enabled ())
-    return;
-
-  m_document->changed_items ()->item_removed (name ());
-  auto handler = m_document->get_undo_handler ();
-  if (m_observers)
-    {
-      for (int id : *m_observers)
-        {
-          svg_item_observer *observer = static_cast<svg_item_observer *> (handler->get_item (id));
-          if (!observer)
-            continue;
-
-          observer->item_removed (name ());
-        }
-    }
+  send_to_listeners ([&] (svg_item_observer *observer) { observer->item_removed (name ()); });
 }
 
 void abstract_svg_item::signal_child_moved (const std::string &child_name, int old_pos, int new_pos)
 {
-  if (!m_document->signals_enabled ())
-    return;
-
-  m_document->changed_items ()->child_moved (name (), child_name, old_pos, new_pos);
-  auto handler = m_document->get_undo_handler ();
-  if (m_observers)
-    {
-      for (int id : *m_observers)
-        {
-          svg_item_observer *observer = static_cast<svg_item_observer *> (handler->get_item (id));
-          if (!observer)
-            continue;
-
-          observer->child_moved (name (), child_name, old_pos, new_pos);
-        }
-    }
+  send_to_listeners ([&] (svg_item_observer *observer) { observer->child_moved (name (), child_name, old_pos, new_pos); });
 }
 
 void abstract_svg_item::signal_attribute_change_start (const abstract_attribute *attribute)
 {
-  if (!m_document->signals_enabled ())
-    return;
-
-  m_document->changed_items ()->attribute_change_start (name (), attribute);
-  auto handler = m_document->get_undo_handler ();
-  if (m_observers)
-    {
-      for (int id : *m_observers)
-        {
-          svg_item_observer *observer = static_cast<svg_item_observer *> (handler->get_item (id));
-          if (!observer)
-            continue;
-
-          observer->attribute_change_start (name (), attribute);
-        }
-    }
+  send_to_listeners ([&] (svg_item_observer *observer) { observer->attribute_change_start (name (), attribute); });
 }
 
 void abstract_svg_item::signal_attribute_change_end (const abstract_attribute *attribute)
 {
-  if (!m_document->signals_enabled ())
-    return;
-
-  m_document->changed_items ()->attribute_change_end (name (), attribute);
-  auto container = m_document->get_undo_handler ();
-  if (m_observers)
-    {
-      for (int id : *m_observers)
-        {
-          svg_item_observer *observer = static_cast<svg_item_observer *> (container->get_item (id));
-          if (!observer)
-            continue;
-
-          observer->attribute_change_end (name (), attribute);
-        }
-    }
+  send_to_listeners ([&] (svg_item_observer *observer) { observer->attribute_change_end (name (), attribute); });
 }
 
 abstract_state_t *abstract_svg_item::create_state ()
@@ -655,7 +528,7 @@ void abstract_svg_item::load_from_state (const abstract_state_t *abstract_state)
 {
   if (!abstract_state)
     {
-      document ()->changed_items ()->set_item_removed (name ());
+      document ()->items_edit_handler ()->set_item_removed (name ());
       return;
     }
 
@@ -665,7 +538,7 @@ void abstract_svg_item::load_from_state (const abstract_state_t *abstract_state)
   m_original_id = state->m_original_id;
   m_own_id = state->m_own_id;
   m_parent = state->m_parent;
-  auto changed_items = document ()->changed_items ();
+  auto changed_items = document ()->items_edit_handler ();
 
   if (state->m_children.empty ())
     FREE (m_children);
@@ -735,5 +608,30 @@ void abstract_svg_item::erase_created_observer (svg_item_observer *observer)
 abstract_attribute *abstract_svg_item::get_attribute_by_id (int id) const
 {
   return static_cast<abstract_attribute *> (m_document->get_undo_handler ()->get_item (id));
+}
+
+bool abstract_svg_item::has_attribute (const std::string &type_name) const
+{
+  return m_attributes.find (type_name) != m_attributes.end ();
+}
+
+void abstract_svg_item::send_to_listeners (std::function< void (svg_item_observer *)> func)
+{
+  if (!m_document->signals_enabled ())
+    return;
+
+  func (m_document->items_edit_handler ());
+  auto container = m_document->get_undo_handler ();
+  if (m_observers)
+    {
+      for (int id : *m_observers)
+        {
+          svg_item_observer *observer = static_cast<svg_item_observer *> (container->get_item (id));
+          if (!observer)
+            continue;
+
+          func (observer);
+        }
+    }
 }
 

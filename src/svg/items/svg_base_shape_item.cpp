@@ -38,8 +38,8 @@ svg_base_shape_item::~svg_base_shape_item ()
 
 void svg_base_shape_item::set_item_style (renderer_base_shape_item *item) const
 {
-  std::unique_ptr<renderer_paint_server> fill (get_computed_attribute<svg_attribute_fill> ()->create_paint_server ());
-  std::unique_ptr<renderer_paint_server> stroke (get_computed_attribute<svg_attribute_stroke> ()->create_paint_server ());
+  std::unique_ptr<renderer_paint_server> fill (get_computed_attribute<svg_attribute_fill> ()->create_paint_server (document ()->item_container ()));
+  std::unique_ptr<renderer_paint_server> stroke (get_computed_attribute<svg_attribute_stroke> ()->create_paint_server (document ()->item_container ()));
   auto stroke_width = get_computed_attribute<svg_attribute_stroke_width> ();
   auto stroke_linecap = get_computed_attribute<svg_attribute_stroke_linecap> ();
   auto stroke_linejoin = get_computed_attribute<svg_attribute_stroke_linejoin> ();
@@ -101,7 +101,7 @@ abstract_renderer_item *svg_base_shape_item::create_outline_renderer () const
 {
   QPainterPath path = get_path ();
   path = full_transform ().map (path);
-  renderer_overlay_path *overlay_item = new renderer_overlay_path (document ()->create_overlay_name ().toStdString ());
+  renderer_overlay_path *overlay_item = new renderer_overlay_path (document ()->create_overlay_name ());
   overlay_item->set_painter_path (path);
   return overlay_item;
 }
@@ -109,7 +109,7 @@ abstract_renderer_item *svg_base_shape_item::create_outline_renderer () const
 bool svg_base_shape_item::get_stroke (QPainterPath &dst) const
 {
   const svg_attribute_stroke *stroke = get_computed_attribute<svg_attribute_stroke> ();
-  if (!stroke->need_to_render ())
+  if (!stroke->need_to_render (document ()->item_container ()))
     return false;
 
   const svg_attribute_stroke_width *stroke_width = get_computed_attribute<svg_attribute_stroke_width> ();
@@ -147,7 +147,7 @@ void svg_base_shape_item::configure_markers_on_path_drawing (renderer_base_shape
   const svg_base_attribute_marker_usage *marker, const QPainterPath &path, const QTransform &transform, double stroke_width) const
 {
   abstract_svg_item *item = document ()->item_container ()->get_item (marker->fragment_name ());
-  if (item->type () != svg_item_type::MARKER)
+  if (!item || item->type () != svg_item_type::MARKER)
     return;
 
   svg_item_marker *marker_item = static_cast <svg_item_marker *> (item);

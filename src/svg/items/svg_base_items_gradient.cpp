@@ -44,7 +44,8 @@ bool svg_base_items_gradient::fill_gradient (renderer_base_gradient_item *gradie
   gradient->set_transform (transform->transform ());
 
   if (!add_stops_to_gradient (this, gradient))
-    add_stops_to_gradient (href, gradient);
+    if (href)
+      add_stops_to_gradient (href, gradient);
 
   return true;
 }

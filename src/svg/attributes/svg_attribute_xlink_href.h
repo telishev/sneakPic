@@ -13,15 +13,14 @@ class svg_attribute_xlink_href : public abstract_attribute
 
   svg_data_type_iri m_iri;
 public:
-  svg_attribute_xlink_href (svg_document *document);
+  svg_attribute_xlink_href ();
   virtual ~svg_attribute_xlink_href ();
 
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 
   std::string get_fragment_name () const;
-  bool has_image_data () const;
-  QImage *get_image_data () const;
+  QImage *get_image_data (const QString &svg_name) const;
   iri_type get_data_type () const;
 };
 

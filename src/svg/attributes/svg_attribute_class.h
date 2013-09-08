@@ -11,7 +11,7 @@ class svg_attribute_class : public abstract_attribute
   SVG_ATTRIBUTE
   std::vector<std::string> m_class_names;
 public:
-  svg_attribute_class (svg_document *document);
+  svg_attribute_class ();
   virtual ~svg_attribute_class ();
 
   virtual bool read (const char *data, bool from_css = false) override;

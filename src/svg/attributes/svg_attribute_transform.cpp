@@ -8,8 +8,7 @@
 #include "svg/items/abstract_svg_item.h"
 
 
-svg_attribute_transform::svg_attribute_transform (svg_document *document)
-  : abstract_attribute (document)
+svg_attribute_transform::svg_attribute_transform ()
 {
 
 }

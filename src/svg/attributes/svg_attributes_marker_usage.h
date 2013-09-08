@@ -15,7 +15,7 @@ class svg_base_attribute_marker_usage : public abstract_attribute
 {
   svg_data_type_iri *m_element;
 public:
-  svg_base_attribute_marker_usage (svg_document *document) : abstract_attribute (document) { m_element = nullptr; }
+  svg_base_attribute_marker_usage () { m_element = nullptr; }
 
   std::vector<abstract_renderer_item *> configure_markers_on_path_drawing (QPainterPath path, QTransform transform, double stroke_width) const;
   virtual bool read (const char *data, bool from_css = false) override;
@@ -30,7 +30,7 @@ class svg_attribute_marker_start : public svg_base_attribute_marker_usage
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_marker_start (svg_document *document) : svg_base_attribute_marker_usage (document) { }
+  svg_attribute_marker_start () { }
 
   virtual bool is_point_applicable (int number, const QPainterPath &path) const  override;
 };
@@ -39,7 +39,7 @@ class svg_attribute_marker_mid : public svg_base_attribute_marker_usage
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_marker_mid (svg_document *document) : svg_base_attribute_marker_usage (document) { }
+  svg_attribute_marker_mid () { }
 
   virtual bool is_point_applicable (int number, const QPainterPath &path) const  override;
 };
@@ -48,7 +48,7 @@ class svg_attribute_marker_end : public svg_base_attribute_marker_usage
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_marker_end (svg_document *document) : svg_base_attribute_marker_usage (document) { }
+  svg_attribute_marker_end () { }
 
   virtual bool is_point_applicable (int number, const QPainterPath &path) const override;
 };
@@ -57,7 +57,7 @@ class svg_attribute_marker : public svg_base_attribute_marker_usage
 {
   SVG_ATTRIBUTE
 public:
-  svg_attribute_marker (svg_document *document) : svg_base_attribute_marker_usage (document) {}
+  svg_attribute_marker () {}
 
   virtual bool is_point_applicable (int /*number*/, const QPainterPath &/*path*/) const  override { return true; }
 };
