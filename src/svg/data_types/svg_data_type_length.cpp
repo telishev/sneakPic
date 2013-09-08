@@ -105,8 +105,8 @@ static double get_required_viewport_size (abstract_svg_item *current_item, units
     {
       if (current_item->type () == svg_item_type::SVG)
         {
-          double width = 0.0;
-          double height = 0.0;
+          double width = 100.0;
+          double height = 100.0;
           const svg_attribute_width *width_attr = current_item->get_computed_attribute <svg_attribute_width> ();
           const svg_attribute_height *height_attr = current_item->get_computed_attribute <svg_attribute_height> ();
 
@@ -117,7 +117,7 @@ static double get_required_viewport_size (abstract_svg_item *current_item, units
 
           // Probably later viewbox checking and getting actual width, height should be moved to svg (viewport) item
           const svg_attribute_view_box *viewbox = current_item->get_computed_attribute <svg_attribute_view_box> ();
-          if (viewbox)
+          if (!viewbox->is_empty ())
             {
               width = viewbox->get_width ();
               height = viewbox->get_height ();
