@@ -1,5 +1,7 @@
 #include "svg/attributes/svg_attribute_style.h"
 
+#include <QString>
+
 #include "common/memory_deallocation.h"
 
 #include "svg/css/css_declaration.h"

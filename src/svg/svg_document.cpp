@@ -32,6 +32,7 @@
 #include "renderer/events_queue.h"
 #include "renderer/event_items_changed.h"
 #include "svg_reader.h"
+#include "svg_writer.h"
 
 
 
@@ -89,21 +90,8 @@ QString svg_document::get_filename ()
 bool svg_document::write_file (const QString &filename_arg)
 {
   m_filename = filename_arg;
-  QFile file (m_filename);
-  if (!file.open (QIODevice::WriteOnly))
-    return false;
-
-  QXmlStreamWriter writer (&file);
-  writer.setAutoFormatting(true);
-  writer.writeDefaultNamespace (svg_namespaces::svg_uri ());
-  std::map<QString, QString> namespaces;
-  m_root->get_used_namespaces (namespaces);
-  for (auto namespace_pair : namespaces)
-    writer.writeNamespace (namespace_pair.first, namespace_pair.second);
-  writer.writeStartDocument();
-  m_root->write (writer);
-  writer.writeEndDocument();
-  return false;
+  svg_writer writer (m_root);
+  return writer.write (filename_arg);
 }
 
 renderer_items_container *svg_document::create_rendered_items (rendered_items_cache *cache)

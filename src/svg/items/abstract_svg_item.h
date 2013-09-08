@@ -2,10 +2,9 @@
 #define BASE_SVG_ITEM_H
 
 #include <unordered_map>
-#include <QString>
 #include <utility>
 #include <functional>
-#include <map>
+#include <vector>
 
 #include "svg/attributes/abstract_attribute.h"
 #include "svg/attributes/attribute_pointer.h"
@@ -21,8 +20,6 @@ static const char *static_ns_URI ();               \
 virtual const char *type_name () const override;   \
 virtual svg_namespaces_t namespace_type () const;  \
 private:                                           \
-
-class QXmlStreamWriter;
 
 class abstract_attribute;
 class svg_document;
@@ -77,8 +74,6 @@ public:
   void add_attribute (abstract_attribute *attribute);
   void remove_attribute (abstract_attribute *attribute);
 
-  void write (QXmlStreamWriter &writer) const;
-
   bool has_name () const;
   std::string name () const;
 
@@ -112,7 +107,6 @@ public:
   /// creates cloned item, for "use" item
   abstract_svg_item *create_clone ();
 
-  void get_used_namespaces (std::map<QString, QString> &map) const;
   void process_after_read ();
 
   virtual const svg_graphics_item *to_graphics_item () const { return nullptr; }
@@ -122,6 +116,8 @@ public:
 
   void observe_item (abstract_svg_item *item_to_observe, svg_item_observer *observer);
   void erase_created_observer (svg_item_observer *observer);
+
+  std::vector<const abstract_attribute *> attributes_list () const;
 protected:
   virtual bool check_item () = 0;
 
