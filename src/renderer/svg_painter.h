@@ -49,24 +49,14 @@ public:
   svg_painter (gl_widget *glwidget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings);
   ~svg_painter ();
 
-  void set_document (svg_document *document);
-
-  virtual unsigned int mouse_event (const mouse_event_t &m_event) override;
-  virtual void draw () override;
-  virtual void configure () override;
-
-  virtual void wheelEvent (QWheelEvent *qevent) override;
-  virtual void leaveEvent (QEvent *qevent) override;
-  virtual void resizeEvent (QResizeEvent *qevent) override;
-  virtual bool event (QEvent * /*qevent*/) override { return false; }
-  virtual void keyPressEvent (QKeyEvent *qevent) override;
+  void set_current_tool (abstract_tool *tool);
 
   settings_t *settings () const { return m_settings; }
   overlay_renderer *overlay () const { return m_overlay; }
   items_selection *selection () const { return m_selection; }
+  svg_document *document () const { return m_document; }
 
-  void set_current_tool (abstract_tool *tool);
-
+  abstract_svg_item *get_current_item (const QPoint &pos);
   QPointF get_local_pos (const QPointF &mouse_pos) const;
 
   void redraw ();
@@ -77,10 +67,21 @@ signals:
 private slots:
   void items_changed ();
 
+protected:
+  virtual unsigned int mouse_event (const mouse_event_t &m_event) override;
+  virtual void draw () override;
+  virtual void configure () override;
+
+  virtual void wheelEvent (QWheelEvent *qevent) override;
+  virtual void leaveEvent (QEvent *qevent) override;
+  virtual void resizeEvent (QResizeEvent *qevent) override;
+  virtual bool event (QEvent * /*qevent*/) override { return false; }
+  virtual void keyPressEvent (QKeyEvent *qevent) override;
+
 private:
+  void set_document (svg_document *document);
   void reset_transform ();
   void send_changes (bool interrrupt_rendering);
-  abstract_svg_item *get_current_item (const QPoint &pos);
   void update_drawing (QTransform transform);
   void draw_base (QPainter &painter);
   void draw_overlay (QPainter &painter);

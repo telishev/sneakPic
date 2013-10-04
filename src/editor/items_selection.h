@@ -20,6 +20,8 @@ public:
   int selected_count () const;
   const set_type &selection () const { return m_selection; }
 
+  bool contains (const std::string &name) const;
+
   void add_item (const abstract_svg_item *item);
   void add_item (const std::string &item_name);
 

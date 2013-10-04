@@ -79,9 +79,13 @@ void overlay_renderer::draw (QPainter &painter, const QRect &rect_to_draw, const
   canvas.drawBitmap (m_base_cache->get_current_screen ((int)render_cache_type::ROOT_ITEM), 0, 0);
   m_base_cache->unlock ();
 
-  m_renderer->draw_to_bitmap (rect_to_draw, transform, root (overlay_layer_type::BASE), &bitmap);
-  QImage img = qt2skia::qimage (bitmap);
-  painter.drawImage (rect_to_draw, img);
+  for (int i = (int)overlay_layer_type::BASE; i < (int)overlay_layer_type::COUNT; i++)
+    {
+      m_renderer->draw_to_bitmap (rect_to_draw, transform, root ((overlay_layer_type)i), &bitmap);
+      QImage img = qt2skia::qimage (bitmap);
+      painter.drawImage (rect_to_draw, img);
+    }
+
 }
 
 void overlay_renderer::draw_page (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform)

@@ -68,3 +68,8 @@ std::vector<abstract_renderer_item *> items_selection::create_overlay_item (cons
   return create_overlay_for_item (object, overlay_item_type::SELECTION);
 }
 
+bool items_selection::contains (const std::string &name) const
+{
+  return m_selection.find (name) != m_selection.end ();
+}
+

@@ -15,6 +15,7 @@ enum class mouse_shortcut_enum
 enum class mouse_drag_shortcut_enum
 {
   PAN,
+  DRAG_OBJECTS,
   RUBBERBAND_SELECTION,
 
   COUNT,
