@@ -5,11 +5,10 @@
 
 #include "gui/gl_widget.h"
 
-abstract_painter::abstract_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object)
+abstract_painter::abstract_painter (gl_widget *glwidget)
   : QObject (glwidget)
 {
   m_glwidget = glwidget;
-  m_mouse_filter_object = mouse_filter_object;
   set_configure_all (1);
 }
 

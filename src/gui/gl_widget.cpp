@@ -32,7 +32,11 @@ gl_widget::~gl_widget ()
 void gl_widget::paintEvent (QPaintEvent * /*qevent*/)
 {
   if (!m_cur_painter)
-    return;
+    {
+      QPainter painter (this);
+      painter.fillRect (rect (), Qt::white);
+      return;
+    }
 
   m_cur_painter->configure ();
   m_cur_painter->draw ();

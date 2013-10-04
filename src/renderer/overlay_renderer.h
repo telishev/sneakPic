@@ -9,14 +9,12 @@ class renderer_page;
 class items_selection;
 class rendered_items_cache;
 class abstract_renderer_item;
-class overlay_items_container;
 
 class QPainter;
 class QRect;
 class QTransform;
 
 #include <string>
-#include <set>
 
 
 enum class overlay_layer_type
@@ -38,8 +36,6 @@ class overlay_renderer
 
   renderer_items_container *m_container;
   abstract_renderer_item *m_root_items[overlay_layer_type::COUNT];
-
-  std::set<overlay_items_container *> m_overlay_containers;
 public:
   overlay_renderer (rendered_items_cache *cache);
   ~overlay_renderer ();
@@ -55,15 +51,8 @@ public:
   void add_overlay_item (overlay_layer_type type, abstract_renderer_item *item);
   void remove_overlay_item (overlay_layer_type type, const std::string &item);
 
-  void add_overlay_container (overlay_items_container *container);
-  void remove_overlay_container (overlay_items_container *container);
-
-  void items_changed ();
-
-
 private:
   abstract_renderer_item *root (overlay_layer_type type) const;
-  void remove_overlay_containers ();
 };
 
 #endif // OVERLAY_RENDERER_H

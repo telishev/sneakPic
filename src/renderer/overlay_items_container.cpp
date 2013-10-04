@@ -11,13 +11,11 @@
 overlay_items_container::overlay_items_container (overlay_renderer *overlay, overlay_layer_type layer_type)
 {
   m_overlay = overlay;
-  m_overlay->add_overlay_container (this);
   m_layer_type = layer_type;
 }
 
 overlay_items_container::~overlay_items_container ()
 {
-  m_overlay->remove_overlay_container (this);
   clear_items ();
 }
 
@@ -62,7 +60,7 @@ void overlay_items_container::clear_items ()
 std::vector<abstract_renderer_item *> overlay_items_container::create_overlay_for_item (const std::string &object, overlay_item_type overlay_type) const
 {
   std::vector<abstract_renderer_item *> result;
-  abstract_svg_item *svg_item = m_overlay->svg_container ()->get_item (object);
+  abstract_svg_item *svg_item = svg_container ()->get_item (object);
   if (!svg_item)
     return result;
 

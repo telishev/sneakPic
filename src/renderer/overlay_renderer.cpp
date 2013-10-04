@@ -44,7 +44,6 @@ overlay_renderer::overlay_renderer (rendered_items_cache *cache)
 
 overlay_renderer::~overlay_renderer ()
 {
-  remove_overlay_containers ();
   FREE (m_container);
   FREE (m_renderer);
   FREE (m_overlay_cache);
@@ -52,7 +51,6 @@ overlay_renderer::~overlay_renderer ()
 
 void overlay_renderer::set_svg_container (svg_items_container *svg_container)
 {
-  remove_overlay_containers ();
   FREE (m_container);
   m_container = new renderer_items_container;
   char buf[16];
@@ -107,35 +105,8 @@ void overlay_renderer::remove_overlay_item (overlay_layer_type type, const std::
   overlay_changed[(int)type] = true;
 }
 
-void overlay_renderer::add_overlay_container (overlay_items_container *container)
-{
-  m_overlay_containers.insert (container);
-}
-
-void overlay_renderer::remove_overlay_container (overlay_items_container *container)
-{
-  m_overlay_containers.erase (container);
-}
-
 abstract_renderer_item *overlay_renderer::root (overlay_layer_type type) const
 {
   return m_root_items[(int)type];
-}
-
-void overlay_renderer::items_changed ()
-{
-  for (overlay_items_container *container : m_overlay_containers)
-    {
-      container->update_items ();
-    }
-}
-
-void overlay_renderer::remove_overlay_containers ()
-{
-  auto containers_copy = m_overlay_containers;
-  for (overlay_items_container *container : containers_copy)
-    {
-      FREE (container);
-    }
 }
 

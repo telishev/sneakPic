@@ -25,23 +25,24 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QTimer>
+#include "editor/tools/tools_container.h"
 
 #define RECENT_FILES_NUMBER 10
 
 main_window::main_window ()
 {
   init_clear ();
+  m_painter = nullptr;
   ui = new Ui_main_window;
   ui->setupUi (this);
   m_qsettings = new QSettings ("SneakPic");
   m_settings = new settings_t;
   m_cache = new rendered_items_cache;
   m_queue = new events_queue;
-  m_painter = new svg_painter (ui->glwidget, ui->glwidget->mouse_filter_object (), m_cache, m_queue, m_settings, this->statusBar ());
   m_renderer_thread = new renderer_thread (new svg_renderer (m_cache, m_queue), m_queue, this);
+  m_tools_container = new tools_container;
   m_renderer_thread->start ();
   m_signal_mapper = nullptr;
-  ui->glwidget->set_painter (m_painter);
   update_timer = new QTimer (this);
   update_timer->setInterval (50);
   update_timer->start ();
@@ -50,6 +51,8 @@ main_window::main_window ()
   ui->openRecentAct->setMenu (&m_recent_menu);
   load_recent_menu ();
   update_recent_menu ();
+  m_zoom_inscription = new QLabel;
+  statusBar ()->addPermanentWidget (m_zoom_inscription);
 
   connect (ui->openFileAct    , SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
   connect (ui->saveAsAct      , SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
@@ -95,7 +98,7 @@ void main_window::update_recent_menu ()
         m_signal_mapper, SLOT (map ()), size - i <= 10 ? QKeySequence (Qt::CTRL + Qt::Key_0 + (size - i) % 10) : QKeySequence ());
       m_signal_mapper->setMapping (action, m_recent_files[i]);
     }
-   connect(m_signal_mapper, SIGNAL (mapped (QString)), this, SLOT (open_file (QString)));
+   connect (m_signal_mapper, SIGNAL (mapped (QString)), this, SLOT (open_file (QString)));
 }
 
 main_window::~main_window ()
@@ -107,6 +110,7 @@ main_window::~main_window ()
   FREE (m_queue);
   FREE (ui);
   FREE (m_qsettings);
+  FREE (m_tools_container);
   FREE (m_painter);
   FREE (m_cache);
   FREE (m_doc);
@@ -183,7 +187,6 @@ void main_window::update_window_title ()
 
 void main_window::open_file (const QString filename)
 {
-  m_painter->set_document (nullptr);
   FREE (m_doc);
   DO_ON_EXIT (update_window_title ());
 
@@ -198,7 +201,7 @@ void main_window::open_file (const QString filename)
 
   renderer_items_container *renderer_items = m_doc->create_rendered_items (m_cache);
   m_queue->add_event (new event_container_changed (renderer_items));
-  m_painter->set_document (m_doc);
+  create_painter (m_doc);
   add_file_to_recent (filename);
   update_recent_menu ();
   ui->glwidget->repaint ();
@@ -223,4 +226,20 @@ void main_window::redo ()
 {
   if (m_doc)
     m_doc->redo ();
+}
+
+void main_window::zoom_description_changed (const QString &description)
+{
+  m_zoom_inscription->setText (description);
+}
+
+void main_window::create_painter (svg_document *doc)
+{
+  FREE (m_painter);
+  m_painter = new svg_painter (ui->glwidget, m_cache, m_queue, doc, m_settings);
+  m_tools_container->update_tools (m_painter);
+  m_painter->set_current_tool (m_tools_container->current_tool ());
+  ui->glwidget->set_painter (m_painter);
+  
+  connect (m_painter, SIGNAL (zoom_description_changed (const QString &)), this, SLOT (zoom_description_changed (const QString &)));
 }

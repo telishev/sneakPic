@@ -29,11 +29,10 @@ class abstract_painter : public QObject
   Q_OBJECT
 
   gl_widget          *m_glwidget;
-  const mouse_filter *m_mouse_filter_object;
   int m_config_needed[CONFIGURE_TYPE__COUNT];
 
 public:
-  abstract_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object);
+  abstract_painter (gl_widget *glwidget);
   virtual ~abstract_painter ();
 
   /// mouse events

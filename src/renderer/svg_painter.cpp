@@ -20,6 +20,7 @@
 #include "common/debug_utils.h"
 
 #include "editor/items_selection.h"
+#include "editor/tools/abstract_tool.h"
 
 #include "gui/gl_widget.h"
 #include "gui/mouse_shortcuts_handler.h"
@@ -48,21 +49,19 @@
 
 
 
-svg_painter::svg_painter (gl_widget *glwidget, const mouse_filter *mouse_filter_object, rendered_items_cache *cache,\
-                          events_queue *queue, settings_t *settings, QStatusBar *status_bar)
-  : abstract_painter (glwidget, mouse_filter_object)
+svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings)
+  : abstract_painter (glwidget)
 {
+  m_current_tool = nullptr;
   m_document = nullptr;
   m_page_renderer = nullptr;
   m_cache = cache;
   m_queue = queue;
   m_overlay = new overlay_renderer (m_cache);
-  create_overlay_containers ();
   m_settings = settings;
   m_mouse_handler = create_mouse_shortcuts ();
-  m_status_bar = status_bar;
-  m_status_bar->addPermanentWidget (&zoom_inscription);
   update_status_bar_widgets ();
+  set_document (document);
 }
 
 svg_painter::~svg_painter ()
@@ -73,7 +72,7 @@ svg_painter::~svg_painter ()
 
 void svg_painter::update_status_bar_widgets ()
 {
-  zoom_inscription.setText (QString ("%1 %2 ").arg ( QLocale ().toString (m_cur_transform.m11 () * 100, 'f', 2)).arg (QLocale ().percent ()));
+  emit zoom_description_changed (QString ("%1 %2 ").arg ( QLocale ().toString (m_cur_transform.m11 () * 100, 'f', 2)).arg (QLocale ().percent ()));
 }
 
 void svg_painter::reset_transform ()
@@ -89,9 +88,6 @@ void svg_painter::reset_transform ()
 void svg_painter::set_document (svg_document *document)
 {
   m_document = document;
-  if (!m_document)
-    return;
-
   m_overlay->set_svg_container (document->item_container ());
   double width, height;
   svg_utils::get_doc_dimensions (document, width, height);
@@ -105,6 +101,10 @@ void svg_painter::set_document (svg_document *document)
 
 unsigned int svg_painter::mouse_event (const mouse_event_t &m_event)
 {
+  if (m_current_tool)
+    if (m_current_tool->mouse_event (m_event))
+      return 0;
+
   return m_mouse_handler->process_mouse_event (m_event);
 }
 
@@ -113,9 +113,6 @@ void svg_painter::draw ()
   QPainter painter;
   painter.begin (glwidget ());
   painter.fillRect (glwidget ()->rect(), Qt::white);
-
-  if (!m_document)
-    return;
 
   draw_page (painter);
   //draw_base (painter);
@@ -126,9 +123,6 @@ void svg_painter::draw ()
 
 void svg_painter::configure ()
 {
-  if (!m_document)
-    return;
-
   if (get_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED))
     {
       set_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED, 0);
@@ -173,8 +167,6 @@ void svg_painter::keyPressEvent (QKeyEvent * qevent)
 {
   if (qevent->key () == Qt::Key_1 && qevent->modifiers () == Qt::NoModifier)
     {
-      if (!m_document)
-        return;
       reset_transform ();
       set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
       glwidget ()->update ();
@@ -190,7 +182,7 @@ void svg_painter::resizeEvent (QResizeEvent * /*qevent*/)
 
 void svg_painter::update_drawing (QTransform transform)
 {
-  svg_renderer renderer (m_cache, m_queue);
+  svg_renderer renderer (m_cache, nullptr);
   renderer.update_drawing (transform, QRectF (glwidget ()->rect ()), (int)render_cache_type::ROOT_ITEM);
 }
 
@@ -282,10 +274,6 @@ mouse_shortcuts_handler *svg_painter::create_mouse_shortcuts ()
   ADD_SHORTCUT (PAN_PICTURE           , pan_picture (m_event.pos ()));
   ADD_SHORTCUT (FIND_CURRENT_OBJECT   , find_current_object (m_event.pos ()));
 
-  ADD_SHORTCUT (START_RUBBERBAND_SELECTION, start_rubberband_selection (m_event.pos ()));
-  ADD_SHORTCUT (MOVE_RUBBERBAND_SELECTION , move_rubberband_selection (m_event.pos ()));
-  ADD_SHORTCUT (END_RUBBERBAND_SELECTION  , end_rubberband_selection (m_event));
-
   return handler;
 }
 
@@ -318,49 +306,40 @@ void svg_painter::find_current_object (const QPoint &pos)
     }
 }
 
-void svg_painter::start_rubberband_selection (const QPoint &pos)
-{
-  if (!m_document)
-    return;
-
-  QPointF start_point = m_cur_transform.inverted ().map (QPointF (pos));
-  m_rubberband->start_selection (start_point.x (), start_point.y ());
-  glwidget ()->update ();
-}
-
-void svg_painter::move_rubberband_selection (const QPoint &pos)
-{
-  if (!m_document)
-    return;
-
-  QPointF cur_point = m_cur_transform.inverted ().map (QPointF (pos));
-  m_rubberband->move_selection (cur_point.x (), cur_point.y ());
-  glwidget ()->update ();
-}
-
-void svg_painter::end_rubberband_selection (const mouse_event_t &event)
-{
-  if (!m_document)
-    return;
-
-  if (event.modifier () != keyboard_modifier::SHIFT)
-    m_selection->clear ();
-
-  m_selection->add_items_for_rect (m_rubberband->selection_rect ());
-  m_rubberband->end_selection ();
-  glwidget ()->update ();
-}
 
 void svg_painter::create_overlay_containers ()
 {
   m_selection = new items_selection (m_overlay);
   m_item_outline = new current_item_outline_renderer (m_overlay);
-  m_rubberband = new rubberband_selection (m_overlay);
   m_page_renderer = new svg_page_renderer (m_overlay);
 }
 
 void svg_painter::items_changed ()
 {
-  m_overlay->items_changed ();
+  m_current_tool->items_changed ();
+
+  m_selection->update_items ();
+  m_item_outline->update_items ();
+  m_page_renderer->update_items ();
+  glwidget ()->update ();
+}
+
+void svg_painter::set_current_tool (abstract_tool *tool)
+{
+  if (m_current_tool)
+    m_current_tool->deactivate ();
+
+  m_current_tool = tool;
+  if (m_current_tool)
+    m_current_tool->activate ();
+}
+
+QPointF svg_painter::get_local_pos (const QPointF &mouse_pos) const
+{
+  return m_cur_transform.inverted ().map (mouse_pos);
+}
+
+void svg_painter::redraw ()
+{
   glwidget ()->update ();
 }

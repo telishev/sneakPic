@@ -9,6 +9,7 @@
 class Ui_main_window;
 class QSettings;
 class QSignalMapper;
+class QLabel;
 
 class svg_document;
 class svg_painter;
@@ -16,6 +17,7 @@ class rendered_items_cache;
 class renderer_thread;
 class events_queue;
 class settings_t;
+class tools_container;
 
 
 class main_window : public QMainWindow
@@ -23,16 +25,21 @@ class main_window : public QMainWindow
   Q_OBJECT
 
   Ui_main_window *ui;
-  svg_document *m_doc;
   QSettings *m_qsettings;
   QMenu m_recent_menu;
   QSignalMapper *m_signal_mapper;
-  settings_t *m_settings;
-  svg_painter *m_painter;
-  rendered_items_cache *m_cache;
-  renderer_thread *m_renderer_thread;
-  events_queue *m_queue;
   QTimer *update_timer;
+  QLabel *m_zoom_inscription;
+  
+  settings_t           *m_settings;
+  rendered_items_cache *m_cache;
+  renderer_thread      *m_renderer_thread;
+  events_queue         *m_queue;
+
+  svg_document *m_doc;
+  svg_painter  *m_painter;
+  tools_container *m_tools_container;
+
   std::vector <QString> m_recent_files;
 
 public:
@@ -46,6 +53,7 @@ private slots:
   void open_file (const QString filename);
   void undo ();
   void redo ();
+  void zoom_description_changed (const QString &description);
 
 private:
   void add_file_to_recent (QString file_path);
@@ -56,6 +64,7 @@ private:
   void update_recent_menu ();
   void init_clear (); 
   QString get_last_file_open_dir () const;
+  void create_painter (svg_document *doc);
 };
 
 
