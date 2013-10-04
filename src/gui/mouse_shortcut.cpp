@@ -16,13 +16,19 @@ mouse_shortcut::mouse_shortcut ()
   m_modifiers = keyboard_modifier::ALL;
 }
 
-bool mouse_shortcut::is_applicable (const mouse_event_t &m_event) const
+bool mouse_shortcut::is_applicable (const mouse_event_t &m_event, bool ignore_modifiers) const
 {
-  if (m_event.event_type () != m_mouse_type)
-    return false;
+  if (!ignore_modifiers)
+    {
+      if (m_event.event_type () != m_mouse_type)
+        return false;
+    }
 
   if (m_event.button () != m_button && m_button != mouse_button::ANY_BUTTON)
     return false;
 
-  return m_modifiers.testFlag (m_event.modifier ());
+  if (ignore_modifiers)
+    return true;
+  else
+    return m_modifiers.testFlag (m_event.modifier ());
 }

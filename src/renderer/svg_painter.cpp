@@ -101,11 +101,14 @@ void svg_painter::set_document (svg_document *document)
 
 unsigned int svg_painter::mouse_event (const mouse_event_t &m_event)
 {
+  if (m_mouse_handler->process_mouse_event (m_event))
+    return 0;
+
   if (m_current_tool)
     if (m_current_tool->mouse_event (m_event))
       return 0;
 
-  return m_mouse_handler->process_mouse_event (m_event);
+  return 0;
 }
 
 void svg_painter::draw ()
@@ -250,7 +253,7 @@ void svg_painter::draw_page (QPainter &painter)
 
 #include "svg/attributes/svg_attribute_transform.h"
 
-void svg_painter::select_item (const QPoint &pos, bool clear_selection)
+bool svg_painter::select_item (const QPoint &pos, bool clear_selection)
 {
   if (clear_selection)
     m_selection->clear ();
@@ -260,30 +263,28 @@ void svg_painter::select_item (const QPoint &pos, bool clear_selection)
     m_selection->add_item (item);
 
   glwidget ()->update ();
+  return true;
 }
-
-#define ADD_SHORTCUT(ITEM,FUNC)\
-  handler->add_shortcut (mouse_shortcut_enum::ITEM, MOUSE_FUNC (FUNC));
 
 mouse_shortcuts_handler *svg_painter::create_mouse_shortcuts ()
 {
   mouse_shortcuts_handler *handler = new mouse_shortcuts_handler (m_settings->shortcuts_cfg ());
-  ADD_SHORTCUT (SELECT_ITEM           , select_item (m_event.pos (), true));
-  ADD_SHORTCUT (ADD_ITEM_TO_SELECTION , select_item (m_event.pos (), false));
-  ADD_SHORTCUT (START_PAN             , start_pan (m_event.pos ()));
-  ADD_SHORTCUT (PAN_PICTURE           , pan_picture (m_event.pos ()));
-  ADD_SHORTCUT (FIND_CURRENT_OBJECT   , find_current_object (m_event.pos ()));
-
+  ADD_SHORTCUT (handler, SELECT_ITEM           , return select_item (m_event.pos (), true));
+  ADD_SHORTCUT (handler, ADD_ITEM_TO_SELECTION , return select_item (m_event.pos (), false));
+  ADD_SHORTCUT (handler, FIND_CURRENT_OBJECT   , return find_current_object (m_event.pos ()));
+  
+  ADD_SHORTCUT_DRAG (handler, PAN, return start_pan (m_event.pos ()), return pan_picture (m_event.pos ()), return true);
   return handler;
 }
 
-void svg_painter::start_pan (const QPoint &pos)
+bool svg_painter::start_pan (const QPoint &pos)
 {
   m_last_transform = m_cur_transform;
   m_drag_start_pos = pos;
+  return true;
 }
 
-void svg_painter::pan_picture (const QPoint &pos)
+bool svg_painter::pan_picture (const QPoint &pos)
 {
   QTransform last_inverted = m_last_transform.inverted ();
   QPointF last_pos_local = last_inverted.map (QPointF (m_drag_start_pos));
@@ -293,9 +294,10 @@ void svg_painter::pan_picture (const QPoint &pos)
   m_cur_transform = QTransform (m_last_transform).translate (diff.x (), diff.y ());
   send_changes (false);
   glwidget ()->update ();
+  return true;
 }
 
-void svg_painter::find_current_object (const QPoint &pos)
+bool svg_painter::find_current_object (const QPoint &pos)
 {
   abstract_svg_item *current_item = get_current_item (pos);
   std::string item_string = current_item ? current_item->name () : std::string ();
@@ -304,6 +306,8 @@ void svg_painter::find_current_object (const QPoint &pos)
       m_item_outline->set_current_item (item_string);
       glwidget ()->update ();
     }
+
+  return true;
 }
 
 

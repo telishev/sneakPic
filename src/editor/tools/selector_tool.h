@@ -18,14 +18,14 @@ public:
 
   virtual void activate () override;
   virtual void deactivate () override;
-  virtual unsigned int mouse_event (const mouse_event_t &m_event) override;
+  virtual bool mouse_event (const mouse_event_t &m_event) override;
 
   virtual void items_changed () override;
 
 private:
-  void start_rubberband_selection (const QPoint &pos);
-  void move_rubberband_selection (const QPoint &pos);
-  void end_rubberband_selection (const mouse_event_t &event);
+  bool start_rubberband_selection (const QPoint &pos);
+  bool move_rubberband_selection (const QPoint &pos);
+  bool end_rubberband_selection (const mouse_event_t &event);
   
 };
 

@@ -14,8 +14,20 @@ enum class mouse_event_type
   DRAG_START,
   DRAG,
   DRAG_END,
-
 };
+
+inline bool is_mouse_event_type_drag (mouse_event_type type)
+{
+  switch (type)
+    {
+    case mouse_event_type::DRAG_START:
+    case mouse_event_type::DRAG:
+    case mouse_event_type::DRAG_END:
+      return true;
+    default:
+      return false;
+    }
+}
 
 enum keyboard_modifier
 {
@@ -56,7 +68,7 @@ public:
   mouse_shortcut (mouse_event_type mouse_type, mouse_button button, keyboard_modifiers modifiers);
   ~mouse_shortcut () {}
 
-  bool is_applicable (const mouse_event_t &m_event) const;
+  bool is_applicable (const mouse_event_t &m_event, bool ignore_modifiers = false) const;
 };
 
 #endif // MOUSE_SHORTCUT_H

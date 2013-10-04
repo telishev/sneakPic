@@ -15,7 +15,7 @@ public:
 
   virtual void items_changed () = 0;
 
-  virtual unsigned int mouse_event (const mouse_event_t &m_event) = 0;
+  virtual bool mouse_event (const mouse_event_t &m_event) = 0;
 };
 
 #endif // ABSTRACT_TOOL_H

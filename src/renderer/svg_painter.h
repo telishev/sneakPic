@@ -85,13 +85,13 @@ private:
   void draw_base (QPainter &painter);
   void draw_overlay (QPainter &painter);
   void draw_page (QPainter &painter);
-  void select_item (const QPoint &pos, bool clear_selection);
+  bool select_item (const QPoint &pos, bool clear_selection);
   void update_status_bar_widgets ();
 
   mouse_shortcuts_handler *create_mouse_shortcuts ();
-  void start_pan (const QPoint &pos);
-  void pan_picture (const QPoint &pos);
-  void find_current_object (const QPoint &pos);
+  bool start_pan (const QPoint &pos);
+  bool pan_picture (const QPoint &pos);
+  bool find_current_object (const QPoint &pos);
   void create_overlay_containers ();
 };
 
