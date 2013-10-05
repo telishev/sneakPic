@@ -133,8 +133,10 @@ void abstract_svg_item::add_attribute (abstract_attribute *attribute)
       return;
     }
 
+  register_item_change ();
   int id = document ()->get_undo_handler ()->add_item (attribute);
   attribute->set_edit_handler (m_document->items_edit_handler ());
+  attribute->set_item (undo_id ());
 
   m_attributes.insert (std::make_pair (attribute->type_name (), id));
 }
@@ -147,6 +149,7 @@ void abstract_svg_item::remove_attribute (abstract_attribute *attribute)
       return;
     }
 
+  register_item_change ();
   m_attributes.erase (attribute->type_name ());
   document ()->get_undo_handler ()->remove_item (attribute->undo_id ());
 }
