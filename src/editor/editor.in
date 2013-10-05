@@ -2,3 +2,6 @@ THIS_DIR = $$PROJ_DIR/src/editor
 
 SOURCES += $$THIS_DIR/*.cpp
 HEADERS += $$THIS_DIR/*.h
+
+include (tools/tools.in)
+include (operations/operations.in)
