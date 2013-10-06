@@ -15,14 +15,29 @@
 
 class use_item_watcher : public simple_item_observer<use_item_watcher>
 {
+  QTransform m_transform_before;
 public:
   use_item_watcher (svg_items_container *container, const std::string &parent)
     : simple_item_observer (container, parent) {}
 
-//   virtual void attribute_change_start (const std::string &/*sender*/, const abstract_attribute *atribute) override
-//   {
-//     base_item ()->base_transform_changed (before, after);
-//   }
+  virtual void attribute_change_start (const std::string &/*sender*/, const abstract_attribute *attribute) override
+  {
+    if (!attribute || attribute->type () != svg_attribute_type::TRANSFORM)
+      return;
+
+    const svg_attribute_transform *atribute_transform = static_cast<const svg_attribute_transform *> (attribute);
+    m_transform_before = atribute_transform->computed_transform ();
+  }
+
+  virtual void attribute_change_end (const std::string &/*sender*/, const abstract_attribute *attribute) override
+  {
+    if (!attribute || attribute->type () != svg_attribute_type::TRANSFORM)
+      return;
+
+    const svg_attribute_transform *atribute_transform = static_cast<const svg_attribute_transform *> (attribute);
+    base_item()->base_transform_changed (m_transform_before, atribute_transform->computed_transform ());
+    m_transform_before = atribute_transform->computed_transform ();
+  }
 
   virtual void item_removed (const std::string &/*sender*/) override
   {
@@ -82,9 +97,11 @@ void svg_item_use::unlink ()
   /// TODO:implement unlink
 }
 
-void svg_item_use::base_transform_changed (const abstract_attribute * /*before*/, const abstract_attribute * /*after*/)
+void svg_item_use::base_transform_changed (const QTransform &before, const QTransform &after)
 {
-  /// TODO:implement transform change
+  auto transform_attr = get_attribute_for_change<svg_attribute_transform> ();
+  QTransform base_transform_change = before.inverted () * after;
+  transform_attr->set_transform (transform_attr->computed_transform () * base_transform_change.inverted ());
 }
 
 bool svg_item_use::can_be_selected () const 

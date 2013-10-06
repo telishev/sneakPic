@@ -4,6 +4,7 @@
 #include "svg/items/svg_item_group_type.h"
 
 class use_item_watcher;
+class QTransform;
 
 class svg_item_use : public svg_item_group_type
 {
@@ -20,7 +21,7 @@ public:
 
 protected:
   virtual bool check_item () override;
-  void base_transform_changed (const abstract_attribute *before, const abstract_attribute *after);
+  void base_transform_changed (const QTransform &before, const QTransform &after);
 
   virtual bool can_be_selected () const override;
 
