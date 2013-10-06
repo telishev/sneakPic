@@ -5,6 +5,8 @@
 #include "svg/attributes/svg_attribute_transform.h"
 
 #include "renderer/abstract_renderer_item.h"
+#include "renderer/overlay_item_type.h"
+#include "renderer/renderer_item_selection.h"
 
 
 svg_graphics_item::svg_graphics_item (svg_document *document)
@@ -58,4 +60,22 @@ abstract_renderer_item *svg_graphics_item::create_renderer_item () const
     item->set_parent (parent ()->name ());
 
   return item;
+}
+
+renderable_item *svg_graphics_item::create_overlay_item (overlay_item_type overlay_type) const
+{
+  switch (overlay_type)
+    {
+    case overlay_item_type::CURRENT_ITEM:
+      {
+        return create_outline_renderer ();
+      }
+    case overlay_item_type::SELECTION:
+      {
+        renderer_item_selection *selection = new renderer_item_selection;
+        selection->set_bbox (m_bbox);
+        return selection;
+      }
+    }
+  return nullptr;
 }

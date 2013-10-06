@@ -10,6 +10,7 @@
 
 #include "common/memory_deallocation.h"
 
+#include "renderer/abstract_renderer_item.h"
 #include "renderer/svg_renderer.h"
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_items_container.h"

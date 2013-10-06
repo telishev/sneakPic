@@ -10,6 +10,8 @@
 
 #include "renderer/svg_painter.h"
 #include "renderer/rubberband_selection.h"
+#include "renderer/overlay_renderer.h"
+
 #include "svg/items/abstract_svg_item.h"
 
 
@@ -19,8 +21,9 @@ selector_tool::selector_tool (svg_painter *painter)
 {
   m_painter = painter;
   m_mouse_handler = new mouse_shortcuts_handler (m_painter->settings ()->shortcuts_cfg ());
-  m_rubberband = new rubberband_selection (m_painter->overlay ());
-  m_move_handler = new items_move_handler (m_painter->overlay (), m_painter->selection (), m_painter->document ());
+  m_overlay = new overlay_renderer;
+  m_rubberband = new rubberband_selection (m_overlay);
+  m_move_handler = new items_move_handler (m_painter->item_container (), m_overlay, m_painter->selection (), m_painter->document ());
 
   ADD_SHORTCUT_DRAG (m_mouse_handler, DRAG_OBJECTS,
     return start_moving_object (m_event.pos ()),
@@ -85,7 +88,6 @@ bool selector_tool::end_rubberband_selection (const mouse_event_t &event)
 
 void selector_tool::items_changed ()
 {
-  m_rubberband->update_items ();
 }
 
 bool selector_tool::start_moving_object (const QPoint &pos)
@@ -120,5 +122,10 @@ bool selector_tool::end_moving_object ()
   m_move_handler->end_move ();
   m_painter->redraw ();
   return true;
+}
+
+void selector_tool::draw (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform)
+{
+  m_overlay->draw (painter, rect_to_draw, transform);
 }
 

@@ -1,20 +1,21 @@
 #ifndef RENDERER_OVERLAY_PATH_H
 #define RENDERER_OVERLAY_PATH_H
 
-#include "renderer/abstract_renderer_item.h"
+#include "renderer/renderable_item.h"
 
-class renderer_overlay_path : public abstract_renderer_item
+#include <QPainterPath>
+#include <QRectF>
+
+class renderer_overlay_path : public renderable_item
 {
   QPainterPath m_path;
   QRectF m_bbox;
 
 public:
-  renderer_overlay_path (const std::string &name);
+  renderer_overlay_path ();
   ~renderer_overlay_path ();
 
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
-  virtual QRectF bounding_box_impl () const override { return m_bbox; }
-  virtual void update_bbox_impl () override;
 
   void set_painter_path (const QPainterPath &path);
 };

@@ -6,6 +6,8 @@
 #include <QRectF>
 
 class QTransform;
+class renderable_item;
+class abstract_renderer_item;
 
 class svg_graphics_item : public abstract_svg_item
 {
@@ -20,7 +22,7 @@ public:
   virtual svg_graphics_item *to_graphics_item () override { return this; }
 
   abstract_renderer_item *create_renderer_item () const;
-  virtual abstract_renderer_item *create_overlay_item (overlay_item_type overlay_type) const = 0;
+  virtual renderable_item *create_overlay_item (overlay_item_type overlay_type) const;
   virtual bool can_be_selected () const = 0;
 
   void update_bbox ();
@@ -32,6 +34,7 @@ public:
 protected:
   virtual void update_bbox_impl () = 0;
   virtual abstract_renderer_item *create_renderer_item_impl () const = 0;
+  virtual renderable_item *create_outline_renderer () const { return nullptr; } // override and return renderer to make outline rendered
 };
 
 #endif // SVG_GRAPHICS_ITEM_H

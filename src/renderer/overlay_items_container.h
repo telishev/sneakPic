@@ -6,7 +6,7 @@
 #include <vector>
 
 class overlay_renderer;
-class abstract_renderer_item;
+class renderable_item;
 class svg_items_container;
 
 enum class overlay_layer_type;
@@ -16,9 +16,10 @@ class overlay_items_container
 {
   overlay_layer_type m_layer_type;
   overlay_renderer *m_overlay;
-  std::multimap<std::string, std::string> m_obj_map; ///< map from object name to corresponding overlay items
+  svg_items_container *m_container;
+  std::map<std::string, renderable_item *> m_obj_map; ///< map from object name to corresponding overlay item
 public:
-  overlay_items_container (overlay_renderer *overlay, overlay_layer_type layer_type);
+  overlay_items_container (overlay_renderer *overlay, svg_items_container *container, overlay_layer_type layer_type);
   ~overlay_items_container ();
 
   void update_items ();
@@ -30,10 +31,9 @@ protected:
   void remove_svg_item (const std::string &object);
   void clear_items ();
 
-  std::vector<abstract_renderer_item *> create_overlay_for_item (const std::string &object, overlay_item_type overlay_type) const;
-  std::vector<abstract_renderer_item *> single_item_vector (abstract_renderer_item *item) const;
+  renderable_item *create_overlay_for_item (const std::string &object, overlay_item_type overlay_type) const;
 
-  virtual std::vector<abstract_renderer_item *> create_overlay_item (const std::string &object) const = 0;
+  virtual renderable_item *create_overlay_item (const std::string &object) const = 0;
 };
 
 

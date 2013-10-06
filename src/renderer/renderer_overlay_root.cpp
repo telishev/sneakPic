@@ -1,50 +1,42 @@
 #include "renderer/renderer_overlay_root.h"
 
-
-#include <QRectF>
-
-#include "renderer/renderer_items_container.h"
-#include "renderer/renderer_config.h"
+#include "common/memory_deallocation.h"
 
 
-renderer_overlay_root::renderer_overlay_root (const std::string &name)
-  : abstract_renderer_item (name)
+renderer_overlay_root::renderer_overlay_root ()
 {
 
 }
 
 renderer_overlay_root::~renderer_overlay_root ()
 {
-
+  for (renderable_item *item : m_items)
+    {
+      FREE (item);
+    }
 }
 
 void renderer_overlay_root::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const 
 {
-  for (const std::string &child_name : m_children)
+  for (renderable_item *item : m_items)
     {
-      abstract_renderer_item *child_item = container ()->item (child_name);
-      if (child_item)
-        child_item->draw (canvas, state, config);
+      item->draw (canvas, state, config);
     }
 }
 
-QRectF renderer_overlay_root::bounding_box_impl () const 
+void renderer_overlay_root::add_item (renderable_item *item)
 {
-  return m_bbox;
+  m_items.insert (item);
 }
 
-void renderer_overlay_root::update_bbox_impl ()
+void renderer_overlay_root::remove_item (renderable_item *item)
 {
-  QRectF new_box;
-  for (const std::string &child_name : m_children)
-    {
-      abstract_renderer_item *renderer_item = container ()->item (child_name);
-      if (!renderer_item)
-        continue;
-
-      renderer_item->update_bbox ();
-      new_box = new_box.united (renderer_item->bounding_box ());
-    }
-
-  m_bbox = new_box;
+  m_items.erase (item);
+  FREE (item);
 }
+
+bool renderer_overlay_root::empty () const
+{
+  return m_items.empty ();
+}
+

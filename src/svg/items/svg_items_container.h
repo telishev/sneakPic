@@ -21,6 +21,7 @@ public:
   void remove_item (abstract_svg_item *item);
 
   abstract_svg_item *get_item (const std::string &id) const;
+  abstract_svg_item *get_editable_item (const std::string &id) const;
   bool contains (const std::string &id) const;
 
   /// creates unique name in a form "item_id"number

@@ -4,11 +4,14 @@
 #include "renderer/overlay_items_container.h"
 
 class QRectF;
+class rubberband_renderer_item;
 
-class rubberband_selection : public overlay_items_container
+class rubberband_selection
 {
   double m_start_x, m_start_y;
   double m_end_x, m_end_y;
+
+  rubberband_renderer_item *m_render_item;
 public:
   rubberband_selection (overlay_renderer *overlay);
   ~rubberband_selection ();
@@ -18,9 +21,6 @@ public:
   void end_selection ();
 
   QRectF selection_rect () const;
-
-protected:
-  virtual std::vector<abstract_renderer_item *> create_overlay_item (const std::string &object) const override;
 };
 
 #endif // RUBBERBAND_SELECTION_H

@@ -5,6 +5,7 @@
 #include "common/common_utils.h"
 
 #include "renderer/abstract_renderer_event.h"
+#include "renderer/abstract_renderer_item.h"
 #include "renderer/svg_renderer.h"
 #include "renderer/renderer_items_container.h"
 #include "renderer/rendered_items_cache.h"

@@ -97,11 +97,11 @@ QPainterPath svg_base_shape_item::get_boundaries () const
   return path;
 }
 
-abstract_renderer_item *svg_base_shape_item::create_outline_renderer () const
+renderable_item *svg_base_shape_item::create_outline_renderer () const
 {
   QPainterPath path = get_path ();
   path = full_transform ().map (path);
-  renderer_overlay_path *overlay_item = new renderer_overlay_path (document ()->create_overlay_name ());
+  renderer_overlay_path *overlay_item = new renderer_overlay_path;
   overlay_item->set_painter_path (path);
   return overlay_item;
 }

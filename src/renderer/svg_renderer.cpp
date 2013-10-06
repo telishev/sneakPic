@@ -11,7 +11,7 @@
 #include "common/math_defs.h"
 
 
-#include "renderer/abstract_renderer_item.h"
+#include "renderer/renderable_item.h"
 #include "renderer/renderer_state.h"
 #include "renderer/rendered_items_cache.h"
 #include "renderer/render_cache_id.h"
@@ -38,13 +38,13 @@ svg_renderer::~svg_renderer ()
 
 }
 
-void svg_renderer::draw_item (const abstract_renderer_item *item, SkCanvas &canvas, const renderer_state &state, renderer_config &cfg)
+void svg_renderer::draw_item (const renderable_item *item, SkCanvas &canvas, const renderer_state &state, renderer_config &cfg)
 {
   cfg.set_queue (m_queue);
   item->draw (canvas, state, &cfg);
 }
 
-void svg_renderer::update_cache_item (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform,
+void svg_renderer::update_cache_item (const renderable_item *item, const render_cache_id &cache_id, const QTransform &transform,
                                       renderer_config &cfg, int total_x, int total_y)
 {
   int block_size = rendered_items_cache::block_pixel_size ();
@@ -81,7 +81,7 @@ void svg_renderer::update_cache_item (const abstract_renderer_item *item, const 
 
 }
 
-void svg_renderer::update_cache_items (const abstract_renderer_item *item, const render_cache_id &first,
+void svg_renderer::update_cache_items (const renderable_item *item, const render_cache_id &first,
                                        const render_cache_id &last, QTransform transform, renderer_config &cfg)
 {
   DEBUG_ASSERT (first.object_type () == last.object_type ());
@@ -122,12 +122,12 @@ bool svg_renderer::is_something_cached (const render_cache_id &first, const rend
     return false;
 }
 
-void svg_renderer::update_cache_item_async (const abstract_renderer_item *item, const render_cache_id &cache_id, const QTransform &transform, renderer_config &cfg)
+void svg_renderer::update_cache_item_async (const renderable_item *item, const render_cache_id &cache_id, const QTransform &transform, renderer_config &cfg)
 {
   return update_cache_item (item, cache_id, transform, cfg, 1, 1);
 }
 
-SkBitmap *svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const abstract_renderer_item *item)
+SkBitmap *svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const renderable_item *item)
 {
   SkBitmap *bitmap = new SkBitmap;
   bitmap->setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
@@ -137,7 +137,7 @@ SkBitmap *svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransf
   return bitmap;
 }
 
-void svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const abstract_renderer_item *item, SkBitmap *bitmap)
+void svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const renderable_item *item, SkBitmap *bitmap)
 {
   SkDevice device (*bitmap);
   SkCanvas canvas (&device);

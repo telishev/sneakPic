@@ -87,4 +87,9 @@ void svg_item_use::base_transform_changed (const abstract_attribute * /*before*/
   /// TODO:implement transform change
 }
 
+bool svg_item_use::can_be_selected () const 
+{
+  return true;
+}
+
 

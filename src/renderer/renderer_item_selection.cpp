@@ -13,8 +13,7 @@
 #include "renderer/renderer_state.h"
 
 
-renderer_item_selection::renderer_item_selection (const std::string &name)
-  : abstract_renderer_item (name)
+renderer_item_selection::renderer_item_selection ()
 {
 
 }
@@ -42,11 +41,6 @@ void renderer_item_selection::draw (SkCanvas &canvas, const renderer_state &stat
   canvas.drawRect (qt2skia::rect (m_bbox), paint);
 
   canvas.restore ();
-}
-
-void renderer_item_selection::update_bbox_impl ()
-{
-
 }
 
 void renderer_item_selection::set_bbox (const QRectF &rect)

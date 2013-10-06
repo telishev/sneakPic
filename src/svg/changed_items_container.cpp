@@ -41,8 +41,7 @@ void items_edit_handler_t::child_moved (const std::string &parent, const std::st
 
 void items_edit_handler_t::attribute_change_start (const std::string &parent, const abstract_attribute * /*computed_attribute*/)
 {
-  ///TODO: change children too
-  m_changed_items.insert (parent);
+  set_children_changed (parent);
 }
 
 void items_edit_handler_t::attribute_change_end (const std::string &/*parent*/, const abstract_attribute * /*computed_attribute*/)
@@ -141,4 +140,15 @@ void items_edit_handler_t::set_item_layout_changed (const std::string &item)
 void items_edit_handler_t::set_item_removed (const std::string &item)
 {
   m_removed_items.insert (item);
+}
+
+void items_edit_handler_t::set_children_changed (const std::string &parent_name)
+{
+  m_changed_items.insert (parent_name);
+  abstract_svg_item *item = m_container->get_item (parent_name);
+  if (!item)
+    return;
+
+  for (int i = 0; i < item->children_count (); i++)
+    set_children_changed (item->child (i)->name ());
 }

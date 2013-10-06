@@ -1,6 +1,9 @@
 #include "svg_item_group_type.h"
 
 #include "renderer/renderer_item_group.h"
+#include "renderer/overlay_item_group.h"
+#include "renderer/overlay_item_type.h"
+
 #include "svg/attributes/svg_attributes_number.h"
 #include "svg/attributes/svg_attribute_transform.h"
 #include "svg/attributes/svg_attribute_clip_path.h"
@@ -33,11 +36,6 @@ void svg_item_group_type::update_group_item (renderer_item_group *renderer_item)
     renderer_item->push_back_child (child (i)->name ());
 }
 
-abstract_renderer_item *svg_item_group_type::create_overlay_item (overlay_item_type /*overlay_type*/) const
-{
-  return nullptr;
-}
-
 void svg_item_group_type::update_bbox_impl ()
 {
   QRectF bbox;
@@ -52,4 +50,19 @@ void svg_item_group_type::update_bbox_impl ()
     }
 
   m_bbox = bbox;
+}
+
+renderable_item *svg_item_group_type::create_outline_renderer () const 
+{
+  overlay_item_group *group_item = new overlay_item_group;
+  for (int i = 0; i < children_count (); i++)
+    {
+      svg_graphics_item *graphics_item = child (i)->to_graphics_item ();
+      if (!graphics_item)
+        continue;
+
+      group_item->add_child (graphics_item->create_overlay_item (overlay_item_type::CURRENT_ITEM));
+    }
+
+  return group_item;
 }

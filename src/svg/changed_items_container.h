@@ -44,6 +44,7 @@ private:
   void clear ();
   void invalidate_bbox (const std::string &item_name);
   svg_graphics_item *get_graphics_item (const std::string &item_name) const;
+  void set_children_changed (const std::string &parent_name);
 };
 
 #endif // CHANGED_ITEMS_CONTAINER_H

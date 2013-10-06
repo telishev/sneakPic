@@ -17,12 +17,10 @@ class overlay_renderer;
 class items_selection;
 class mouse_shortcuts_handler;
 class settings_t;
-class svg_page_renderer;
 class current_item_outline_renderer;
 class rubberband_selection;
 class abstract_tool;
-
-class QStatusBar;
+class svg_items_container;
 
 
 class svg_painter : public abstract_painter
@@ -38,7 +36,6 @@ class svg_painter : public abstract_painter
   events_queue *m_queue;
   overlay_renderer *m_overlay;
   items_selection *m_selection;
-  svg_page_renderer *m_page_renderer;
   current_item_outline_renderer *m_item_outline;
   mouse_shortcuts_handler *m_mouse_handler;
   settings_t *m_settings;
@@ -52,9 +49,9 @@ public:
   void set_current_tool (abstract_tool *tool);
 
   settings_t *settings () const { return m_settings; }
-  overlay_renderer *overlay () const { return m_overlay; }
   items_selection *selection () const { return m_selection; }
   svg_document *document () const { return m_document; }
+  svg_items_container *item_container () const;
 
   abstract_svg_item *get_current_item (const QPoint &pos);
   QPointF get_local_pos (const QPointF &mouse_pos) const;
@@ -83,9 +80,6 @@ private:
   void reset_transform ();
   void send_changes (bool interrrupt_rendering);
   void update_drawing (QTransform transform);
-  void draw_base (QPainter &painter);
-  void draw_overlay (QPainter &painter);
-  void draw_page (QPainter &painter);
   bool select_item (const QPoint &pos, bool clear_selection);
   void update_status_bar_widgets ();
 

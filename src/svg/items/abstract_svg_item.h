@@ -24,7 +24,6 @@ private:                                           \
 class abstract_attribute;
 class svg_document;
 class svg_item_defs;
-class abstract_renderer_item;
 class svg_graphics_item;
 class abstract_attribute_pointer;
 class svg_item_observer;

@@ -22,6 +22,8 @@ protected:
   virtual bool check_item () override;
   void base_transform_changed (const abstract_attribute *before, const abstract_attribute *after);
 
+  virtual bool can_be_selected () const override;
+
   friend class use_item_watcher;
 };
 

@@ -26,24 +26,6 @@ svg_base_graphics_item::~svg_base_graphics_item ()
 {
 }
 
-abstract_renderer_item *svg_base_graphics_item::create_overlay_item (overlay_item_type overlay_type) const
-{
-  switch (overlay_type)
-    {
-    case overlay_item_type::CURRENT_ITEM:
-      {
-        return create_outline_renderer ();
-      }
-    case overlay_item_type::SELECTION:
-      {
-        renderer_item_selection *selection = new renderer_item_selection (document ()->create_overlay_name ());
-        selection->set_bbox (m_bbox);
-        return selection;
-      }
-    }
-  return nullptr;
-}
-
 void svg_base_graphics_item::set_item_style (renderer_graphics_item *item) const
 {
   const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path (document ()->item_container ());

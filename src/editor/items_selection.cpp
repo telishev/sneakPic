@@ -9,8 +9,8 @@
 #include "renderer/overlay_item_type.h"
 #include "renderer/overlay_renderer.h"
 
-items_selection::items_selection (overlay_renderer *overlay)
-  : overlay_items_container (overlay, overlay_layer_type::BASE)
+items_selection::items_selection (overlay_renderer *overlay, svg_items_container *container)
+  : overlay_items_container (overlay, container, overlay_layer_type::BASE)
 {
 }
 
@@ -63,7 +63,7 @@ void items_selection::add_items_for_rect (const QRectF &rect, const abstract_svg
     add_items_for_rect (rect, root->child (i));
 }
 
-std::vector<abstract_renderer_item *> items_selection::create_overlay_item (const std::string &object) const 
+renderable_item *items_selection::create_overlay_item (const std::string &object) const 
 {
   return create_overlay_for_item (object, overlay_item_type::SELECTION);
 }

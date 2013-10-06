@@ -8,6 +8,7 @@ class QTransform;
 class SkCanvas;
 class renderer_config;
 class renderer_state;
+class abstract_renderer_item;
 
 class svg_item_marker : public abstract_svg_item
 {

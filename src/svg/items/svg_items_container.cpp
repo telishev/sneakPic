@@ -43,6 +43,18 @@ abstract_svg_item *svg_items_container::get_item (const std::string &id) const
   return it->second;
 }
 
+abstract_svg_item *svg_items_container::get_editable_item (const std::string &id) const
+{
+  abstract_svg_item *item = get_item (id);
+  if (!item)
+    return nullptr;
+
+  while (item && item->is_cloned ())
+    item = item->parent ();
+
+  return item;
+}
+
 bool svg_items_container::contains (const std::string &id) const
 {
   return m_map.find (id) != m_map.end ();

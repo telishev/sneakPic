@@ -4,10 +4,11 @@
 #include <QPointF>
 #include <string>
 
-class transformed_renderer_items;
+class transformed_renderable_items;
 class overlay_renderer;
 class items_selection;
 class svg_document;
+class svg_items_container;
 
 class items_move_handler
 {
@@ -15,11 +16,12 @@ class items_move_handler
   overlay_renderer *m_overlay_renderer;
   items_selection *m_selection;
   svg_document *m_document;
+  svg_items_container *m_container;
 
-  transformed_renderer_items *m_transformed_items;
+  transformed_renderable_items *m_transformed_items;
 
 public:
-  items_move_handler (overlay_renderer *overlay_renderer, items_selection *selection, svg_document *document);
+  items_move_handler (svg_items_container *container, overlay_renderer *overlay_renderer, items_selection *selection, svg_document *document);
   ~items_move_handler ();
 
   void start_move (QPointF start_pos);

@@ -8,10 +8,11 @@
 #include "svg/items/svg_graphics_item.h"
 
 
-overlay_items_container::overlay_items_container (overlay_renderer *overlay, overlay_layer_type layer_type)
+overlay_items_container::overlay_items_container (overlay_renderer *overlay, svg_items_container *container, overlay_layer_type layer_type)
 {
   m_overlay = overlay;
   m_layer_type = layer_type;
+  m_container = container;
 }
 
 overlay_items_container::~overlay_items_container ()
@@ -21,7 +22,7 @@ overlay_items_container::~overlay_items_container ()
 
 svg_items_container *overlay_items_container::svg_container () const
 {
-  return m_overlay->svg_container ();
+  return m_container;
 }
 
 void overlay_items_container::add_svg_item (const std::string &object)
@@ -33,50 +34,44 @@ void overlay_items_container::svg_item_changed (const std::string &object)
 {
   remove_svg_item (object);
 
-  for (abstract_renderer_item *item : create_overlay_item (object))
-    {
-      m_obj_map.insert (std::make_pair (object, item->name ()));
-      m_overlay->add_overlay_item (m_layer_type, item);
-    }
+  renderable_item *item = create_overlay_item (object);
+  if (!item)
+    return;
+
+  m_obj_map[object] = item;
+  m_overlay->add_item (item, m_layer_type);
 }
 
 void overlay_items_container::remove_svg_item (const std::string &object)
 {
-  auto it_pair = m_obj_map.equal_range (object);
-  for (auto it = it_pair.first; it != it_pair.second; it++)
-    m_overlay->remove_overlay_item (m_layer_type, it->second);
-
-  m_obj_map.erase (it_pair.first, it_pair.second);
+  auto it = m_obj_map.find (object);
+  if (it != m_obj_map.end ())
+    {
+      m_overlay->remove_item (it->second, m_layer_type);
+      m_obj_map.erase (it);
+    }
 }
 
 void overlay_items_container::clear_items ()
 {
-  for (auto it : m_obj_map)
-    m_overlay->remove_overlay_item (m_layer_type, it.second);
+  for (auto &pair : m_obj_map)
+    m_overlay->remove_item (pair.second, m_layer_type);
 
   m_obj_map.clear ();
 }
 
-std::vector<abstract_renderer_item *> overlay_items_container::create_overlay_for_item (const std::string &object, overlay_item_type overlay_type) const
+renderable_item *overlay_items_container::create_overlay_for_item (const std::string &object, overlay_item_type overlay_type) const
 {
   std::vector<abstract_renderer_item *> result;
   abstract_svg_item *svg_item = svg_container ()->get_item (object);
   if (!svg_item)
-    return result;
+    return nullptr;
 
   svg_graphics_item *graphics_item = svg_item->to_graphics_item ();
   if (!graphics_item)
-    return result;
+    return nullptr;
 
-  result.push_back (graphics_item->create_overlay_item (overlay_type));
-  return result;
-}
-
-std::vector<abstract_renderer_item *> overlay_items_container::single_item_vector (abstract_renderer_item *item) const
-{
-  std::vector<abstract_renderer_item *> result;
-  result.push_back (item);
-  return result;
+  return graphics_item->create_overlay_item (overlay_type);
 }
 
 void overlay_items_container::update_items ()

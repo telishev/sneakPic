@@ -8,12 +8,14 @@ class renderer_items_container;
 class renderer_config;
 class SkPaint;
 
+#include "renderer/renderable_item.h"
+
 #include <QRectF>
 #include <QTransform>
 #include <string>
 #include <vector>
 
-class abstract_renderer_item
+class abstract_renderer_item : public renderable_item
 {
 protected:
   std::string m_name;
@@ -27,7 +29,6 @@ public:
   abstract_renderer_item (const std::string &name);
   virtual ~abstract_renderer_item ();
 
-  virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const = 0;
   QRectF bounding_box () const;
   void update_bbox ();
   void invalidate_bbox ();

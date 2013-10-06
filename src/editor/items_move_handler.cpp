@@ -4,9 +4,10 @@
 #include "editor/operations/transform_item_operation.h"
 
 
-#include "renderer/transformed_renderer_items.h"
+#include "renderer/transformed_renderable_items.h"
 #include "renderer/overlay_renderer.h"
 #include "renderer/overlay_item_type.h"
+#include "renderer/abstract_renderer_item.h"
 
 #include "svg/items/svg_items_container.h"
 #include "svg/items/abstract_svg_item.h"
@@ -15,13 +16,14 @@
 #include "svg/svg_document.h"
 
 
-items_move_handler::items_move_handler (overlay_renderer *overlay_renderer, items_selection *selection, svg_document *document)
+items_move_handler::items_move_handler (svg_items_container *container, overlay_renderer *overlay_renderer, items_selection *selection, svg_document *document)
 {
   m_overlay_renderer = overlay_renderer;
   m_selection = selection;
   m_document = document;
-  m_transformed_items = new transformed_renderer_items;
-  m_overlay_renderer->add_overlay_item (overlay_layer_type::TEMP, m_transformed_items);
+  m_transformed_items = new transformed_renderable_items;
+  m_container = container;
+  m_overlay_renderer->add_item (m_transformed_items, overlay_layer_type::TEMP);
 }
 
 items_move_handler::~items_move_handler ()
@@ -52,13 +54,12 @@ void items_move_handler::end_move ()
 
 void items_move_handler::add_item (const std::string &name)
 {
-  svg_items_container *container = m_overlay_renderer->svg_container ();
-  abstract_svg_item *item = container->get_item (name);
+  abstract_svg_item *item = m_container->get_editable_item (name);
   svg_graphics_item *graphics_item = item ? item->to_graphics_item () : nullptr;
   if (!graphics_item)
     return;
 
-  abstract_renderer_item *overlay_item = graphics_item->create_overlay_item (overlay_item_type::CURRENT_ITEM);
+  renderable_item *overlay_item = graphics_item->create_overlay_item (overlay_item_type::CURRENT_ITEM);
   if (overlay_item)
     m_transformed_items->add_base_item (overlay_item);
 }
@@ -71,11 +72,10 @@ QTransform items_move_handler::current_transform () const
 void items_move_handler::apply_transform ()
 {
   transform_item_operation transform_operation (m_document);
-  svg_items_container *container = m_overlay_renderer->svg_container ();
   QTransform cur_transform = current_transform ();
   for (const std::string &name : m_selection->selection ())
     {
-      abstract_svg_item *item = container->get_item (name);
+      abstract_svg_item *item = m_container->get_editable_item (name);
       if (!item)
         continue;
 

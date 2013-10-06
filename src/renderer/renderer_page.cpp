@@ -9,11 +9,10 @@
 #pragma warning(pop)
 
 
-renderer_page::renderer_page (const std::string &name)
-  : abstract_renderer_item (name)
+renderer_page::renderer_page (double width, double height)
 {
-  m_height = 0.0;
-  m_width  = 0.0;
+  m_height = height;
+  m_width  = width;
 }
 
 renderer_page::~renderer_page ()
@@ -35,12 +34,3 @@ void renderer_page::draw (SkCanvas &canvas, const renderer_state &state, const r
     }
 }
 
-QRectF renderer_page::bounding_box_impl () const 
-{
-  return QRectF (0, 0, m_width, m_height);
-}
-
-void renderer_page::update_bbox_impl ()
-{
-
-}
