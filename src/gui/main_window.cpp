@@ -1,23 +1,6 @@
 /// \file main_window.cpp
 
-#include "main_window.h"
-
-#include "ui/ui_main_window.h"
-
-#include "gui/settings.h"
-
-#include "common/common_utils.h"
-#include "common/memory_deallocation.h"
-
-#include "renderer/svg_painter.h"
-#include "renderer/rendered_items_cache.h"
-#include "renderer/abstract_renderer_event.h"
-#include "renderer/renderer_thread.h"
-#include "renderer/svg_renderer.h"
-#include "renderer/event_container_changed.h"
-#include "renderer/events_queue.h"
-
-#include "svg/svg_document.h"
+#include "gui/main_window.h"
 
 #include <QFileDialog>
 #include <QFileInfo>
@@ -25,40 +8,59 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QTimer>
-#include "editor/tools/tools_container.h"
+#include <QLabel>
+#include <QMenuBar>
+
+#include "ui/ui_main_window.h"
+
+#include "gui/settings.h"
+#include "gui/gui_document.h"
+#include "gui/gui_actions.h"
+#include "gui/actions_applier.h"
+#include "gui/gui_action_id.h"
+#include "gui/menu_builder.h"
+
+#include "common/common_utils.h"
+#include "common/memory_deallocation.h"
+
+#include "svg/svg_document.h"
+
+#include "renderer/svg_painter.h"
 
 #define RECENT_FILES_NUMBER 10
 
 main_window::main_window ()
 {
-  init_clear ();
-  m_painter = nullptr;
   ui = new Ui_main_window;
   ui->setupUi (this);
+  m_document = nullptr;
   m_qsettings = new QSettings ("SneakPic");
   m_settings = new settings_t;
-  m_cache = new rendered_items_cache;
-  m_queue = new events_queue;
-  m_renderer_thread = new renderer_thread (new svg_renderer (m_cache, m_queue), m_queue, this);
-  m_tools_container = new tools_container;
-  m_renderer_thread->start ();
   m_signal_mapper = nullptr;
-  update_timer = new QTimer (this);
-  update_timer->setInterval (50);
-  update_timer->start ();
+  m_actions = new gui_actions (m_settings->shortcuts_cfg ());
+  m_applier = new actions_applier;
+  m_menu_builder = new menu_builder (menuBar (), m_actions);
 
   update_window_title ();  
-  ui->openRecentAct->setMenu (&m_recent_menu);
+  m_actions->action (gui_action_id::OPEN_RECENT)->setMenu (&m_recent_menu);
   load_recent_menu ();
   update_recent_menu ();
   m_zoom_inscription = new QLabel;
   statusBar ()->addPermanentWidget (m_zoom_inscription);
 
-  connect (ui->openFileAct    , SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
-  connect (ui->saveAsAct      , SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
-  connect (update_timer       , SIGNAL (timeout ())  , this, SLOT (update_timeout ()));
-  connect (ui->actionUndo     , SIGNAL (triggered ()), this, SLOT (undo ()));
-  connect (ui->actionRedo     , SIGNAL (triggered ()), this, SLOT (redo ()));
+  m_applier->register_action (gui_action_id::OPEN, [&] () { return open_file_clicked (); });
+  m_applier->register_action (gui_action_id::SAVE_AS, [&] () { return save_file_clicked (); });
+
+  connect (m_actions, SIGNAL (triggered (gui_action_id)), this, SLOT (action_triggered (gui_action_id)));
+}
+
+main_window::~main_window ()
+{
+  FREE (m_applier);
+  FREE (m_actions);
+  FREE (ui);
+  FREE (m_qsettings);
+  FREE (m_settings);
 }
 
 void main_window::load_recent_menu ()
@@ -101,35 +103,29 @@ void main_window::update_recent_menu ()
    connect (m_signal_mapper, SIGNAL (mapped (QString)), this, SLOT (open_file (QString)));
 }
 
-main_window::~main_window ()
-{
-  save_recent_menu ();
-  m_renderer_thread->set_exit_needed ();
-  m_renderer_thread->wait ();
-  FREE (m_renderer_thread);
-  FREE (m_queue);
-  FREE (ui);
-  FREE (m_qsettings);
-  FREE (m_tools_container);
-  FREE (m_painter);
-  FREE (m_cache);
-  FREE (m_doc);
-  FREE (m_settings);
-  init_clear ();
-}
 
-void main_window::init_clear ()
-{
-  m_doc = nullptr;
-}
-
-void main_window::open_file_clicked ()
+bool main_window::open_file_clicked ()
 {
   QString filename = QFileDialog::getOpenFileName (this, "Open File", get_last_file_open_dir (), "Scalable Vector Graphics (*.svg)");
   if (filename.isEmpty ())
-    return;
+    return true;
 
   open_file (filename);
+  return true;
+}
+
+bool main_window::save_file_clicked ()
+{
+  if (!m_document)
+    return true;
+
+  QString filename = QFileDialog::getSaveFileName (this, "Save File", m_document->get_filename (), "Scalable Vector Graphics (*.svg)");
+  if (filename.isEmpty ())
+    return true;
+
+  m_document->save_file (filename);
+  update_window_title ();
+  return true;
 }
 
 void main_window::add_file_to_recent (QString file_path)
@@ -148,29 +144,6 @@ void main_window::add_file_to_recent (QString file_path)
   m_recent_files.push_back (file_path);
 }
 
-void main_window::keyPressEvent(QKeyEvent * qevent)
-{
-  ui->glwidget->keyPressEvent (qevent);
-
-  if (qevent->isAccepted ())
-    return;
-
-  QWidget::keyPressEvent (qevent);
-}
-
-void main_window::save_file_clicked ()
-{
-  if (!m_doc)
-    return;
-
-  QString filename = QFileDialog::getSaveFileName (this, "Save File", m_doc->get_filename (), "Scalable Vector Graphics (*.svg)");
-  if (filename.isEmpty ())
-    return;
-
-  m_doc->write_file (filename);
-  update_window_title ();
-}
-
 QString main_window::get_last_file_open_dir () const
 {
   if (m_recent_files.size () == 0)
@@ -182,50 +155,26 @@ QString main_window::get_last_file_open_dir () const
 
 void main_window::update_window_title ()
 {
-  setWindowTitle (QString ("sneakPic%1").arg (m_doc ? QString (" - %1").arg (m_doc->get_filename ()) : ""));
+  setWindowTitle (QString ("sneakPic%1").arg (m_document ? QString (" - %1").arg (m_document->get_filename ()) : ""));
 }
 
 void main_window::open_file (const QString filename)
 {
-  FREE (m_doc);
+  FREE (m_document);
   DO_ON_EXIT (update_window_title ());
 
-  m_doc = new svg_document ();
-  m_doc->set_queue (m_queue);
+  m_document = new gui_document (m_settings);
   setWindowTitle ("Loading...");
-  if (!m_doc->read_file (filename))
+  if (!m_document->open_file (filename))
     {
       QMessageBox::warning (this, "Warning", "Cannot open document");
       return;
     }
 
-  renderer_items_container *renderer_items = m_doc->create_rendered_items (m_cache);
-  m_queue->add_event (new event_container_changed (renderer_items));
-  create_painter (m_doc);
+  create_painter ();
   add_file_to_recent (filename);
   update_recent_menu ();
   ui->glwidget->repaint ();
-}
-
-void main_window::update_timeout ()
-{
-  if (m_cache->has_pending_changes ())
-    {
-      m_painter->set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
-      ui->glwidget->repaint ();
-    }
-}
-
-void main_window::undo ()
-{
-  if (m_doc)
-    m_doc->undo ();
-}
-
-void main_window::redo ()
-{
-  if (m_doc)
-    m_doc->redo ();
 }
 
 void main_window::zoom_description_changed (const QString &description)
@@ -233,13 +182,17 @@ void main_window::zoom_description_changed (const QString &description)
   m_zoom_inscription->setText (description);
 }
 
-void main_window::create_painter (svg_document *doc)
+void main_window::create_painter ()
 {
-  FREE (m_painter);
-  m_painter = new svg_painter (ui->glwidget, m_cache, m_queue, doc, m_settings);
-  m_tools_container->update_tools (m_painter);
-  m_painter->set_current_tool (m_tools_container->current_tool ());
-  ui->glwidget->set_painter (m_painter);
-  
-  connect (m_painter, SIGNAL (zoom_description_changed (const QString &)), this, SLOT (zoom_description_changed (const QString &)));
+  svg_painter *painter = m_document->create_painter (ui->glwidget);
+  connect (painter, SIGNAL (zoom_description_changed (const QString &)), this, SLOT (zoom_description_changed (const QString &)));
+}
+
+void main_window::action_triggered (gui_action_id id)
+{
+  if (m_applier->apply_action (id))
+    return;
+
+  if (m_document)
+    m_document->action_triggered (id);
 }

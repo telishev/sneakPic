@@ -20,7 +20,6 @@ public:
 
   void set_painter (abstract_painter *painter) { m_cur_painter = painter; }
   mouse_filter *mouse_filter_object () const { return m_mouse_filter_object; }
-  void keyPressEvent (QKeyEvent * qevent) override;
 
 private slots:
   void mouse_event (const mouse_event_t &m_event);

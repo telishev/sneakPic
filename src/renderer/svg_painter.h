@@ -73,7 +73,6 @@ protected:
   virtual void leaveEvent (QEvent *qevent) override;
   virtual void resizeEvent (QResizeEvent *qevent) override;
   virtual bool event (QEvent * /*qevent*/) override { return false; }
-  virtual void keyPressEvent (QKeyEvent *qevent) override;
 
 private:
   void set_document (svg_document *document);

@@ -42,7 +42,6 @@ svg_document::svg_document ()
   m_item_container = new svg_items_container;
   m_items_edit_handler = new items_edit_handler_t (m_item_container);
   m_root = nullptr;
-  m_last_overlay_num = 0;
   m_queue = nullptr;
   set_signals_enabled (false);
 }
@@ -120,12 +119,6 @@ void svg_document::create_renderer_item (renderer_items_container *renderer_item
 
   for (int i = 0; i < svg_item->children_count (); i++)
     create_renderer_item (renderer_items, svg_item->child (i));
-}
-
-std::string svg_document::create_overlay_name ()
-{
-  char buf[32];
-  return std::string ("#overlay") + itoa (m_last_overlay_num++, buf, 10);
 }
 
 void svg_document::apply_changes ()

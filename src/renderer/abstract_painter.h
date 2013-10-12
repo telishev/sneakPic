@@ -45,12 +45,13 @@ public:
   /// \note event functions should return false if event was not processed; If you do not kwno how to process event, do nothing and return false
   virtual void wheelEvent (QWheelEvent *qevent) = 0;
   virtual void leaveEvent (QEvent *qevent) = 0;
-  virtual void keyPressEvent (QKeyEvent *qevent) = 0;
   virtual bool event (QEvent *qevent) = 0;
 
   virtual void resizeEvent (QResizeEvent *qevent) = 0;
 
   gl_widget *glwidget () const { return m_glwidget; }
+
+  void update ();
 
   void set_configure_needed (configure_type type, int value) { m_config_needed[type] = value; }
   int get_configure_needed (configure_type type) const { return m_config_needed[type]; }

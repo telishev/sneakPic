@@ -31,7 +31,6 @@ class svg_document : public QObject
 
   abstract_svg_item *m_root;
   QString m_filename;
-  int m_last_overlay_num;
   bool m_signals_enabled;
 
 public:

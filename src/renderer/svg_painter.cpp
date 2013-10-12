@@ -162,17 +162,6 @@ void svg_painter::leaveEvent (QEvent *qevent)
   FIX_UNUSED (qevent);
 }
 
-void svg_painter::keyPressEvent (QKeyEvent * qevent)
-{
-  if (qevent->key () == Qt::Key_1 && qevent->modifiers () == Qt::NoModifier)
-    {
-      reset_transform ();
-      set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
-      glwidget ()->update ();
-      qevent->accept ();
-    }
-}
-
 void svg_painter::resizeEvent (QResizeEvent * /*qevent*/)
 {
   send_changes (false);

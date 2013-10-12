@@ -24,7 +24,7 @@ class renderer_thread : public QThread
   QTransform m_last_transform;
 
 public:
-  renderer_thread (svg_renderer *renderer, events_queue *queue, QObject *parent);
+  renderer_thread (svg_renderer *renderer, events_queue *queue, QObject *parent = 0);
   ~renderer_thread ();
 
   void set_exit_needed () { m_exit_needed = true; }

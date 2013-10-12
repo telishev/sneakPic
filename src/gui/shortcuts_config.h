@@ -3,6 +3,11 @@
 
 #include "gui/mouse_shortcut.h"
 
+#include <QKeySequence>
+#include <vector>
+
+enum class gui_action_id;
+
 enum class mouse_shortcut_enum
 {
   SELECT_ITEM,
@@ -23,8 +28,9 @@ enum class mouse_drag_shortcut_enum
 
 class shortcuts_config
 {
-  mouse_shortcut m_mouse_shortcuts[(int)mouse_shortcut_enum::COUNT];
-  mouse_shortcut m_drag_shortcuts[(int)mouse_drag_shortcut_enum::COUNT];
+  std::vector<mouse_shortcut> m_mouse_shortcuts;
+  std::vector<mouse_shortcut> m_drag_shortcuts;
+  std::vector<QKeySequence> m_action_shortcuts;
 
 public:
   shortcuts_config ();
@@ -32,8 +38,15 @@ public:
 
   mouse_shortcut shortcut_mouse (mouse_shortcut_enum index) const { return m_mouse_shortcuts[(int)index]; }
   mouse_shortcut drag_shortcut_mouse (mouse_drag_shortcut_enum index) const { return m_drag_shortcuts[(int)index]; }
+  QKeySequence action_shortcut (gui_action_id index) const { return m_action_shortcuts[(int)index]; }
 
   void fill_by_default ();
+
+private:
+  void fill_mouse_default ();
+  void fill_drag_default ();
+  void fill_action_default ();
 };
 
 #endif // SHORTCUTS_CONFIG_H
+

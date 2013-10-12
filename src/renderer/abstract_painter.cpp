@@ -21,3 +21,9 @@ void abstract_painter::set_configure_all (int value)
   for (int i = 0; i < CONFIGURE_TYPE__COUNT; i++)
     set_configure_needed ((configure_type)i, value);
 }
+
+void abstract_painter::update ()
+{
+  set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
+  glwidget ()->update ();
+}

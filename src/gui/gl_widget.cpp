@@ -57,12 +57,6 @@ void gl_widget::leaveEvent (QEvent *qevent)
   qevent->accept ();
 }
 
-void gl_widget::keyPressEvent(QKeyEvent * qevent)
-{
-  if (m_cur_painter)
-    m_cur_painter->keyPressEvent (qevent);
-}
-
 void gl_widget::resizeEvent (QResizeEvent *qevent)
 {
   if (m_cur_painter)
