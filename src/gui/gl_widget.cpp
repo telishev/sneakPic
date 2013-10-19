@@ -39,6 +39,7 @@ void gl_widget::paintEvent (QPaintEvent * /*qevent*/)
     }
 
   m_cur_painter->configure ();
+  m_cur_painter->set_configure_all (false);
   m_cur_painter->draw ();
 }
 
