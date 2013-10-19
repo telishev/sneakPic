@@ -13,7 +13,7 @@ include (skia.pri)
 # configuration
 
 #RC_FILE += $$PROJ_DIR/resource/sneakPic.rc
-#RESOURCES += $$PROJ_DIR/resource/sneakPic.qrc
+RESOURCES += $$PROJ_DIR/resource/sneakPic.qrc
 
 CONFIG += warn_on build_all debug_and_release
 

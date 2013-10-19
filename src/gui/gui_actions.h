@@ -8,7 +8,7 @@
 class shortcuts_config;
 class actions_info;
 class QAction;
-class QSignalMapper;
+class QTimer;
 
 enum class gui_action_id;
 
@@ -20,21 +20,17 @@ class gui_actions : public QObject
 
   actions_info *m_info;
   std::vector<std::unique_ptr<QAction>> m_actions;
-  QSignalMapper *m_mapper;
-
 public:
   gui_actions (const shortcuts_config *cfg);
   ~gui_actions ();
 
   QAction *action (gui_action_id id) const;
 
-  void update_actions ();
+  void rebuild_actions ();
+  void set_update_needed ();
 
 signals:
-  void triggered (gui_action_id id);
-
-private slots:
-  void action_triggered (int id);
+  void actions_update_needed ();
 };
 
 #endif // GUI_ACTIONS_H

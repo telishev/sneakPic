@@ -300,6 +300,8 @@ void svg_painter::set_current_tool (abstract_tool *tool)
   m_current_tool = tool;
   if (m_current_tool)
     m_current_tool->activate ();
+
+  glwidget ()->update ();
 }
 
 QPointF svg_painter::get_local_pos (const QPointF &mouse_pos) const

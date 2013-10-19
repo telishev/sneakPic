@@ -1,14 +1,15 @@
 #include "gui/gui_document.h"
 
 #include <QTimer>
+#include <QAction>
 
 #include "common/memory_deallocation.h"
 
 #include "editor/tools/tools_container.h"
 
 #include "gui/gl_widget.h"
-#include "gui/actions_applier.h"
 #include "gui/gui_action_id.h"
+#include "gui/gui_actions.h"
 
 #include "renderer/rendered_items_cache.h"
 #include "renderer/events_queue.h"
@@ -20,24 +21,26 @@
 #include "svg/svg_document.h"
 
 
-gui_document::gui_document (settings_t *settings)
+gui_document::gui_document (settings_t *settings, gui_actions *actions)
 {
+  m_actions = actions; 
   m_painter = nullptr;
   m_settings = settings;
   m_cache = new rendered_items_cache;
   m_queue = new events_queue;
-  m_tools_container = new tools_container;
-  m_applier = new actions_applier;
+  m_tools_container = new tools_container (m_actions);
   m_renderer_thread = new renderer_thread (new svg_renderer (m_cache, m_queue), m_queue);
   m_renderer_thread->start ();
 
   update_timer = new QTimer (this);
   update_timer->setInterval (50);
   update_timer->start ();
-  connect (update_timer, SIGNAL (timeout ()), this, SLOT (update_timeout ()));
 
-  m_applier->register_action (gui_action_id::UNDO, [&] () { return undo (); });
-  m_applier->register_action (gui_action_id::REDO, [&] () { return redo (); });
+  connect (update_timer     , SIGNAL (timeout ())     , this, SLOT (update_timeout ()));
+  connect (m_tools_container, SIGNAL (tool_changed ()), this, SLOT (tool_changed ()));
+
+  connect (m_actions->action (gui_action_id::UNDO), SIGNAL (triggered ()), this, SLOT (undo ()));
+  connect (m_actions->action (gui_action_id::REDO), SIGNAL (triggered ()), this, SLOT (redo ()));
 }
 
 gui_document::~gui_document ()
@@ -50,7 +53,6 @@ gui_document::~gui_document ()
   FREE (m_painter);
   FREE (m_cache);
   FREE (m_doc);
-  FREE (m_applier);
 }
 
 bool gui_document::open_file (const QString &filename)
@@ -93,22 +95,17 @@ void gui_document::update_timeout ()
     m_painter->update ();
 }
 
-bool gui_document::action_triggered (gui_action_id id)
-{
-  if (m_applier->apply_action (id))
-    return true;
-
-  return false;
-}
-
-bool gui_document::undo ()
+void gui_document::undo ()
 {
   m_doc->undo ();
-  return true;
 }
 
-bool gui_document::redo ()
+void gui_document::redo ()
 {
   m_doc->redo ();
-  return true;
+}
+
+void gui_document::tool_changed ()
+{
+  m_painter->set_current_tool (m_tools_container->current_tool ());
 }

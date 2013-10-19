@@ -14,8 +14,8 @@ class QLabel;
 class settings_t;
 class gui_document;
 class gui_actions;
-class actions_applier;
 class menu_builder;
+class tools_widget_builder;
 
 enum class gui_action_id;
 
@@ -33,8 +33,9 @@ class main_window : public QMainWindow
   settings_t *m_settings;
   gui_document *m_document;
   gui_actions *m_actions;
-  actions_applier *m_applier;
+
   menu_builder *m_menu_builder;
+  tools_widget_builder *m_tools_builder;
   
   std::vector <QString> m_recent_files;
 
@@ -44,12 +45,11 @@ public:
 
 private slots:
   void zoom_description_changed (const QString &description);
-  void action_triggered (gui_action_id id);
   void open_file (const QString filename);
-
-private:
   bool open_file_clicked ();
   bool save_file_clicked ();
+
+private:
   void add_file_to_recent (QString file_path);
   void update_window_title ();
   void load_recent_menu ();

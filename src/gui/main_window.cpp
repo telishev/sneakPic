@@ -16,8 +16,8 @@
 #include "gui/settings.h"
 #include "gui/gui_document.h"
 #include "gui/gui_actions.h"
-#include "gui/actions_applier.h"
 #include "gui/gui_action_id.h"
+#include "gui/tools_widget_builder.h"
 #include "gui/menu_builder.h"
 
 #include "common/common_utils.h"
@@ -38,8 +38,8 @@ main_window::main_window ()
   m_settings = new settings_t;
   m_signal_mapper = nullptr;
   m_actions = new gui_actions (m_settings->shortcuts_cfg ());
-  m_applier = new actions_applier;
   m_menu_builder = new menu_builder (menuBar (), m_actions);
+  m_tools_builder = new tools_widget_builder (m_actions, this);
 
   update_window_title ();  
   m_actions->action (gui_action_id::OPEN_RECENT)->setMenu (&m_recent_menu);
@@ -48,19 +48,18 @@ main_window::main_window ()
   m_zoom_inscription = new QLabel;
   statusBar ()->addPermanentWidget (m_zoom_inscription);
 
-  m_applier->register_action (gui_action_id::OPEN, [&] () { return open_file_clicked (); });
-  m_applier->register_action (gui_action_id::SAVE_AS, [&] () { return save_file_clicked (); });
-
-  connect (m_actions, SIGNAL (triggered (gui_action_id)), this, SLOT (action_triggered (gui_action_id)));
+  connect (m_actions->action (gui_action_id::OPEN), SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
+  connect (m_actions->action (gui_action_id::SAVE_AS), SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
 }
 
 main_window::~main_window ()
 {
-  FREE (m_applier);
   FREE (m_actions);
   FREE (ui);
   FREE (m_qsettings);
   FREE (m_settings);
+  FREE (m_tools_builder);
+  FREE (m_menu_builder);
 }
 
 void main_window::load_recent_menu ()
@@ -163,7 +162,7 @@ void main_window::open_file (const QString filename)
   FREE (m_document);
   DO_ON_EXIT (update_window_title ());
 
-  m_document = new gui_document (m_settings);
+  m_document = new gui_document (m_settings, m_actions);
   setWindowTitle ("Loading...");
   if (!m_document->open_file (filename))
     {
@@ -188,11 +187,3 @@ void main_window::create_painter ()
   connect (painter, SIGNAL (zoom_description_changed (const QString &)), this, SLOT (zoom_description_changed (const QString &)));
 }
 
-void main_window::action_triggered (gui_action_id id)
-{
-  if (m_applier->apply_action (id))
-    return;
-
-  if (m_document)
-    m_document->action_triggered (id);
-}

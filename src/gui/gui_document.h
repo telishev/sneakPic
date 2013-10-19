@@ -13,7 +13,7 @@ class svg_document;
 class svg_painter;
 class tools_container;
 class gl_widget;
-class actions_applier;
+class gui_actions;
 
 enum class gui_action_id;
 
@@ -21,7 +21,8 @@ class gui_document : public QObject
 {
   Q_OBJECT
 public:
-  settings_t *m_settings;
+  settings_t  *m_settings;
+  gui_actions *m_actions;
 
   QTimer *update_timer;
   rendered_items_cache *m_cache;
@@ -31,10 +32,9 @@ public:
   svg_document *m_doc;
   svg_painter  *m_painter;
   tools_container *m_tools_container;
-  actions_applier *m_applier;
 
 public:
-  gui_document (settings_t *settings);
+  gui_document (settings_t *settings, gui_actions *actions);
   ~gui_document ();
 
   svg_painter *create_painter (gl_widget *widget);
@@ -48,8 +48,10 @@ public:
 
 private slots:
   void update_timeout ();
-  bool undo ();
-  bool redo ();
+  void tool_changed ();
+
+  void undo ();
+  void redo ();
 };
   
 

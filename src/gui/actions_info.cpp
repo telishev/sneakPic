@@ -27,7 +27,11 @@ actions_info::actions_info ()
   add_action (gui_action_id::SAVE, "Save...", QKeySequence::Save);
   add_action (gui_action_id::SAVE_AS, "Save As...", QKeySequence::SaveAs);
   add_action (gui_action_id::UNDO, "Undo", QKeySequence::Undo);
-  add_action (gui_action_id::REDO, "Redo", QKeySequence::Redo, QIcon ());
+  add_action (gui_action_id::REDO, "Redo", QKeySequence::Redo);
+
+  /// Tools
+  add_action (gui_action_id::TOOL_SELECTOR, "Selection Tool", QKeySequence (), QIcon (":/cursor.png"));
+  
 }
 
 actions_info::~actions_info ()

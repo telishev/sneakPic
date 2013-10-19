@@ -3,6 +3,8 @@
 
 enum class gui_action_id
 {
+
+  //// Menu
   OPEN,
   OPEN_RECENT,
   SAVE,
@@ -10,6 +12,12 @@ enum class gui_action_id
   UNDO,
   REDO,
 
+
+  //// Tools
+  TOOL_SELECTOR,
+
+
+  /// Count
   COUNT,
 };
 
