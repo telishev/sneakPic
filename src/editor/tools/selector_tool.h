@@ -13,7 +13,6 @@ class selector_tool : public abstract_tool
 {
   svg_painter             *m_painter;
 
-
   mouse_shortcuts_handler *m_mouse_handler;
   rubberband_selection    *m_rubberband;
   items_move_handler      *m_move_handler;

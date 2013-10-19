@@ -7,6 +7,7 @@
 
 #include "gui/gui_action_id.h"
 #include "gui/gui_actions.h"
+#include "editor/tools/tools_container.h"
 
 
 
@@ -41,7 +42,10 @@ void tools_widget_builder::update ()
 
 void tools_widget_builder::fill_tool_bar ()
 {
-  add_action (gui_action_id::TOOL_SELECTOR);
+  tools_container container (nullptr);
+
+  for (gui_action_id id : container.tool_actions ())
+    add_action (id);
 }
 
 void tools_widget_builder::add_action (gui_action_id id)

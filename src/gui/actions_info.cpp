@@ -31,6 +31,7 @@ actions_info::actions_info ()
 
   /// Tools
   add_action (gui_action_id::TOOL_SELECTOR, "Selection Tool", QKeySequence (), QIcon (":/cursor.png"));
+  add_action (gui_action_id::TOOL_PATH_EDITOR, "Path Editor Tool", QKeySequence (), QIcon (":/cursor.png"));
   
 }
 

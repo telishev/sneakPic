@@ -15,7 +15,7 @@ enum class gui_action_id
 
   //// Tools
   TOOL_SELECTOR,
-
+  TOOL_PATH_EDITOR,
 
   /// Count
   COUNT,
