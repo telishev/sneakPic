@@ -21,18 +21,19 @@ action_description::~action_description ()
 actions_info::actions_info ()
 {
   m_info.resize ((int)gui_action_id::COUNT);
-  
+
   add_action (gui_action_id::OPEN, "Open...", QKeySequence::Open);
   add_action (gui_action_id::OPEN_RECENT, "Open Recent");
   add_action (gui_action_id::SAVE, "Save...", QKeySequence::Save);
   add_action (gui_action_id::SAVE_AS, "Save As...", QKeySequence::SaveAs);
   add_action (gui_action_id::UNDO, "Undo", QKeySequence::Undo);
   add_action (gui_action_id::REDO, "Redo", QKeySequence::Redo);
+  add_action (gui_action_id::QUIT, "Exit", QKeySequence ("Alt+F4"));
 
   /// Tools
   add_action (gui_action_id::TOOL_SELECTOR, "Selection Tool", QKeySequence (), QIcon (":/cursor.png"));
   add_action (gui_action_id::TOOL_PATH_EDITOR, "Path Editor Tool", QKeySequence (), QIcon (":/cursor.png"));
-  
+
 }
 
 actions_info::~actions_info ()

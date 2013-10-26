@@ -41,7 +41,7 @@ main_window::main_window ()
   m_menu_builder = new menu_builder (menuBar (), m_actions);
   m_tools_builder = new tools_widget_builder (m_actions, this);
 
-  update_window_title ();  
+  update_window_title ();
   m_actions->action (gui_action_id::OPEN_RECENT)->setMenu (&m_recent_menu);
   load_recent_menu ();
   update_recent_menu ();
@@ -50,6 +50,7 @@ main_window::main_window ()
 
   connect (m_actions->action (gui_action_id::OPEN), SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
   connect (m_actions->action (gui_action_id::SAVE_AS), SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
+  connect (m_actions->action (gui_action_id::QUIT), SIGNAL (triggered ()), this, SLOT (close ()));
 }
 
 main_window::~main_window ()
@@ -95,7 +96,7 @@ void main_window::update_recent_menu ()
     {
       QAction *action = m_recent_menu.addAction (QString ("%1.%2")
           .arg (size - i)
-          .arg (QFileInfo (m_recent_files[i]).fileName ()), 
+          .arg (QFileInfo (m_recent_files[i]).fileName ()),
         m_signal_mapper, SLOT (map ()), size - i <= 10 ? QKeySequence (Qt::CTRL + Qt::Key_0 + (size - i) % 10) : QKeySequence ());
       m_signal_mapper->setMapping (action, m_recent_files[i]);
     }

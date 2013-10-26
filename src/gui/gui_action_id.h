@@ -9,6 +9,7 @@ enum class gui_action_id
   OPEN_RECENT,
   SAVE,
   SAVE_AS,
+  QUIT,
   UNDO,
   REDO,
 
