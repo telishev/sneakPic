@@ -5,6 +5,7 @@ enum class overlay_item_type
 {
   CURRENT_ITEM,
   SELECTION,
+  HANDLES,
 };
 
 #endif // OVERLAY_ITEM_TYPE_H

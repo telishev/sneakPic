@@ -77,13 +77,6 @@ renderable_item *overlay_items_container::create_overlay_for_item (const std::st
 void overlay_items_container::update_items ()
 {
   auto m_map_copy = m_obj_map;
-  std::string cur_object;
   for (const auto &item_pair : m_map_copy)
-    {
-      if (item_pair.first == cur_object)
-        continue;
-
-      cur_object = item_pair.first;
-      svg_item_changed (cur_object);
-    }
+    svg_item_changed (item_pair.first);
 }

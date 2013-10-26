@@ -44,6 +44,7 @@
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_items_container.h"
 #include "svg/svg_utils.h"
+#include "items_selection_renderer.h"
 
 
 svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings)
@@ -55,15 +56,19 @@ svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, even
   m_queue = queue;
   m_overlay = new overlay_renderer (m_cache);
   m_settings = settings;
+  m_selection = new items_selection;
   m_mouse_handler = create_mouse_shortcuts ();
   update_status_bar_widgets ();
   set_document (document);
+
+  connect (m_selection, SIGNAL (selection_changed ()), this, SLOT (selection_changed ()));
 }
 
 svg_painter::~svg_painter ()
 {
   FREE (m_mouse_handler);
   FREE (m_overlay);
+  FREE (m_selection);
 }
 
 void svg_painter::update_status_bar_widgets ()
@@ -90,7 +95,6 @@ void svg_painter::set_document (svg_document *document)
   create_overlay_containers ();
   m_overlay->add_item (new renderer_page (width, height), overlay_layer_type::PAGE);
 
-  set_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED, 1);
   reset_transform ();
   connect (m_document, &svg_document::items_changed, this, &svg_painter::items_changed);
 }
@@ -122,18 +126,25 @@ void svg_painter::draw ()
 
 void svg_painter::configure ()
 {
-  if (get_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED))
+  if (get_configure_needed (configure_type::ITEMS_CHANGED))
     {
-      set_configure_needed (CONFIGURE_TYPE__ITEMS_CHANGED, 0);
-      set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
-      send_changes (true);
+      m_item_outline->update_items ();
+      set_configure_needed (configure_type::SELECTION_CHANGED);
     }
 
-  if (get_configure_needed (CONFIGURE_TYPE__REDRAW))
+  if (get_configure_needed (configure_type::SELECTION_CHANGED))
+    {
+      m_selection_renderer->update_items ();
+    }
+
+  if (m_current_tool)
+    m_current_tool->configure ();
+
+  /// must be last
+  if (get_configure_needed (configure_type::REDRAW_BASE))
     {
       update_drawing (m_cur_transform);
     }
-
 
   return;
 }
@@ -179,7 +190,7 @@ void svg_painter::send_changes (bool interrrupt_rendering)
   
   auto object_pair = render_cache_id::get_id_for_pixel_rect (m_cur_transform, glwidget ()->rect (), (int)render_cache_type::ROOT_ITEM);
   m_queue->add_event_and_wait (new event_transform_changed (object_pair.first, object_pair.second, m_cur_transform, interrrupt_rendering));
-  set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
+  set_configure_needed (configure_type::REDRAW_BASE);
 }
 
 abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
@@ -204,11 +215,17 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
   /// pick item id, which is packed in color
   QImage img = qt2skia::qimage (bitmap);
   QRectF block_rect = id.pixel_rect (transform);
-  QPointF point_to_pick = scaled_pos - block_rect.topLeft ();
+  QPoint point_to_pick = (scaled_pos - block_rect.topLeft ()).toPoint ();
   int block_size = rendered_items_cache::block_pixel_size ();
+  if (point_to_pick.x () >= img.width ())
+    point_to_pick.setX (img.width () - 1);
+
+  if (point_to_pick.y () >= img.height ())
+    point_to_pick.setY (img.height () - 1);
+
   DEBUG_ASSERT (   point_to_pick.x () >= 0 && point_to_pick.y () >= 0
                 && point_to_pick.x () < block_size && point_to_pick.y () < block_size);
-  QColor color (img.pixel (point_to_pick.toPoint ()));
+  QColor color (img.pixel (point_to_pick));
   int item_id = rendered_items_cache::get_id_by_color (color);
 
   std::string selected_item_name = m_cache->get_selection_name (item_id);
@@ -278,17 +295,13 @@ bool svg_painter::find_current_object (const QPoint &pos)
 
 void svg_painter::create_overlay_containers ()
 {
-  m_selection = new items_selection (m_overlay, item_container ());
+  m_selection_renderer = new items_selection_renderer (m_overlay, item_container (), m_selection);
   m_item_outline = new current_item_outline_renderer (m_overlay, item_container ());
 }
 
 void svg_painter::items_changed ()
 {
-  if (m_current_tool)
-    m_current_tool->items_changed ();
-
-  m_selection->update_items ();
-  m_item_outline->update_items ();
+  set_configure_needed (configure_type::ITEMS_CHANGED);
   glwidget ()->update ();
 }
 
@@ -301,6 +314,7 @@ void svg_painter::set_current_tool (abstract_tool *tool)
   if (m_current_tool)
     m_current_tool->activate ();
 
+  items_changed ();
   glwidget ()->update ();
 }
 
@@ -317,4 +331,9 @@ void svg_painter::redraw ()
 svg_items_container *svg_painter::item_container () const
 {
   return m_document->item_container ();
+}
+
+void svg_painter::selection_changed ()
+{
+  set_configure_needed (configure_type::SELECTION_CHANGED);
 }

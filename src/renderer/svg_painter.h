@@ -21,7 +21,7 @@ class current_item_outline_renderer;
 class rubberband_selection;
 class abstract_tool;
 class svg_items_container;
-
+class items_selection_renderer;
 
 class svg_painter : public abstract_painter
 {
@@ -36,6 +36,7 @@ class svg_painter : public abstract_painter
   events_queue *m_queue;
   overlay_renderer *m_overlay;
   items_selection *m_selection;
+  items_selection_renderer *m_selection_renderer;
   current_item_outline_renderer *m_item_outline;
   mouse_shortcuts_handler *m_mouse_handler;
   settings_t *m_settings;
@@ -63,6 +64,7 @@ signals:
 
 private slots:
   void items_changed ();
+  void selection_changed ();
 
 protected:
   virtual unsigned int mouse_event (const mouse_event_t &m_event) override;

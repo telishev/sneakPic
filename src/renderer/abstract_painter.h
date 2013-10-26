@@ -16,12 +16,13 @@ class QResizeEvent;
 
 class mouse_event_t;
 
-enum configure_type
+enum class configure_type
 {
-  CONFIGURE_TYPE__REDRAW,
-  CONFIGURE_TYPE__ITEMS_CHANGED,
+  REDRAW_BASE,
+  ITEMS_CHANGED,
+  SELECTION_CHANGED,
 
-  CONFIGURE_TYPE__COUNT,
+  COUNT,
 };
 
 class abstract_painter : public QObject
@@ -29,7 +30,7 @@ class abstract_painter : public QObject
   Q_OBJECT
 
   gl_widget          *m_glwidget;
-  int m_config_needed[CONFIGURE_TYPE__COUNT];
+  int m_config_needed[(int)configure_type::COUNT];
 
 public:
   abstract_painter (gl_widget *glwidget);
@@ -53,8 +54,8 @@ public:
 
   void update ();
 
-  void set_configure_needed (configure_type type, int value) { m_config_needed[type] = value; }
-  int get_configure_needed (configure_type type) const { return m_config_needed[type]; }
+  void set_configure_needed (configure_type type, int value = 1) { m_config_needed[(int)type] = value; }
+  int get_configure_needed (configure_type type) const { return m_config_needed[(int)type]; }
   void set_configure_all (int value);
 };
 

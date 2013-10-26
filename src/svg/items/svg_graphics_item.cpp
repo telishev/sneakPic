@@ -76,6 +76,8 @@ renderable_item *svg_graphics_item::create_overlay_item (overlay_item_type overl
         selection->set_bbox (m_bbox);
         return selection;
       }
+    case overlay_item_type::HANDLES:
+      break;
     }
   return nullptr;
 }

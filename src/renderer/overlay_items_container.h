@@ -20,9 +20,9 @@ class overlay_items_container
   std::map<std::string, renderable_item *> m_obj_map; ///< map from object name to corresponding overlay item
 public:
   overlay_items_container (overlay_renderer *overlay, svg_items_container *container, overlay_layer_type layer_type);
-  ~overlay_items_container ();
+  virtual ~overlay_items_container ();
 
-  void update_items ();
+  virtual void update_items ();
 
 protected:
   svg_items_container *svg_container () const;

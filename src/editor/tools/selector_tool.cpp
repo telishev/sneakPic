@@ -13,6 +13,7 @@
 #include "renderer/overlay_renderer.h"
 
 #include "svg/items/abstract_svg_item.h"
+#include "svg/items/svg_items_container.h"
 
 
 
@@ -80,14 +81,10 @@ bool selector_tool::end_rubberband_selection (const mouse_event_t &event)
   if (event.modifier () != keyboard_modifier::SHIFT)
     selection->clear ();
 
-  selection->add_items_for_rect (m_rubberband->selection_rect ());
+  selection->add_items_for_rect (m_rubberband->selection_rect (), m_painter->item_container ()->get_root ());
   m_rubberband->end_selection ();
   m_painter->redraw ();
   return true;
-}
-
-void selector_tool::items_changed ()
-{
 }
 
 bool selector_tool::start_moving_object (const QPoint &pos)
@@ -122,6 +119,11 @@ bool selector_tool::end_moving_object ()
   m_move_handler->end_move ();
   m_painter->redraw ();
   return true;
+}
+
+void selector_tool::configure ()
+{
+
 }
 
 void selector_tool::draw (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform)

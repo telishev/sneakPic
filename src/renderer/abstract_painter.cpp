@@ -18,12 +18,12 @@ abstract_painter::~abstract_painter ()
 
 void abstract_painter::set_configure_all (int value)
 {
-  for (int i = 0; i < CONFIGURE_TYPE__COUNT; i++)
+  for (int i = 0; i < (int)configure_type::COUNT; i++)
     set_configure_needed ((configure_type)i, value);
 }
 
 void abstract_painter::update ()
 {
-  set_configure_needed (CONFIGURE_TYPE__REDRAW, 1);
+  set_configure_needed (configure_type::REDRAW_BASE, 1);
   glwidget ()->update ();
 }
