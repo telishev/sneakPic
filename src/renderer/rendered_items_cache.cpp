@@ -12,6 +12,7 @@
 
 #pragma warning(push, 0)
 #include <SkBitmap.h>
+#include <set>
 #pragma warning(pop)
 
 const int rendered_items_cache::m_block_pixel_size = 256;
@@ -164,6 +165,25 @@ void rendered_items_cache::remove_from_cache (const render_cache_id &id)
 {
   QMutexLocker lock (m_mutex);
   m_cache->erase (id);
+}
+
+void rendered_items_cache::remove_from_cache (const render_cache_id &first, const render_cache_id &last)
+{
+  QMutexLocker lock (m_mutex);
+  std::set<render_cache_id> items_to_remove;
+  for (auto &item_pair : *m_cache)
+    {
+      render_cache_id cur_id = item_pair.first;
+      if (cur_id.object_type () != first.object_type ())
+        continue;;
+
+      if (   cur_id.x () >= first.x () && cur_id.x () <= last.x ()
+          && cur_id.y () >= first.y () && cur_id.y () <= last.y ())
+        items_to_remove.insert (cur_id);
+    }
+
+  for (const auto &id : items_to_remove)
+    m_cache->erase (id);
 }
 
 void rendered_items_cache::set_current_screen (const SkBitmap &bitmap, int cache_object_id)

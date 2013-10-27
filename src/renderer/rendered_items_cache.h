@@ -34,6 +34,7 @@ public:
 
   void add_bitmap (const render_cache_id &id, const SkBitmap &pixmap, bool add_to_new_cache);
   void remove_from_cache (const render_cache_id &id);
+  void remove_from_cache (const render_cache_id &first, const render_cache_id &last);
   bool is_cached (const render_cache_id &id, bool next_cache) const;
 
   void zoom_level_changed (double zoom_x, double zoom_y);
