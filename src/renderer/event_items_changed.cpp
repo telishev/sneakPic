@@ -35,13 +35,14 @@ void event_items_changed::process (renderer_thread *renderer)
   renderer_items_container *container = renderer->container ();
   for (abstract_renderer_item *item : m_changed_items)
     {
-      change_item (renderer, item);
+      change_item (renderer, item, true);
+      item->update_bbox ();
       renderer->invalidate_rect (item->bounding_box ());
     }
 
   for (abstract_renderer_item *item : m_layout_changed_items)
     {
-      change_item (renderer, item);
+      change_item (renderer, item, false);
     }
 
   for (const std::string &name : m_removed_items)
@@ -60,13 +61,16 @@ void event_items_changed::process (renderer_thread *renderer)
   container->root ()->update_bbox ();
 }
 
-void event_items_changed::change_item (renderer_thread *renderer, abstract_renderer_item *item)
+void event_items_changed::change_item (renderer_thread *renderer, abstract_renderer_item *item, bool invalidate_prev_bbox)
 {
   renderer_items_container *container = renderer->container ();
-  abstract_renderer_item *prev_item = container->item (item->name ());
-  if (prev_item)
-    renderer->invalidate_rect (prev_item->bounding_box ());
+  if (invalidate_prev_bbox)
+    {
+      abstract_renderer_item *prev_item = container->item (item->name ());
+      if (prev_item)
+        renderer->invalidate_rect (prev_item->bounding_box ());
+    }
+
   container->change_item (item);
   item->invalidate_bbox ();
-  item->update_bbox ();
 }

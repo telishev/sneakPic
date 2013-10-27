@@ -24,7 +24,7 @@ public:
   virtual bool interrupt_rendering () const override { return true; }
 
 private:
-  void change_item (renderer_thread *renderer, abstract_renderer_item *item);
+  void change_item (renderer_thread *renderer, abstract_renderer_item *item, bool invalidate_prev_bbox);
 };
 
 #endif // EVENT_ITEMS_CHANGED_H
