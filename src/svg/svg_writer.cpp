@@ -27,11 +27,12 @@ bool svg_writer::write (const QString &filename)
 
   QXmlStreamWriter writer (&file);
   writer.setAutoFormatting(true);
-  writer.writeDefaultNamespace (svg_namespaces::svg_uri ());
   std::map<QString, QString> namespaces;
   get_used_namespaces (m_root, namespaces);
   for (auto namespace_pair : namespaces)
     writer.writeNamespace (namespace_pair.first, namespace_pair.second);
+
+  writer.writeDefaultNamespace (svg_namespaces::svg_uri ());
   writer.writeStartDocument();
   write_item (m_root, writer);
   writer.writeEndDocument();
@@ -80,7 +81,12 @@ void svg_writer::write_item (const abstract_svg_item *root, QXmlStreamWriter &wr
         value = "inherit";
       else
         attribute->write (value);
-      writer.writeAttribute (attribute->namespace_uri (), attribute->type_name (), value);
+
+      /// Qt ignores default namespace for atributes, force it manually
+      if (attribute->namespace_type () == svg_namespaces_t::SVG)
+        writer.writeAttribute (attribute->type_name (), value);
+      else
+        writer.writeAttribute (attribute->namespace_uri (), attribute->type_name (), value);
     }
 
   for (int i = 0; i < root->children_count (); i++)

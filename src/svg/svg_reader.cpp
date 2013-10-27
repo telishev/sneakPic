@@ -107,20 +107,13 @@ bool svg_reader::read_file (const QString &filename)
   return true;
 }
 
-static inline QString get_namespace_name (const QXmlStreamNamespaceDeclarations &declarations, const QString &uri)
-{
-  for (int i = 0; i < declarations.size (); i++)
-    if (declarations[i].namespaceUri () == uri)
-      return declarations[i].prefix ().toString ();
-
-  return QString ();
-}
-
 abstract_svg_item *svg_reader::process_new_item (QXmlStreamReader &reader, abstract_svg_item *cur_item)
 {
   QString namespace_uri = reader.namespaceUri ().toString ();
   QString name = reader.name ().toString ();
-  QString namespace_name = get_namespace_name (reader.namespaceDeclarations (), namespace_uri);
+  QString qualified_name = reader.qualifiedName ().toString ();
+  int colon_index = qualified_name.indexOf (':');
+  QString namespace_name = colon_index >= 0 ? qualified_name.left (colon_index) : QString ();
   abstract_svg_item *child_item = m_item_factory->create_item (name, namespace_uri, namespace_name);
   if (cur_item)
     cur_item->push_back (child_item);
