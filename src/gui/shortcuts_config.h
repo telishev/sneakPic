@@ -22,6 +22,7 @@ enum class mouse_drag_shortcut_enum
   PAN,
   DRAG_OBJECTS,
   RUBBERBAND_SELECTION,
+  CREATE_RECTANGLE,
 
   COUNT,
 };

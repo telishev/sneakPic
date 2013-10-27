@@ -11,7 +11,7 @@ enum class svg_length_units
   EM,
   EX,
   PX,
-  IN,
+  INCHES,
   CM,
   MM,
   PT,

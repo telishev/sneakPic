@@ -8,9 +8,14 @@ class QPainter;
 class QRect;
 class QTransform;
 
+class svg_painter;
+
 class abstract_tool : public QObject
 {
+protected:
+  svg_painter *m_painter;
 public:
+  abstract_tool (svg_painter *painter) { m_painter = painter; }
   virtual ~abstract_tool () {}
 
   virtual void activate () = 0;

@@ -14,11 +14,12 @@ protected:
   svg_data_type_length m_value;
   units_orientation m_units_orientation;
 public:
-  svg_base_attribute_length (double value = 0.0, svg_length_units units = svg_length_units::NO_UNITS, 
+  svg_base_attribute_length (double value = 0.0, svg_length_units units = svg_length_units::NO_UNITS,
                              units_orientation units_orientation_arg = units_orientation::OTHER)
     { m_value.set_value (value, units); m_units_orientation = units_orientation_arg; }
 
   double value () const { return m_value.value (item (), m_units_orientation); }
+  void set_value (double value, svg_length_units units = svg_length_units::NO_UNITS) { m_value.set_value (value, units); }
   svg_length_units units_type () const { return m_value.units_type (); }
 
   virtual bool read (const char *data, bool from_css = false) override

@@ -31,9 +31,9 @@ actions_info::actions_info ()
   add_action (gui_action_id::QUIT, "Exit", QKeySequence ("Alt+F4"));
 
   /// Tools
-  add_action (gui_action_id::TOOL_SELECTOR, "Selection Tool", QKeySequence (), QIcon (":/cursor.png"));
-  add_action (gui_action_id::TOOL_PATH_EDITOR, "Path Editor Tool", QKeySequence (), QIcon (":/cursor.png"));
-
+  add_action (gui_action_id::TOOL_SELECTOR, "Select Objects", QKeySequence (), QIcon (":/cursor.png"));
+  add_action (gui_action_id::TOOL_PATH_EDITOR, "Edit Paths by Nodes", QKeySequence (), QIcon (":/cursor.png"));
+  add_action (gui_action_id::TOOL_RECTANGLE, "Create Rectangles", QKeySequence (), QIcon (":/rectangle.png"));
 }
 
 actions_info::~actions_info ()

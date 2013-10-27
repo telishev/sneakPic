@@ -28,7 +28,7 @@ items_move_handler::items_move_handler (svg_items_container *container, overlay_
 
 items_move_handler::~items_move_handler ()
 {
-  
+
 }
 
 void items_move_handler::start_move (QPointF start_pos)

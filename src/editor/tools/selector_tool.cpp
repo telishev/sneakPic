@@ -19,8 +19,8 @@
 
 
 selector_tool::selector_tool (svg_painter *painter)
+  : abstract_tool (painter)
 {
-  m_painter = painter;
   m_mouse_handler = new mouse_shortcuts_handler (m_painter->settings ()->shortcuts_cfg ());
   m_overlay = new overlay_renderer;
   m_rubberband = new rubberband_selection (m_overlay);

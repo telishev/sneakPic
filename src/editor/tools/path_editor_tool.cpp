@@ -15,6 +15,7 @@
 #include "svg/items/svg_items_container.h"
 
 path_editor_tool::path_editor_tool (svg_painter *painter)
+  : abstract_tool (painter)
 {
   m_painter = painter;
   m_mouse_handler = new mouse_shortcuts_handler (m_painter->settings ()->shortcuts_cfg ());

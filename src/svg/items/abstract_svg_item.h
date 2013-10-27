@@ -117,6 +117,9 @@ public:
   void erase_created_observer (svg_item_observer *observer);
 
   std::vector<const abstract_attribute *> attributes_list () const;
+
+  void create_unique_name ();
+
 protected:
   virtual bool check_item () = 0;
 
@@ -129,7 +132,6 @@ private:
   const abstract_attribute *get_computed_attribute (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type) const;
   const abstract_svg_item *get_original_item () const;
   void create_id_by_attr ();
-  void create_unique_name ();
   abstract_attribute *get_attribute_for_change (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type, const abstract_attribute *default_val);
   abstract_attribute *get_attribute (const char *data, bool get_clone_attributes) const;
 

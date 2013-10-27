@@ -328,7 +328,7 @@ void abstract_svg_item::process_after_read ()
 
 bool abstract_svg_item::is_character_data () const
 {
-  return type () == svg_item_type::CHARACTER_DATA; 
+  return type () == svg_item_type::CHARACTER_DATA;
 }
 
 int abstract_svg_item::child_index () const
