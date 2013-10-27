@@ -55,6 +55,7 @@ main_window::main_window ()
 
 main_window::~main_window ()
 {
+  save_recent_menu ();
   FREE (m_actions);
   FREE (ui);
   FREE (m_qsettings);
