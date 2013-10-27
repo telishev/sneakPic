@@ -50,9 +50,6 @@ void single_undo_item_builder::register_item (undoable *item)
 void single_undo_item_builder::register_new_item (undoable *item)
 {
   int id = item->undo_id ();
-  if (m_changed_items.find (id) != m_changed_items.end ())
-    return;
-
   m_changed_items[id].reset (nullptr);
 }
 

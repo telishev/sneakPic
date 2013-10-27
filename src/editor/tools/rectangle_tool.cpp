@@ -94,14 +94,15 @@ void rectangle_tool::hide_preview ()
 
 void rectangle_tool::insert_item( const QPointF &pos )
 {
-  svg_item_rect *rect_item = new svg_item_rect (m_painter->document ());
+  auto *rect_item = m_painter->document ()->create_new_svg_item<svg_item_rect> ();
+
   QRectF rect = get_rect (pos);
   rect_item->get_attribute_for_change<svg_attribute_x> ()->set_value (rect.left ());
   rect_item->get_attribute_for_change<svg_attribute_y> ()->set_value (rect.top ());
   rect_item->get_attribute_for_change<svg_attribute_width> ()->set_value (rect.width ());
   rect_item->get_attribute_for_change<svg_attribute_height> ()->set_value (rect.height ());
   rect_item->update_bbox ();
-  rect_item->check ();
   m_painter->document ()->root ()->push_back (rect_item);
+
   m_painter->document ()->apply_changes ();
 }

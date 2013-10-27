@@ -63,6 +63,14 @@ public:
   void undo ();
   void redo ();
 
+  template<typename T>
+  T *create_new_svg_item ()
+  {
+    T *item = new T (this);
+    item->check ();
+    return item;
+  }
+
 signals:
   void items_changed ();
 private:
