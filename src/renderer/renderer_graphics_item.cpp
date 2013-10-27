@@ -17,6 +17,7 @@ renderer_graphics_item::renderer_graphics_item (const std::string &name)
   m_opacity = 1.0;
   m_display = display::INLINE;
   visible = true;
+  m_ignore_bbox = false;
 }
 
 void renderer_graphics_item::set_visibility (bool visible_arg)
@@ -39,9 +40,12 @@ void renderer_graphics_item::draw (SkCanvas &canvas, const renderer_state &state
     return;
 
   QTransform item_transform = transform () * state.transform ();
-  QRectF transformed_rect = state.transform ().mapRect (bounding_box_impl ());
-  if (!state.rect ().intersects (transformed_rect.toRect ()))
-    return;
+  if (!m_ignore_bbox)
+    {
+      QRectF transformed_rect = state.transform ().mapRect (bounding_box_impl ());
+      if (!state.rect ().intersects (transformed_rect.toRect ()))
+        return;
+    }
 
   canvas.save ();
   if (m_has_clip_path)

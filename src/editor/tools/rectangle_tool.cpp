@@ -46,6 +46,7 @@ rectangle_tool::rectangle_tool( svg_painter *painter )
      return end_rectangle_positioning (m_event.pos ()));
 
   m_renderer_item = new renderer_base_shape_item ("");
+  m_renderer_item->set_ignore_bbox (true);
   m_overlay->add_item (m_renderer_item, overlay_layer_type::TEMP);
 }
 
@@ -67,8 +68,6 @@ void rectangle_tool::update_preview (QPointF &current_pos)
   path.addRect (get_rect (current_pos));
   m_renderer_item->set_visibility (true);
   m_renderer_item->set_painter_path (path);
-  m_renderer_item->set_bounding_box (path.boundingRect ());
-  m_renderer_item->update_bbox ();
 }
 
 bool rectangle_tool::continue_rectangle_positioning (const QPoint &pos)

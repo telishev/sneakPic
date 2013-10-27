@@ -17,6 +17,7 @@ protected:
   QPainterPath m_clip_path;
   bool m_has_clip_path;
   bool visible;
+  bool m_ignore_bbox;
   display m_display;
   double m_opacity;
 
@@ -28,6 +29,7 @@ public:
   void set_visibility (bool visible);
   void set_display (display display) { m_display = display; }
   void set_opacity (double opacity_arg);
+  void set_ignore_bbox (bool ignore) { m_ignore_bbox = ignore; }
 
   virtual void draw_graphics_item (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const = 0;
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
