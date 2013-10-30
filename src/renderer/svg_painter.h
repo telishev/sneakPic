@@ -89,6 +89,7 @@ private:
   bool pan_picture (const QPoint &pos);
   bool find_current_object (const QPoint &pos);
   void create_overlay_containers ();
+  abstract_svg_item *get_current_item_for_point (const QPoint &pos);
 };
 
 #endif // SVG_PAINTER_H
