@@ -1,6 +1,7 @@
 
 include (console/console.in)
 include (gui/gui.in)
+include (gui/utils/gui_utils.in)
 include (ui/ui.in)
 include (svg/svg.in)
 include (renderer/renderer.in)

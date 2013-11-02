@@ -19,7 +19,7 @@ color_selector_widget_builder::color_selector_widget_builder (dock_widget_builde
   m_color = color;
 
   add_color_selectors ();
-  m_color_selector_widget->setWindowTitle ("Color");
+  m_color_selector_widget->setObjectName ("Color");
 
   m_dock_widget_builder->add_widget (m_color_selector_widget, Qt::RightDockWidgetArea, visibility_state::visible);
 }

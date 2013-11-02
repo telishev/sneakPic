@@ -1,0 +1,4 @@
+THIS_DIR = $$PROJ_DIR/src/gui/utils
+
+SOURCES += $$THIS_DIR/*.cpp
+HEADERS += $$THIS_DIR/*.h

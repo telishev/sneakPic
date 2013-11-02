@@ -53,6 +53,8 @@ main_window::main_window ()
   m_zoom_label = new QLabel;
   statusBar ()->addPermanentWidget (m_zoom_label);
   m_color_indicator = new color_indicator (this, m_settings->fill_color ());
+  this->restoreGeometry (m_qsettings->value ("main_window_geometry").toByteArray ());
+  this->restoreState (m_qsettings->value ("main_window_state").toByteArray ());
   statusBar ()->addWidget (m_color_indicator);
   connect (m_color_selector_widget_builder, &color_selector_widget_builder::color_changed, m_color_indicator, &color_selector::color_changed_externally);
 
@@ -63,6 +65,8 @@ main_window::main_window ()
 
 main_window::~main_window ()
 {
+  m_qsettings->setValue ("main_window_geometry", this->saveGeometry ());
+  m_qsettings->setValue ("main_window_state", this->saveState ());
   save_recent_menu ();
   FREE (m_actions);
   FREE (ui);
