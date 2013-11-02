@@ -33,6 +33,8 @@ public:
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 
+  void set_to_color (QColor color);
+
   renderer_paint_server *create_paint_server (const svg_items_container *container) const;
 
   bool need_to_render (const svg_items_container *container) const;
@@ -50,7 +52,7 @@ public:
     m_color = Qt::black;
     m_server_type = svg_paint_server::paint_server_type::COLOR;
   }
-  virtual abstract_svg_item *get_item () const override { return item (); } 
+  virtual abstract_svg_item *get_item () const override { return item (); }
 };
 
 class svg_attribute_stroke : public svg_paint_server
@@ -58,7 +60,7 @@ class svg_attribute_stroke : public svg_paint_server
   SVG_ATTRIBUTE
 public:
   svg_attribute_stroke () {}
-  virtual abstract_svg_item *get_item () const override { return item (); } 
+  virtual abstract_svg_item *get_item () const override { return item (); }
 };
 
 

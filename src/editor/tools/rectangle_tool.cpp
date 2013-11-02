@@ -4,13 +4,17 @@
 #include "gui/settings.h"
 
 #include "renderer/overlay_renderer.h"
+#include "renderer/renderer_paint_server.h"
 #include "renderer/renderer_base_shape_item.h"
 #include "renderer/svg_painter.h"
 
 #include "svg/attributes/svg_attributes_length_type.h"
+#include "svg/attributes/svg_attributes_fill_stroke.h"
+#include "svg/attributes/svg_attributes_number.h"
 #include "svg/items/svg_items_container.h"
 #include "svg/items/svg_item_rect.h"
 #include "svg/svg_document.h"
+
 
 void rectangle_tool::activate()
 {
@@ -35,15 +39,15 @@ bool rectangle_tool::mouse_event( const mouse_event_t &m_event)
 }
 
 rectangle_tool::rectangle_tool( svg_painter *painter )
-  :abstract_tool (painter)
+  : abstract_tool (painter)
 {
-   m_mouse_handler = new mouse_shortcuts_handler (m_painter->settings ()->shortcuts_cfg ());
-   m_overlay = new overlay_renderer;
-   m_items_container = m_painter->item_container ();
-   ADD_SHORTCUT_DRAG (m_mouse_handler, CREATE_RECTANGLE,
-     return start_rectangle_positioning (m_event.pos ()),
-     return continue_rectangle_positioning (m_event.pos ()),
-     return end_rectangle_positioning (m_event.pos ()));
+  m_mouse_handler = new mouse_shortcuts_handler (m_painter->settings ()->shortcuts_cfg ());
+  m_overlay = new overlay_renderer;
+  m_items_container = m_painter->item_container ();
+  ADD_SHORTCUT_DRAG (m_mouse_handler, CREATE_RECTANGLE,
+                     return start_rectangle_positioning (m_event.pos ()),
+                     return continue_rectangle_positioning (m_event.pos ()),
+                     return end_rectangle_positioning (m_event.pos ()));
 
   m_renderer_item = new renderer_base_shape_item ("");
   m_renderer_item->set_ignore_bbox (true);
@@ -68,6 +72,14 @@ void rectangle_tool::update_preview (QPointF &current_pos)
   path.addRect (get_rect (current_pos));
   m_renderer_item->set_visibility (true);
   m_renderer_item->set_painter_path (path);
+  renderer_painter_server_color fill_server (*(m_painter->settings ()->fill_color ()));
+  fill_server.set_opacity (m_painter->settings ()->fill_color ()->alphaF ());
+  m_renderer_item->set_fill_server (&fill_server);
+
+  QColor lacuna;
+  renderer_painter_server_color stroke_server (lacuna);
+  stroke_server.set_opacity (0);
+  m_renderer_item->set_stroke_server (&stroke_server);
 }
 
 bool rectangle_tool::continue_rectangle_positioning (const QPoint &pos)
@@ -100,6 +112,12 @@ void rectangle_tool::insert_item( const QPointF &pos )
   rect_item->get_attribute_for_change<svg_attribute_y> ()->set_value (rect.top ());
   rect_item->get_attribute_for_change<svg_attribute_width> ()->set_value (rect.width ());
   rect_item->get_attribute_for_change<svg_attribute_height> ()->set_value (rect.height ());
+  {
+    auto fill = rect_item->get_attribute_for_change<svg_attribute_fill> ();
+    fill->set_to_color (*m_painter->settings ()->fill_color ());
+  }
+  rect_item->get_attribute_for_change<svg_attribute_fill_opacity> ()->set_value (m_painter->settings ()->fill_color ()->alphaF ());
+
   rect_item->update_bbox ();
   m_painter->document ()->root ()->push_back (rect_item);
 

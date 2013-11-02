@@ -56,6 +56,7 @@ public:
 
   abstract_svg_item *get_current_item (const QPoint &pos);
   QPointF get_local_pos (const QPointF &mouse_pos) const;
+  void update_status_bar_widgets ();
 
   void redraw ();
 
@@ -82,7 +83,6 @@ private:
   void send_changes (bool interrrupt_rendering);
   void update_drawing (QTransform transform);
   bool select_item (const QPoint &pos, bool clear_selection);
-  void update_status_bar_widgets ();
 
   mouse_shortcuts_handler *create_mouse_shortcuts ();
   bool start_pan (const QPoint &pos);

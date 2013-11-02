@@ -13,6 +13,8 @@
 
 #include "ui/ui_main_window.h"
 
+#include "gui/color_selector_widget_builder.h"
+#include "gui/color_selectors.h"
 #include "gui/settings.h"
 #include "gui/gui_document.h"
 #include "gui/gui_actions.h"
@@ -25,6 +27,7 @@
 
 #include "svg/svg_document.h"
 
+#include "dock_widget_builder.h"
 #include "renderer/svg_painter.h"
 
 #define RECENT_FILES_NUMBER 10
@@ -38,15 +41,20 @@ main_window::main_window ()
   m_settings = new settings_t;
   m_signal_mapper = nullptr;
   m_actions = new gui_actions (m_settings->shortcuts_cfg ());
+  m_dock_widget_builder = new dock_widget_builder (this);
   m_menu_builder = new menu_builder (menuBar (), m_actions);
-  m_tools_builder = new tools_widget_builder (m_actions, this);
+  m_tools_builder = new tools_widget_builder (m_actions, m_dock_widget_builder);
+  m_color_selector_widget_builder = new color_selector_widget_builder (m_dock_widget_builder, m_settings->fill_color ());
 
   update_window_title ();
   m_actions->action (gui_action_id::OPEN_RECENT)->setMenu (&m_recent_menu);
   load_recent_menu ();
   update_recent_menu ();
-  m_zoom_inscription = new QLabel;
-  statusBar ()->addPermanentWidget (m_zoom_inscription);
+  m_zoom_label = new QLabel;
+  statusBar ()->addPermanentWidget (m_zoom_label);
+  m_color_indicator = new color_indicator (this, m_settings->fill_color ());
+  statusBar ()->addWidget (m_color_indicator);
+  connect (m_color_selector_widget_builder, &color_selector_widget_builder::color_changed, m_color_indicator, &color_selector::color_changed_externally);
 
   connect (m_actions->action (gui_action_id::OPEN), SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
   connect (m_actions->action (gui_action_id::SAVE_AS), SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
@@ -60,6 +68,7 @@ main_window::~main_window ()
   FREE (ui);
   FREE (m_qsettings);
   FREE (m_settings);
+  FREE (m_dock_widget_builder);
   FREE (m_tools_builder);
   FREE (m_menu_builder);
 }
@@ -89,19 +98,20 @@ void main_window::save_recent_menu ()
 void main_window::update_recent_menu ()
 {
   m_recent_menu.clear ();
-  m_signal_mapper->deleteLater ();
+  if (m_signal_mapper)
+    m_signal_mapper->deleteLater ();
   m_signal_mapper = new QSignalMapper (this);
   int size = (int) m_recent_files.size ();
 
   for (int i = size - 1; i >= 0; i--)
     {
       QAction *action = m_recent_menu.addAction (QString ("%1.%2")
-          .arg (size - i)
-          .arg (QFileInfo (m_recent_files[i]).fileName ()),
-        m_signal_mapper, SLOT (map ()), size - i <= 10 ? QKeySequence (Qt::CTRL + Qt::Key_0 + (size - i) % 10) : QKeySequence ());
+                                                 .arg (size - i)
+                                                 .arg (QFileInfo (m_recent_files[i]).fileName ()),
+                                                 m_signal_mapper, SLOT (map ()), size - i <= 10 ? QKeySequence (Qt::CTRL + Qt::Key_0 + (size - i) % 10) : QKeySequence ());
       m_signal_mapper->setMapping (action, m_recent_files[i]);
     }
-   connect (m_signal_mapper, SIGNAL (mapped (QString)), this, SLOT (open_file (QString)));
+  connect (m_signal_mapper, SIGNAL (mapped (QString)), this, SLOT (open_file (QString)));
 }
 
 
@@ -180,12 +190,13 @@ void main_window::open_file (const QString filename)
 
 void main_window::zoom_description_changed (const QString &description)
 {
-  m_zoom_inscription->setText (description);
+  m_zoom_label->setText (description);
 }
 
 void main_window::create_painter ()
 {
   svg_painter *painter = m_document->create_painter (ui->glwidget);
   connect (painter, SIGNAL (zoom_description_changed (const QString &)), this, SLOT (zoom_description_changed (const QString &)));
+  painter->update_status_bar_widgets ();
 }
 

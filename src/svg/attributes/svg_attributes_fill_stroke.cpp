@@ -24,6 +24,12 @@ svg_paint_server::~svg_paint_server ()
 
 }
 
+void svg_paint_server::set_to_color (QColor color)
+{
+  m_server_type = paint_server_type::COLOR;
+  m_color = color;
+}
+
 bool svg_paint_server::read (const char *char_data, bool /*from_css*/)
 {
   QString data (char_data);
@@ -58,11 +64,13 @@ bool svg_paint_server::read (const char *char_data, bool /*from_css*/)
   return true;
 }
 
-bool svg_paint_server::write (QString &data, bool /*to_css*/) const 
+bool svg_paint_server::write (QString &data, bool /*to_css*/) const
 {
   switch (m_server_type)
     {
-    case paint_server_type::NONE: data = "none"; return true;
+    case paint_server_type::NONE:
+      data = "none";
+      return true;
     case paint_server_type::COLOR:
       data = color_to_string (m_color);
       return true;
@@ -85,7 +93,8 @@ renderer_paint_server *svg_paint_server::create_paint_server (const svg_items_co
 {
   switch (m_server_type)
     {
-    case paint_server_type::NONE: return new renderer_painter_server_none;
+    case paint_server_type::NONE:
+      return new renderer_painter_server_none;
     case paint_server_type::COLOR:
       return new renderer_painter_server_color (m_color);
     case paint_server_type::CURRENT_COLOR:

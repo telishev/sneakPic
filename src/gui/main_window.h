@@ -7,10 +7,14 @@
 #include <QMenu>
 
 class Ui_main_window;
+class QColor;
 class QSettings;
 class QSignalMapper;
 class QLabel;
 
+class color_indicator;
+class color_selector_widget_builder;
+class dock_widget_builder;
 class settings_t;
 class gui_document;
 class gui_actions;
@@ -28,7 +32,7 @@ class main_window : public QMainWindow
   QSettings *m_qsettings;
   QMenu m_recent_menu;
   QSignalMapper *m_signal_mapper;
-  QLabel *m_zoom_inscription;
+  QLabel *m_zoom_label;
 
   settings_t *m_settings;
   gui_document *m_document;
@@ -36,9 +40,11 @@ class main_window : public QMainWindow
 
   menu_builder *m_menu_builder;
   tools_widget_builder *m_tools_builder;
-  
-  std::vector <QString> m_recent_files;
+  dock_widget_builder *m_dock_widget_builder;
+  color_selector_widget_builder *m_color_selector_widget_builder;
+  color_indicator *m_color_indicator;
 
+  std::vector <QString> m_recent_files;
 public:
   main_window ();
   ~main_window ();

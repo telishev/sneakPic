@@ -11,6 +11,7 @@ public:
   svg_base_attribute_number () { m_value = 0.0; }
 
   double value () const { return m_value; }
+  void set_value (double value) { m_value = value; }
 
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool from_css = false) const override;

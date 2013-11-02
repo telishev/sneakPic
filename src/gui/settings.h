@@ -3,15 +3,19 @@
 
 class shortcuts_config;
 
+class QColor;
+
 class settings_t
 {
   shortcuts_config *m_shortcuts;
+  QColor *m_fill_color;
 
 public:
   settings_t ();
   ~settings_t ();
 
   shortcuts_config *shortcuts_cfg () const { return m_shortcuts; }
+  QColor *fill_color () const { return m_fill_color; }
 };
 
 #endif // SETTINGS_H
