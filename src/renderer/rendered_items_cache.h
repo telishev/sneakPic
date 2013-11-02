@@ -10,13 +10,14 @@ class render_cache_id;
 class QMutex;
 class QTransform;
 class QColor;
+struct cache_bitmap_t;
 
 class rendered_items_cache
 {
   static const int m_block_pixel_size;
 
-  std::map<render_cache_id, SkBitmap> *m_cache;
-  std::map<render_cache_id, SkBitmap> *m_next_zoom_cache;
+  std::map<render_cache_id, cache_bitmap_t> *m_cache;
+  std::map<render_cache_id, cache_bitmap_t> *m_next_zoom_cache;
   std::map<int, std::string> m_selection_map;
 
   double m_zoom_x, m_zoom_y;
@@ -33,8 +34,8 @@ public:
   static int block_pixel_size () { return m_block_pixel_size; }
 
   void add_bitmap (const render_cache_id &id, const SkBitmap &pixmap, bool add_to_new_cache);
-  void remove_from_cache (const render_cache_id &id);
-  void remove_from_cache (const render_cache_id &first, const render_cache_id &last);
+  void invalidate (const render_cache_id &id);
+  void invalidate (const render_cache_id &first, const render_cache_id &last);
   bool is_cached (const render_cache_id &id, bool next_cache) const;
 
   void zoom_level_changed (double zoom_x, double zoom_y);
@@ -57,6 +58,7 @@ public:
   /// call this functions only after calling lock
   std::string get_selection_name (int id) const;
   SkBitmap bitmap (const render_cache_id &id) const;
+  bool is_valid (const render_cache_id &id) const;
   double zoom_x () const { return m_zoom_x; }
   double zoom_y () const { return m_zoom_y; }
   //************************************ 

@@ -64,7 +64,11 @@ void renderer_thread::run ()
           rendered_items_cache *cache = m_renderer->cache ();
           if (!cache->same_zoom (m_last_transform))
             cache->zoom_level_changed (m_last_transform.m11 (), m_last_transform.m22 ());
-          m_queue->set_calculated_id (queue_id);
+          if (queue_id >= 0)
+            {
+              m_queue->set_calculated_id (queue_id);
+              queue_id = -1;
+            }
         }
     }
 
@@ -121,8 +125,8 @@ void renderer_thread::invalidate_rect (const QRectF &rect)
   auto object_pair = render_cache_id::get_id_for_pixel_rect (m_last_transform, pixel_rect, (int)render_cache_type::ROOT_ITEM);
   rendered_items_cache *cache = m_renderer->cache ();
 
-  cache->remove_from_cache (object_pair.first, object_pair.second);
+  cache->invalidate (object_pair.first, object_pair.second);
   render_cache_id selection_id_first = render_cache_id (object_pair.first.x (), object_pair.first.y (), (int)render_cache_type::ROOT_ITEM_SELECTION);
   render_cache_id selection_id_second = render_cache_id (object_pair.second.x (), object_pair.second.y (), (int)render_cache_type::ROOT_ITEM_SELECTION);
-  cache->remove_from_cache (selection_id_first, selection_id_second);
+  cache->invalidate (selection_id_first, selection_id_second);
 }

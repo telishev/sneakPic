@@ -129,6 +129,7 @@ void svg_painter::configure ()
   if (get_configure_needed (configure_type::ITEMS_CHANGED))
     {
       m_item_outline->update_items ();
+      set_configure_needed (configure_type::REDRAW_BASE);
       set_configure_needed (configure_type::SELECTION_CHANGED);
     }
 
@@ -207,9 +208,9 @@ static bool compare_items_z_order (const abstract_svg_item *first, const abstrac
   fill_parents_list (first, first_parents);
   fill_parents_list (second, second_parents);
 
-  size_t max_size = std::max (first_parents.size (), second_parents.size ());
+  size_t min_size = std::min (first_parents.size (), second_parents.size ());
 
-  for (size_t i = 0; i < max_size - 1; i++)
+  for (size_t i = 0; i < min_size - 1; i++)
     {
       if (first_parents[i] == second_parents[i])
         continue;

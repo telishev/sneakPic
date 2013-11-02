@@ -15,13 +15,20 @@
 #include <set>
 #pragma warning(pop)
 
+struct cache_bitmap_t
+{
+  SkBitmap bitmap; bool valid;
+  cache_bitmap_t () { valid = false; }
+  cache_bitmap_t (SkBitmap bitmap, bool valid) : bitmap (bitmap), valid (valid) {}
+};
+
 const int rendered_items_cache::m_block_pixel_size = 256;
 
 rendered_items_cache::rendered_items_cache ()
 {
   m_mutex = new QMutex;
-  m_cache = new std::map<render_cache_id, SkBitmap>;
-  m_next_zoom_cache = new std::map<render_cache_id, SkBitmap>;
+  m_cache = new std::map<render_cache_id, cache_bitmap_t>;
+  m_next_zoom_cache = new std::map<render_cache_id, cache_bitmap_t>;
   m_pending_changes = false;
   m_zoom_y = m_zoom_x = 1.0;
 }
@@ -39,7 +46,17 @@ SkBitmap rendered_items_cache::bitmap (const render_cache_id &id) const
   if (it == m_cache->end ())
     return SkBitmap ();
 
-  return it->second;
+  return it->second.bitmap;
+}
+
+
+bool rendered_items_cache::is_valid (const render_cache_id &id) const
+{
+  auto it = m_cache->find (id);
+  if (it == m_cache->end ())
+    return false;
+
+  return it->second.valid;
 }
 
 void rendered_items_cache::add_bitmap (const render_cache_id &id, const SkBitmap &bitmap, bool next_cache)
@@ -47,7 +64,7 @@ void rendered_items_cache::add_bitmap (const render_cache_id &id, const SkBitmap
   QMutexLocker lock (m_mutex);
   DEBUG_ASSERT (id.object_type () != (int)render_cache_type::INVALID);
   auto cache_to_use = next_cache ? m_next_zoom_cache : m_cache;
-  (*cache_to_use)[id] = bitmap;
+  (*cache_to_use)[id] = cache_bitmap_t (bitmap, true);
   m_pending_changes = true;
   ///TODO: cache cleanup
 }
@@ -56,7 +73,11 @@ bool rendered_items_cache::is_cached (const render_cache_id &id, bool next_cache
 {
   QMutexLocker lock (m_mutex);
   auto cache_to_use = next_cache ? m_next_zoom_cache : m_cache;
-  return cache_to_use->find (id) != cache_to_use->end ();
+  auto it = cache_to_use->find (id);
+  if (it == cache_to_use->end ())
+    return false;
+
+  return it->second.valid;
 }
 
 void rendered_items_cache::zoom_level_changed (double zoom_x, double zoom_y)
@@ -161,29 +182,27 @@ void rendered_items_cache::clear_selection_mapping ()
   m_selection_map.clear ();
 }
 
-void rendered_items_cache::remove_from_cache (const render_cache_id &id)
+void rendered_items_cache::invalidate (const render_cache_id &id)
 {
   QMutexLocker lock (m_mutex);
-  m_cache->erase (id);
+  auto it = m_cache->find (id);
+  if (it != m_cache->end ())
+    it->second.valid = false;
 }
 
-void rendered_items_cache::remove_from_cache (const render_cache_id &first, const render_cache_id &last)
+void rendered_items_cache::invalidate (const render_cache_id &first, const render_cache_id &last)
 {
   QMutexLocker lock (m_mutex);
-  std::set<render_cache_id> items_to_remove;
   for (auto &item_pair : *m_cache)
     {
       render_cache_id cur_id = item_pair.first;
       if (cur_id.object_type () != first.object_type ())
-        continue;;
+        continue;
 
       if (   cur_id.x () >= first.x () && cur_id.x () <= last.x ()
           && cur_id.y () >= first.y () && cur_id.y () <= last.y ())
-        items_to_remove.insert (cur_id);
+        item_pair.second.valid = false;
     }
-
-  for (const auto &id : items_to_remove)
-    m_cache->erase (id);
 }
 
 void rendered_items_cache::set_current_screen (const SkBitmap &bitmap, int cache_object_id)
