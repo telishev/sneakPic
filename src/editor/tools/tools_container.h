@@ -12,6 +12,7 @@ class svg_painter;
 class abstract_tool;
 class selector_tool;
 class gui_actions;
+class connection;
 
 enum class gui_action_id;
 
@@ -24,6 +25,7 @@ class tools_container : public QObject
   info_map_t m_tools_info;
   std::map<gui_action_id, std::unique_ptr<abstract_tool>> m_tools;
 
+  std::vector<std::unique_ptr<connection>> m_connections;
   gui_actions *m_actions;
 public:
   tools_container (gui_actions *actions);

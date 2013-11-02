@@ -10,6 +10,7 @@
 #include "gui/gl_widget.h"
 #include "gui/gui_action_id.h"
 #include "gui/gui_actions.h"
+#include "gui/connection.h"
 
 #include "renderer/rendered_items_cache.h"
 #include "renderer/events_queue.h"
@@ -36,11 +37,11 @@ gui_document::gui_document (settings_t *settings, gui_actions *actions)
   update_timer->setInterval (50);
   update_timer->start ();
 
-  connect (update_timer     , SIGNAL (timeout ())     , this, SLOT (update_timeout ()));
-  connect (m_tools_container, SIGNAL (tool_changed ()), this, SLOT (tool_changed ()));
+  CONNECT (update_timer     , SIGNAL (timeout ())     , this, SLOT (update_timeout ()));
+  CONNECT (m_tools_container, SIGNAL (tool_changed ()), this, SLOT (tool_changed ()));
 
-  connect (m_actions->action (gui_action_id::UNDO), SIGNAL (triggered ()), this, SLOT (undo ()));
-  connect (m_actions->action (gui_action_id::REDO), SIGNAL (triggered ()), this, SLOT (redo ()));
+  CONNECT (m_actions->action (gui_action_id::UNDO), SIGNAL (triggered ()), this, SLOT (undo ()));
+  CONNECT (m_actions->action (gui_action_id::REDO), SIGNAL (triggered ()), this, SLOT (redo ()));
 }
 
 gui_document::~gui_document ()

@@ -2,6 +2,7 @@
 
 #include "gui/color_selectors.h"
 #include "gui/dock_widget_builder.h"
+#include "gui/connection.h"
 
 #include <QLabel>
 #include <QLayout>
@@ -95,6 +96,6 @@ void color_selector_widget_builder::add_color_selectors ()
 
   foreach (QWidget * widget, m_color_widgets)
   {
-    connect (widget, SIGNAL (color_changed_internally ()), this, SLOT (update_colors ()));
+    CONNECT (widget, SIGNAL (color_changed_internally ()), this, SLOT (update_colors ()));
   }
 }

@@ -3,6 +3,10 @@
 
 #include <QWidget>
 
+#include <memory>
+
+class connection;
+
 enum class color_single_selector_type
 {
   HUE,
@@ -89,6 +93,8 @@ class color_spinbox : public color_selector
   color_single_selector_type m_type;
   QHBoxLayout *m_layout;
   QSpinBox *m_spin_box;
+
+  std::unique_ptr<connection> m_value_changed_connection;
 
 public:
   color_spinbox (QWidget *parent, color_single_selector_type type, QColor *color);

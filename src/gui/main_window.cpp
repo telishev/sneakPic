@@ -21,6 +21,7 @@
 #include "gui/gui_action_id.h"
 #include "gui/tools_widget_builder.h"
 #include "gui/menu_builder.h"
+#include "gui/connection.h"
 
 #include "common/common_utils.h"
 #include "common/memory_deallocation.h"
@@ -56,11 +57,11 @@ main_window::main_window ()
   this->restoreGeometry (m_qsettings->value ("main_window_geometry").toByteArray ());
   this->restoreState (m_qsettings->value ("main_window_state").toByteArray ());
   statusBar ()->addWidget (m_color_indicator);
-  connect (m_color_selector_widget_builder, &color_selector_widget_builder::color_changed, m_color_indicator, &color_selector::color_changed_externally);
+  CONNECT (m_color_selector_widget_builder, &color_selector_widget_builder::color_changed, m_color_indicator, &color_selector::color_changed_externally);
 
-  connect (m_actions->action (gui_action_id::OPEN), SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
-  connect (m_actions->action (gui_action_id::SAVE_AS), SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
-  connect (m_actions->action (gui_action_id::QUIT), SIGNAL (triggered ()), this, SLOT (close ()));
+  CONNECT (m_actions->action (gui_action_id::OPEN), SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
+  CONNECT (m_actions->action (gui_action_id::SAVE_AS), SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
+  CONNECT (m_actions->action (gui_action_id::QUIT), SIGNAL (triggered ()), this, SLOT (close ()));
 }
 
 main_window::~main_window ()
@@ -115,7 +116,7 @@ void main_window::update_recent_menu ()
                                                  m_signal_mapper, SLOT (map ()), size - i <= 10 ? QKeySequence (Qt::CTRL + Qt::Key_0 + (size - i) % 10) : QKeySequence ());
       m_signal_mapper->setMapping (action, m_recent_files[i]);
     }
-  connect (m_signal_mapper, SIGNAL (mapped (QString)), this, SLOT (open_file (QString)));
+  CONNECT (m_signal_mapper, SIGNAL (mapped (QString)), this, SLOT (open_file (QString)));
 }
 
 
@@ -200,7 +201,7 @@ void main_window::zoom_description_changed (const QString &description)
 void main_window::create_painter ()
 {
   svg_painter *painter = m_document->create_painter (ui->glwidget);
-  connect (painter, SIGNAL (zoom_description_changed (const QString &)), this, SLOT (zoom_description_changed (const QString &)));
+  CONNECT (painter, SIGNAL (zoom_description_changed (const QString &)), this, SLOT (zoom_description_changed (const QString &)));
   painter->update_status_bar_widgets ();
 }
 

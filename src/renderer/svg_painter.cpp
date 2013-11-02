@@ -26,6 +26,7 @@
 #include "gui/mouse_shortcuts_handler.h"
 #include "gui/shortcuts_config.h"
 #include "gui/settings.h"
+#include "gui/connection.h"
 
 #include "renderer/abstract_renderer_item.h"
 #include "renderer/renderer_state.h"
@@ -61,7 +62,7 @@ svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, even
   update_status_bar_widgets ();
   set_document (document);
 
-  connect (m_selection, SIGNAL (selection_changed ()), this, SLOT (selection_changed ()));
+  CONNECT (m_selection, SIGNAL (selection_changed ()), this, SLOT (selection_changed ()));
 }
 
 svg_painter::~svg_painter ()
@@ -96,7 +97,7 @@ void svg_painter::set_document (svg_document *document)
   m_overlay->add_item (new renderer_page (width, height), overlay_layer_type::PAGE);
 
   reset_transform ();
-  connect (m_document, &svg_document::items_changed, this, &svg_painter::items_changed);
+  CONNECT (m_document, &svg_document::items_changed, this, &svg_painter::items_changed);
 }
 
 unsigned int svg_painter::mouse_event (const mouse_event_t &m_event)

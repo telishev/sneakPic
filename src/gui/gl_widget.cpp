@@ -6,6 +6,7 @@
 #include "common/memory_deallocation.h"
 
 #include "gui/mouse_filter.h"
+#include "gui/connection.h"
 
 #include "renderer/abstract_painter.h"
 
@@ -20,7 +21,7 @@ gl_widget::gl_widget (QWidget *parent)
 
   m_mouse_filter_object = new mouse_filter (this);
   
-  connect (m_mouse_filter_object, SIGNAL (mouse_event_happened (const mouse_event_t &)), this, SLOT (mouse_event (const mouse_event_t &)));
+  CONNECT (m_mouse_filter_object, SIGNAL (mouse_event_happened (const mouse_event_t &)), this, SLOT (mouse_event (const mouse_event_t &)));
 
   setMouseTracking (true);
 }

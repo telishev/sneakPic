@@ -9,6 +9,8 @@
 
 #include "gui/gui_action_id.h"
 #include "gui/gui_actions.h"
+#include "gui/connection.h"
+
 #include "path_editor_tool.h"
 
 
@@ -16,12 +18,13 @@ tools_container::tools_container (gui_actions *actions)
 {
   m_cur_tool = gui_action_id::TOOL_SELECTOR;
   m_actions = actions;
+  m_connections.resize ((int)gui_action_id::COUNT);
 
   init_tools_info ();
 
   if (actions)
     {
-      connect (m_actions, SIGNAL (actions_update_needed ()), this, SLOT (update_actions ()));
+      CONNECT (m_actions, SIGNAL (actions_update_needed ()), this, SLOT (update_actions ()));
       for (gui_action_id id : tool_actions ())
         connect_action (id);
     }
@@ -30,6 +33,9 @@ tools_container::tools_container (gui_actions *actions)
 tools_container::~tools_container ()
 {
   remove_tools ();
+  for (auto &conn : m_connections)
+    if (conn)
+      conn->disconnect ();
 }
 
 void tools_container::update_tools (svg_painter *painter)
@@ -82,7 +88,7 @@ void tools_container::add_tool (gui_action_id id, abstract_tool *tool)
 
 void tools_container::connect_action (gui_action_id id)
 {
-  connect (m_actions->action (id), &QAction::triggered, [this, id] () { change_tool (id); });
+  m_connections[(int)id] = CONNECT (m_actions->action (id), &QAction::triggered, [this, id] () { change_tool (id); });
 }
 
 std::vector<gui_action_id> tools_container::tool_actions () const

@@ -6,7 +6,8 @@
 #include <QPainter>
 
 #include "gui/mouse_filter.h"
-#include "gui/temporary_disconnect.h"
+#include "gui/connection.h"
+
 #include <stdlib.h>
 
 static int SLIDER_WIDTH = 2;
@@ -373,12 +374,12 @@ color_spinbox::color_spinbox (QWidget *parent, color_single_selector_type type, 
   m_spin_box->setSingleStep (1);
   m_layout->addWidget (m_spin_box);
   m_layout->setContentsMargins (0, 0, 0, 0);
-  connect (m_spin_box, SIGNAL (valueChanged (int)), this, SLOT (spinbox_value_changed (int)));
+  m_value_changed_connection = CONNECT (m_spin_box, SIGNAL (valueChanged (int)), this, SLOT (spinbox_value_changed (int)));
 }
 
 void color_spinbox::color_changed_externally ()
 {
-  TEMPORARY_DISCONNECT (m_spin_box, SIGNAL (valueChanged (int)), this, SLOT (spinbox_value_changed (int)));
+  TEMPORARY_DISCONNECT (m_value_changed_connection);
   m_spin_box->setValue (get_param_value_by_type (m_type));
 }
 
