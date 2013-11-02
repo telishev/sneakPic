@@ -133,7 +133,7 @@ private:
   int get_param_by_x_type ();
   int get_param_by_y_type ();
   void update_cached_gradient ();
-
+  QRect gradient_rect ();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS (color_rectangular_selector::flags)

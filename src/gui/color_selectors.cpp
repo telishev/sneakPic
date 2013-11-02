@@ -13,14 +13,13 @@
 #include <stdlib.h>
 
 static int SLIDER_WIDTH = 2;
-static int COLOR_LINEAR_SELECTOR_DEFAULT_LENGTH = 175;
+static int COLOR_LINEAR_SELECTOR_DEFAULT_LENGTH = 250;
 static int COLOR_LINEAR_SELECTOR_DEFAULT_WIDTH = 22;
-static int COLOR_RECTANGULAR_SELECTOR_DEFAULT_SIZE = 175;
+static int COLOR_RECTANGULAR_SELECTOR_DEFAULT_SIZE = 250;
 static int RECTANGULAR_SELECTOR_CIRCLE_RADIUS = 5;
 static int COLOR_INDICATOR_DEFAULT_SIZE = 25;
 static int BORDER_WIDTH = 1;
 static int CHECKERBOARD_ELEMENT_SIZE = 5;
-#define HQ_BILINEAR_GRADIENT
 
 static bool is_selector_type_alpha (color_single_selector_type type)
 {
@@ -101,10 +100,10 @@ int color_linear_selector::get_pos (QPoint point)
   switch (m_orientation)
     {
     case Qt::Horizontal:
-      return point.x ();
+      return point.x () - BORDER_WIDTH;
       break;
     case Qt::Vertical:
-      return get_controlled_length () - point.y ();
+      return get_controlled_length () - point.y () - BORDER_WIDTH;
       break;
     }
   return 0;
@@ -115,10 +114,11 @@ int color_linear_selector::get_controlled_length ()
   switch (m_orientation)
     {
     case Qt::Horizontal:
-      return this->width () - SLIDER_WIDTH * 2 + 1 - 2 * BORDER_WIDTH;
+      return this->width () - 2 * BORDER_WIDTH - SLIDER_WIDTH;
       break;
     case Qt::Vertical:
-      return this->height () - SLIDER_WIDTH * 2 + 1 - 2 * BORDER_WIDTH;
+      return this->height () - 2 * BORDER_WIDTH - SLIDER_WIDTH;
+      ;
       break;
     }
   return 0;
@@ -157,6 +157,9 @@ int color_selector::get_param_value_by_type (color_single_selector_type type)
       m_color->getCmyk (&c, &m, &y, &k, &a);
       break;
     }
+
+  if (h < 0)
+    h = 0;
 
   switch (type)
     {
@@ -274,6 +277,9 @@ void color_selector::set_param_by_type (QColor *color, int value, color_single_s
 
   if (value > get_param_maximum_by_type (type))
     value = get_param_maximum_by_type (type);
+
+  if (h < 0)
+    h = 0;
 
   switch (type)
     {
@@ -420,12 +426,12 @@ void color_linear_selector::draw_gradient (QPainter &painter)
   switch (m_orientation)
     {
     case Qt::Horizontal:
-      gradient.setStart (0, this->height () / 2);
-      gradient.setFinalStop (this->width (), this->height () / 2);
+      gradient.setStart (BORDER_WIDTH, this->height () / 2);
+      gradient.setFinalStop (this->width () - BORDER_WIDTH, this->height () / 2);
       break;
     case Qt::Vertical:
-      gradient.setStart (this->width () / 2, 0);
-      gradient.setFinalStop (this->width () / 2, this->height ());
+      gradient.setStart (this->width () / 2, BORDER_WIDTH);
+      gradient.setFinalStop (this->width () / 2, this->height () - BORDER_WIDTH);
       break;
     }
 
@@ -451,10 +457,10 @@ void color_linear_selector::draw_gradient (QPainter &painter)
   switch (m_orientation)
     {
     case Qt::Horizontal:
-      painter.fillRect (QRect (BORDER_WIDTH, BORDER_WIDTH, width () - 1 - BORDER_WIDTH, height () - 1 - BORDER_WIDTH), gradient);
+      painter.fillRect (QRect (BORDER_WIDTH, BORDER_WIDTH, width () - 2 * BORDER_WIDTH, height () - 2 * BORDER_WIDTH), gradient);
       break;
     case Qt::Vertical:
-      painter.fillRect (QRect (BORDER_WIDTH, BORDER_WIDTH, width () - 1 - BORDER_WIDTH, height () - 1 - BORDER_WIDTH), gradient);
+      painter.fillRect (QRect (BORDER_WIDTH, BORDER_WIDTH, width () - 2 * BORDER_WIDTH, height () - 2 * BORDER_WIDTH), gradient);
       break;
     }
 }
@@ -466,10 +472,10 @@ void color_linear_selector::draw_controller (QPainter &painter)
   switch (m_orientation)
     {
     case Qt::Horizontal:
-      controller_rect = QRect (slider_pos, BORDER_WIDTH, SLIDER_WIDTH, this->height () - 1 - 2 * BORDER_WIDTH);
+      controller_rect = QRect (slider_pos, BORDER_WIDTH, SLIDER_WIDTH, this->height () - 2 * BORDER_WIDTH);
       break;
     case Qt::Vertical:
-      controller_rect = QRect (BORDER_WIDTH, slider_pos, this->width () - 1 - 2 * BORDER_WIDTH, SLIDER_WIDTH);
+      controller_rect = QRect (BORDER_WIDTH, slider_pos, this->width () - 2 * BORDER_WIDTH, SLIDER_WIDTH);
       break;
     }
 
@@ -481,8 +487,8 @@ void color_linear_selector::draw_controller (QPainter &painter)
 
 void color_selector::draw_border (QPainter &painter)
 {
-  painter.setPen ("Grey");
-  painter.drawRect (0, 0, width () - 1, height () - 1);
+  painter.setPen (QPen (QBrush ("Grey"), BORDER_WIDTH, Qt::SolidLine, Qt::SquareCap, Qt::MiterJoin));
+  painter.drawRect (BORDER_WIDTH / 2, BORDER_WIDTH / 2, width () - BORDER_WIDTH, height () - BORDER_WIDTH);
 }
 
 void color_selector::do_color_preprocessing_by_type (QColor &color, color_single_selector_type type)
@@ -619,6 +625,11 @@ QSize color_rectangular_selector::sizeHint () const
 
 }
 
+QRect color_rectangular_selector::gradient_rect ()
+{
+  return QRect (BORDER_WIDTH, BORDER_WIDTH, width () - 2 * BORDER_WIDTH, height () - 2 * BORDER_WIDTH);
+}
+
 void color_rectangular_selector::update_cached_gradient ()
 {
   FREE (m_gradient_cached);
@@ -627,48 +638,23 @@ void color_rectangular_selector::update_cached_gradient ()
   if (is_selector_type_alpha (m_controlled_types[0]) ||
       is_selector_type_alpha (m_controlled_types[1]))
     draw_checkerboard (painter);
-#ifndef HQ_BILINEAR_GRADIENT
-  int small_image_width = get_needed_number_of_points_for_gradient_by_type (m_controlled_types[0]) * 32;
-  int small_image_height = get_needed_number_of_points_for_gradient_by_type (m_controlled_types[1]) * 32;
-  QImage image (small_image_width, small_image_height, QImage::Format_ARGB32_Premultiplied);
-  QImage alpha = image.alphaChannel ();
-
-  for (int j = 0; j < small_image_height; j++)
-    {
-      QRgb *color_scanline = (QRgb *) image.scanLine (j);
-      uchar *alpha_scanline = alpha.scanLine (j);
-      for (int i = 0; i < small_image_width; i++)
-        {
-          QColor color = *m_color;
-          do_color_preprocessing_by_two_types (color, m_controlled_types[0], m_controlled_types[1]);
-          set_param_by_x_type (&color, (i * get_x_param_maximum ()) / (small_image_width - 1));
-          set_param_by_y_type (&color, (j * get_y_param_maximum ()) / (small_image_height - 1));
-          color_scanline[i] = color.rgb ();
-          alpha_scanline[i] = color.alpha ();
-        }
-    }
-  image.setAlphaChannel (alpha);
-  painter.setRenderHint (QPainter::SmoothPixmapTransform, true);
-  painter.drawImage (rect (), image, image.rect ());
-#else // HQ_BILINEAR_GRADIENT
-  for (int j = 0; j < height (); j++)
+  for (int j = 0; j < height () - 2 * BORDER_WIDTH + 1; j++)
     {
       int n_points = get_needed_number_of_points_for_gradient_by_type (m_controlled_types[0]);
       QLinearGradient gradient;
-      gradient.setStart (0, j);
-      gradient.setFinalStop (width (), j);
+      gradient.setStart (BORDER_WIDTH, j + BORDER_WIDTH);
+      gradient.setFinalStop (width () - BORDER_WIDTH, j + BORDER_WIDTH);
       for (int i = 0; i < n_points; i++)
         {
           QColor color = *m_color;
           do_color_preprocessing_by_two_types (color, m_controlled_types[0], m_controlled_types[1]);
           set_param_by_x_type (&color, (i * get_x_param_maximum ()) / (n_points - 1));
-          set_param_by_y_type (&color, (j * get_y_param_maximum ()) / (height () - 1));
+          set_param_by_y_type (&color, (j * get_y_param_maximum ()) / (height () - 2 * BORDER_WIDTH));
           gradient.setColorAt ((double) i / n_points, color);
         }
 
-      painter.fillRect (QRect (0, j, width (), 1), gradient);
+      painter.fillRect (QRect (BORDER_WIDTH, j + BORDER_WIDTH, width () - 2 * BORDER_WIDTH + 1, 1), gradient);
     }
-#endif // HQ_BILINEAR_GRADIENT
   m_size_cached = size ();
   m_cached_color = *m_color;
 }
@@ -683,11 +669,13 @@ void color_rectangular_selector::paintEvent (QPaintEvent * /*event*/)
 
   QPainter painter(this);
   painter.drawImage (rect (), *m_gradient_cached);
+  draw_border (painter);
   painter.setCompositionMode(QPainter::RasterOp_SourceXorDestination);
   painter.setPen(QColor ("White"));
+  painter.setClipRect (gradient_rect ());
   QPoint point;
-  point.setX (width () * get_param_by_x_type () / get_x_param_maximum ());
-  point.setY (height () * get_param_by_y_type () / get_y_param_maximum ());
+  point.setX (BORDER_WIDTH + (width () - 2 * BORDER_WIDTH) * get_param_by_x_type () / get_x_param_maximum ());
+  point.setY (BORDER_WIDTH + (height () - 2 * BORDER_WIDTH) * get_param_by_y_type () / get_y_param_maximum ());
   painter.drawEllipse (point, RECTANGULAR_SELECTOR_CIRCLE_RADIUS, RECTANGULAR_SELECTOR_CIRCLE_RADIUS);
 }
 
@@ -749,8 +737,8 @@ void color_rectangular_selector::mousePressEvent (QMouseEvent *event)
 void color_rectangular_selector::set_color_from_pos (QPoint pos)
 {
   emit color_changed_internally ();
-  set_param_by_x_type (m_color, (pos.x () * get_x_param_maximum ()) / width ());
-  set_param_by_y_type (m_color, (pos.y () * get_y_param_maximum ()) / height ());
+  set_param_by_x_type (m_color, ((pos.x () - BORDER_WIDTH) * get_x_param_maximum ()) / (width () - BORDER_WIDTH * 2));
+  set_param_by_y_type (m_color, ((pos.y () - BORDER_WIDTH) * get_y_param_maximum ()) / (height () - BORDER_WIDTH * 2));
   update ();
 }
 
