@@ -38,12 +38,16 @@ static inline QString get_label_string_by_type (color_single_selector_type type)
 {
   switch (type)
     {
-    case color_single_selector_type::HUE:
+    case color_single_selector_type::HUE_HSL:
+    case color_single_selector_type::HUE_HSV:
       return "H";
     case color_single_selector_type::LIGHTNESS:
       return "L";
-    case color_single_selector_type::SATURATION:
+    case color_single_selector_type::SATURATION_HSL:
+    case color_single_selector_type::SATURATION_HSV:
       return "S";
+    case color_single_selector_type::VALUE:
+      return "V";
     case color_single_selector_type::RED:
       return "R";
     case color_single_selector_type::GREEN:
@@ -52,6 +56,14 @@ static inline QString get_label_string_by_type (color_single_selector_type type)
       return "B";
     case color_single_selector_type::ALPHA:
       return "A";
+    case color_single_selector_type::CYAN:
+      return "C";
+    case color_single_selector_type::MAGENTA:
+      return "M";
+    case color_single_selector_type::YELLOW:
+      return "Y";
+    case color_single_selector_type::BLACK:
+      return "K";
     }
   return "";
 }
@@ -62,9 +74,9 @@ void color_selector_widget_builder::add_typical_scroller_widget (QGridLayout *gr
   QString label_string = get_label_string_by_type (type);
   int row_pos = grid_layout->rowCount ();
   grid_layout->addWidget (new QLabel (label_string, grid_layout->parentWidget ()), row_pos, 0);
-  color_scroller *color_scroller_widget = new color_scroller (grid_layout->parentWidget (), Qt::Horizontal, type, m_color);
-  m_color_widgets << color_scroller_widget;
-  grid_layout->addWidget (color_scroller_widget, row_pos, 1);
+  color_linear_selector *color_linear_selector_widget = new color_linear_selector (grid_layout->parentWidget (), Qt::Horizontal, type, m_color);
+  m_color_widgets << color_linear_selector_widget;
+  grid_layout->addWidget (color_linear_selector_widget, row_pos, 1);
   color_spinbox *color_spinbox_widget = new color_spinbox (grid_layout->parentWidget (), type, m_color);
   m_color_widgets << color_spinbox_widget;
   grid_layout->addWidget (color_spinbox_widget, row_pos, 2);
@@ -83,16 +95,49 @@ void color_selector_widget_builder::add_color_selectors ()
   rgb_layout->addItem (new QSpacerItem (0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding), rgb_layout->rowCount (), 0);
   m_tab_widget->addTab (rgb_widget, QIcon (), "RGB");
 
+
+
   QWidget *hsl_widget = new QWidget (m_tab_widget);
   QGridLayout *hsl_layout = new QGridLayout (hsl_widget);
   hsl_layout->setVerticalSpacing (5);
   hsl_layout->setHorizontalSpacing (10);
-  add_typical_scroller_widget (hsl_layout, color_single_selector_type::HUE);
-  add_typical_scroller_widget (hsl_layout, color_single_selector_type::SATURATION);
+  add_typical_scroller_widget (hsl_layout, color_single_selector_type::HUE_HSL);
+  add_typical_scroller_widget (hsl_layout, color_single_selector_type::SATURATION_HSL);
   add_typical_scroller_widget (hsl_layout, color_single_selector_type::LIGHTNESS);
   add_typical_scroller_widget (hsl_layout, color_single_selector_type::ALPHA);
   hsl_layout->addItem (new QSpacerItem (0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding), hsl_layout->rowCount (), 0);
   m_tab_widget->addTab (hsl_widget, QIcon (), "HSL");
+
+  QWidget *hsv_tab_widget = new QWidget (m_tab_widget);
+  QVBoxLayout *hsv_tab_layout = new QVBoxLayout (hsv_tab_widget);
+  QWidget *hsv_widget = new QWidget (hsv_tab_widget);
+  QHBoxLayout *hsv_layout = new QHBoxLayout (hsv_widget);
+  color_rectangular_selector *color_rect_widget = new color_rectangular_selector (rgb_widget, color_single_selector_type::SATURATION_HSV, color_single_selector_type::VALUE, m_color);
+  m_color_widgets << color_rect_widget;
+  hsv_layout->addWidget (color_rect_widget);
+  color_linear_selector *hue_widget = new color_linear_selector (hsv_widget, Qt::Vertical, color_single_selector_type::HUE_HSV, m_color);
+  m_color_widgets << hue_widget;
+  hsv_layout->addWidget (hue_widget);
+  hsv_layout->addItem (new QSpacerItem (0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum));
+  hsv_tab_layout->addWidget (hsv_widget);
+  hsv_tab_layout->addItem (new QSpacerItem (0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding));
+  m_tab_widget->addTab (hsv_tab_widget, QIcon (), "HSV");
+
+
+  QWidget *cmyk_widget = new QWidget (m_tab_widget);
+  QGridLayout *cmyk_layout = new QGridLayout (cmyk_widget);
+  cmyk_layout->setVerticalSpacing (5);
+  cmyk_layout->setHorizontalSpacing (10);
+  add_typical_scroller_widget (cmyk_layout, color_single_selector_type::CYAN);
+  add_typical_scroller_widget (cmyk_layout, color_single_selector_type::MAGENTA);
+  add_typical_scroller_widget (cmyk_layout, color_single_selector_type::YELLOW);
+  add_typical_scroller_widget (cmyk_layout, color_single_selector_type::BLACK);
+  add_typical_scroller_widget (cmyk_layout, color_single_selector_type::ALPHA);
+  cmyk_layout->addItem (new QSpacerItem (0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding), cmyk_layout->rowCount (), 0);
+  m_tab_widget->addTab (cmyk_widget, QIcon (), "CMYK");
+
+
+
 
   foreach (QWidget * widget, m_color_widgets)
   {
