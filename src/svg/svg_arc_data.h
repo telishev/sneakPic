@@ -4,12 +4,12 @@
 
 #include <qglobal.h>
 
-class QPainterPath;
+class path_builder;
 
 class arc_converter
 {
 public:
-  static void pathArc (QPainterPath &path,
+  static void pathArc (path_builder &builder,
                        qreal               rx,
                        qreal               ry,
                        qreal               x_axis_rotation,

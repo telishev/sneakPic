@@ -5,25 +5,15 @@
 
 #include <vector>
 
-class point_2d;
 class QPainterPath;
-
-enum class path_command
-{
-  MOVE,
-  CLOSE_PATH,
-  LINE,
-  CURVE,
-  QUAD,
-  ARC,
-};
+class svg_path;
+class path_builder;
 
 class svg_attribute_path_data : public abstract_attribute
 {
   SVG_ATTRIBUTE
 
-  std::vector<double> m_path_data;
-  std::vector<path_command> m_commands;
+  svg_path *m_path;
 public:
   svg_attribute_path_data ();
   virtual ~svg_attribute_path_data ();
@@ -37,19 +27,16 @@ private:
   bool is_upper (char v) const;
   unsigned char to_command (char v) const;
 
-  int command_data_count (path_command command) const;
-  const char *command_svg_name (path_command command) const;
-
-  bool read_move (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
-  bool read_end_subpath (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
-  bool read_line (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
-  bool read_h_line (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
-  bool read_v_line (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
-  bool read_curve (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
-  bool read_curve_short (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
-  bool read_quadratic (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
-  bool read_quadratic_short (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
-  bool read_arc (const char *&data, point_2d &subpath_start_point, point_2d &current_point, bool relative);
+  bool read_move (const char *&data, path_builder &builder, bool relative);
+  bool read_end_subpath (const char *&data, path_builder &builder, bool relative);
+  bool read_line (const char *&data, path_builder &builder, bool relative);
+  bool read_h_line (const char *&data, path_builder &builder, bool relative);
+  bool read_v_line (const char *&data, path_builder &builder, bool relative);
+  bool read_curve (const char *&data, path_builder &builder, bool relative);
+  bool read_curve_short (const char *&data, path_builder &builder, bool relative);
+  bool read_quadratic (const char *&data, path_builder &builder, bool relative);
+  bool read_quadratic_short (const char *&data, path_builder &builder, bool relative);
+  bool read_arc (const char *&data, path_builder &builder, bool relative);
 };
 
 

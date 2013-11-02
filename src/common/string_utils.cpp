@@ -1,4 +1,5 @@
 #include <QColor>
+#include <QPointF>
 
 #include "common/common_utils.h"
 #include "debug_utils.h"
@@ -753,4 +754,9 @@ QColor string_to_color (const char *string)
 QString double_to_str (double value)
 {
   return QString::number (value, 'f', 10);
+}
+
+QString point_to_str (QPointF point)
+{
+  return QString ("%1, %2").arg (double_to_str (point.x ()), double_to_str (point.y ()));
 }

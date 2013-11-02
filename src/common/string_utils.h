@@ -5,6 +5,7 @@
 
 class QColor;
 class QString;
+class QPointF;
 
 int is_separator (const unsigned char c);
 
@@ -89,5 +90,6 @@ QString color_to_string (const QColor &color);
 QColor string_to_color (const char *string);
 
 QString double_to_str (double value);
+QString point_to_str (QPointF point);
 
 #endif // STRING_UTILS_H

@@ -2,6 +2,7 @@
 
 #include <QPainterPath>
 #include <qmath.h>
+#include "path/path_builder.h"
 
 #define Q_PI 3.14159265358979323846
 ///the code below is from qt
@@ -38,7 +39,7 @@
 ****************************************************************************/
 
 
-static void pathArcSegment(QPainterPath &path,
+static void pathArcSegment(path_builder &builder,
                            qreal xc, qreal yc,
                            qreal th0, qreal th1,
                            qreal rx, qreal ry, qreal xAxisRotation)
@@ -66,9 +67,10 @@ static void pathArcSegment(QPainterPath &path,
     x2 = x3 + t * qSin(th1);
     y2 = y3 - t * qCos(th1);
 
-    path.cubicTo(a00 * x1 + a01 * y1, a10 * x1 + a11 * y1,
-                 a00 * x2 + a01 * y2, a10 * x2 + a11 * y2,
-                 a00 * x3 + a01 * y3, a10 * x3 + a11 * y3);
+    builder.curve_to (QPointF (a00 * x3 + a01 * y3, a10 * x3 + a11 * y3),
+                      QPointF (a00 * x1 + a01 * y1, a10 * x1 + a11 * y1),
+                      QPointF (a00 * x2 + a01 * y2, a10 * x2 + a11 * y2),
+                      false);
 }
 
 // the arc handling code underneath is from XSVG (BSD license)
@@ -97,7 +99,7 @@ static void pathArcSegment(QPainterPath &path,
  * PERFORMANCE OF THIS SOFTWARE.
  *
  */
-void arc_converter::pathArc(QPainterPath &path,
+void arc_converter::pathArc(path_builder &builder,
                             qreal               rx,
                             qreal               ry,
                             qreal               x_axis_rotation,
@@ -170,7 +172,7 @@ void arc_converter::pathArc(QPainterPath &path,
     n_segs = qCeil(qAbs(th_arc / (Q_PI * 0.5 + 0.001)));
 
     for (i = 0; i < n_segs; i++) {
-        pathArcSegment(path, xc, yc,
+        pathArcSegment(builder, xc, yc,
                        th0 + i * th_arc / n_segs,
                        th0 + (i + 1) * th_arc / n_segs,
                        rx, ry, x_axis_rotation);
