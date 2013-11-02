@@ -9,20 +9,26 @@ class connection;
 
 enum class color_single_selector_type
 {
-  HUE_HSL,
-  LIGHTNESS,
-  SATURATION_HSL,
-  HUE_HSV,
-  VALUE,
-  SATURATION_HSV,
-  RED,
-  GREEN,
-  BLUE,
-  ALPHA,
-  CYAN,
-  MAGENTA,
-  YELLOW,
-  BLACK
+  RGB_RED,
+  RGB_GREEN,
+  RGB_BLUE,
+  RGB_ALPHA,
+
+  HSL_HUE,
+  HSL_SATURATION,
+  HSL_LIGHTNESS,
+  HSL_ALPHA,
+
+  HSV_HUE,
+  HSV_SATURATION,
+  HSV_VALUE,
+  HSV_ALPHA,
+
+  CMYK_CYAN,
+  CMYK_MAGENTA,
+  CMYK_YELLOW,
+  CMYK_BLACK,
+  CMYK_ALPHA
 };
 
 class QHBoxLayout;

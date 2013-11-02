@@ -22,10 +22,41 @@ static int BORDER_WIDTH = 1;
 static int CHECKERBOARD_ELEMENT_SIZE = 5;
 #define HQ_BILINEAR_GRADIENT
 
+static bool is_selector_type_alpha (color_single_selector_type type)
+{
+  switch (type)
+    {
+    case color_single_selector_type::RGB_RED:
+    case color_single_selector_type::RGB_GREEN:
+    case color_single_selector_type::RGB_BLUE:
+
+    case color_single_selector_type::HSL_HUE:
+    case color_single_selector_type::HSL_SATURATION:
+    case color_single_selector_type::HSL_LIGHTNESS:
+
+    case color_single_selector_type::HSV_HUE:
+    case color_single_selector_type::HSV_SATURATION:
+    case color_single_selector_type::HSV_VALUE:
+
+    case color_single_selector_type::CMYK_CYAN:
+    case color_single_selector_type::CMYK_MAGENTA:
+    case color_single_selector_type::CMYK_YELLOW:
+    case color_single_selector_type::CMYK_BLACK:
+      return false;
+
+    case color_single_selector_type::RGB_ALPHA:
+    case color_single_selector_type::HSL_ALPHA:
+    case color_single_selector_type::HSV_ALPHA:
+    case color_single_selector_type::CMYK_ALPHA:
+      return true;
+    }
+  return false;
+}
+
 void color_linear_selector::paintEvent (QPaintEvent * /*event*/)
 {
   QPainter painter (this);
-  if (m_type == color_single_selector_type::ALPHA)
+  if (is_selector_type_alpha (m_type))
     draw_checkerboard (painter);
 
   draw_gradient (painter);
@@ -41,10 +72,10 @@ color_linear_selector::color_linear_selector (QWidget *parent, Qt::Orientation o
   switch (m_orientation)
     {
     case Qt::Horizontal:
-      setSizePolicy (QSizePolicy::Maximum, QSizePolicy::Fixed);
+      setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Fixed);
       break;
     case Qt::Vertical:
-      setSizePolicy (QSizePolicy::Fixed, QSizePolicy::Maximum);
+      setSizePolicy (QSizePolicy::Fixed, QSizePolicy::Expanding);
       break;
     }
 }
@@ -95,41 +126,68 @@ int color_linear_selector::get_controlled_length ()
 
 int color_selector::get_param_value_by_type (color_single_selector_type type)
 {
-  int h_hsl, h_hsv, s_hsl, s_hsv, v, l, r, g, b, a, c, m, y, k;
-  m_color->getHsv (&h_hsv, &s_hsv, &v);
-  m_color->getHsl (&h_hsl, &s_hsl, &l);
-  m_color->getRgb (&r, &g, &b, &a);
-  m_color->getCmyk (&c, &m, &y, &k);
+  int h, s, v, l, r, g, b, a, c, m, y, k;
+  switch (type)
+    {
+    case color_single_selector_type::HSV_SATURATION:
+    case color_single_selector_type::HSV_HUE:
+    case color_single_selector_type::HSV_VALUE:
+    case color_single_selector_type::HSV_ALPHA:
+      m_color->getHsv (&h, &s, &v, &a);
+      break;
+    case color_single_selector_type::HSL_HUE:
+    case color_single_selector_type::HSL_SATURATION:
+    case color_single_selector_type::HSL_LIGHTNESS:
+    case color_single_selector_type::HSL_ALPHA:
+      m_color->getHsl (&h, &s, &l, &a);
+      break;
+
+    case color_single_selector_type::RGB_RED:
+    case color_single_selector_type::RGB_GREEN:
+    case color_single_selector_type::RGB_BLUE:
+    case color_single_selector_type::RGB_ALPHA:
+      m_color->getRgb (&r, &g, &b, &a);
+      break;
+
+    case color_single_selector_type::CMYK_CYAN:
+    case color_single_selector_type::CMYK_MAGENTA:
+    case color_single_selector_type::CMYK_YELLOW:
+    case color_single_selector_type::CMYK_BLACK:
+    case color_single_selector_type::CMYK_ALPHA:
+      m_color->getCmyk (&c, &m, &y, &k, &a);
+      break;
+    }
 
   switch (type)
     {
-    case color_single_selector_type::HUE_HSL:
-      return h_hsl;
-    case color_single_selector_type::HUE_HSV:
-      return h_hsv;
-    case color_single_selector_type::LIGHTNESS:
+    case color_single_selector_type::HSL_HUE:
+    case color_single_selector_type::HSV_HUE:
+      return h;
+    case color_single_selector_type::HSL_LIGHTNESS:
       return l;
-    case color_single_selector_type::SATURATION_HSL:
-      return s_hsl;
-    case color_single_selector_type::SATURATION_HSV:
-      return s_hsv;
-    case color_single_selector_type::RED:
+    case color_single_selector_type::HSL_SATURATION:
+    case color_single_selector_type::HSV_SATURATION:
+      return s;
+    case color_single_selector_type::RGB_RED:
       return r;
-    case color_single_selector_type::GREEN:
+    case color_single_selector_type::RGB_GREEN:
       return g;
-    case color_single_selector_type::BLUE:
+    case color_single_selector_type::RGB_BLUE:
       return b;
-    case color_single_selector_type::ALPHA:
+    case color_single_selector_type::RGB_ALPHA:
+    case color_single_selector_type::HSL_ALPHA:
+    case color_single_selector_type::HSV_ALPHA:
+    case color_single_selector_type::CMYK_ALPHA:
       return a;
-    case color_single_selector_type::CYAN:
+    case color_single_selector_type::CMYK_CYAN:
       return c;
-    case color_single_selector_type::MAGENTA:
+    case color_single_selector_type::CMYK_MAGENTA:
       return m;
-    case color_single_selector_type::YELLOW:
+    case color_single_selector_type::CMYK_YELLOW:
       return y;
-    case color_single_selector_type::BLACK:
+    case color_single_selector_type::CMYK_BLACK:
       return k;
-    case color_single_selector_type::VALUE:
+    case color_single_selector_type::HSV_VALUE:
       return v;
     }
   return 0;
@@ -144,21 +202,24 @@ static int get_param_maximum_by_type (color_single_selector_type type)
 {
   switch (type)
     {
-    case color_single_selector_type::HUE_HSL:
-    case color_single_selector_type::HUE_HSV:
+    case color_single_selector_type::HSL_HUE:
+    case color_single_selector_type::HSV_HUE:
       return 359;
-    case color_single_selector_type::LIGHTNESS:
-    case color_single_selector_type::SATURATION_HSL:
-    case color_single_selector_type::SATURATION_HSV:
-    case color_single_selector_type::RED:
-    case color_single_selector_type::BLUE:
-    case color_single_selector_type::GREEN:
-    case color_single_selector_type::ALPHA:
-    case color_single_selector_type::CYAN:
-    case color_single_selector_type::MAGENTA:
-    case color_single_selector_type::BLACK:
-    case color_single_selector_type::YELLOW:
-    case color_single_selector_type::VALUE:
+    case color_single_selector_type::HSL_LIGHTNESS:
+    case color_single_selector_type::HSL_SATURATION:
+    case color_single_selector_type::HSV_SATURATION:
+    case color_single_selector_type::RGB_RED:
+    case color_single_selector_type::RGB_BLUE:
+    case color_single_selector_type::RGB_GREEN:
+    case color_single_selector_type::RGB_ALPHA:
+    case color_single_selector_type::HSL_ALPHA:
+    case color_single_selector_type::HSV_ALPHA:
+    case color_single_selector_type::CMYK_ALPHA:
+    case color_single_selector_type::CMYK_CYAN:
+    case color_single_selector_type::CMYK_MAGENTA:
+    case color_single_selector_type::CMYK_BLACK:
+    case color_single_selector_type::CMYK_YELLOW:
+    case color_single_selector_type::HSV_VALUE:
       return 255;
     }
   return 0;
@@ -176,11 +237,37 @@ void color_linear_selector::set_color_from_pos (QPoint pos)
 
 void color_selector::set_param_by_type (QColor *color, int value, color_single_selector_type type)
 {
-  int h, s_hsl, s_hsv, v, l, r, g, b, a, c, m, y, k;
-  color->getHsl (&h, &s_hsl, &l);
-  color->getRgb (&r, &g, &b, &a);
-  color->getHsv (&h, &s_hsv, &v);
-  color->getCmyk (&c, &m, &y, &k);
+  int h, s, v, l, r, g, b, a, c, m, y, k;
+  switch (type)
+    {
+    case color_single_selector_type::HSV_SATURATION:
+    case color_single_selector_type::HSV_HUE:
+    case color_single_selector_type::HSV_VALUE:
+    case color_single_selector_type::HSV_ALPHA:
+      color->getHsv (&h, &s, &v, &a);
+      break;
+    case color_single_selector_type::HSL_HUE:
+    case color_single_selector_type::HSL_SATURATION:
+    case color_single_selector_type::HSL_LIGHTNESS:
+    case color_single_selector_type::HSL_ALPHA:
+      color->getHsl (&h, &s, &l, &a);
+      break;
+
+    case color_single_selector_type::RGB_RED:
+    case color_single_selector_type::RGB_GREEN:
+    case color_single_selector_type::RGB_BLUE:
+    case color_single_selector_type::RGB_ALPHA:
+      color->getRgb (&r, &g, &b, &a);
+      break;
+
+    case color_single_selector_type::CMYK_CYAN:
+    case color_single_selector_type::CMYK_MAGENTA:
+    case color_single_selector_type::CMYK_YELLOW:
+    case color_single_selector_type::CMYK_BLACK:
+    case color_single_selector_type::CMYK_ALPHA:
+      color->getCmyk (&c, &m, &y, &k, &a);
+      break;
+    }
 
   if (value < 0)
     value = 0;
@@ -190,47 +277,56 @@ void color_selector::set_param_by_type (QColor *color, int value, color_single_s
 
   switch (type)
     {
-    case color_single_selector_type::HUE_HSL:
-      color->setHsl (value, s_hsl, l, a);
+    case color_single_selector_type::HSL_HUE:
+      color->setHsl (value, s, l, a);
       break;
-    case color_single_selector_type::HUE_HSV:
-      color->setHsv (value, s_hsv, v, a);
+    case color_single_selector_type::HSV_HUE:
+      color->setHsv (value, s, v, a);
       break;
-    case color_single_selector_type::LIGHTNESS:
-      color->setHsl (h, s_hsl, value, a);
+    case color_single_selector_type::HSL_LIGHTNESS:
+      color->setHsl (h, s, value, a);
       break;
-    case color_single_selector_type::SATURATION_HSL:
+    case color_single_selector_type::HSL_SATURATION:
       color->setHsl (h, value, l, a);
       break;
-    case color_single_selector_type::SATURATION_HSV:
+    case color_single_selector_type::HSV_SATURATION:
       color->setHsv (h, value, v, a);
       break;
-    case color_single_selector_type::VALUE:
-      color->setHsv (h, s_hsv, value, a);
+    case color_single_selector_type::HSV_VALUE:
+      color->setHsv (h, s, value, a);
       break;
-    case color_single_selector_type::RED:
+    case color_single_selector_type::RGB_RED:
       color->setRgb (value, g, b, a);
       break;
-    case color_single_selector_type::GREEN:
+    case color_single_selector_type::RGB_GREEN:
       color->setRgb (r, value, b, a);
       break;
-    case color_single_selector_type::BLUE:
+    case color_single_selector_type::RGB_BLUE:
       color->setRgb (r, g, value, a);
       break;
-    case color_single_selector_type::ALPHA:
+    case color_single_selector_type::RGB_ALPHA:
       color->setRgb (r, g, b, value);
       break;
-    case color_single_selector_type::CYAN:
-      color->setCmyk (value, m, y, k);
+    case color_single_selector_type::CMYK_CYAN:
+      color->setCmyk (value, m, y, k, a);
       break;
-    case color_single_selector_type::MAGENTA:
-      color->setCmyk (c, value, y, k);
+    case color_single_selector_type::CMYK_MAGENTA:
+      color->setCmyk (c, value, y, k, a);
       break;
-    case color_single_selector_type::YELLOW:
-      color->setCmyk (c, m, value, k);
+    case color_single_selector_type::CMYK_YELLOW:
+      color->setCmyk (c, m, value, k, a);
       break;
-    case color_single_selector_type::BLACK:
-      color->setCmyk (c, m, y, value);
+    case color_single_selector_type::CMYK_BLACK:
+      color->setCmyk (c, m, y, value, a);
+      break;
+    case color_single_selector_type::HSL_ALPHA:
+      color->setHsl (h, s, l, value);
+      break;
+    case color_single_selector_type::HSV_ALPHA:
+      color->setHsv (h, s, v, value);
+      break;
+    case color_single_selector_type::CMYK_ALPHA:
+      color->setCmyk (c, m, y, k, value);
       break;
     }
 }
@@ -258,24 +354,27 @@ int color_selector::get_needed_number_of_points_for_gradient_by_type (color_sing
 {
   switch (type)
     {
-    case color_single_selector_type::HUE_HSL:
-    case color_single_selector_type::HUE_HSV:
+    case color_single_selector_type::HSL_HUE:
+    case color_single_selector_type::HSV_HUE:
       return 7;
       break;
-    case color_single_selector_type::LIGHTNESS:
+    case color_single_selector_type::HSL_LIGHTNESS:
       return 3;
       break;
-    case color_single_selector_type::SATURATION_HSL:
-    case color_single_selector_type::SATURATION_HSV:
-    case color_single_selector_type::VALUE:
-    case color_single_selector_type::RED:
-    case color_single_selector_type::GREEN:
-    case color_single_selector_type::BLUE:
-    case color_single_selector_type::ALPHA:
-    case color_single_selector_type::CYAN:
-    case color_single_selector_type::MAGENTA:
-    case color_single_selector_type::YELLOW:
-    case color_single_selector_type::BLACK:
+    case color_single_selector_type::HSL_SATURATION:
+    case color_single_selector_type::HSV_SATURATION:
+    case color_single_selector_type::HSV_VALUE:
+    case color_single_selector_type::RGB_RED:
+    case color_single_selector_type::RGB_GREEN:
+    case color_single_selector_type::RGB_BLUE:
+    case color_single_selector_type::RGB_ALPHA:
+    case color_single_selector_type::HSL_ALPHA:
+    case color_single_selector_type::HSV_ALPHA:
+    case color_single_selector_type::CMYK_ALPHA:
+    case color_single_selector_type::CMYK_CYAN:
+    case color_single_selector_type::CMYK_MAGENTA:
+    case color_single_selector_type::CMYK_YELLOW:
+    case color_single_selector_type::CMYK_BLACK:
       return 2;
     }
   return 0;
@@ -390,31 +489,42 @@ void color_selector::do_color_preprocessing_by_type (QColor &color, color_single
 {
   switch (type)
     {
-    case color_single_selector_type::HUE_HSL:
-    case color_single_selector_type::HUE_HSV:
-      color.setHsl (0, 255, 128); // In this case we need basically the same palette for every color (rainbow)
+    case color_single_selector_type::HSL_HUE:
+      color.setHsl (0, 255, 128, 255); // In this case we need basically the same palette for every color (rainbow)
       break;
-    case color_single_selector_type::LIGHTNESS:
-    case color_single_selector_type::SATURATION_HSL:
-    case color_single_selector_type::SATURATION_HSV:
-    case color_single_selector_type::VALUE:
-    case color_single_selector_type::CYAN:
-    case color_single_selector_type::MAGENTA:
-    case color_single_selector_type::YELLOW:
-    case color_single_selector_type::BLACK:
-    case color_single_selector_type::RED:
-    case color_single_selector_type::GREEN:
-    case color_single_selector_type::BLUE:
-      color.setAlpha (255); // In this case we don't need to see changes in alpha component
+    case color_single_selector_type::HSV_HUE:
+      color.setHsv (0, 255, 255, 255);
       break;
-    case color_single_selector_type::ALPHA:
+    case color_single_selector_type::HSL_LIGHTNESS:
+    case color_single_selector_type::HSL_SATURATION:
+      set_param_by_type (&color, 255, color_single_selector_type::HSL_ALPHA);
+      break;
+    case color_single_selector_type::HSV_SATURATION:
+    case color_single_selector_type::HSV_VALUE:
+      set_param_by_type (&color, 255, color_single_selector_type::HSV_ALPHA);
+      break;
+    case color_single_selector_type::CMYK_CYAN:
+    case color_single_selector_type::CMYK_MAGENTA:
+    case color_single_selector_type::CMYK_YELLOW:
+    case color_single_selector_type::CMYK_BLACK:
+      set_param_by_type (&color, 255, color_single_selector_type::CMYK_ALPHA);
+      break;
+    case color_single_selector_type::RGB_RED:
+    case color_single_selector_type::RGB_GREEN:
+    case color_single_selector_type::RGB_BLUE:
+      set_param_by_type (&color, 255, color_single_selector_type::RGB_ALPHA);
+      break;
+    case color_single_selector_type::RGB_ALPHA:
+    case color_single_selector_type::HSL_ALPHA:
+    case color_single_selector_type::HSV_ALPHA:
+    case color_single_selector_type::CMYK_ALPHA:
       break;
     }
 }
 
 void color_selector::do_color_preprocessing_by_two_types (QColor &color, color_single_selector_type first_type, color_single_selector_type second_type)
 {
-  if (first_type != color_single_selector_type::ALPHA && second_type != color_single_selector_type::ALPHA)
+  if (!is_selector_type_alpha (first_type) && !is_selector_type_alpha (second_type))
     color.setAlpha (255);
 }
 
@@ -514,8 +624,8 @@ void color_rectangular_selector::update_cached_gradient ()
   FREE (m_gradient_cached);
   m_gradient_cached = new QImage (size (), QImage::Format_ARGB32_Premultiplied);
   QPainter painter (m_gradient_cached);
-  if (m_controlled_types[0] == color_single_selector_type::ALPHA ||
-      m_controlled_types[1] == color_single_selector_type::ALPHA)
+  if (is_selector_type_alpha (m_controlled_types[0]) ||
+      is_selector_type_alpha (m_controlled_types[1]))
     draw_checkerboard (painter);
 #ifndef HQ_BILINEAR_GRADIENT
   int small_image_width = get_needed_number_of_points_for_gradient_by_type (m_controlled_types[0]) * 32;
