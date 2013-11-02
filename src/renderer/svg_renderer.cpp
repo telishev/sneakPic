@@ -17,6 +17,7 @@
 #include "renderer/render_cache_id.h"
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_config.h"
+#include "renderer/events_queue.h"
 
 
 
@@ -64,6 +65,9 @@ void svg_renderer::update_cache_item (const renderable_item *item, const render_
   QTransform pixmap_transform = QTransform (transform).translate (diff.x (), diff.y ());
   renderer_state state (QRect (0, 0, block_size * total_x, block_size * total_y), pixmap_transform);
   draw_item (item, canvas, state, cfg);
+
+  if (m_queue->is_interrupted ())
+    return;
 
   if (total_x == total_y && total_x == 1)
     m_cache->add_bitmap (cache_id, bitmap, cfg.use_new_cache ());
