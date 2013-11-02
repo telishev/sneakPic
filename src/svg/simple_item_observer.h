@@ -7,6 +7,9 @@
 
 class svg_items_container;
 
+template<typename T>
+class simple_item_observer;
+
 
 template<typename T>
 class simple_observer_state_t : public abstract_state_t

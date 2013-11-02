@@ -9,6 +9,7 @@ enum class svg_item_type;
 
 class QString;
 
+#include <map>
 #include <unordered_map>
 #include <functional>
 #include <string>
@@ -16,8 +17,8 @@ class QString;
 class svg_attribute_factory
 {
   std::unordered_multimap<std::string, std::function<abstract_attribute * ()>> m_string_map;
-  std::unordered_map<svg_attribute_type, std::function<abstract_attribute * ()>> m_type_map;
-  std::unordered_map<svg_attribute_type, std::string> m_type_to_string_map;
+  std::map<svg_attribute_type, std::function<abstract_attribute * ()>> m_type_map;
+  std::map<svg_attribute_type, std::string> m_type_to_string_map;
 public:
   static svg_attribute_factory *get ();
 

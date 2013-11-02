@@ -63,8 +63,7 @@ bool svg_items_container::contains (const std::string &id) const
 std::string svg_items_container::create_unique_name (const char *item_id)
 {
   max_id++;
-  char buf[64];
-  return std::string (item_id) + itoa (max_id, buf, 10);
+  return std::string (item_id) + std::to_string (max_id);
 }
 
 void svg_items_container::extract_number (const char *data)

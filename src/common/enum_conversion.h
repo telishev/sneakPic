@@ -14,6 +14,7 @@
 /// negative values in enums, for now unsupported
 
 #include "common/memory_deallocation.h"
+#include "common/string_utils.h"
 
 #include <unordered_map>
 #include <string.h>
@@ -71,12 +72,12 @@ static E string_to_enum (const char *string)
 template <typename E>
 static E process_string_fixed_length_to_enum (const char *&string, int length)
 {
-  char *string_in_question = 0; 
+  char *string_in_question = 0;
   string_in_question = new char[length + 1];
   strncpy (string_in_question, string, length);
   string_in_question[length] = '\0';
   const char *trimmed_string_in_question = string_in_question;
-  
+
   E res = enum_helper<E>::self.get_enum_value (trimmed_string_in_question);
   FREE_ARRAY (string_in_question);
   string += length;
@@ -96,7 +97,7 @@ static E process_string_before_delimiter_to_enum (const char *&string, const cha
   E res = process_string_fixed_length_to_enum<E> (string, len);
   if (*next_delimiter_pos)
     next_delimiter_pos++;
-  
+
   string = next_delimiter_pos;
   return res;
 }

@@ -3,6 +3,7 @@
 
 #include "renderer/abstract_renderer_event.h"
 
+#include <string>
 #include <vector>
 
 class abstract_renderer_item;

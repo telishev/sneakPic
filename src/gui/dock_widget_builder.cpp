@@ -1,4 +1,4 @@
-#include "gui\dock_widget_builder.h"
+#include "gui/dock_widget_builder.h"
 
 #include <QDockWidget>
 #include <QMainWindow>

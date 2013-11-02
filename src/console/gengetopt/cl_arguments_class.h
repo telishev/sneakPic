@@ -19,4 +19,4 @@ public:
   QString get_save ();
   QStringList get_target_files ();
 };
-#endif CL_ARGUMENTS_CLASS_H
+#endif // CL_ARGUMENTS_CLASS_H

@@ -32,8 +32,8 @@ class mouse_shortcuts_handler
   };
 
   const shortcuts_config *m_cfg;
-  mouse_shortcut_func_t m_shortcuts[mouse_shortcut_enum::COUNT];
-  drag_shortcut_func_t m_drag_shortcuts[mouse_drag_shortcut_enum::COUNT];
+  mouse_shortcut_func_t m_shortcuts[(int) mouse_shortcut_enum::COUNT];
+  drag_shortcut_func_t m_drag_shortcuts[(int) mouse_drag_shortcut_enum::COUNT];
 
   std::vector<const drag_shortcut_func_t *> m_drag_stack;
 

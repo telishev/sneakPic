@@ -1,9 +1,9 @@
 #ifndef SELECTORS_CONTAINER_H
 #define SELECTORS_CONTAINER_H
 
-#include <unordered_set>
 #include <unordered_map>
 #include <string>
+#include <vector>
 
 class abstract_css_selector;
 class css_declaration;

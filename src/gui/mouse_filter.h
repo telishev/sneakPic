@@ -32,11 +32,11 @@ class mouse_filter : public QObject
   const int move_threshold;                 ///< Threshold for accidental move when user presses mouse button (in pixels).
   const unsigned int time_to_move;          ///< Accidental moves eliminating are enabled during this time (in milliseconds) after mouse button pressed.
 
-  unsigned char pressed[mouse_button::BUTTONS_COUNT];   ///< Current mouse buttons pressed states array.
-  unsigned char dragged[mouse_button::BUTTONS_COUNT];   ///< Current mouse buttons dragged states array. 1 - mouse is being moved and button is being pressed.
+  unsigned char pressed[(int) mouse_button::BUTTONS_COUNT];   ///< Current mouse buttons pressed states array.
+  unsigned char dragged[(int) mouse_button::BUTTONS_COUNT];   ///< Current mouse buttons dragged states array. 1 - mouse is being moved and button is being pressed.
 
-  QPoint       start_point[mouse_button::BUTTONS_COUNT];///< Start points array. Start point - point where button was pressed (in pixels).
-  unsigned int start_time[mouse_button::BUTTONS_COUNT]; ///< Start time array. Start time - time when button was pressed (in milliseconds).
+  QPoint       start_point[(int) mouse_button::BUTTONS_COUNT];///< Start points array. Start point - point where button was pressed (in pixels).
+  unsigned int start_time[(int) mouse_button::BUTTONS_COUNT]; ///< Start time array. Start time - time when button was pressed (in milliseconds).
 
 public:
   mouse_filter (QObject *parent, int move_threshold = 2, unsigned int time_to_move = 400);

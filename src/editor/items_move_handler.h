@@ -4,6 +4,8 @@
 #include <QPointF>
 #include <string>
 
+class QTransform;
+
 class transformed_renderable_items;
 class overlay_renderer;
 class items_selection;

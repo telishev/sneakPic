@@ -94,7 +94,7 @@ class color_rectangular_selector : public color_selector
   QSize m_size_cached;
 
 public:
-  enum class flag
+  enum flag
   {
     EMPTY = 0x00,
     X_REVERSED = 0x01,
@@ -155,6 +155,7 @@ class color_spinbox : public color_selector
 
 public:
   color_spinbox (QWidget *parent, color_single_selector_type type, QColor *color);
+  ~color_spinbox ();
 
 protected slots:
   virtual void color_changed_externally();

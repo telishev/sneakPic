@@ -473,6 +473,10 @@ color_spinbox::color_spinbox (QWidget *parent, color_single_selector_type type, 
   m_value_changed_connection = CONNECT (m_spin_box, SIGNAL (valueChanged (int)), this, SLOT (spinbox_value_changed (int)));
 }
 
+color_spinbox::~color_spinbox ()
+{
+}
+
 void color_spinbox::color_changed_externally ()
 {
   TEMPORARY_DISCONNECT (m_value_changed_connection);
