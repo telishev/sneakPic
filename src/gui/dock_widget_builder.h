@@ -22,7 +22,7 @@ class dock_widget_builder
 public:
   dock_widget_builder (QMainWindow *main_window);
 
-  void add_widget (QWidget *widget, Qt::DockWidgetArea default_pos, visibility_state default_visibility);
+  void add_widget (QWidget *widget, Qt::DockWidgetArea default_pos, visibility_state default_visibility, Qt::DockWidgetAreas allowed_areas = Qt::AllDockWidgetAreas);
 };
 
 #endif // DOCK_WIDGET_BUILDER_H
