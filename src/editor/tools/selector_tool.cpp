@@ -21,8 +21,6 @@
 selector_tool::selector_tool (svg_painter *painter)
   : abstract_tool (painter)
 {
-  m_mouse_handler = new mouse_shortcuts_handler (m_painter->settings ()->shortcuts_cfg ());
-  m_overlay = new overlay_renderer;
   m_rubberband = new rubberband_selection (m_overlay);
   m_move_handler = new items_move_handler (m_painter->item_container (), m_overlay, m_painter->selection (), m_painter->document ());
 
@@ -40,25 +38,9 @@ selector_tool::selector_tool (svg_painter *painter)
 selector_tool::~selector_tool ()
 {
   FREE (m_rubberband);
-  FREE (m_mouse_handler);
   FREE (m_move_handler);
-  FREE (m_overlay);
 }
 
-void selector_tool::activate ()
-{
-
-}
-
-void selector_tool::deactivate ()
-{
-
-}
-
-bool selector_tool::mouse_event (const mouse_event_t &m_event)
-{
-  return m_mouse_handler->process_mouse_event (m_event);
-}
 
 bool selector_tool::start_rubberband_selection (const QPoint &pos)
 {
@@ -121,14 +103,3 @@ bool selector_tool::end_moving_object ()
   m_painter->redraw ();
   return true;
 }
-
-void selector_tool::configure ()
-{
-
-}
-
-void selector_tool::draw (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform)
-{
-  m_overlay->draw (painter, rect_to_draw, transform);
-}
-

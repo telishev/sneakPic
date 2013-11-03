@@ -20,6 +20,7 @@ class gui_document;
 class gui_actions;
 class menu_builder;
 class tools_widget_builder;
+class actions_applier;
 
 enum class gui_action_id;
 
@@ -37,6 +38,7 @@ class main_window : public QMainWindow
   settings_t *m_settings;
   gui_document *m_document;
   gui_actions *m_actions;
+  actions_applier *m_actions_applier;
 
   menu_builder *m_menu_builder;
   tools_widget_builder *m_tools_builder;
@@ -52,8 +54,7 @@ public:
 private slots:
   void zoom_description_changed (const QString &description);
   void open_file (const QString filename);
-  bool open_file_clicked ();
-  bool save_file_clicked ();
+
 
 private:
   void add_file_to_recent (QString file_path);
@@ -63,6 +64,9 @@ private:
   void update_recent_menu ();
   QString get_last_file_open_dir () const;
   void create_painter ();
+  bool action_triggered (gui_action_id id);
+  bool open_file_clicked ();
+  bool save_file_clicked ();
 };
 
 

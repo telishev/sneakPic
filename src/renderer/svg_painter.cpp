@@ -27,6 +27,8 @@
 #include "gui/shortcuts_config.h"
 #include "gui/settings.h"
 #include "gui/connection.h"
+#include "gui/actions_applier.h"
+#include "gui/gui_action_id.h"
 
 #include "renderer/abstract_renderer_item.h"
 #include "renderer/renderer_state.h"
@@ -58,11 +60,14 @@ svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, even
   m_overlay = new overlay_renderer (m_cache);
   m_settings = settings;
   m_selection = new items_selection;
+  m_actions_applier = new actions_applier;
   m_mouse_handler = create_mouse_shortcuts ();
   update_status_bar_widgets ();
   set_document (document);
 
   CONNECT (m_selection, SIGNAL (selection_changed ()), this, SLOT (selection_changed ()));
+
+  m_actions_applier->register_action (gui_action_id::DELETE_ITEMS, this, &svg_painter::remove_items_in_selection);
 }
 
 svg_painter::~svg_painter ()
@@ -73,6 +78,7 @@ svg_painter::~svg_painter ()
 
   FREE (m_selection_renderer);
   FREE (m_item_outline);
+  FREE (m_actions_applier);
 }
 
 void svg_painter::update_status_bar_widgets ()
@@ -390,4 +396,18 @@ abstract_svg_item *svg_painter::get_current_item_for_point (const QPoint &pos)
     return nullptr;
 
   return m_document->item_container ()->get_editable_item (selected_item_name);
+}
+
+bool svg_painter::action_triggered (gui_action_id id)
+{
+  if (m_current_tool)
+    if (m_current_tool->action_triggered (id))
+      return true;
+
+  return m_actions_applier->apply_action (id);
+}
+
+bool svg_painter::remove_items_in_selection ()
+{
+  return true;
 }

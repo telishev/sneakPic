@@ -30,6 +30,7 @@
 
 #include "dock_widget_builder.h"
 #include "renderer/svg_painter.h"
+#include "actions_applier.h"
 
 #define RECENT_FILES_NUMBER 10
 
@@ -41,7 +42,7 @@ main_window::main_window ()
   m_qsettings = new QSettings ("SneakPic");
   m_settings = new settings_t;
   m_signal_mapper = nullptr;
-  m_actions = new gui_actions (m_settings->shortcuts_cfg ());
+  m_actions = new gui_actions (m_settings->shortcuts_cfg (), [&] (gui_action_id id) { return action_triggered (id); }, this);
   m_dock_widget_builder = new dock_widget_builder (this);
   m_menu_builder = new menu_builder (menuBar (), m_actions);
   m_tools_builder = new tools_widget_builder (m_actions, m_dock_widget_builder);
@@ -59,9 +60,11 @@ main_window::main_window ()
   statusBar ()->addWidget (m_color_indicator);
   CONNECT (m_color_selector_widget_builder, &color_selector_widget_builder::color_changed, m_color_indicator, &color_selector::color_changed_externally);
 
-  CONNECT (m_actions->action (gui_action_id::OPEN), SIGNAL (triggered ()), this, SLOT (open_file_clicked ()));
-  CONNECT (m_actions->action (gui_action_id::SAVE_AS), SIGNAL (triggered ()), this, SLOT (save_file_clicked ()));
-  CONNECT (m_actions->action (gui_action_id::QUIT), SIGNAL (triggered ()), this, SLOT (close ()));
+  m_actions_applier = new actions_applier;
+  m_actions_applier->register_action (gui_action_id::OPEN, this, &main_window::open_file_clicked);
+  m_actions_applier->register_action (gui_action_id::SAVE_AS, this, &main_window::save_file_clicked);
+  m_actions_applier->register_action (gui_action_id::QUIT, (QWidget *)this, &QWidget::close);
+
 }
 
 main_window::~main_window ()
@@ -78,6 +81,7 @@ main_window::~main_window ()
   FREE (m_tools_builder);
   FREE (m_menu_builder);
   FREE (m_document);
+  FREE (m_actions_applier);
 }
 
 void main_window::load_recent_menu ()
@@ -205,5 +209,14 @@ void main_window::create_painter ()
   svg_painter *painter = m_document->create_painter (ui->glwidget);
   CONNECT (painter, SIGNAL (zoom_description_changed (const QString &)), this, SLOT (zoom_description_changed (const QString &)));
   painter->update_status_bar_widgets ();
+}
+
+bool main_window::action_triggered (gui_action_id id)
+{
+  if (m_document)
+    if (m_document->action_triggered (id))
+      return true;
+
+  return m_actions_applier->apply_action (id);
 }
 

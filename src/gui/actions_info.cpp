@@ -34,6 +34,10 @@ actions_info::actions_info ()
   add_action (gui_action_id::TOOL_SELECTOR, "Select Objects", QKeySequence (), QIcon (":/cursor.png"));
   add_action (gui_action_id::TOOL_PATH_EDITOR, "Edit Paths by Nodes", QKeySequence (), QIcon (":/cursor.png"));
   add_action (gui_action_id::TOOL_RECTANGLE, "Create Rectangles", QKeySequence (), QIcon (":/rectangle.png"));
+
+  /// Other
+  add_action (gui_action_id::DELETE_HANDLES, "Delete Handles", QKeySequence ("Del"));
+  add_action (gui_action_id::DELETE_ITEMS, "Delete", QKeySequence ("Del"));
 }
 
 actions_info::~actions_info ()

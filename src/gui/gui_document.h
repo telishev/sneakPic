@@ -14,6 +14,7 @@ class svg_painter;
 class tools_container;
 class gl_widget;
 class gui_actions;
+class actions_applier;
 
 enum class gui_action_id;
 
@@ -32,6 +33,7 @@ public:
   svg_document *m_doc;
   svg_painter  *m_painter;
   tools_container *m_tools_container;
+  actions_applier *m_actions_applier;
 
 public:
   gui_document (settings_t *settings, gui_actions *actions);
@@ -50,8 +52,9 @@ private slots:
   void update_timeout ();
   void tool_changed ();
 
-  void undo ();
-  void redo ();
+private:
+  bool undo ();
+  bool redo ();
 };
   
 

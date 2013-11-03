@@ -11,23 +11,12 @@ class overlay_renderer;
 
 class selector_tool : public abstract_tool
 {
-  mouse_shortcuts_handler *m_mouse_handler;
   rubberband_selection    *m_rubberband;
   items_move_handler      *m_move_handler;
-  overlay_renderer        *m_overlay;
 
 public:
   selector_tool (svg_painter *painter);
   ~selector_tool ();
-
-
-protected:
-  virtual void activate () override;
-  virtual void deactivate () override;
-  virtual bool mouse_event (const mouse_event_t &m_event) override;
-
-  virtual void configure () override;
-  virtual void draw (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform) override;
 
 private:
   bool start_rubberband_selection (const QPoint &pos);

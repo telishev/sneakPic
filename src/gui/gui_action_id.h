@@ -1,6 +1,7 @@
 #ifndef GUI_ACTION_ID_H
 #define GUI_ACTION_ID_H
 
+/// Higher actions have higher priority
 enum class gui_action_id
 {
 
@@ -18,6 +19,10 @@ enum class gui_action_id
   TOOL_SELECTOR,
   TOOL_PATH_EDITOR,
   TOOL_RECTANGLE,
+
+  /// Other
+  DELETE_HANDLES,
+  DELETE_ITEMS,
 
   /// Count
   COUNT,

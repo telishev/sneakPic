@@ -10,6 +10,7 @@
 #include "gui/gl_widget.h"
 #include "gui/gui_action_id.h"
 #include "gui/gui_actions.h"
+#include "gui/actions_applier.h"
 #include "gui/connection.h"
 
 #include "renderer/rendered_items_cache.h"
@@ -27,6 +28,7 @@ gui_document::gui_document (settings_t *settings, gui_actions *actions)
   m_actions = actions; 
   m_painter = nullptr;
   m_settings = settings;
+  m_actions_applier = new actions_applier;
   m_cache = new rendered_items_cache;
   m_queue = new events_queue;
   m_tools_container = new tools_container (m_actions);
@@ -40,8 +42,8 @@ gui_document::gui_document (settings_t *settings, gui_actions *actions)
   CONNECT (update_timer     , SIGNAL (timeout ())     , this, SLOT (update_timeout ()));
   CONNECT (m_tools_container, SIGNAL (tool_changed ()), this, SLOT (tool_changed ()));
 
-  CONNECT (m_actions->action (gui_action_id::UNDO), SIGNAL (triggered ()), this, SLOT (undo ()));
-  CONNECT (m_actions->action (gui_action_id::REDO), SIGNAL (triggered ()), this, SLOT (redo ()));
+  m_actions_applier->register_action (gui_action_id::UNDO, this, &gui_document::undo);
+  m_actions_applier->register_action (gui_action_id::REDO, this, &gui_document::redo);
 }
 
 gui_document::~gui_document ()
@@ -54,6 +56,7 @@ gui_document::~gui_document ()
   FREE (m_painter);
   FREE (m_cache);
   FREE (m_doc);
+  FREE (m_actions_applier);
 }
 
 bool gui_document::open_file (const QString &filename)
@@ -96,17 +99,30 @@ void gui_document::update_timeout ()
     m_painter->update ();
 }
 
-void gui_document::undo ()
+bool gui_document::undo ()
 {
   m_doc->undo ();
+  return true;
 }
 
-void gui_document::redo ()
+bool gui_document::redo ()
 {
   m_doc->redo ();
+  return true;
 }
 
 void gui_document::tool_changed ()
 {
   m_painter->set_current_tool (m_tools_container->current_tool ());
+}
+
+bool gui_document::action_triggered (gui_action_id id)
+{
+  if (m_tools_container->action_triggered (id))
+    return true;
+
+  if (m_painter && m_painter->action_triggered (id))
+    return true;
+
+  return m_actions_applier->apply_action (id);
 }

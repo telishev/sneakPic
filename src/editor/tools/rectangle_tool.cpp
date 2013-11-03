@@ -17,34 +17,9 @@
 #include "svg/items/svg_item_rect.h"
 #include "svg/svg_document.h"
 
-
-void rectangle_tool::activate()
-{
-}
-
-void rectangle_tool::deactivate()
-{
-}
-
-void rectangle_tool::configure()
-{
-}
-
-void rectangle_tool::draw( QPainter &painter, const QRect &rect_to_draw, const QTransform &transform)
-{
-  m_overlay->draw (painter, rect_to_draw, transform);
-}
-
-bool rectangle_tool::mouse_event( const mouse_event_t &m_event)
-{
-  return m_mouse_handler->process_mouse_event (m_event);
-}
-
 rectangle_tool::rectangle_tool( svg_painter *painter )
   : abstract_tool (painter)
 {
-  m_mouse_handler = new mouse_shortcuts_handler (m_painter->settings ()->shortcuts_cfg ());
-  m_overlay = new overlay_renderer;
   m_items_container = m_painter->item_container ();
   ADD_SHORTCUT_DRAG (m_mouse_handler, CREATE_RECTANGLE,
                      return start_rectangle_positioning (m_event.pos ()),
@@ -58,8 +33,6 @@ rectangle_tool::rectangle_tool( svg_painter *painter )
 
 rectangle_tool::~rectangle_tool ()
 {
-  FREE (m_overlay);
-  FREE (m_mouse_handler);
 }
 
 bool rectangle_tool::start_rectangle_positioning (const QPoint &pos)

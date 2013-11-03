@@ -8,10 +8,7 @@
 
 class svg_document;
 class abstract_svg_item;
-class abstract_renderer_item;
 class rendered_items_cache;
-class render_cache_id;
-class svg_renderer;
 class events_queue;
 class overlay_renderer;
 class items_selection;
@@ -22,6 +19,9 @@ class rubberband_selection;
 class abstract_tool;
 class svg_items_container;
 class items_selection_renderer;
+class actions_applier;
+
+enum class gui_action_id;
 
 class svg_painter : public abstract_painter
 {
@@ -40,6 +40,7 @@ class svg_painter : public abstract_painter
   current_item_outline_renderer *m_item_outline;
   mouse_shortcuts_handler *m_mouse_handler;
   settings_t *m_settings;
+  actions_applier *m_actions_applier;
 
   abstract_tool *m_current_tool;
 
@@ -59,6 +60,7 @@ public:
   void update_status_bar_widgets ();
 
   void redraw ();
+  bool action_triggered (gui_action_id id);
 
 signals:
   void zoom_description_changed (const QString &description);
@@ -90,6 +92,7 @@ private:
   bool find_current_object (const QPoint &pos);
   void create_overlay_containers ();
   abstract_svg_item *get_current_item_for_point (const QPoint &pos);
+  bool remove_items_in_selection ();
 };
 
 #endif // SVG_PAINTER_H

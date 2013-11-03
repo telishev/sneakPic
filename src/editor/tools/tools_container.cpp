@@ -18,24 +18,16 @@ tools_container::tools_container (gui_actions *actions)
 {
   m_cur_tool = gui_action_id::TOOL_SELECTOR;
   m_actions = actions;
-  m_connections.resize ((int)gui_action_id::COUNT);
 
   init_tools_info ();
 
   if (actions)
-    {
-      CONNECT (m_actions, SIGNAL (actions_update_needed ()), this, SLOT (update_actions ()));
-      for (gui_action_id id : tool_actions ())
-        connect_action (id);
-    }
+    CONNECT (m_actions, SIGNAL (actions_update_needed ()), this, SLOT (update_actions ()));
 }
 
 tools_container::~tools_container ()
 {
   remove_tools ();
-  for (auto &conn : m_connections)
-    if (conn)
-      conn->disconnect ();
 }
 
 void tools_container::update_tools (svg_painter *painter)
@@ -86,11 +78,6 @@ void tools_container::add_tool (gui_action_id id, abstract_tool *tool)
   m_tools[id].reset (tool);
 }
 
-void tools_container::connect_action (gui_action_id id)
-{
-  m_connections[(int)id] = CONNECT (m_actions->action (id), &QAction::triggered, [this, id] () { change_tool (id); });
-}
-
 std::vector<gui_action_id> tools_container::tool_actions () const
 {
   std::vector<gui_action_id> result;
@@ -111,4 +98,13 @@ void tools_container::init_tools_info ()
   add_info<selector_tool> (gui_action_id::TOOL_SELECTOR);
   add_info<path_editor_tool> (gui_action_id::TOOL_PATH_EDITOR);
   add_info<rectangle_tool> (gui_action_id::TOOL_RECTANGLE);
+}
+
+bool tools_container::action_triggered (gui_action_id id)
+{
+  if (m_tools_info.find (id) == m_tools_info.end ())
+    return false;
+
+  change_tool (id);
+  return true;
 }

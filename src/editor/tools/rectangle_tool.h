@@ -13,8 +13,6 @@ class svg_items_container;
 
 class rectangle_tool : public abstract_tool
 {
-  overlay_renderer         *m_overlay;
-  mouse_shortcuts_handler  *m_mouse_handler;
   renderer_base_shape_item *m_renderer_item;
   svg_items_container      *m_items_container;
   QPointF m_initial_pos;
@@ -22,16 +20,6 @@ class rectangle_tool : public abstract_tool
 public:
   rectangle_tool (svg_painter *painter);
   ~rectangle_tool ();
-
-  virtual void activate();
-
-  virtual void deactivate();
-
-  virtual void configure();
-
-  virtual void draw( QPainter &painter, const QRect &rect_to_draw, const QTransform &transform );
-
-  virtual bool mouse_event( const mouse_event_t &m_event );
 
 private:
   bool start_rectangle_positioning (const QPoint &pos);

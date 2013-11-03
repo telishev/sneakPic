@@ -25,7 +25,6 @@ class tools_container : public QObject
   info_map_t m_tools_info;
   std::map<gui_action_id, std::unique_ptr<abstract_tool>> m_tools;
 
-  std::vector<std::unique_ptr<connection>> m_connections;
   gui_actions *m_actions;
 public:
   tools_container (gui_actions *actions);
@@ -35,6 +34,7 @@ public:
 
   abstract_tool *current_tool () const;
   std::vector<gui_action_id> tool_actions () const;
+  bool action_triggered (gui_action_id id);
 
 signals:
   void tool_changed ();
@@ -51,6 +51,7 @@ private:
 
   template<typename T>
   void add_info (gui_action_id id);
+  
 };
 
 #endif // TOOLS_CONTAINER_H
