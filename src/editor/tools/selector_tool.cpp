@@ -42,6 +42,7 @@ selector_tool::~selector_tool ()
   FREE (m_rubberband);
   FREE (m_mouse_handler);
   FREE (m_move_handler);
+  FREE (m_overlay);
 }
 
 void selector_tool::activate ()

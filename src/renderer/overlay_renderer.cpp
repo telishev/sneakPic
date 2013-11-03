@@ -36,6 +36,8 @@ overlay_renderer::~overlay_renderer ()
 {
   FREE (m_renderer);
   FREE (m_overlay_cache);
+  for (int i = 0; i < (int)overlay_layer_type::COUNT; i++)
+    FREE (m_items[i]);
 }
 
 void overlay_renderer::draw (QPainter &painter, const QRect &rect_to_draw, const QTransform &transform)

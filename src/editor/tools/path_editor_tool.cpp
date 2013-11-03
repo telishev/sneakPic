@@ -32,6 +32,7 @@ path_editor_tool::~path_editor_tool ()
 {
   FREE (m_rubberband);
   FREE (m_mouse_handler);
+  FREE (m_overlay);
 }
 
 void path_editor_tool::activate ()

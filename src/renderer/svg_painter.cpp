@@ -70,6 +70,9 @@ svg_painter::~svg_painter ()
   FREE (m_mouse_handler);
   FREE (m_overlay);
   FREE (m_selection);
+
+  FREE (m_selection_renderer);
+  FREE (m_item_outline);
 }
 
 void svg_painter::update_status_bar_widgets ()

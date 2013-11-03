@@ -123,11 +123,13 @@ bool renderer_base_shape_item::configure_painter (SkPaint &paint, bool stroke, b
 
 void renderer_base_shape_item::set_stroke_server (const renderer_paint_server *server)
 {
+  FREE (m_stroke_server);
   m_stroke_server = server->clone ();
 }
 
 void renderer_base_shape_item::set_fill_server (const renderer_paint_server *server)
 {
+  FREE (m_fill_server);
   m_fill_server = server->clone ();
 }
 

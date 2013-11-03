@@ -17,7 +17,6 @@ overlay_items_container::overlay_items_container (overlay_renderer *overlay, svg
 
 overlay_items_container::~overlay_items_container ()
 {
-  clear_items ();
 }
 
 svg_items_container *overlay_items_container::svg_container () const

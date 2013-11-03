@@ -26,11 +26,11 @@ single_undo_item *single_undo_item_builder::create_undo ()
       abstract_state_t *old_state = pair.second.get ();
 
       undoable *item = m_items_container->get_item (id);
-      abstract_state_t *new_state = item ? item->create_state () : nullptr;
+      std::unique_ptr<abstract_state_t> new_state (item ? item->create_state () : nullptr);
       if (!old_state && !new_state)
         continue;
 
-      abstract_state_diff_t *diff = old_state ? old_state->create_diff (old_state, new_state) : new_state->create_diff (old_state, new_state);
+      abstract_state_diff_t *diff = old_state ? old_state->create_diff (old_state, new_state.get ()) : new_state->create_diff (old_state, new_state.get ());
       single_item->add_item_diff (id, diff);
     }
 

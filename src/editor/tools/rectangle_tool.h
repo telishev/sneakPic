@@ -21,6 +21,7 @@ class rectangle_tool : public abstract_tool
 
 public:
   rectangle_tool (svg_painter *painter);
+  ~rectangle_tool ();
 
   virtual void activate();
 

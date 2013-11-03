@@ -74,8 +74,10 @@ main_window::~main_window ()
   FREE (m_qsettings);
   FREE (m_settings);
   FREE (m_dock_widget_builder);
+  FREE (m_color_selector_widget_builder);
   FREE (m_tools_builder);
   FREE (m_menu_builder);
+  FREE (m_document);
 }
 
 void main_window::load_recent_menu ()

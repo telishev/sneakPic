@@ -103,23 +103,6 @@ abstract_svg_item::abstract_svg_item (svg_document *document)
 
 abstract_svg_item::~abstract_svg_item ()
 {
-  remove_from_container ();
-  auto handler = m_document->get_undo_handler ();
-  for (auto &attribute : m_attributes)
-     handler->remove_item (attribute.second);
-
-  if (m_observers)
-    {
-      for (int id : *m_observers)
-        handler->remove_item (id);
-    }
-
-  if (m_created_observers)
-    {
-      for (int id : *m_created_observers)
-        handler->remove_item (id);
-    }
-
   FREE (m_observers);
   FREE (m_created_observers);
   FREE (m_children);
@@ -388,6 +371,7 @@ void abstract_svg_item::remove_child (abstract_svg_item *child)
   signal_child_removed (child->name (), child->child_index ());
   child->signal_item_removed ();
   m_children->erase (std::remove (m_children->begin (), m_children->end (), child->undo_id ()), m_children->end ());
+  child->prepare_to_remove ();
   m_document->get_undo_handler ()->remove_item (child->undo_id ());
 }
 
@@ -479,6 +463,7 @@ void abstract_svg_item::load_from_state (const abstract_state_t *abstract_state)
 {
   if (!abstract_state)
     {
+      prepare_to_remove ();
       document ()->items_edit_handler ()->set_item_removed (name ());
       return;
     }
@@ -593,5 +578,25 @@ std::vector<const abstract_attribute *> abstract_svg_item::attributes_list () co
     result.push_back (get_attribute_by_id (attribute.second));
 
   return result;
+}
+
+void abstract_svg_item::prepare_to_remove ()
+{
+  remove_from_container ();
+  auto handler = m_document->get_undo_handler ();
+  for (auto &attribute : m_attributes)
+    handler->remove_item (attribute.second);
+
+  if (m_observers)
+    {
+      for (int id : *m_observers)
+        handler->remove_item (id);
+    }
+
+  if (m_created_observers)
+    {
+      for (int id : *m_created_observers)
+        handler->remove_item (id);
+    }
 }
 

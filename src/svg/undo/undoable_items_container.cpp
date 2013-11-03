@@ -21,7 +21,7 @@ undoable *undoable_items_container_t::get_item (int id) const
 {
   auto it = m_map.find (id);
   if (it != m_map.end ())
-    return it->second;
+    return it->second.get ();
 
   return nullptr;
 }
@@ -29,7 +29,7 @@ undoable *undoable_items_container_t::get_item (int id) const
 int undoable_items_container_t::add_item (undoable *item)
 {
   assign_id (item);
-  DEBUG_ASSERT (m_map.insert (std::make_pair (item->undo_id (), item)).second == true);
+  DEBUG_ASSERT (m_map.insert (std::make_pair (item->undo_id (), std::move (std::unique_ptr<undoable> (item)))).second == true);
   return item->undo_id ();
 }
 
@@ -39,7 +39,6 @@ void undoable_items_container_t::remove_item (int id)
   if (it == m_map.end ())
     return;
 
-  FREE (it->second);
   m_map.erase (id);
 }
 

@@ -1,5 +1,7 @@
 #include "rectangle_tool.h"
 
+#include "common/memory_deallocation.h"
+
 #include "gui/mouse_shortcuts_handler.h"
 #include "gui/settings.h"
 
@@ -52,6 +54,12 @@ rectangle_tool::rectangle_tool( svg_painter *painter )
   m_renderer_item = new renderer_base_shape_item ("");
   m_renderer_item->set_ignore_bbox (true);
   m_overlay->add_item (m_renderer_item, overlay_layer_type::TEMP);
+}
+
+rectangle_tool::~rectangle_tool ()
+{
+  FREE (m_overlay);
+  FREE (m_mouse_handler);
 }
 
 bool rectangle_tool::start_rectangle_positioning (const QPoint &pos)
@@ -123,3 +131,4 @@ void rectangle_tool::insert_item( const QPointF &pos )
 
   m_painter->document ()->apply_changes ();
 }
+

@@ -26,6 +26,9 @@ events_queue::~events_queue ()
       ev = m_queue.dequeue ();
       FREE (ev);
     }
+
+  FREE (m_wait_cond);
+  FREE (m_mutex);
 }
 
 

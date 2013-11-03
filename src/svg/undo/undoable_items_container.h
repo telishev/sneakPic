@@ -2,12 +2,13 @@
 #define UNDOABLE_ITEMS_CONTAINER_H
 
 #include <unordered_map>
+#include <memory>
 
 class undoable;
 
 class undoable_items_container_t
 {
-  std::unordered_map<int, undoable *> m_map;
+  std::unordered_map<int, std::unique_ptr<undoable>> m_map;
   int m_next_id;
 
 public:
