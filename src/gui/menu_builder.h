@@ -13,9 +13,10 @@ class menu_builder
 {
   const gui_actions *m_actions;
   QMenuBar *m_bar;
+  QMenu *m_view_menu;
   dock_widget_builder *m_dock_widget_builder;
 public:
-  menu_builder (QMenuBar *bar, const gui_actions *actions);
+  menu_builder (QMenuBar *bar, const gui_actions *actions, QMenu *view_menu);
   ~menu_builder ();
 
   void update_menu ();

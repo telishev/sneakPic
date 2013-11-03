@@ -44,9 +44,10 @@ main_window::main_window ()
   m_signal_mapper = nullptr;
   m_actions = new gui_actions (m_settings->shortcuts_cfg (), [&] (gui_action_id id) { return action_triggered (id); }, this);
   m_dock_widget_builder = new dock_widget_builder (this);
-  m_menu_builder = new menu_builder (menuBar (), m_actions);
   m_tools_builder = new tools_widget_builder (m_actions, m_dock_widget_builder);
   m_color_selector_widget_builder = new color_selector_widget_builder (m_dock_widget_builder, m_settings->fill_color ());
+
+  m_menu_builder = new menu_builder (menuBar (), m_actions, createPopupMenu ());
 
   update_window_title ();
   m_actions->action (gui_action_id::OPEN_RECENT)->setMenu (&m_recent_menu);

@@ -1,26 +1,29 @@
 #include "gui/menu_builder.h"
 
+#include <QMenu>
 #include <QMenuBar>
 
 #include "gui/gui_actions.h"
 #include "gui/gui_action_id.h"
 
-menu_builder::menu_builder (QMenuBar *bar, const gui_actions *actions)
+menu_builder::menu_builder (QMenuBar *bar, const gui_actions *actions, QMenu *view_menu)
 {
   m_bar = bar;
   m_actions = actions;
+  m_view_menu = view_menu;
   update_menu ();
 }
 
 menu_builder::~menu_builder ()
 {
-
 }
 
 void menu_builder::update_menu ()
 {
   m_bar->clear ();
   create_file_menu (m_bar->addMenu ("File"));
+  m_view_menu->setTitle ("View");
+  m_bar->addMenu (m_view_menu);
   create_edit_menu (m_bar->addMenu ("Edit"));
 }
 
