@@ -220,12 +220,12 @@ static bool compare_items_z_order (const abstract_svg_item *first, const abstrac
 
   size_t min_size = std::min (first_parents.size (), second_parents.size ());
 
-  for (size_t i = 0; i < min_size - 1; i++)
+  for (size_t i = 0; i < min_size; i++)
     {
       if (first_parents[i] == second_parents[i])
         continue;
 
-      return first_parents[i + 1]->child_index () < second_parents[i + 1]->child_index ();
+      return first_parents[i]->child_index () < second_parents[i]->child_index ();
     }
 
   return false;
