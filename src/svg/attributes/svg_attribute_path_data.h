@@ -22,6 +22,7 @@ public:
   virtual bool write (QString &data, bool to_css = false) const override;
 
   QPainterPath create_painter_path () const;
+  svg_path *path () const { return m_path; }
 
 private:
   bool is_upper (char v) const;

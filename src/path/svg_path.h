@@ -10,22 +10,13 @@ public:
   svg_path ();
   ~svg_path ();
 
-  using vec_t::begin;
-  using vec_t::end;
-  using vec_t::operator[];
-  using vec_t::resize;
-  using vec_t::reserve;
-  using vec_t::push_back;
-  using vec_t::at;
-  using vec_t::insert;
-  using vec_t::erase;
-  using vec_t::empty;
-  using vec_t::size;
-  using vec_t::back;
-  using vec_t::front;
+  size_t total_elements () const;
+  single_path_element *element (size_t index);
 
-  using vec_t::iterator;
-  using vec_t::const_iterator;
+  size_t total_points () const;
+  QPointF point (size_t index) const;
+  void set_point (size_t index, QPointF point);
+
 };
 
 #endif // SVG_PATH_H

@@ -56,6 +56,7 @@ void shortcuts_config::fill_drag_default ()
   SET_MOUSE_DRAG_SHORTCUT (RUBBERBAND_SELECTION , DRAG_START, BUTTON_LEFT  , NO_MODIFIERS, SHIFT  );
   SET_MOUSE_DRAG_SHORTCUT (DRAG_OBJECTS         , DRAG_START, BUTTON_LEFT  , NO_MODIFIERS         );
   SET_MOUSE_DRAG_SHORTCUT (CREATE_RECTANGLE     , DRAG_START, BUTTON_LEFT,   ALL                  );
+  SET_MOUSE_DRAG_SHORTCUT (DRAG_HANDLE          , DRAG_START, BUTTON_LEFT,   ALL                  );
 }
 
 void shortcuts_config::fill_action_default ()

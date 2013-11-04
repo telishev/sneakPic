@@ -54,6 +54,7 @@ public:
   items_selection *selection () const { return m_selection; }
   svg_document *document () const { return m_document; }
   svg_items_container *item_container () const;
+  QTransform cur_transform () const { return m_cur_transform; }
 
   abstract_svg_item *get_current_item (const QPoint &pos);
   QPointF get_local_pos (const QPointF &mouse_pos) const;

@@ -24,13 +24,14 @@ public:
 
   virtual void update_items ();
 
-protected:
+
   svg_items_container *svg_container () const;
   void add_svg_item (const std::string &object);
   void svg_item_changed (const std::string &object);
   void remove_svg_item (const std::string &object);
   void clear_items ();
 
+protected:
   renderable_item *create_overlay_for_item (const std::string &object, overlay_item_type overlay_type) const;
 
   virtual renderable_item *create_overlay_item (const std::string &object) const = 0;
