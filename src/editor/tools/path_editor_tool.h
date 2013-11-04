@@ -17,10 +17,6 @@ public:
   ~path_editor_tool ();
 
 private:
-  bool start_rubberband_selection (const QPoint &pos);
-  bool move_rubberband_selection (const QPoint &pos);
-  bool end_rubberband_selection (const mouse_event_t &event);
-
   bool delete_handles ();
 };
 

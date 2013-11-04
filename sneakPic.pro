@@ -24,6 +24,7 @@ VPATH += src
 # These are for gengetopt, version should be updated correctly later though
 DEFINES += 'PACKAGE=\\"sneakPic\\"'
 DEFINES += 'VERSION=\\"0.01\\"'
+DEFINES += 'NOMINMAX=1'
 
 UI_DIR = $$PROJ_DIR/src/ui
 

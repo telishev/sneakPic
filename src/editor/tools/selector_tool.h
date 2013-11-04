@@ -19,10 +19,6 @@ public:
   ~selector_tool ();
 
 private:
-  bool start_rubberband_selection (const QPoint &pos);
-  bool move_rubberband_selection (const QPoint &pos);
-  bool end_rubberband_selection (const mouse_event_t &event);
-
   bool start_moving_object (const QPoint &pos);
   bool move_object (const QPoint &pos);
   bool end_moving_object ();

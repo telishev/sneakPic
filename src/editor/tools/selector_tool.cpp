@@ -21,7 +21,7 @@
 selector_tool::selector_tool (svg_painter *painter)
   : abstract_tool (painter)
 {
-  m_rubberband = new rubberband_selection (m_overlay);
+  m_rubberband = new rubberband_selection (m_overlay, m_painter, m_mouse_handler);
   m_move_handler = new items_move_handler (m_painter->item_container (), m_overlay, m_painter->selection (), m_painter->document ());
 
   ADD_SHORTCUT_DRAG (m_mouse_handler, DRAG_OBJECTS,
@@ -29,45 +29,12 @@ selector_tool::selector_tool (svg_painter *painter)
     return move_object (m_event.pos ()),
     return end_moving_object ());
 
-  ADD_SHORTCUT_DRAG (m_mouse_handler, RUBBERBAND_SELECTION,
-    return start_rubberband_selection (m_event.pos ()),
-    return move_rubberband_selection (m_event.pos ()),
-    return end_rubberband_selection (m_event));
 }
 
 selector_tool::~selector_tool ()
 {
   FREE (m_rubberband);
   FREE (m_move_handler);
-}
-
-
-bool selector_tool::start_rubberband_selection (const QPoint &pos)
-{
-  QPointF start_point = m_painter->get_local_pos (QPointF (pos));
-  m_rubberband->start_selection (start_point.x (), start_point.y ());
-  m_painter->redraw ();
-  return true;
-}
-
-bool selector_tool::move_rubberband_selection (const QPoint &pos)
-{
-  QPointF cur_point = m_painter->get_local_pos (QPointF (pos));
-  m_rubberband->move_selection (cur_point.x (), cur_point.y ());
-  m_painter->redraw ();
-  return true;
-}
-
-bool selector_tool::end_rubberband_selection (const mouse_event_t &event)
-{
-  items_selection *selection = m_painter->selection ();
-  if (event.modifier () != keyboard_modifier::SHIFT)
-    selection->clear ();
-
-  selection->add_items_for_rect (m_rubberband->selection_rect (), m_painter->item_container ()->get_root ());
-  m_rubberband->end_selection ();
-  m_painter->redraw ();
-  return true;
 }
 
 bool selector_tool::start_moving_object (const QPoint &pos)
