@@ -414,7 +414,10 @@ bool svg_painter::remove_items_in_selection ()
 
   for (auto item : *m_selection)
     {
-      m_document->root ()->remove_child (item);
+      if (!item || !item->parent ())
+        continue;
+
+      item->parent ()->remove_child (item);
     }
   m_selection->clear ();
   document ()->apply_changes ();
