@@ -37,12 +37,12 @@ public:
     if (config->render_for_selection ())
       return;
 
-      {
-        SkPaint paint;
-        paint.setStyle (SkPaint::kStroke_Style);
-        paint.setStrokeWidth (0);
-        canvas.drawRect (qt2skia::rect (m_rect), paint);
-      }
+    {
+      SkPaint paint;
+      paint.setStyle (SkPaint::kStroke_Style);
+      paint.setStrokeWidth (0);
+      canvas.drawRect (qt2skia::rect (m_rect), paint);
+    }
   }
 };
 
@@ -58,9 +58,9 @@ rubberband_selection::rubberband_selection (overlay_renderer *overlay, svg_paint
   m_mouse_handler = mouse_handler;
 
   ADD_SHORTCUT_DRAG (m_mouse_handler, RUBBERBAND_SELECTION,
-    return start_selection (m_event.pos ()),
-    return move_selection (m_event.pos ()),
-    return end_selection (m_event));
+                     return start_selection (m_event.pos ()),
+                     return move_selection (m_event.pos ()),
+                     return end_selection (m_event));
 
 }
 

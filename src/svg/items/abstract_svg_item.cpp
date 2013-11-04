@@ -36,7 +36,7 @@ public:
 
   svg_item_type m_type;
 
-  virtual undoable * create_new_item () override
+  virtual undoable *create_new_item () override
   {
     abstract_svg_item *item =  m_document->item_factory ()->create_item (m_type);
     return item;
@@ -142,7 +142,7 @@ const char *abstract_svg_item::namespace_uri () const
   return svg_namespaces::uri (namespace_type ());
 }
 
-const char * abstract_svg_item::namespace_name () const
+const char *abstract_svg_item::namespace_name () const
 {
   return svg_namespaces::name (namespace_type ());
 }
@@ -412,32 +412,32 @@ abstract_attribute *abstract_svg_item::get_attribute_for_change (const char *dat
 
 void abstract_svg_item::signal_child_inserted (const std::string &child, int position)
 {
-  send_to_listeners ([&] (svg_item_observer *observer) { observer->child_added (name (), child, position); });
+  send_to_listeners ([&] (svg_item_observer * observer) { observer->child_added (name (), child, position); });
 }
 
 void abstract_svg_item::signal_child_removed (const std::string &child_name, int pos)
 {
-  send_to_listeners ([&] (svg_item_observer *observer) { observer->child_removed (name (), child_name, pos); });
+  send_to_listeners ([&] (svg_item_observer * observer) { observer->child_removed (name (), child_name, pos); });
 }
 
 void abstract_svg_item::signal_item_removed ()
 {
-  send_to_listeners ([&] (svg_item_observer *observer) { observer->item_removed (name ()); });
+  send_to_listeners ([&] (svg_item_observer * observer) { observer->item_removed (name ()); });
 }
 
 void abstract_svg_item::signal_child_moved (const std::string &child_name, int old_pos, int new_pos)
 {
-  send_to_listeners ([&] (svg_item_observer *observer) { observer->child_moved (name (), child_name, old_pos, new_pos); });
+  send_to_listeners ([&] (svg_item_observer * observer) { observer->child_moved (name (), child_name, old_pos, new_pos); });
 }
 
 void abstract_svg_item::signal_attribute_change_start (const abstract_attribute *attribute)
 {
-  send_to_listeners ([&] (svg_item_observer *observer) { observer->attribute_change_start (name (), attribute); });
+  send_to_listeners ([&] (svg_item_observer * observer) { observer->attribute_change_start (name (), attribute); });
 }
 
 void abstract_svg_item::signal_attribute_change_end (const abstract_attribute *attribute)
 {
-  send_to_listeners ([&] (svg_item_observer *observer) { observer->attribute_change_end (name (), attribute); });
+  send_to_listeners ([&] (svg_item_observer * observer) { observer->attribute_change_end (name (), attribute); });
 }
 
 abstract_state_t *abstract_svg_item::create_state ()
@@ -574,7 +574,7 @@ void abstract_svg_item::send_to_listeners (std::function< void (svg_item_observe
 std::vector<const abstract_attribute *> abstract_svg_item::attributes_list () const
 {
   std::vector<const abstract_attribute *> result;
-  for (auto &attribute : m_attributes)
+  for (auto & attribute : m_attributes)
     result.push_back (get_attribute_by_id (attribute.second));
 
   return result;
@@ -584,7 +584,7 @@ void abstract_svg_item::prepare_to_remove ()
 {
   remove_from_container ();
   auto handler = m_document->get_undo_handler ();
-  for (auto &attribute : m_attributes)
+  for (auto & attribute : m_attributes)
     handler->remove_item (attribute.second);
 
   if (m_observers)

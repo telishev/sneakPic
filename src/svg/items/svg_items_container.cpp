@@ -5,7 +5,6 @@
 
 #include "svg/items/abstract_svg_item.h"
 
-
 svg_items_container::svg_items_container ()
 {
   max_id = 0;
@@ -26,7 +25,7 @@ void svg_items_container::add_item (abstract_svg_item *item)
   m_map.insert (std::make_pair (id, item));
 }
 
-void svg_items_container::remove_item (abstract_svg_item *item)
+void svg_items_container::remove_item (const abstract_svg_item *item)
 {
   std::string id = item->name ();
   DEBUG_ASSERT (!id.empty ());

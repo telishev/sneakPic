@@ -6,6 +6,7 @@
 
 class abstract_svg_item;
 class svg_document;
+class svg_items_container;
 class QRectF;
 
 class items_selection : public QObject
@@ -14,8 +15,25 @@ class items_selection : public QObject
 
   typedef std::set<std::string> set_type;
   set_type m_selection;
+  svg_items_container *m_container;
 public:
-  items_selection ();
+  class iterator
+  {
+    set_type::iterator m_it;
+    svg_items_container *m_container;
+
+  private:
+    iterator (svg_items_container *container, set_type::iterator it);
+
+  public:
+    abstract_svg_item *operator* ();
+    bool operator != (const iterator &) const;
+    iterator &operator++();
+
+    friend class items_selection;
+  };
+
+  items_selection (svg_items_container *container);
   ~items_selection ();
 
   int selected_count () const;
@@ -32,6 +50,9 @@ public:
   void clear ();
 
   void add_items_for_rect (const QRectF &rect, const abstract_svg_item *root);
+
+  iterator begin ();
+  iterator end ();
 
 signals:
   void selection_changed ();

@@ -4,9 +4,11 @@
 
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_graphics_item.h"
+#include "svg/items/svg_items_container.h"
 
-items_selection::items_selection ()
+items_selection::items_selection (svg_items_container *container)
 {
+  m_container = container;
 }
 
 items_selection::~items_selection ()
@@ -69,4 +71,39 @@ bool items_selection::contains (const std::string &name) const
   return m_selection.find (name) != m_selection.end ();
 }
 
+items_selection::iterator items_selection::begin ()
+{
+  return items_selection::iterator (m_container, m_selection.begin ());
+}
 
+items_selection::iterator items_selection::end ()
+{
+  return items_selection::iterator (m_container, m_selection.end ());
+}
+
+int items_selection::selected_count () const
+{
+  return (int) m_selection.size ();
+}
+
+abstract_svg_item *items_selection::iterator::operator* ()
+{
+  return m_container->get_item (*m_it);
+}
+
+items_selection::iterator::iterator (svg_items_container *container, set_type::iterator it)
+{
+  m_container = container;
+  m_it = it;
+}
+
+bool items_selection::iterator::operator!= (const iterator &other) const
+{
+  return (this->m_it != other.m_it);
+}
+
+items_selection::iterator &items_selection::iterator::operator++ ()
+{
+  this->m_it++;
+  return *this;
+}

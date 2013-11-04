@@ -2,6 +2,8 @@
 
 #include "common/memory_deallocation.h"
 
+#include "editor/items_selection.h"
+
 #include "gui/mouse_shortcuts_handler.h"
 #include "gui/settings.h"
 
@@ -84,7 +86,7 @@ void rectangle_tool::hide_preview ()
   m_renderer_item->set_visibility (false);
 }
 
-void rectangle_tool::insert_item( const QPointF &pos )
+void rectangle_tool::insert_item (const QPointF &pos )
 {
   auto *rect_item = m_painter->document ()->create_new_svg_item<svg_item_rect> ();
 
@@ -101,6 +103,10 @@ void rectangle_tool::insert_item( const QPointF &pos )
 
   rect_item->update_bbox ();
   m_painter->document ()->root ()->push_back (rect_item);
+
+  items_selection *selection = m_painter->selection ();
+  selection->clear ();
+  selection->add_item (rect_item);
 
   m_painter->document ()->apply_changes ();
 }

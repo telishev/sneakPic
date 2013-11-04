@@ -59,7 +59,7 @@ svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, even
   m_queue = queue;
   m_overlay = new overlay_renderer (m_cache);
   m_settings = settings;
-  m_selection = new items_selection;
+  m_selection = new items_selection (document->item_container ());
   m_actions_applier = new actions_applier;
   m_mouse_handler = create_mouse_shortcuts ();
   update_status_bar_widgets ();
@@ -198,7 +198,7 @@ void svg_painter::update_drawing (QTransform transform)
 
 void svg_painter::send_changes (bool interrrupt_rendering)
 {
-  
+
   auto object_pair = render_cache_id::get_id_for_pixel_rect (m_cur_transform, glwidget ()->rect (), (int)render_cache_type::ROOT_ITEM);
   m_queue->add_event_and_wait (new event_transform_changed (object_pair.first, object_pair.second, m_cur_transform, interrrupt_rendering));
   set_configure_needed (configure_type::REDRAW_BASE);
@@ -258,7 +258,7 @@ bool svg_painter::select_item (const QPoint &pos, bool clear_selection)
   if (clear_selection)
     m_selection->clear ();
   abstract_svg_item *item = get_current_item (pos);
-  
+
   if (item)
     m_selection->add_item (item);
 
@@ -272,7 +272,7 @@ mouse_shortcuts_handler *svg_painter::create_mouse_shortcuts ()
   ADD_SHORTCUT (handler, SELECT_ITEM           , return select_item (m_event.pos (), true));
   ADD_SHORTCUT (handler, ADD_ITEM_TO_SELECTION , return select_item (m_event.pos (), false));
   ADD_SHORTCUT (handler, FIND_CURRENT_OBJECT   , return find_current_object (m_event.pos ()));
-  
+
   ADD_SHORTCUT_DRAG (handler, PAN, return start_pan (m_event.pos ()), return pan_picture (m_event.pos ()), return true);
   return handler;
 }
@@ -387,7 +387,7 @@ abstract_svg_item *svg_painter::get_current_item_for_point (const QPoint &pos)
     point_to_pick.setY (img.height () - 1);
 
   DEBUG_ASSERT (   point_to_pick.x () >= 0 && point_to_pick.y () >= 0
-                && point_to_pick.x () < block_size && point_to_pick.y () < block_size);
+                   && point_to_pick.x () < block_size && point_to_pick.y () < block_size);
   QColor color (img.pixel (point_to_pick));
   int item_id = rendered_items_cache::get_id_by_color (color);
 
@@ -409,5 +409,14 @@ bool svg_painter::action_triggered (gui_action_id id)
 
 bool svg_painter::remove_items_in_selection ()
 {
+  if (m_selection->selected_count () == 0)
+    return true;
+
+  for (auto item : *m_selection)
+    {
+      m_document->root ()->remove_child (item);
+    }
+  m_selection->clear ();
+  document ()->apply_changes ();
   return true;
 }

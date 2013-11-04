@@ -3,9 +3,9 @@
 #include <stdlib.h>
 
 #ifdef _WIN32
- #include <windows.h>
+#include <windows.h>
 #else // !_WIN32
- #include <sys/time.h>
+#include <sys/time.h>
 #endif // !_WIN32
 
 #include <QMouseEvent>
@@ -51,8 +51,8 @@ void mouse_filter::mouse_move_event (QMouseEvent *qevent)
       if (pressed[i] && !dragged[i])
         {
           if (   time - start_time[i] >= time_to_move
-              || abs (qevent->x () - start_point[i].x ()) >= move_threshold
-              || abs (qevent->y () - start_point[i].y ()) >= move_threshold)
+                 || abs (qevent->x () - start_point[i].x ()) >= move_threshold
+                 || abs (qevent->y () - start_point[i].y ()) >= move_threshold)
             {
               dragged[i] = 1;
               emit_mouse_event (start_point[i], qevent->modifiers (), mouse_event_type::DRAG_START, (mouse_button) i);
@@ -111,7 +111,7 @@ void mouse_filter::mouse_double_click_event (QMouseEvent *qevent)
   if (button == mouse_button::NO_BUTTON)
     return;
 
- emit_mouse_event (qevent->pos (), qevent->modifiers (), mouse_event_type::DOUBLECLICK, button);
+  emit_mouse_event (qevent->pos (), qevent->modifiers (), mouse_event_type::DOUBLECLICK, button);
 }
 
 mouse_button mouse_filter::to_mouse_button (Qt::MouseButton qmousebutton) const
