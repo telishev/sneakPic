@@ -17,6 +17,8 @@ public:
   QPointF point (size_t index) const;
   void set_point (size_t index, QPointF point);
 
+  void get_subpath_and_index (size_t global_index, const single_subpath *&subpath, size_t &index) const;
+  void get_subpath_and_index (size_t global_index, single_subpath *&subpath, size_t &index);
 };
 
 #endif // SVG_PATH_H
