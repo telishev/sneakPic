@@ -19,6 +19,7 @@ handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter,
   m_painter = painter;
   m_mouse_handler = mouse_handler;
   m_cur_handle = nullptr;
+  m_highlighted_handle = nullptr;
 
   m_renderer = new handles_renderer (this, m_overlay, m_painter->item_container ());
 
@@ -26,6 +27,8 @@ handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter,
                      return start_drag (m_event.pos ()),
                      return drag_handle (m_event.pos ()),
                      return end_drag (m_event.pos ()));
+
+  ADD_SHORTCUT (m_mouse_handler, HIGHLIGHT_HANDLE, return highlight_handle (m_event.pos ()));
 }
 
 handles_editor::~handles_editor ()
@@ -39,6 +42,8 @@ void handles_editor::update_handles ()
   for (auto item : *m_painter->selection ())
     add_item (item);
 
+  m_cur_handle = nullptr;
+  m_highlighted_handle = nullptr;
 }
 
 element_handles *handles_editor::handles_for_item (const std::string &item) const
@@ -124,4 +129,18 @@ abstract_handle *handles_editor::get_handle_by_element (QPoint screen_pos, eleme
     }
 
   return nullptr;
+}
+
+bool handles_editor::highlight_handle (QPointF pos)
+{
+  abstract_handle *cur_handle = get_handle_by_pos (pos);
+  if (cur_handle != m_highlighted_handle && m_highlighted_handle)
+    m_highlighted_handle->set_mouse_hovered (false);
+
+  m_highlighted_handle = cur_handle;
+  if (!m_highlighted_handle)
+    return false;
+
+  m_highlighted_handle->set_mouse_hovered (true);
+  return true;
 }

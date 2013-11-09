@@ -4,9 +4,10 @@
 #include "editor/abstract_handle.h"
 #include <QPointF>
 
-class svg_item_path;
 class QRect;
-class QPointF;
+class QColor;
+
+class svg_item_path;
 class svg_path;
 class svg_painter;
 
@@ -21,6 +22,7 @@ class path_control_point : public abstract_handle
 
   QPointF m_drag_start;
   QPointF m_drag_cur;
+  bool m_is_highlighted;
 
 public:
   path_control_point (svg_painter *painter, svg_item_path *item, int control_point_id, svg_path *path);
@@ -40,6 +42,7 @@ private:
 
   void apply_drag ();
   void move_point (svg_path *path);
+  QColor current_color () const;
 };
 
 #endif // PATH_CONTROL_POINT_H

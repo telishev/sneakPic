@@ -27,6 +27,7 @@ protected:
 private:
   handles_renderer *m_renderer;
   abstract_handle *m_cur_handle;
+  abstract_handle *m_highlighted_handle;
 
   std::map<std::string, std::unique_ptr<element_handles>> m_handles;
 
@@ -50,6 +51,8 @@ private:
   bool start_drag (QPointF pos);
   bool drag_handle (QPointF pos);
   bool end_drag (QPointF pos);
+
+  bool highlight_handle (QPointF pos);
 
   QPointF get_local_pos (QPointF screen_pos) const;
   abstract_handle *get_handle_by_element (QPoint screen_pos, element_handles *element) const;

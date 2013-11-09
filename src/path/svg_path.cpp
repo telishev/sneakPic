@@ -43,7 +43,7 @@ size_t svg_path::total_points () const
 {
   size_t total = 0;
   for (const auto &subpath : *this)
-    total += subpath.size () + 1;
+    total += subpath.total_handles ();
 
   return total;
 }
@@ -69,7 +69,7 @@ void svg_path::get_subpath_and_index (size_t global_index, single_subpath *&subp
   size_t total = 0;
   for (auto &cur_subpath : *this)
     {
-      size_t new_total = total + cur_subpath.size () + 1;
+      size_t new_total = total + cur_subpath.total_handles ();
       if (new_total <= global_index)
         {
           total = new_total;

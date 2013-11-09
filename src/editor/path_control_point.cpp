@@ -31,6 +31,7 @@ path_control_point::path_control_point (svg_painter *painter, svg_item_path *ite
   m_item = item;
   m_control_point_id = control_point_id;
   m_painter = painter;
+  m_is_highlighted = false;
 }
 
 path_control_point::~path_control_point ()
@@ -43,9 +44,13 @@ bool path_control_point::is_mouse_inside (QPoint screen_pos, QTransform transfor
   return get_element_rect (transform).contains (screen_pos);
 }
 
-void path_control_point::set_mouse_hovered (bool /*hovered*/)
+void path_control_point::set_mouse_hovered (bool hovered)
 {
+  if (m_is_highlighted == hovered)
+    return;
 
+  m_is_highlighted = hovered;
+  m_painter->update ();
 }
 
 bool path_control_point::start_drag (QPointF local_pos)
@@ -76,21 +81,20 @@ void path_control_point::draw (SkCanvas &canvas, const renderer_state &state, co
   canvas.save ();
   canvas.resetMatrix ();
 
-  SkRect rect = qt2skia::rect (get_element_rect (state.transform ()));
+  QRect element_rect = get_element_rect (state.transform ());
+  SkRect fill_rect = qt2skia::rect (element_rect);
+  SkRect stroke_rect = qt2skia::rect (element_rect);
 
   SkPaint fill_paint;
   fill_paint.setStyle (SkPaint::kFill_Style);
-  fill_paint.setAntiAlias (false);
-  fill_paint.setColor (SkColorSetRGB (127, 127, 127));
-  canvas.drawRect (rect, fill_paint);
+  fill_paint.setColor (qt2skia::color (current_color ()));
+  canvas.drawRect (fill_rect, fill_paint);
 
   SkPaint stroke_paint;
   stroke_paint.setStrokeWidth (0.0);
   stroke_paint.setStyle (SkPaint::kStroke_Style);
-  stroke_paint.setAntiAlias (false);
-  stroke_paint.setColor (SK_ColorWHITE);
-  stroke_paint.setXfermodeMode (SkXfermode::kDifference_Mode);
-  canvas.drawRect (rect, stroke_paint);
+  stroke_paint.setColor (SK_ColorBLACK);
+  canvas.drawRect (stroke_rect, stroke_paint);
 
   canvas.restore ();
 }
@@ -127,4 +131,12 @@ void path_control_point::move_point (svg_path *path)
 {
   QTransform transform = m_item->full_transform ().inverted ();
   path->set_point (m_control_point_id, transform.map (m_drag_cur));
+}
+
+QColor path_control_point::current_color () const
+{
+  if (m_is_highlighted)
+    return QColor ("lightcoral");
+  else
+    return QColor ("gray");
 }

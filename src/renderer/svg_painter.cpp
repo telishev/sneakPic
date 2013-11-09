@@ -307,7 +307,7 @@ bool svg_painter::find_current_object (const QPoint &pos)
       glwidget ()->update ();
     }
 
-  return true;
+  return false;
 }
 
 

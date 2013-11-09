@@ -45,6 +45,7 @@ void shortcuts_config::fill_mouse_default ()
   SET_MOUSE_SHORTCUT (SELECT_ITEM               , CLICK     , BUTTON_LEFT  , NO_MODIFIERS);
   SET_MOUSE_SHORTCUT (ADD_ITEM_TO_SELECTION     , CLICK     , BUTTON_LEFT  , SHIFT       );
   SET_MOUSE_SHORTCUT (FIND_CURRENT_OBJECT       , MOVE      , ANY_BUTTON   , ALL         );
+  SET_MOUSE_SHORTCUT (HIGHLIGHT_HANDLE          , MOVE      , ANY_BUTTON   , ALL         );
 }
 
 void shortcuts_config::fill_drag_default ()

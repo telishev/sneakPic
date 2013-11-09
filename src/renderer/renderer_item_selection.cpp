@@ -13,6 +13,8 @@
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_state.h"
 
+#include "path/geom_helpers.h"
+
 
 renderer_item_selection::renderer_item_selection ()
 {
@@ -22,15 +24,6 @@ renderer_item_selection::renderer_item_selection ()
 renderer_item_selection::~renderer_item_selection ()
 {
 
-}
-
-static inline QRect to_rect (QRectF rect)
-{
-  int left = (int)ceil (rect.left () + 0.5);
-  int rigth = (int)floor (rect.right () - 0.5);
-  int top = (int)ceil (rect.top () + 0.5);
-  int bottom = (int)floor (rect.bottom () - 0.5);
-  return QRect (left, top, rigth - left - 1, bottom - top - 1);
 }
 
 void renderer_item_selection::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config * /*config*/) const 
@@ -47,7 +40,7 @@ void renderer_item_selection::draw (SkCanvas &canvas, const renderer_state &stat
   SkScalar dash_offsets[] = { SkFloatToScalar (4), SkFloatToScalar (4) };
   SkDashPathEffect *effect = new SkDashPathEffect (dash_offsets, 2, 0);
   paint.setPathEffect (effect)->unref ();
-  QRect mapped_rect = to_rect (state.transform ().mapRect (m_bbox));
+  QRect mapped_rect = geom_helpers::inner_rect (state.transform ().mapRect (m_bbox));
   canvas.drawRect (qt2skia::rect (mapped_rect), paint);
 
   canvas.restore ();

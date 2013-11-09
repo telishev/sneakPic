@@ -29,6 +29,7 @@ public:
   void set_point (size_t index, QPointF point);
 
   void apply_transform (const QTransform &transform);
+  int total_handles () const;
 
 };
 

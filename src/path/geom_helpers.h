@@ -5,6 +5,9 @@
 
 #include "common/math_defs.h"
 
+class QRect;
+class QRectF;
+
 namespace geom_helpers
 {
   inline bool are_line (QPointF points[3])
@@ -19,6 +22,10 @@ namespace geom_helpers
     QPointF points[] = { first, second, third };
     return are_line (points);
   }
+
+  
+  QRect inner_rect (QRectF rect);
+
 };
 
 #endif // GEOM_HELPERS_H

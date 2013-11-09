@@ -67,3 +67,11 @@ void single_subpath::apply_transform (const QTransform &transform)
   for (auto &element : *this)
     element.apply_transform (transform);
 }
+
+int single_subpath::total_handles () const
+{
+  if (first_point_is_last ())
+    return (int)size ();
+  else
+    return (int)size () + 1;
+}

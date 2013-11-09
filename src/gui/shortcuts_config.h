@@ -13,6 +13,7 @@ enum class mouse_shortcut_enum
   SELECT_ITEM,
   ADD_ITEM_TO_SELECTION,
   FIND_CURRENT_OBJECT,
+  HIGHLIGHT_HANDLE,
 
   COUNT,
 };
