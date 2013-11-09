@@ -12,12 +12,12 @@ single_subpath::~single_subpath ()
 
 QPointF single_subpath::first_point () const
 {
-  return front ().start_point;
+  return front ().start;
 }
 
 QPointF single_subpath::last_point () const
 {
-  return back ().end_point;
+  return back ().end;
 }
 
 bool single_subpath::first_point_is_last () const
@@ -31,33 +31,39 @@ void single_subpath::set_point (size_t index, QPointF point)
     {
       if (first_point_is_last ())
         {
-          back ().end_point = point;
-          front ().start_point = point;
+          back ().end = point;
+          front ().start = point;
         }
       else
-        front ().start_point = point;
+        front ().start = point;
     }
   else if (index == size ())
     {
       if (first_point_is_last ())
         {
-          back ().end_point = point;
-          front ().start_point = point;
+          back ().end = point;
+          front ().start = point;
         }
       else
-        back ().end_point = point;
+        back ().end = point;
     }
   else
     {
-      (*this)[index - 1].end_point = point;
-      (*this)[index].start_point = point;
+      (*this)[index - 1].end = point;
+      (*this)[index].start = point;
     }
 }
 
 QPointF single_subpath::point (size_t index) const
 {
   if (index == 0)
-    return front ().start_point;
+    return front ().start;
   else
-    return (*this)[index - 1].end_point;
+    return (*this)[index - 1].end;
+}
+
+void single_subpath::apply_transform (const QTransform &transform)
+{
+  for (auto &element : *this)
+    element.apply_transform (transform);
 }

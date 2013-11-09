@@ -14,6 +14,7 @@
 #include <SkSurface.h>
 #include <SkDevice.h>
 #include <SkPoint.h>
+#include "path/svg_path.h"
 #pragma warning(pop)
 
 SkMatrix qt2skia::matrix (const QTransform &tr)
@@ -80,6 +81,23 @@ SkPath qt2skia::path (const QPainterPath &qpath)
 
  path.setFillType (qt2skia::fill_rule (qpath.fillRule ()));
   return path;
+}
+
+SkPath qt2skia::path (const svg_path &path)
+{
+  SkPath sk_path;
+  for (const auto &subpath : path)
+    {
+      sk_path.moveTo (qt2skia::point (subpath.front ().start));
+      for (const auto &element : subpath)
+        sk_path.cubicTo (qt2skia::point (element.c1), qt2skia::point (element.c2),
+                         qt2skia::point (element.end));
+
+      if (subpath.is_closed ())
+        sk_path.close ();
+    }
+
+  return sk_path;
 }
 
 SkColor qt2skia::color (const QColor &color)

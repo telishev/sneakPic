@@ -5,6 +5,8 @@
 
 #include <vector>
 
+class QTransform;
+
 
 class single_subpath : public std::vector<single_path_element>
 {
@@ -25,6 +27,8 @@ public:
 
   QPointF point (size_t index) const;
   void set_point (size_t index, QPointF point);
+
+  void apply_transform (const QTransform &transform);
 
 };
 

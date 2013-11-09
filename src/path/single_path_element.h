@@ -5,11 +5,13 @@
 
 #include "path/geom_helpers.h"
 
+class QTransform;
+
 struct single_path_element
 {
-  QPointF start_point, end_point, first_control, second_control;
+  QPointF start, end, c1, c2;
   single_path_element (const QPointF &start_point_, const QPointF &end_point_, const QPointF &first_control_, const QPointF &second_control_)
-    : start_point (start_point_), end_point (end_point_), first_control (first_control_), second_control (second_control_) {}
+    : start (start_point_), end (end_point_), c1 (first_control_), c2 (second_control_) {}
 
   static single_path_element make_line (const QPointF &start, const QPointF &end)
   {
@@ -20,9 +22,11 @@ struct single_path_element
 
   bool is_line () const
   {
-    return    geom_helpers::are_line (start_point, end_point, first_control)
-           && geom_helpers::are_line (start_point, end_point, second_control);
+    return    geom_helpers::are_line (start, end, c1)
+           && geom_helpers::are_line (start, end, c2);
   }
+
+  void apply_transform (const QTransform &transform);
 };
 
 #endif // SINGLE_PATH_ELEMENT_H

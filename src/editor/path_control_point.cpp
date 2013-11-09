@@ -25,8 +25,9 @@
 static const int mouse_size_px = 7;
 
 
-path_control_point::path_control_point (svg_painter *painter, svg_item_path *item, int control_point_id)
+path_control_point::path_control_point (svg_painter *painter, svg_item_path *item, int control_point_id, svg_path *path)
 {
+  m_path = path;
   m_item = item;
   m_control_point_id = control_point_id;
   m_painter = painter;
@@ -56,6 +57,7 @@ bool path_control_point::start_drag (QPointF local_pos)
 bool path_control_point::drag (QPointF local_pos)
 {
   m_drag_cur = local_pos;
+  move_point (m_path);
   m_painter->update ();
   return true;
 }
@@ -98,12 +100,8 @@ QPointF path_control_point::get_handle_center () const
   if (m_drag_start != m_drag_cur)
     return m_drag_cur;
 
-  auto path_data = m_item->get_computed_attribute<svg_attribute_path_data> ();
   QTransform transform = m_item->full_transform ();
-  svg_path *path = path_data->path ();
-  DEBUG_ASSERT (path);
-
-  QPointF point = path->point (m_control_point_id);
+  QPointF point = m_path->point (m_control_point_id);
   return transform.map (point);
 }
 
@@ -119,9 +117,14 @@ void path_control_point::apply_drag ()
 {
   {
     auto path_data = m_item->get_attribute_for_change<svg_attribute_path_data> ();
-    QTransform transform = m_item->full_transform ().inverted ();
-    path_data->path ()->set_point (m_control_point_id, transform.map (m_drag_cur));
+    move_point (path_data->path ());
   }
 
   m_painter->document ()->apply_changes ();
+}
+
+void path_control_point::move_point (svg_path *path)
+{
+  QTransform transform = m_item->full_transform ().inverted ();
+  path->set_point (m_control_point_id, transform.map (m_drag_cur));
 }

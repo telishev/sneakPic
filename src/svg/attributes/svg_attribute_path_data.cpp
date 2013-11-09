@@ -33,8 +33,8 @@ bool svg_attribute_path_data::write (QString &data, bool /*to_css*/) const
       data += QString ("M %1 ").arg (point_to_str (subpath.first_point ()));
       for (const auto &element : subpath)
         {
-          data += QString ("C %1 %2 %3 ").arg (point_to_str (element.first_control), point_to_str (element.second_control),
-                                              point_to_str (element.end_point));
+          data += QString ("C %1 %2 %3 ").arg (point_to_str (element.c1), point_to_str (element.c2),
+                                              point_to_str (element.end));
         }
 
       if (subpath.is_closed ())
@@ -241,7 +241,7 @@ QPainterPath svg_attribute_path_data::create_painter_path () const
       path.moveTo (subpath.first_point ());
       for (const auto &element : subpath)
         {
-          path.cubicTo (element.first_control, element.second_control, element.end_point);
+          path.cubicTo (element.c1, element.c2, element.end);
         }
 
       if (subpath.is_closed ())

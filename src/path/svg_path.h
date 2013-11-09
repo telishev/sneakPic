@@ -3,6 +3,8 @@
 
 #include "path/single_subpath.h"
 
+class QTransform;
+
 class svg_path : public std::vector<single_subpath>
 {
   typedef std::vector<single_subpath> vec_t;
@@ -19,6 +21,8 @@ public:
 
   void get_subpath_and_index (size_t global_index, const single_subpath *&subpath, size_t &index) const;
   void get_subpath_and_index (size_t global_index, single_subpath *&subpath, size_t &index);
+
+  void apply_transform (const QTransform &transform);
 };
 
 #endif // SVG_PATH_H

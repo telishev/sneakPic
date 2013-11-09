@@ -11,10 +11,10 @@ path_builder::path_builder (svg_path &dst_path)
   m_prev_is_quad = false;
   if (!m_dst_path.empty ())
     {
-      m_cur_position = m_dst_path.back ().back ().end_point;
+      m_cur_position = m_dst_path.back ().back ().end;
       m_new_subpath_pending = false;
       m_prev_is_curve = true;
-      m_prev_curve_c = m_dst_path.back ().back ().second_control;
+      m_prev_curve_c = m_dst_path.back ().back ().c2;
     }
   else
     m_new_subpath_pending = true;
@@ -32,7 +32,7 @@ void path_builder::close_subpath ()
     return;
 
   m_dst_path.back ().set_closed (true);
-  m_cur_position = m_dst_path.back ().front ().start_point;
+  m_cur_position = m_dst_path.back ().front ().start;
 }
 
 void path_builder::move_to (QPointF dst, bool relative)

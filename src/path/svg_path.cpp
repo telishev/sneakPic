@@ -90,3 +90,9 @@ void svg_path::get_subpath_and_index (size_t global_index, const single_subpath 
   const_cast<svg_path *> (this)->get_subpath_and_index (global_index, sub, index);
   subpath = sub;
 }
+
+void svg_path::apply_transform (const QTransform &transform)
+{
+  for (auto &cur_subpath : *this)
+    cur_subpath.apply_transform (transform);
+}

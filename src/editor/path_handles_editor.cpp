@@ -4,6 +4,7 @@
 
 #include "editor/element_handles.h"
 #include "editor/path_control_point.h"
+#include "editor/path_preview_handle.h"
 
 #include "path/svg_path.h"
 
@@ -13,22 +14,24 @@
 
 class path_elements_handles : public element_handles
 {
-  svg_item_path *m_path;
   std::vector<abstract_handle *> m_handles;
+  svg_path *m_path;
 
 public:
-  path_elements_handles (svg_painter *painter, svg_item_path *path)
+  path_elements_handles (svg_painter *painter, svg_item_path *path_item)
   {
-    m_path = path;
-
-    auto path_data = m_path->get_computed_attribute<svg_attribute_path_data> ();
+    m_path = nullptr;
+    auto path_data = path_item->get_computed_attribute<svg_attribute_path_data> ();
     if (!path_data->is_empty ())
       {
-        int total_handles = (int)path_data->path ()->total_points ();
+        m_path = new svg_path (*path_data->path ());
+        int total_handles = (int)m_path->total_points ();
 
         m_handles.resize (total_handles);
         for (int i = 0; i < total_handles; i++)
-          m_handles[i] = new path_control_point (painter, m_path, i);
+          m_handles[i] = new path_control_point (painter, path_item, i, m_path);
+
+        m_handles.push_back (new path_preview_handle (painter, path_item, m_path));
       }
 
   }
@@ -39,6 +42,8 @@ public:
       {
         FREE (handle);
       }
+
+    FREE (m_path);
   }
 
 
