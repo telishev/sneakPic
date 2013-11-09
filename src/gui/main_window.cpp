@@ -11,7 +11,7 @@
 #include <QLabel>
 #include <QMenuBar>
 
-#include "ui/ui_main_window.h"
+#include <ui_main_window.h>
 
 #include "gui/color_selector_widget_builder.h"
 #include "gui/color_selectors.h"

@@ -18,7 +18,7 @@ bool svg_item_circle::check_item ()
   return true;
 }
 
-QPainterPath svg_item_circle::get_path () const 
+QPainterPath svg_item_circle::get_path () const
 {
   const svg_attribute_cx *cx = get_computed_attribute<svg_attribute_cx> ();
   const svg_attribute_cy *cy = get_computed_attribute<svg_attribute_cy> ();

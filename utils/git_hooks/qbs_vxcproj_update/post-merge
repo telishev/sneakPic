@@ -1,0 +1,5 @@
+#!/bin/sh
+
+. git-sh-setup
+touch -c sneakPic-qbs.vcxproj
+:

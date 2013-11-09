@@ -18,6 +18,7 @@ RESOURCES += $$PROJ_DIR/resource/sneakPic.qrc
 CONFIG += warn_on build_all debug_and_release
 
 INCLUDEPATH += src
+INCLUDEPATH += src/ui
 DEPENDPATH  += src
 VPATH += src
 

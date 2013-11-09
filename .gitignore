@@ -8,12 +8,14 @@
 /test/*.txt
 /test/*.html
 /test/*.css
+/qbs-*/
 build.bat
 
 Makefile
 *.sln
 *.vcproj
 *.vcxproj
+!sneakPic-qbs.vcxproj
 *.vcxproj.filters
 *.vcxproj.user
 *.sdf
