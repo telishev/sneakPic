@@ -42,6 +42,10 @@ path_control_point::~path_control_point ()
 int path_control_point::distance_to_mouse (QPoint screen_pos, QTransform transform) const 
 {
   QPoint center = geom::nearest_point (transform.map (get_handle_center ()));
+  QRect element_rect = get_element_rect (transform);
+  if (element_rect.contains (screen_pos))
+    return 0;
+
   return geom::distance (center, screen_pos);
 }
 

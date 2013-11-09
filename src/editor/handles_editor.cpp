@@ -129,7 +129,7 @@ abstract_handle *handles_editor::get_handle_by_element (QPoint screen_pos, eleme
   for (const auto &handle : element->handles ())
     {
       double cur_distance = handle->distance_to_mouse (screen_pos, trans);
-      if (cur_distance < distance)
+      if (cur_distance <= distance)
         {
           distance = cur_distance;
           cur_handle = handle;
