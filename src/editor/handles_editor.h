@@ -55,7 +55,7 @@ private:
   bool highlight_handle (QPointF pos);
 
   QPointF get_local_pos (QPointF screen_pos) const;
-  abstract_handle *get_handle_by_element (QPoint screen_pos, element_handles *element) const;
+  abstract_handle *get_handle_by_element (QPoint screen_pos, element_handles *element, double &distance) const;
 };
 
 #endif // HANDLES_EDITOR_H

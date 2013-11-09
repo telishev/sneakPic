@@ -104,14 +104,17 @@ bool handles_editor::end_drag (QPointF pos)
 
 abstract_handle *handles_editor::get_handle_by_pos (QPointF screen_pos) const
 {
+  const double max_distance = 10;
+  double distance = max_distance;
+  abstract_handle *handle = nullptr, *cur_handle = nullptr;
   for (const auto & handle_pair : m_handles)
     {
-      abstract_handle *handle = get_handle_by_element (screen_pos.toPoint (), handle_pair.second.get ());
-      if (handle)
-        return handle;
+      cur_handle = get_handle_by_element (screen_pos.toPoint (), handle_pair.second.get (), distance);
+      if (cur_handle)
+        handle = cur_handle;
     }
 
-  return nullptr;
+  return handle;
 }
 
 QPointF handles_editor::get_local_pos (QPointF screen_pos) const
@@ -119,16 +122,21 @@ QPointF handles_editor::get_local_pos (QPointF screen_pos) const
   return m_painter->get_local_pos (screen_pos);
 }
 
-abstract_handle *handles_editor::get_handle_by_element (QPoint screen_pos, element_handles *element) const
+abstract_handle *handles_editor::get_handle_by_element (QPoint screen_pos, element_handles *element, double &distance) const
 {
   QTransform trans = m_painter->cur_transform ();
+  abstract_handle *cur_handle = nullptr;
   for (const auto &handle : element->handles ())
     {
-      if (handle->is_mouse_inside (screen_pos, trans))
-        return handle;
+      double cur_distance = handle->distance_to_mouse (screen_pos, trans);
+      if (cur_distance < distance)
+        {
+          distance = cur_distance;
+          cur_handle = handle;
+        }
     }
 
-  return nullptr;
+  return cur_handle;
 }
 
 bool handles_editor::highlight_handle (QPointF pos)

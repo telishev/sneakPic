@@ -8,7 +8,8 @@
 class QRect;
 class QRectF;
 
-namespace geom_helpers
+
+namespace geom
 {
   inline bool are_line (QPointF points[3])
   {
@@ -25,6 +26,9 @@ namespace geom_helpers
 
   
   QRect inner_rect (QRectF rect);
+  QPoint nearest_point (QPointF point);
+  double distance (QPoint first, QPoint second);
+  double norm (QPoint point);
 
 };
 

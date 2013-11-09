@@ -22,8 +22,8 @@ struct single_path_element
 
   bool is_line () const
   {
-    return    geom_helpers::are_line (start, end, c1)
-           && geom_helpers::are_line (start, end, c2);
+    return    geom::are_line (start, end, c1)
+           && geom::are_line (start, end, c2);
   }
 
   void apply_transform (const QTransform &transform);

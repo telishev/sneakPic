@@ -39,9 +39,10 @@ path_control_point::~path_control_point ()
 
 }
 
-bool path_control_point::is_mouse_inside (QPoint screen_pos, QTransform transform) const 
+int path_control_point::distance_to_mouse (QPoint screen_pos, QTransform transform) const 
 {
-  return get_element_rect (transform).contains (screen_pos);
+  QPoint center = geom::nearest_point (transform.map (get_handle_center ()));
+  return geom::distance (center, screen_pos);
 }
 
 void path_control_point::set_mouse_hovered (bool hovered)
@@ -111,7 +112,7 @@ QPointF path_control_point::get_handle_center () const
 
 QRect path_control_point::get_element_rect (QTransform transform) const
 {
-  QPoint center = transform.map (get_handle_center ()).toPoint ();
+  QPoint center = geom::nearest_point (transform.map (get_handle_center ()));
   QRect rect (0, 0, mouse_size_px, mouse_size_px);
   rect.moveCenter (center);
   return rect;

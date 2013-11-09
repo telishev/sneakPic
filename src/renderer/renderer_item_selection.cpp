@@ -40,7 +40,7 @@ void renderer_item_selection::draw (SkCanvas &canvas, const renderer_state &stat
   SkScalar dash_offsets[] = { SkFloatToScalar (4), SkFloatToScalar (4) };
   SkDashPathEffect *effect = new SkDashPathEffect (dash_offsets, 2, 0);
   paint.setPathEffect (effect)->unref ();
-  QRect mapped_rect = geom_helpers::inner_rect (state.transform ().mapRect (m_bbox));
+  QRect mapped_rect = geom::inner_rect (state.transform ().mapRect (m_bbox));
   canvas.drawRect (qt2skia::rect (mapped_rect), paint);
 
   canvas.restore ();

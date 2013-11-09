@@ -27,11 +27,9 @@ public:
         m_path = new svg_path (*path_data->path ());
         int total_handles = (int)m_path->total_points ();
 
-        m_handles.resize (total_handles);
-        for (int i = 0; i < total_handles; i++)
-          m_handles[i] = new path_control_point (painter, path_item, i, m_path);
-
         m_handles.push_back (new path_preview_handle (painter, path_item, m_path));
+        for (int i = 0; i < total_handles; i++)
+          m_handles.push_back (new path_control_point (painter, path_item, i, m_path));
       }
 
   }

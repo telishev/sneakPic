@@ -29,9 +29,9 @@ path_preview_handle::~path_preview_handle ()
 
 }
 
-bool path_preview_handle::is_mouse_inside (QPoint /*screen_pos*/, QTransform /*transform*/) const 
+int path_preview_handle::distance_to_mouse (QPoint /*screen_pos*/, QTransform /*transform*/) const 
 {
-  return false;
+  return 10000;
 }
 
 void path_preview_handle::set_mouse_hovered (bool /*hovered*/)

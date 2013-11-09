@@ -12,7 +12,7 @@ class abstract_handle : public renderable_item
 public:
   virtual ~abstract_handle () {}
 
-  virtual bool is_mouse_inside (QPoint screen_pos, QTransform transform) const = 0;
+  virtual int distance_to_mouse (QPoint screen_pos, QTransform transform) const = 0;
 
   virtual void set_mouse_hovered (bool hovered) = 0;
 
