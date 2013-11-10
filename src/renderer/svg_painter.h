@@ -20,6 +20,7 @@ class abstract_tool;
 class svg_items_container;
 class items_selection_renderer;
 class actions_applier;
+class renderer_page;
 
 enum class gui_action_id;
 
@@ -41,6 +42,7 @@ class svg_painter : public abstract_painter
   mouse_shortcuts_handler *m_mouse_handler;
   settings_t *m_settings;
   actions_applier *m_actions_applier;
+  renderer_page *m_renderer_page;
 
   abstract_tool *m_current_tool;
 

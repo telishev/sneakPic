@@ -10,10 +10,6 @@ renderer_overlay_root::renderer_overlay_root ()
 
 renderer_overlay_root::~renderer_overlay_root ()
 {
-  for (renderable_item *item : m_items)
-    {
-      FREE (item);
-    }
 }
 
 void renderer_overlay_root::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const 
@@ -32,7 +28,6 @@ void renderer_overlay_root::add_item (renderable_item *item)
 void renderer_overlay_root::remove_item (renderable_item *item)
 {
   m_items.erase (item);
-  FREE (item);
 }
 
 bool renderer_overlay_root::empty () const

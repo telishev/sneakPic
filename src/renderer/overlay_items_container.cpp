@@ -8,10 +8,8 @@
 #include "svg/items/svg_graphics_item.h"
 
 
-overlay_items_container::overlay_items_container (overlay_renderer *overlay, svg_items_container *container, overlay_layer_type layer_type)
+overlay_items_container::overlay_items_container (svg_items_container *container)
 {
-  m_overlay = overlay;
-  m_layer_type = layer_type;
   m_container = container;
 }
 
@@ -38,7 +36,6 @@ void overlay_items_container::svg_item_changed (const std::string &object)
     return;
 
   m_obj_map[object] = item;
-  m_overlay->add_item (item, m_layer_type);
 }
 
 void overlay_items_container::remove_svg_item (const std::string &object)
@@ -46,16 +43,12 @@ void overlay_items_container::remove_svg_item (const std::string &object)
   auto it = m_obj_map.find (object);
   if (it != m_obj_map.end ())
     {
-      m_overlay->remove_item (it->second, m_layer_type);
       m_obj_map.erase (it);
     }
 }
 
 void overlay_items_container::clear_items ()
 {
-  for (auto &pair : m_obj_map)
-    m_overlay->remove_item (pair.second, m_layer_type);
-
   m_obj_map.clear ();
 }
 
@@ -78,4 +71,10 @@ void overlay_items_container::update_items ()
   auto m_map_copy = m_obj_map;
   for (const auto &item_pair : m_map_copy)
     svg_item_changed (item_pair.first);
+}
+
+void overlay_items_container::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const 
+{
+  for (auto &item_pair : m_obj_map)
+    item_pair.second->draw (canvas, state, config);
 }

@@ -5,6 +5,8 @@
 #include <map>
 #include <vector>
 
+#include "renderer/renderable_item.h"
+
 class overlay_renderer;
 class renderable_item;
 class svg_items_container;
@@ -12,14 +14,12 @@ class svg_items_container;
 enum class overlay_layer_type;
 enum class overlay_item_type;
 
-class overlay_items_container
+class overlay_items_container : public renderable_item
 {
-  overlay_layer_type m_layer_type;
-  overlay_renderer *m_overlay;
   svg_items_container *m_container;
   std::map<std::string, renderable_item *> m_obj_map; ///< map from object name to corresponding overlay item
 public:
-  overlay_items_container (overlay_renderer *overlay, svg_items_container *container, overlay_layer_type layer_type);
+  overlay_items_container (svg_items_container *container);
   virtual ~overlay_items_container ();
 
   virtual void update_items ();
@@ -35,6 +35,8 @@ protected:
   renderable_item *create_overlay_for_item (const std::string &object, overlay_item_type overlay_type) const;
 
   virtual renderable_item *create_overlay_item (const std::string &object) const = 0;
+
+  virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
 };
 
 

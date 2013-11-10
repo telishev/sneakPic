@@ -29,7 +29,8 @@ private:
   abstract_handle *m_cur_handle;
   abstract_handle *m_highlighted_handle;
 
-  std::map<std::string, std::unique_ptr<element_handles>> m_handles;
+  typedef std::map<std::string, std::unique_ptr<element_handles>> map_t;
+  map_t m_handles;
 
 public:
   handles_editor (overlay_renderer *overlay, svg_painter *painter, mouse_shortcuts_handler *mouse_handler);
@@ -37,6 +38,8 @@ public:
 
   void update_handles ();
 
+  map_t::const_iterator begin () const { return m_handles.begin (); }
+  map_t::const_iterator end () const { return m_handles.end (); }
   element_handles *handles_for_item (const std::string &item) const;
 
 protected:

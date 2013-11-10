@@ -7,7 +7,7 @@ class current_item_outline_renderer : public overlay_items_container
 {
   std::string m_item;
 public:
-  current_item_outline_renderer (overlay_renderer *overlay, svg_items_container *container);
+  current_item_outline_renderer (svg_items_container *container);
   ~current_item_outline_renderer ();
 
   void set_current_item (const std::string &item);

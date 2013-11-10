@@ -1,5 +1,7 @@
 #include "editor/items_move_handler.h"
 
+#include "common/memory_deallocation.h"
+
 #include "editor/items_selection.h"
 #include "editor/operations/transform_item_operation.h"
 
@@ -28,7 +30,7 @@ items_move_handler::items_move_handler (svg_items_container *container, overlay_
 
 items_move_handler::~items_move_handler ()
 {
-
+  FREE (m_transformed_items);
 }
 
 void items_move_handler::start_move (QPointF start_pos)

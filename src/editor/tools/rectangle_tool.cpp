@@ -35,6 +35,7 @@ rectangle_tool::rectangle_tool( svg_painter *painter )
 
 rectangle_tool::~rectangle_tool ()
 {
+  FREE (m_renderer_item);
 }
 
 bool rectangle_tool::start_rectangle_positioning (const QPoint &pos)

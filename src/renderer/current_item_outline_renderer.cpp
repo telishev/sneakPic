@@ -4,8 +4,8 @@
 #include "renderer/overlay_item_type.h"
 
 
-current_item_outline_renderer::current_item_outline_renderer (overlay_renderer *overlay, svg_items_container *container)
-  : overlay_items_container (overlay, container, overlay_layer_type::BASE)
+current_item_outline_renderer::current_item_outline_renderer (svg_items_container *container)
+  : overlay_items_container (container)
 {
 
 }

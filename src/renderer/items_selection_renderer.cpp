@@ -4,8 +4,8 @@
 #include "renderer/overlay_item_type.h"
 #include "editor/items_selection.h"
 
-items_selection_renderer::items_selection_renderer (overlay_renderer *overlay, svg_items_container *container, items_selection *selection)
-  : overlay_items_container (overlay, container, overlay_layer_type::BASE)
+items_selection_renderer::items_selection_renderer (svg_items_container *container, items_selection *selection)
+  : overlay_items_container (container)
 {
   m_selection = selection;
 }

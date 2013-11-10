@@ -7,6 +7,8 @@
 
 #include "editor/items_selection.h"
 
+#include "common/memory_deallocation.h"
+
 #include "renderer/abstract_renderer_item.h"
 #include "renderer/renderer_state.h"
 #include "renderer/qt2skia.h"
@@ -66,7 +68,7 @@ rubberband_selection::rubberband_selection (overlay_renderer *overlay, svg_paint
 
 rubberband_selection::~rubberband_selection ()
 {
-
+  FREE (m_render_item);
 }
 
 bool rubberband_selection::start_selection (QPointF pos)

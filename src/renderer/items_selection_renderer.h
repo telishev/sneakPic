@@ -11,7 +11,7 @@ class items_selection_renderer : public overlay_items_container
   items_selection *m_selection;
 
 public:
-  items_selection_renderer (overlay_renderer *overlay, svg_items_container *container, items_selection *selection);
+  items_selection_renderer (svg_items_container *container, items_selection *selection);
   ~items_selection_renderer ();
 
   virtual void update_items () override;

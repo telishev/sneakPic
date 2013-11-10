@@ -1,19 +1,20 @@
 #ifndef HANDLES_RENDERER_H
 #define HANDLES_RENDERER_H
 
-#include "renderer/overlay_items_container.h"
+#include "renderer/renderable_item.h"
 
 class handles_editor;
 
-class handles_renderer : public overlay_items_container
+class handles_renderer : public renderable_item
 {
   const handles_editor *m_editor;
 public:
-  handles_renderer (const handles_editor *editor, overlay_renderer *overlay, svg_items_container *container);
+  handles_renderer (const handles_editor *editor);
   ~handles_renderer ();
 
 protected:
-  virtual renderable_item *create_overlay_item (const std::string &object) const override;
+  virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
+  
 };
 
 #endif // HANDLES_RENDERER_H

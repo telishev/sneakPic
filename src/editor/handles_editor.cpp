@@ -4,13 +4,16 @@
 
 #include "editor/handles_renderer.h"
 #include "editor/items_selection.h"
+#include "editor/abstract_handle.h"
+#include "editor/element_handles.h"
 
 #include "svg/items/abstract_svg_item.h"
 
 #include "renderer/svg_painter.h"
+#include "renderer/overlay_renderer.h"
+
 #include "gui/mouse_shortcuts_handler.h"
-#include "abstract_handle.h"
-#include "element_handles.h"
+
 
 
 handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter, mouse_shortcuts_handler *mouse_handler)
@@ -21,7 +24,8 @@ handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter,
   m_cur_handle = nullptr;
   m_highlighted_handle = nullptr;
 
-  m_renderer = new handles_renderer (this, m_overlay, m_painter->item_container ());
+  m_renderer = new handles_renderer (this);
+  m_overlay->add_item (m_renderer, overlay_layer_type::TEMP);
 
   ADD_SHORTCUT_DRAG (m_mouse_handler, DRAG_HANDLE,
                      return start_drag (m_event.pos ()),
@@ -62,19 +66,16 @@ void handles_editor::add_item (abstract_svg_item *item)
     return;
 
   m_handles[item->name ()].reset (handle);
-  m_renderer->add_svg_item (item->name ());
 }
 
 void handles_editor::remove_item (const std::string &item)
 {
   m_handles.erase (item);
-  m_renderer->remove_svg_item (item);
 }
 
 void handles_editor::clear_items ()
 {
   m_handles.clear ();
-  m_renderer->clear_items ();
 }
 
 bool handles_editor::start_drag (QPointF pos)

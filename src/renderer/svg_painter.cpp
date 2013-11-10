@@ -53,6 +53,7 @@
 svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings)
   : abstract_painter (glwidget)
 {
+  m_renderer_page = nullptr;
   m_current_tool = nullptr;
   m_document = nullptr;
   m_cache = cache;
@@ -78,6 +79,7 @@ svg_painter::~svg_painter ()
 
   FREE (m_selection_renderer);
   FREE (m_item_outline);
+  FREE (m_renderer_page);
   FREE (m_actions_applier);
 }
 
@@ -103,7 +105,8 @@ void svg_painter::set_document (svg_document *document)
   double width, height;
   svg_utils::get_doc_dimensions (document, width, height);
   create_overlay_containers ();
-  m_overlay->add_item (new renderer_page (width, height), overlay_layer_type::PAGE);
+  m_renderer_page = new renderer_page (width, height);
+  m_overlay->add_item (m_renderer_page, overlay_layer_type::PAGE);
 
   reset_transform ();
   CONNECT (m_document, &svg_document::items_changed, this, &svg_painter::items_changed);
@@ -313,8 +316,10 @@ bool svg_painter::find_current_object (const QPoint &pos)
 
 void svg_painter::create_overlay_containers ()
 {
-  m_selection_renderer = new items_selection_renderer (m_overlay, item_container (), m_selection);
-  m_item_outline = new current_item_outline_renderer (m_overlay, item_container ());
+  m_selection_renderer = new items_selection_renderer (item_container (), m_selection);
+  m_item_outline = new current_item_outline_renderer (item_container ());
+  m_overlay->add_item (m_item_outline, overlay_layer_type::BASE);
+  m_overlay->add_item (m_selection_renderer, overlay_layer_type::TEMP);
 }
 
 void svg_painter::items_changed ()
