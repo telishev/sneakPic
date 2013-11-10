@@ -54,6 +54,8 @@ public:
   iterator begin ();
   iterator end ();
 
+  void remove_unavailable_items ();
+
 signals:
   void selection_changed ();
 };

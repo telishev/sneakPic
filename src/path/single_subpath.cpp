@@ -75,3 +75,71 @@ int single_subpath::total_handles () const
   else
     return (int)size () + 1;
 }
+
+QPointF single_subpath::control_point (size_t subpath_index, bool left_cp) const
+{
+  QPointF substitute;
+  const QPointF *point = get_control_point (subpath_index, left_cp, substitute);
+  return point ? *point : substitute;
+}
+
+QPointF * single_subpath::get_control_point (size_t subpath_index, bool left_cp, QPointF &substitute)
+{
+  if (subpath_index == 0)
+    {
+      if (!left_cp)
+        return &front ().c1;
+      else
+        {
+          if (first_point_is_last ())
+            return &back ().c2;
+          else
+            {
+              substitute = front ().start;
+              return nullptr;
+            }
+        }
+    }
+  else if (subpath_index == size ())
+    {
+      if (left_cp)
+        return &back ().c2;
+      else
+        {
+          if (first_point_is_last ())
+            return &front ().c1;
+          else
+            {
+              substitute = back ().end;
+              return nullptr;
+            }
+        }
+    }
+  else
+    {
+      if (left_cp)
+        return &(*this)[subpath_index - 1].c2;
+      else
+        return &(*this)[subpath_index].c1;
+    }
+}
+
+const QPointF *single_subpath::get_control_point (size_t subpath_index, bool left_cp, QPointF &substitute) const
+{
+  return const_cast<single_subpath *>(this)->get_control_point (subpath_index, left_cp, substitute);
+}
+
+void single_subpath::set_control_point (size_t subpath_index, bool left_cp, QPointF point)
+{
+  QPointF tmp;
+  QPointF *result = get_control_point (subpath_index, left_cp, tmp);
+  if (result)
+    *result = point;
+}
+
+bool single_subpath::control_point_exists (size_t subpath_index, bool left_cp) const
+{
+  QPointF substitute;
+  const QPointF *point = get_control_point (subpath_index, left_cp, substitute);
+  return point != nullptr;
+}

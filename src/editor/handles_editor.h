@@ -44,6 +44,7 @@ public:
 
 protected:
   virtual element_handles *create_handles_for_item (abstract_svg_item *item) = 0;
+  virtual void update_handles_impl () {}
   abstract_handle *get_handle_by_pos (QPointF screen_pos) const;
 
 private:

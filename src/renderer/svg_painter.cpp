@@ -114,11 +114,13 @@ void svg_painter::set_document (svg_document *document)
 
 unsigned int svg_painter::mouse_event (const mouse_event_t &m_event)
 {
-  if (m_mouse_handler->process_mouse_event (m_event))
-    return 0;
 
   if (m_current_tool && m_current_tool->mouse_event (m_event))
     return 0;
+
+  if (m_mouse_handler->process_mouse_event (m_event))
+    return 0;
+
 
   return 0;
 }
@@ -141,6 +143,7 @@ void svg_painter::configure ()
 {
   if (get_configure_needed (configure_type::ITEMS_CHANGED))
     {
+      m_selection->remove_unavailable_items ();
       m_item_outline->update_items ();
       set_configure_needed (configure_type::REDRAW_BASE);
       set_configure_needed (configure_type::SELECTION_CHANGED);

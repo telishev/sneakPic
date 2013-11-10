@@ -1,32 +1,36 @@
-#ifndef PATH_CONTROL_POINT_H
-#define PATH_CONTROL_POINT_H
+#ifndef PATH_ANCHOR_HANDLE_H
+#define PATH_ANCHOR_HANDLE_H
 
 #include "editor/abstract_handle.h"
 #include <QPointF>
+#include <string>
 
 class QRect;
 class QColor;
 
 class svg_item_path;
 class svg_path;
-class svg_painter;
+class path_handles_editor;
 
 struct single_path_element;
 
-class path_control_point : public abstract_handle
+class path_anchor_handle : public abstract_handle
 {
   svg_path *m_path;
   svg_item_path *m_item;
-  svg_painter *m_painter;
-  int m_control_point_id;
+  path_handles_editor *m_editor;
+  int m_anchor_id;
 
   QPointF m_drag_start;
   QPointF m_drag_cur;
   bool m_is_highlighted;
 
 public:
-  path_control_point (svg_painter *painter, svg_item_path *item, int control_point_id, svg_path *path);
-  virtual ~path_control_point ();
+  path_anchor_handle (path_handles_editor *editor, svg_item_path *item, int anchor_id, svg_path *path);
+  virtual ~path_anchor_handle ();
+
+  int point_id () const { return m_anchor_id; }
+  std::string item_name () const;
 
 protected:
   virtual int distance_to_mouse (QPoint screen_pos, QTransform transform) const override;
@@ -45,4 +49,4 @@ private:
   QColor current_color () const;
 };
 
-#endif // PATH_CONTROL_POINT_H
+#endif // PATH_ANCHOR_HANDLE_H

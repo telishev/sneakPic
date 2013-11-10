@@ -31,6 +31,13 @@ public:
   void apply_transform (const QTransform &transform);
   int total_handles () const;
 
+  QPointF control_point (size_t subpath_index, bool left_cp) const;
+  void set_control_point (size_t subpath_index, bool left_cp, QPointF point);
+  bool control_point_exists (size_t subpath_index, bool left_cp) const;
+
+private:
+  QPointF *get_control_point (size_t subpath_index, bool left_cp, QPointF &substitute);
+  const QPointF *get_control_point (size_t subpath_index, bool left_cp, QPointF &substitute) const;
 };
 
 #endif // SINGLE_SUBPATH_H

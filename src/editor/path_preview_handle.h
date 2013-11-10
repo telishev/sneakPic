@@ -14,10 +14,9 @@ class path_preview_handle : public abstract_handle
 {
   svg_path *m_path;
   svg_item_path *m_item;
-  svg_painter *m_painter;
 
 public:
-  path_preview_handle (svg_painter *painter, svg_item_path *item, svg_path *path);
+  path_preview_handle (svg_item_path *item, svg_path *path);
   virtual ~path_preview_handle ();
 
 protected:

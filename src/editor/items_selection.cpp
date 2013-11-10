@@ -86,6 +86,17 @@ int items_selection::count () const
   return (int) m_selection.size ();
 }
 
+void items_selection::remove_unavailable_items ()
+{
+  for (auto it = m_selection.begin (); it != m_selection.end ();)
+    {
+      if (m_container->contains (*it))
+        ++it;
+      else
+        it = m_selection.erase (it);
+    }
+}
+
 abstract_svg_item *items_selection::iterator::operator* ()
 {
   return m_container->get_item (*m_it);

@@ -17,9 +17,8 @@
 #include "svg/items/svg_item_path.h"
 
 
-path_preview_handle::path_preview_handle (svg_painter *painter, svg_item_path *item, svg_path *path)
+path_preview_handle::path_preview_handle (svg_item_path *item, svg_path *path)
 {
-  m_painter = painter;
   m_item = item;
   m_path = path;
 }

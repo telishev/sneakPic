@@ -96,3 +96,75 @@ void svg_path::apply_transform (const QTransform &transform)
   for (auto &cur_subpath : *this)
     cur_subpath.apply_transform (transform);
 }
+
+QPointF svg_path::control_point (size_t index, bool left_cp) const
+{
+  size_t subpath_index = -1;
+  const single_subpath *subpath = 0;
+  get_subpath_and_index (index, subpath, subpath_index);
+  return subpath->control_point (subpath_index, left_cp);
+}
+
+void svg_path::set_control_point (size_t index, bool left_cp, QPointF point)
+{
+  size_t subpath_index = -1;
+  single_subpath *subpath = 0;
+  get_subpath_and_index (index, subpath, subpath_index);
+  return subpath->set_control_point (subpath_index, left_cp, point);
+}
+
+bool svg_path::control_point_exists (size_t index, bool left_cp) const
+{
+  size_t subpath_index = -1;
+  const single_subpath *subpath = 0;
+  get_subpath_and_index (index, subpath, subpath_index);
+  return subpath->control_point_exists (subpath_index, left_cp);
+}
+
+void svg_path::move_point (size_t index, QPointF new_point)
+{
+  QPointF old_point = point (index);
+  QPointF diff = new_point - old_point;
+  set_point (index, new_point);
+  if (control_point_exists (index, false))
+    set_control_point (index, false, control_point (index, false) + diff);
+
+  if (control_point_exists (index, true))
+    set_control_point (index, true, control_point (index, true) + diff);
+}
+
+size_t svg_path::prev_point (size_t index) const
+{
+  size_t subpath_index = -1;
+  const single_subpath *subpath = 0;
+  get_subpath_and_index (index, subpath, subpath_index);
+  if (subpath_index == 0)
+    return subpath->first_point_is_last () ? global_index (subpath->size () - 1, subpath) : index;
+  else
+    return index - 1;
+}
+
+size_t svg_path::next_point (size_t index) const
+{
+  size_t subpath_index = -1;
+  const single_subpath *subpath = 0;
+  get_subpath_and_index (index, subpath, subpath_index);
+  if (subpath_index == subpath->size () - 1)
+    return subpath->first_point_is_last () ? global_index (0, subpath) : index;
+  else
+    return index + 1;
+}
+
+size_t svg_path::global_index (size_t local_index, const single_subpath *subpath) const
+{
+  size_t total = 0;
+  for (const auto &cur_subpath : *this)
+    {
+      if (&cur_subpath == subpath)
+        break;
+
+      total += cur_subpath.total_handles ();
+    }
+
+  return total + local_index;
+}
