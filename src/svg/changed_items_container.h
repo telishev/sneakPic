@@ -4,14 +4,17 @@
 #include "svg/svg_item_observer.h"
 
 #include <unordered_set>
+#include <QObject>
 
 class event_items_changed;
 class svg_items_container;
 class svg_graphics_item;
 class undo_handler;
 
-class items_edit_handler_t : public svg_item_observer
+class items_edit_handler_t : public QObject, public svg_item_observer
 {
+  Q_OBJECT
+
   std::unordered_set<std::string> m_changed_items;
   std::unordered_set<std::string> m_layout_changed_items;
   std::unordered_set<std::string> m_removed_items;
@@ -39,6 +42,14 @@ public:
   void set_item_removed (const std::string &item);
 
   undo_handler *get_undo_handler () const { return m_undo_handler; }
+
+signals:
+  void child_added_signal (const std::string &parent, const std::string &child_name, int insert_pos);
+  void child_removed_signal (const std::string &parent, const std::string &child_name, int pos);
+  void child_moved_signal (const std::string &parent, const std::string &child_name, int old_pos, int new_pos);
+  void attribute_change_start_signal (const std::string &sender, const abstract_attribute *computed_attribute);
+  void attribute_change_end_signal (const std::string &sender, const abstract_attribute *computed_attribute);
+  void item_removed_signal (const std::string &item);
 
 private:
   void clear ();

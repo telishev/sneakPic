@@ -22,34 +22,40 @@ items_edit_handler_t::~items_edit_handler_t ()
   FREE (m_undo_handler);
 }
 
-void items_edit_handler_t::child_added (const std::string &parent, const std::string &child_name, int /*insert_pos*/)
+void items_edit_handler_t::child_added (const std::string &parent, const std::string &child_name, int insert_pos)
 {
   m_changed_items.insert (child_name);
   m_layout_changed_items.insert (parent);
+  emit child_added_signal (parent, child_name, insert_pos);
 }
 
-void items_edit_handler_t::child_removed (const std::string &parent, const std::string &child_name, int /*pos*/)
+void items_edit_handler_t::child_removed (const std::string &parent, const std::string &child_name, int pos)
 {
   m_removed_items.insert (child_name);
   m_layout_changed_items.insert (parent);
+  emit child_removed_signal (parent, child_name, pos);
 }
 
-void items_edit_handler_t::child_moved (const std::string &parent, const std::string &/*child_name*/, int /*old_pos*/, int /*new_pos*/)
+void items_edit_handler_t::child_moved (const std::string &parent, const std::string &child_name, int old_pos, int new_pos)
 {
   m_layout_changed_items.insert (parent);
+  emit child_moved_signal (parent, child_name, old_pos, new_pos);
 }
 
-void items_edit_handler_t::attribute_change_start (const std::string &parent, const abstract_attribute * /*computed_attribute*/)
+void items_edit_handler_t::attribute_change_start (const std::string &parent, const abstract_attribute *computed_attribute)
 {
   set_children_changed (parent);
+  emit attribute_change_start_signal (parent, computed_attribute);
 }
 
-void items_edit_handler_t::attribute_change_end (const std::string &/*parent*/, const abstract_attribute * /*computed_attribute*/)
+void items_edit_handler_t::attribute_change_end (const std::string &parent, const abstract_attribute *computed_attribute)
 {
+  emit attribute_change_end_signal (parent, computed_attribute);
 }
 
-void items_edit_handler_t::item_removed (const std::string &/*parent*/)
+void items_edit_handler_t::item_removed (const std::string &parent)
 {
+  emit item_removed_signal (parent);
   /// handled in child_removed
 }
 
