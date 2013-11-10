@@ -14,26 +14,27 @@ Application {
 	Depends { name: 'cpp'}
 
 	cpp.defines:{
-	var defines = [
-	'NOMINMAX=1',
-	'VERSION="0.01"',
-	'PACKAGE="sneakPic"'
-	]
 
-	if (qbs.toolchain.contains ('msvc'))
-		defines.push ('_VARIADIC_MAX=10');
+		var defines = [
+		'NOMINMAX=1',
+		'VERSION="0.01"',
+		'PACKAGE="sneakPic"'
+		];
 
-	 if (qbs.buildVariant === 'debug')
-		defines.push ("SK_DEBUG");
-	  else
-		defines.push ("SK_RELEASE");
+		if (qbs.toolchain.contains ('msvc'))
+			defines.push ('_VARIADIC_MAX=10');
 
-	if (qbs.targetOS === 'windows')
-		defines.push ("_WINDOWS");
-		defines.push ("WIN32");
-		defines.push ("WIN64");
+		if (qbs.buildVariant === 'debug')
+			defines.push ("SK_DEBUG");
+		else
+			defines.push ("SK_RELEASE");
 
-		return defines;
+		if (qbs.targetOS.contains ('windows'))
+		{
+			defines = defines.concat ("_WINDOWS", "WIN32", "WIN64");
+		}
+
+		  return defines;
 	}
 
 	cpp.cxxFlags :
@@ -130,7 +131,7 @@ Application {
 			"**/*.h",
         ]
     }
-	
+
 	Group {
         files: [
             "src/gtest/gmock-gtest-all.cc"
