@@ -414,7 +414,7 @@ bool svg_painter::action_triggered (gui_action_id id)
 
 bool svg_painter::remove_items_in_selection ()
 {
-  if (m_selection->selected_count () == 0)
+  if (m_selection->count () == 0)
     return true;
 
   for (auto item : *m_selection)

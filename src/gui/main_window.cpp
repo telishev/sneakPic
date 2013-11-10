@@ -13,12 +13,13 @@
 
 #include <ui_main_window.h>
 
-#include "gui/color_selector_widget_builder.h"
-#include "gui/color_selectors.h"
+#include "editor/style_controller.h"
+
 #include "gui/settings.h"
 #include "gui/gui_document.h"
 #include "gui/gui_actions.h"
 #include "gui/gui_action_id.h"
+#include "gui/style_widget_handler.h"
 #include "gui/tools_widget_builder.h"
 #include "gui/menu_builder.h"
 #include "gui/connection.h"
@@ -45,7 +46,9 @@ main_window::main_window ()
   m_actions = new gui_actions (m_settings->shortcuts_cfg (), [&] (gui_action_id id) { return action_triggered (id); }, this);
   m_dock_widget_builder = new dock_widget_builder (this);
   m_tools_builder = new tools_widget_builder (m_actions, m_dock_widget_builder);
-  m_color_selector_widget_builder = new color_selector_widget_builder (m_dock_widget_builder, m_settings->fill_color ());
+  m_style_controller = new style_controller (m_settings);
+  m_style_widget_handler = new style_widget_handler (m_dock_widget_builder, m_style_controller);
+
 
   m_menu_builder = new menu_builder (menuBar (), m_actions, createPopupMenu ());
 
@@ -55,11 +58,8 @@ main_window::main_window ()
   update_recent_menu ();
   m_zoom_label = new QLabel;
   statusBar ()->addPermanentWidget (m_zoom_label);
-  m_color_indicator = new color_indicator (this, m_settings->fill_color ());
   this->restoreGeometry (m_qsettings->value ("main_window_geometry").toByteArray ());
   this->restoreState (m_qsettings->value ("main_window_state").toByteArray ());
-  statusBar ()->addWidget (m_color_indicator);
-  CONNECT (m_color_selector_widget_builder, &color_selector_widget_builder::color_changed, m_color_indicator, &color_selector::color_changed_externally);
 
   m_actions_applier = new actions_applier;
   m_actions_applier->register_action (gui_action_id::OPEN, this, &main_window::open_file_clicked);
@@ -78,7 +78,6 @@ main_window::~main_window ()
   FREE (m_qsettings);
   FREE (m_settings);
   FREE (m_dock_widget_builder);
-  FREE (m_color_selector_widget_builder);
   FREE (m_tools_builder);
   FREE (m_menu_builder);
   FREE (m_document);
@@ -209,6 +208,7 @@ void main_window::create_painter ()
 {
   svg_painter *painter = m_document->create_painter (ui->glwidget);
   CONNECT (painter, SIGNAL (zoom_description_changed (const QString &)), this, SLOT (zoom_description_changed (const QString &)));
+  m_style_controller->set_painter (painter);
   painter->update_status_bar_widgets ();
 }
 

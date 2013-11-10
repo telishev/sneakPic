@@ -12,13 +12,13 @@ class QSettings;
 class QSignalMapper;
 class QLabel;
 
-class color_indicator;
-class color_selector_widget_builder;
 class dock_widget_builder;
 class settings_t;
 class gui_document;
 class gui_actions;
 class menu_builder;
+class style_controller;
+class style_widget_handler;
 class tools_widget_builder;
 class actions_applier;
 
@@ -43,10 +43,10 @@ class main_window : public QMainWindow
   menu_builder *m_menu_builder;
   tools_widget_builder *m_tools_builder;
   dock_widget_builder *m_dock_widget_builder;
-  color_selector_widget_builder *m_color_selector_widget_builder;
-  color_indicator *m_color_indicator;
+  style_widget_handler *m_style_widget_handler;
 
   std::vector <QString> m_recent_files;
+  style_controller *m_style_controller;
 public:
   main_window ();
   ~main_window ();

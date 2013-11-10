@@ -36,7 +36,7 @@ public:
   items_selection (svg_items_container *container);
   ~items_selection ();
 
-  int selected_count () const;
+  int count () const;
   const set_type &selection () const { return m_selection; }
 
   bool contains (const std::string &name) const;

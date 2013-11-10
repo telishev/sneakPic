@@ -10,18 +10,17 @@ class abstract_svg_item;
 class svg_items_container;
 class renderer_paint_server;
 
+enum class paint_server_type
+{
+  NONE,
+  CURRENT_COLOR,
+  COLOR,
+  IRI,
+};
+
 class svg_paint_server : public abstract_attribute
 {
-
 protected:
-  enum class paint_server_type
-  {
-    NONE,
-    CURRENT_COLOR,
-    COLOR,
-    IRI,
-  };
-
   svg_data_type_iri m_iri;
   QColor m_color;
   paint_server_type m_server_type;
@@ -34,6 +33,9 @@ public:
   virtual bool write (QString &data, bool to_css = false) const override;
 
   void set_to_color (QColor color);
+  paint_server_type server_type () const { return m_server_type; };
+  QColor color () const { return m_color; };
+
 
   renderer_paint_server *create_paint_server (const svg_items_container *container) const;
 
@@ -50,7 +52,7 @@ public:
   svg_attribute_fill ()
   {
     m_color = Qt::black;
-    m_server_type = svg_paint_server::paint_server_type::COLOR;
+    m_server_type = paint_server_type::COLOR;
   }
   virtual abstract_svg_item *get_item () const override { return item (); }
 };

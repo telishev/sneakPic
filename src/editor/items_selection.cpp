@@ -81,7 +81,7 @@ items_selection::iterator items_selection::end ()
   return items_selection::iterator (m_container, m_selection.end ());
 }
 
-int items_selection::selected_count () const
+int items_selection::count () const
 {
   return (int) m_selection.size ();
 }

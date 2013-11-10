@@ -10,7 +10,7 @@
 
 #include "gui/gui_action_id.h"
 #include "gui/gui_actions.h"
-#include "gui/color_selectors.h"
+#include "gui/color_selectors/color_selector.h"
 #include "gui/dock_widget_builder.h"
 #include "gui/utils/flowlayout.h"
 #include "editor/tools/tools_container.h"

@@ -2,3 +2,6 @@ THIS_DIR = $$PROJ_DIR/src/gui
 
 SOURCES += $$THIS_DIR/*.cpp
 HEADERS += $$THIS_DIR/*.h
+
+include ($$PROJ_DIR/src/gui/color_selectors/color_selectors.in)
+include ($$PROJ_DIR/src/gui/utils/utils.in)

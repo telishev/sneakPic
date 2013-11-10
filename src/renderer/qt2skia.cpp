@@ -33,8 +33,10 @@ SkPath::FillType qt2skia::fill_rule (Qt::FillRule rule)
 {
   switch (rule)
     {
-      case Qt::FillRule::OddEvenFill:return SkPath::FillType::kEvenOdd_FillType;
-      case Qt::FillRule::WindingFill:return SkPath::FillType::kWinding_FillType;
+    case Qt::FillRule::OddEvenFill:
+      return SkPath::FillType::kEvenOdd_FillType;
+    case Qt::FillRule::WindingFill:
+      return SkPath::FillType::kWinding_FillType;
     }
   return SkPath::FillType::kWinding_FillType;
 }
@@ -66,30 +68,30 @@ SkPath qt2skia::path (const QPainterPath &qpath)
         }
     }
 
- if (count == 1)
-   {
-     path.lineTo (qt2skia::point (qpath.elementAt (0)));
-     path.close ();
-   }
+  if (count == 1)
+    {
+      path.lineTo (qt2skia::point (qpath.elementAt (0)));
+      path.close ();
+    }
 
- if (   count > 3
-     && are_equal (qpath.elementAt (count - 1).x, qpath.elementAt (0).x)
-     && are_equal (qpath.elementAt (count - 1).y, qpath.elementAt (0).y)
-    )
-  path.close ();
+  if (   count > 3
+         && are_equal (qpath.elementAt (count - 1).x, qpath.elementAt (0).x)
+         && are_equal (qpath.elementAt (count - 1).y, qpath.elementAt (0).y)
+     )
+    path.close ();
   // Qt doesn't have any special definition if path is closed expect that it's first and last points are equal
 
- path.setFillType (qt2skia::fill_rule (qpath.fillRule ()));
+  path.setFillType (qt2skia::fill_rule (qpath.fillRule ()));
   return path;
 }
 
 SkPath qt2skia::path (const svg_path &path)
 {
   SkPath sk_path;
-  for (const auto &subpath : path)
+  for (const auto & subpath : path)
     {
       sk_path.moveTo (qt2skia::point (subpath.front ().start));
-      for (const auto &element : subpath)
+      for (const auto & element : subpath)
         sk_path.cubicTo (qt2skia::point (element.c1), qt2skia::point (element.c2),
                          qt2skia::point (element.end));
 
@@ -116,7 +118,7 @@ SkBitmap qt2skia::image (const QImage &image_arg)
 QImage qt2skia::qimage (const SkBitmap &bitmap)
 {
   SkAutoLockPixels image_lock (bitmap);
-  return QImage ((unsigned char*)bitmap.getPixels (), bitmap.width (), bitmap.height (), (int)bitmap.rowBytes (), QImage::Format_ARGB32_Premultiplied);
+  return QImage ((unsigned char *)bitmap.getPixels (), bitmap.width (), bitmap.height (), (int)bitmap.rowBytes (), QImage::Format_ARGB32_Premultiplied);
 }
 
 SkRect qt2skia::rect (const QRect &rect)
