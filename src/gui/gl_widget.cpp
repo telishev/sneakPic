@@ -20,8 +20,8 @@ gl_widget::gl_widget (QWidget *parent)
   setAutoFillBackground (false);
 
   m_mouse_filter_object = new mouse_filter (this);
-  
-  CONNECT (m_mouse_filter_object, SIGNAL (mouse_event_happened (const mouse_event_t &)), this, SLOT (mouse_event (const mouse_event_t &)));
+
+  CONNECT (m_mouse_filter_object, &mouse_filter::mouse_event_happened, this, &gl_widget::mouse_event);
 
   setMouseTracking (true);
 }

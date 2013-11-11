@@ -22,7 +22,7 @@ tools_container::tools_container (gui_actions *actions)
   init_tools_info ();
 
   if (actions)
-    CONNECT (m_actions, SIGNAL (actions_update_needed ()), this, SLOT (update_actions ()));
+    CONNECT (m_actions, &gui_actions::actions_update_needed, this, &tools_container::update_actions);
 }
 
 tools_container::~tools_container ()

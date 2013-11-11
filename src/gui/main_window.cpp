@@ -122,7 +122,7 @@ void main_window::update_recent_menu ()
                                                  m_signal_mapper, SLOT (map ()), size - i <= 10 ? QKeySequence (Qt::CTRL + Qt::Key_0 + (size - i) % 10) : QKeySequence ());
       m_signal_mapper->setMapping (action, m_recent_files[i]);
     }
-  CONNECT (m_signal_mapper, SIGNAL (mapped (QString)), this, SLOT (open_file (QString)));
+  CONNECT (m_signal_mapper, (void (QSignalMapper::*) (const QString&)) &QSignalMapper::mapped, this, &main_window::open_file);
 }
 
 
@@ -207,7 +207,7 @@ void main_window::zoom_description_changed (const QString &description)
 void main_window::create_painter ()
 {
   svg_painter *painter = m_document->create_painter (ui->glwidget);
-  CONNECT (painter, SIGNAL (zoom_description_changed (const QString &)), this, SLOT (zoom_description_changed (const QString &)));
+  CONNECT (painter, &svg_painter::zoom_description_changed, this, &main_window::zoom_description_changed);
   m_style_controller->set_painter (painter);
   painter->update_status_bar_widgets ();
 }

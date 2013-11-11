@@ -66,7 +66,7 @@ svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, even
   update_status_bar_widgets ();
   set_document (document);
 
-  CONNECT (m_selection, SIGNAL (selection_changed ()), this, SLOT (selection_changed ()));
+  CONNECT (m_selection, &items_selection::selection_changed, this, &svg_painter::selection_changed);
 
   m_actions_applier->register_action (gui_action_id::DELETE_ITEMS, this, &svg_painter::remove_items_in_selection);
 }

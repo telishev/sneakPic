@@ -25,7 +25,7 @@
 
 gui_document::gui_document (settings_t *settings, gui_actions *actions)
 {
-  m_actions = actions; 
+  m_actions = actions;
   m_painter = nullptr;
   m_settings = settings;
   m_actions_applier = new actions_applier;
@@ -39,8 +39,8 @@ gui_document::gui_document (settings_t *settings, gui_actions *actions)
   update_timer->setInterval (50);
   update_timer->start ();
 
-  CONNECT (update_timer     , SIGNAL (timeout ())     , this, SLOT (update_timeout ()));
-  CONNECT (m_tools_container, SIGNAL (tool_changed ()), this, SLOT (tool_changed ()));
+  CONNECT (update_timer, &QTimer::timeout, this, &gui_document::update_timeout);
+  CONNECT (m_tools_container, &tools_container::tool_changed, this, &gui_document::tool_changed);
 
   m_actions_applier->register_action (gui_action_id::UNDO, this, &gui_document::undo);
   m_actions_applier->register_action (gui_action_id::REDO, this, &gui_document::redo);

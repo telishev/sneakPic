@@ -53,7 +53,7 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
       m_target_style_layout->addWidget (button);
     }
   m_target_style->button ((int) m_style_controller->current_style ())->setChecked (true);
-  connect (m_target_style, (void (QButtonGroup::*) (int)) &QButtonGroup::buttonClicked, this, &style_widget_handler::selected_style_changed);
+  CONNECT (m_target_style, (void (QButtonGroup::*) (int)) &QButtonGroup::buttonClicked, this, &style_widget_handler::selected_style_changed);
 
   finish_with_spacer (m_target_style_layout);
 

@@ -20,7 +20,7 @@ gui_actions::gui_actions (const shortcuts_config *cfg, std::function<bool (gui_a
   m_info = new actions_info;
   m_callback = callback;
   m_actions_mapper = new QSignalMapper (this);
-  connect (m_actions_mapper, SIGNAL (mapped (int)), this, SLOT (action_triggered (int)));
+  CONNECT (m_actions_mapper, (void (QSignalMapper::*) (int)) &QSignalMapper::mapped, this, &gui_actions::action_triggered);
 
   m_actions.resize ((int)gui_action_id::COUNT);
   for (int i = 0; i < (int)gui_action_id::COUNT; i++)
@@ -29,7 +29,7 @@ gui_actions::gui_actions (const shortcuts_config *cfg, std::function<bool (gui_a
       m_parent->addAction (act);
       act->installEventFilter (this);
       m_actions[i].reset (act);
-      CONNECT (act, SIGNAL (triggered ()), m_actions_mapper, SLOT (map ()));
+      CONNECT (act, (void (QAction::*) ()) &QAction::triggered, m_actions_mapper, (void (QSignalMapper::*) ()) &QSignalMapper::map);
       m_actions_mapper->setMapping (act, i);
     }
 
