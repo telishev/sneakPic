@@ -53,13 +53,14 @@ void fill_style::update_color_from_selection ()
     case paint_server_type::NONE:
     case paint_server_type::IRI:
     case paint_server_type::CURRENT_COLOR:
+      m_color = 0;
       break;
     }
 }
 
 void fill_style::set_selection_color ()
 {
-  if (!m_selection || m_selection->count () == 0 || m_selection->count () > 1)
+  if (!m_color || !m_selection || m_selection->count () == 0 || m_selection->count () > 1)
     return;
 
   auto fill = (*(m_selection->begin ()))->get_attribute_for_change <svg_attribute_fill> ();
@@ -67,7 +68,6 @@ void fill_style::set_selection_color ()
 
   fill->set_to_color (*m_color);
   fill_opacity->set_value (m_color->alphaF ());
-  paint_server_type fill_type = fill->server_type ();
 }
 
 void fill_style::init (items_selection *selection)

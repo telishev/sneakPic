@@ -3,10 +3,6 @@
 
 #include <QWidget>
 
-#include <memory>
-
-class connection;
-
 enum class color_single_selector_type
 {
   RGB_RED,

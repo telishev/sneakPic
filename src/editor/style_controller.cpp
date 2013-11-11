@@ -7,6 +7,7 @@
 #include "renderer/svg_painter.h"
 
 #include "svg/svg_document.h"
+#include "gui/connection.h"
 
 style_controller::style_controller (settings_t *settings_arg)
 {
@@ -26,35 +27,36 @@ style_container *style_controller::active_container ()
 void style_controller::set_painter (svg_painter *painter)
 {
   m_containers[(int) selected_style::SELECTED_STYLE]->get_fill_style ()->init (painter->selection ());
-  connect (painter->selection (), &items_selection::selection_changed, this, &style_controller::selection_changed);
-  connect (painter->document (), &svg_document::items_changed, this, &style_controller::selection_changed);
+  CONNECT (painter->selection (), &items_selection::selection_changed, this, &style_controller::selection_or_items_changed);
+  CONNECT (painter->document (), &svg_document::items_changed, this, &style_controller::selection_or_items_changed);
   m_painter = painter;
 }
 
 void style_controller::switch_to (selected_style current_style_arg)
 {
   m_current_style = current_style_arg;
-  selection_changed ();
+  selection_or_items_changed ();
 }
 
 void style_controller::update_color_momentarily ()
 {
   active_container ()->get_fill_style ()->apply_color_to_selection ();
   if (m_painter)
+  {
     m_painter->document ()->redraw ();
+  }
 }
 
 void style_controller::apply_changes ()
 {
-  active_container ()->get_fill_style ()->apply_color_to_selection ();
   if (m_painter)
     m_painter->document ()->apply_changes ();
 }
 
 
-void style_controller::selection_changed ()
+void style_controller::selection_or_items_changed ()
 {
   active_container ()->get_fill_style ()->update_color_from_selection ();
-  emit controller_updates_needed ();
+  emit target_items_changed ();
 }
 

@@ -33,9 +33,9 @@ public slots:
   void update_color_momentarily ();
   void apply_changes ();
 private slots:
-  void selection_changed ();
+  void selection_or_items_changed ();
 signals:
-  void controller_updates_needed ();
+  void target_items_changed ();
 };
 
 #endif // STYLE_CONTROLLER_H

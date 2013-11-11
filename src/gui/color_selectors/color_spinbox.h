@@ -2,6 +2,10 @@
 #define COLOR_SPINBOX_H
 #include "gui/color_selectors/color_selector.h"
 
+#include <memory>
+
+class connection;
+
 class color_spinbox : public color_selector
 {
   Q_OBJECT

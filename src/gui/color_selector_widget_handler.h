@@ -35,8 +35,10 @@ private:
   void create_hsl_tab();
   void create_rgb_tab();
 
-private slots:
+public slots:
   void update_colors_momentarily ();
+
+private slots:
   void update_colors_finally ();
   void add_typical_scroller_widget (QGridLayout *grid_layout, color_single_selector_type type);
 

@@ -37,7 +37,7 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
   CONNECT (m_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, m_color_indicator, &color_selector::color_changed_externally);
   CONNECT (m_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, m_style_controller, &style_controller::update_color_momentarily);
   CONNECT (m_color_selector_widget_handler, &color_selector_widget_handler::color_changing_finished, m_style_controller, &style_controller::apply_changes);
-  CONNECT (m_style_controller, &style_controller::controller_updates_needed, this, &style_widget_handler::update_color_in_controllers);
+  m_target_items_changed_connection = CONNECT (m_style_controller, &style_controller::target_items_changed, this, &style_widget_handler::target_items_changed);
 
   m_layout->addWidget (m_color_indicator);
 
@@ -53,7 +53,7 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
       m_target_style_layout->addWidget (button);
     }
   m_target_style->button ((int) m_style_controller->current_style ())->setChecked (true);
-  connect (m_target_style, (void (QButtonGroup::*) (int)) &QButtonGroup::buttonClicked, this, &style_widget_handler::target_style_changed);
+  connect (m_target_style, (void (QButtonGroup::*) (int)) &QButtonGroup::buttonClicked, this, &style_widget_handler::selected_style_changed);
 
   finish_with_spacer (m_target_style_layout);
 
@@ -63,10 +63,17 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
   m_style_type_widget->addTab (m_color_selector_widget_handler->widget (), QIcon (), "Fill");
   m_dock_widget_builder->add_widget (m_widget, Qt::RightDockWidgetArea, visibility_state::visible, Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-  target_style_changed ();
+  selected_style_changed ();
 };
 
-void style_widget_handler::target_style_changed ()
+void style_widget_handler::target_items_changed ()
+{
+  TEMPORARY_DISCONNECT (m_target_items_changed_connection);
+  m_color_indicator->color_changed_externally ();
+  m_color_selector_widget_handler->color_changed_momentarily ();
+}
+
+void style_widget_handler::selected_style_changed ()
 {
   if (!m_style_controller)
     return;
@@ -76,7 +83,7 @@ void style_widget_handler::target_style_changed ()
   if (checked != m_style_controller->current_style ()) // synchronize with radio button
     m_style_controller->switch_to (checked);
 
-  update_color_in_controllers();
+  update_color_in_controllers ();
 }
 
 style_widget_handler::~style_widget_handler ()
@@ -104,3 +111,4 @@ const char *enum_to_string (selected_style value)
     }
   return "";
 }
+

@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+#include <memory>
+
 class dock_widget_builder;
 
 class QButtonGroup;
@@ -14,6 +16,7 @@ class QWidget;
 
 class color_indicator;
 class color_selector_widget_handler;
+class connection;
 class settings_t;
 class style_controller;
 enum class selected_style;
@@ -35,6 +38,7 @@ class style_widget_handler : public QObject
   selected_style m_cur_target_style;
   QButtonGroup *m_target_style;
   QSignalMapper *m_target_style_mapper;
+  std::unique_ptr <connection> m_target_items_changed_connection;
 
   style_controller *m_style_controller;
 
@@ -44,9 +48,10 @@ public:
   void set_style_controller (style_controller *style_controller_arg);
 
 private slots:
-  void target_style_changed();
+  void selected_style_changed ();
+  void target_items_changed ();
 
-public slots:
+private:
   void update_color_in_controllers ();
 };
 
