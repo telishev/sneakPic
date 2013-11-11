@@ -40,6 +40,8 @@ void style_controller::switch_to (selected_style current_style_arg)
 void style_controller::update_color_momentarily ()
 {
   active_container ()->get_fill_style ()->apply_color_to_selection ();
+  if (m_painter)
+    m_painter->document ()->redraw ();
 }
 
 void style_controller::apply_changes ()
