@@ -71,10 +71,12 @@ public:
     return item;
   }
 
+  void redraw ();
+
 signals:
   void items_changed ();
 private:
-  void send_items_change ();
+  void send_items_change (bool clear);
 };
 
 #endif // SVG_DOCUMENT_H

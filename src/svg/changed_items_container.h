@@ -35,7 +35,7 @@ public:
   virtual abstract_state_t *create_state () override;
   virtual void load_from_state (const abstract_state_t *state) override;
 
-  event_items_changed *create_changed_items_event ();
+  event_items_changed *create_changed_items_event (bool need_to_clear);
 
   void set_item_changed (const std::string &item);
   void set_item_layout_changed (const std::string &item);
@@ -52,10 +52,11 @@ signals:
   void item_removed_signal (const std::string &item);
 
 private:
-  void clear ();
+
   void invalidate_bbox (const std::string &item_name);
   svg_graphics_item *get_graphics_item (const std::string &item_name) const;
   void set_children_changed (const std::string &parent_name);
+  void clear ();
 };
 
 #endif // CHANGED_ITEMS_CONTAINER_H

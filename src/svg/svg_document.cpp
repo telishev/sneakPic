@@ -127,7 +127,7 @@ void svg_document::apply_changes ()
     return;
 
   get_undo_handler ()->create_undo ();
-  send_items_change ();
+  send_items_change (true);
 }
 
 bool svg_document::signals_enabled () const
@@ -144,22 +144,27 @@ void svg_document::set_signals_enabled (bool enable)
 void svg_document::undo ()
 {
   get_undo_handler ()->undo (1);
-  send_items_change ();
+  send_items_change (true);
 }
 
 void svg_document::redo ()
 {
   get_undo_handler ()->redo (1);
-  send_items_change ();
+  send_items_change (true);
 }
 
-void svg_document::send_items_change ()
+void svg_document::send_items_change (bool clear)
 {
-  m_queue->add_event_and_wait (m_items_edit_handler->create_changed_items_event ());
+  m_queue->add_event_and_wait (m_items_edit_handler->create_changed_items_event (clear));
   emit items_changed ();
 }
 
 undo_handler *svg_document::get_undo_handler () const
 {
   return m_items_edit_handler->get_undo_handler ();
+}
+
+void svg_document::redraw ()
+{
+  send_items_change (false);
 }

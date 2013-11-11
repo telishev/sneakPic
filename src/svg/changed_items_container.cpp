@@ -71,7 +71,7 @@ void items_edit_handler_t::load_from_state (const abstract_state_t * /*state*/)
   DEBUG_PAUSE ("Not really undoable");
 }
 
-event_items_changed *items_edit_handler_t::create_changed_items_event ()
+event_items_changed *items_edit_handler_t::create_changed_items_event (bool need_to_clear)
 {
   event_items_changed *ev = new event_items_changed;
   for (const std::string &item_name : m_changed_items)
@@ -107,7 +107,9 @@ event_items_changed *items_edit_handler_t::create_changed_items_event ()
     {
       ev->add_removed_item (item_name);
     }
-  clear ();
+
+  if (need_to_clear)
+    clear ();
   return ev;
 }
 
