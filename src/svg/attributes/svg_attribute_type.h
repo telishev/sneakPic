@@ -73,17 +73,76 @@ DECLARE_ATTRIBUTE(MARKER               , "marker"             , SVG        , svg
 
 enum class svg_attribute_type
 {
-#define DECLARE_ATTRIBUTE(ENUM,NAME,NAMESPACE,CLASS,INHERIT_TYPE) ENUM,
-  DECLARE_SVG_ATTRIBUTES
-#undef DECLARE_ATTRIBUTE
+  ID,
+  SVG_VERSION,
+  WIDTH,
+  HEIGHT,
+  D,
+  STYLE,
+  CLASS,
+  FILL,
+  STROKE,
+  STROKE_LINECAP,
+  STROKE_LINEJOIN,
+  STROKE_MITERLIMIT,
+  STROKE_WIDTH,
+  TRANSFORM,
+  X1,
+  Y1,
+  X2,
+  Y2,
+  X,
+  Y,
+  R,
+  RX,
+  RY,
+  CX,
+  CY,
+  FX,
+  FY,
+  VISIBILITY,
+  DISPLAY,
+  OPACITY,
+  STROKE_OPACITY,
+  FILL_OPACITY,
+  HREF,
+  GRADIENT_UNITS,
+  SPREAD_METHOD,
+  GRADIENT_TRANSFORM,
+  OFFSET,
+  STOP_COLOR,
+  STOP_OPACITY,
+  CLIP_PATH,
+  FILL_RULE,
+  CLIP_RULE,
+  VIEW_BOX,
+  FONT_FAMILY,
+  FONT_SIZE,
+  POINTS,
+  DX,
+  DY,
+  TEXT_ANCHOR,
+  COLOR,
+  STROKE_DASH_ARRAY,
+  STROKE_DASH_OFFSET,
+  PRESERVE_ASPECT_RATIO,
+  MARKER_UNITS,
+  REFX,
+  REFY,
+  MARKER_WIDTH,
+  MARKER_HEIGHT,
+  ORIENT,
+  MARKER_START,
+  MARKER_MID,
+  MARKER_END,
+  MARKER,
 
+  COUNT,
 };
 
 static inline int enum_values_count (svg_attribute_type)
 {
-#define DECLARE_ATTRIBUTE(ENUM,NAME,NAMESPACE,CLASS,INHERIT_TYPE) +1
-  return DECLARE_SVG_ATTRIBUTES;
-#undef DECLARE_ATTRIBUTE
+  return (int)svg_attribute_type::COUNT;
 }
 
 enum class svg_inherit_type

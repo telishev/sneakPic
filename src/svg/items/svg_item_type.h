@@ -3,6 +3,35 @@
 
 /// !!!! Don't forget to update svg/attributes/svg_attribute_element_mapping.h after adding new item
 
+enum class svg_item_type
+{
+  UNKNOWN = -1,
+
+  CHARACTER_DATA,
+  SVG,
+  G,
+  PATH,
+  STYLE,
+  DEFS,
+  LINE,
+  RECT,
+  ELLIPSE,
+  CIRCLE,
+  USE,
+  STOP,
+  LINEAR_GRADIENT,
+  RADIAL_GRADIENT,
+  CLIP_PATH,
+  IMAGE,
+  TEXT,
+  POLYGON,
+  POLYLINE,
+  A,
+  MARKER,
+
+  COUNT,
+};
+
 #define DECLARE_SVG_ITEM                                          \
 /*                                                            */  \
 /*            ENUM           |   NAME           |  NAMESPACE  |         CLASS            */  \
@@ -28,14 +57,7 @@ DECLARE_ITEM(A               , "a"              , SVG         , svg_item_a      
 DECLARE_ITEM(MARKER          , "marker"         , SVG         , svg_item_marker          )   \
 
 
-enum class svg_item_type
-{
-  UNKNOWN,
-  CHARACTER_DATA,
-#define DECLARE_ITEM(ENUM,NAME,NAMESPACE,CLASS) ENUM,
-  DECLARE_SVG_ITEM
-#undef DECLARE_ITEM
-};
+
 
 
 #endif // SVG_ITEM_TYPE_H

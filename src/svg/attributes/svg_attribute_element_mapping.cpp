@@ -8,88 +8,90 @@
 #include "svg/items/svg_item_type.h"
 
 
-#define INSERT_ITEM(ITEM) cur_map.insert (svg_item_type::ITEM);
+#define INSERT_ITEM(ITEM) cur_map.insert (ITEM);
 
-#define DO_MAP_ATTRIBUTE(ATTRIBUTE,...)                        \
-  do {                                                         \
-    auto &cur_map = m_map[(int)ATTRIBUTE];                     \
-    FOR_EACH (INSERT_ITEM, __VA_ARGS__)                        \
-  } while (0);                                                 \
+#define MAP_ATTRIBUTE(ATTRIBUTE,...)                        \
+  do {                                                      \
+    auto &cur_map = m_map[(int)ATTRIBUTE];                  \
+    FOR_EACH (INSERT_ITEM, __VA_ARGS__)                     \
+  } while (0);                                              \
 
-#define MAP_ATTRIBUTE(ATTRIBUTE,...) DO_MAP_ATTRIBUTE (svg_attribute_type::ATTRIBUTE, __VA_ARGS__)
 
 svg_attribute_element_mapping::svg_attribute_element_mapping ()
 {
+  typedef svg_attribute_type s;
+  typedef svg_item_type t;
   m_map.resize (enum_values_count (svg_attribute_type ()));
-  fill_all_items (svg_attribute_type::ID);
+  fill_all_items (s::ID);
 
-  fill_presentation_attribute (svg_attribute_type::STYLE);
-  fill_presentation_attribute (svg_attribute_type::CLASS);
-  fill_presentation_attribute (svg_attribute_type::FILL);
-  fill_presentation_attribute (svg_attribute_type::STROKE);
-  fill_presentation_attribute (svg_attribute_type::STROKE_LINECAP);
-  fill_presentation_attribute (svg_attribute_type::STROKE_LINEJOIN);
-  fill_presentation_attribute (svg_attribute_type::STROKE_MITERLIMIT);
-  fill_presentation_attribute (svg_attribute_type::STROKE_WIDTH);
-  fill_presentation_attribute (svg_attribute_type::VISIBILITY);
-  fill_presentation_attribute (svg_attribute_type::DISPLAY);
-  fill_presentation_attribute (svg_attribute_type::OPACITY);
-  fill_presentation_attribute (svg_attribute_type::STROKE_OPACITY);
-  fill_presentation_attribute (svg_attribute_type::FILL_OPACITY);
-  fill_presentation_attribute (svg_attribute_type::STOP_COLOR);
-  fill_presentation_attribute (svg_attribute_type::STOP_OPACITY);
-  fill_presentation_attribute (svg_attribute_type::CLIP_PATH);
-  fill_presentation_attribute (svg_attribute_type::FILL_RULE);
-  fill_presentation_attribute (svg_attribute_type::CLIP_RULE);
-  fill_presentation_attribute (svg_attribute_type::FONT_FAMILY);
-  fill_presentation_attribute (svg_attribute_type::FONT_SIZE);
-  fill_presentation_attribute (svg_attribute_type::TEXT_ANCHOR);
-  fill_presentation_attribute (svg_attribute_type::COLOR);
-  fill_presentation_attribute (svg_attribute_type::STROKE_DASH_ARRAY);
-  fill_presentation_attribute (svg_attribute_type::STROKE_DASH_OFFSET);
-  fill_presentation_attribute (svg_attribute_type::MARKER_START);
-  fill_presentation_attribute (svg_attribute_type::MARKER_MID);
-  fill_presentation_attribute (svg_attribute_type::MARKER_END);
-  fill_presentation_attribute (svg_attribute_type::MARKER);
+  fill_presentation_attribute (s::STYLE);
+  fill_presentation_attribute (s::CLASS);
+  fill_presentation_attribute (s::FILL);
+  fill_presentation_attribute (s::STROKE);
+  fill_presentation_attribute (s::STROKE_LINECAP);
+  fill_presentation_attribute (s::STROKE_LINEJOIN);
+  fill_presentation_attribute (s::STROKE_MITERLIMIT);
+  fill_presentation_attribute (s::STROKE_WIDTH);
+  fill_presentation_attribute (s::VISIBILITY);
+  fill_presentation_attribute (s::DISPLAY);
+  fill_presentation_attribute (s::OPACITY);
+  fill_presentation_attribute (s::STROKE_OPACITY);
+  fill_presentation_attribute (s::FILL_OPACITY);
+  fill_presentation_attribute (s::STOP_COLOR);
+  fill_presentation_attribute (s::STOP_OPACITY);
+  fill_presentation_attribute (s::CLIP_PATH);
+  fill_presentation_attribute (s::FILL_RULE);
+  fill_presentation_attribute (s::CLIP_RULE);
+  fill_presentation_attribute (s::FONT_FAMILY);
+  fill_presentation_attribute (s::FONT_SIZE);
+  fill_presentation_attribute (s::TEXT_ANCHOR);
+  fill_presentation_attribute (s::COLOR);
+  fill_presentation_attribute (s::STROKE_DASH_ARRAY);
+  fill_presentation_attribute (s::STROKE_DASH_OFFSET);
+  fill_presentation_attribute (s::MARKER_START);
+  fill_presentation_attribute (s::MARKER_MID);
+  fill_presentation_attribute (s::MARKER_END);
+  fill_presentation_attribute (s::MARKER);
 
-  MAP_ATTRIBUTE  (SVG_VERSION          , SVG);
-  MAP_ATTRIBUTE  (WIDTH                , IMAGE, RECT, SVG, USE);
-  MAP_ATTRIBUTE  (HEIGHT               , IMAGE, RECT, SVG, USE);
-  MAP_ATTRIBUTE  (D                    , PATH);
-  MAP_ATTRIBUTE  (TRANSFORM            , CIRCLE, CLIP_PATH, DEFS, ELLIPSE, G, IMAGE, LINE, PATH, POLYGON, POLYLINE, RECT, TEXT, USE);
-  MAP_ATTRIBUTE  (X1                   , LINE, LINEAR_GRADIENT);
-  MAP_ATTRIBUTE  (Y1                   , LINE, LINEAR_GRADIENT);
-  MAP_ATTRIBUTE  (X2                   , LINE, LINEAR_GRADIENT);
-  MAP_ATTRIBUTE  (Y2                   , LINE, LINEAR_GRADIENT);
-  MAP_ATTRIBUTE  (X                    , IMAGE, RECT, SVG, TEXT, USE);
-  MAP_ATTRIBUTE  (Y                    , IMAGE, RECT, SVG, TEXT, USE);
-  MAP_ATTRIBUTE  (R                    , CIRCLE, RADIAL_GRADIENT);
-  MAP_ATTRIBUTE  (RX                   , ELLIPSE, RECT);
-  MAP_ATTRIBUTE  (RY                   , ELLIPSE, RECT);
-  MAP_ATTRIBUTE  (CX                   , CIRCLE, ELLIPSE, RADIAL_GRADIENT);
-  MAP_ATTRIBUTE  (CY                   , CIRCLE, ELLIPSE, RADIAL_GRADIENT);
-  MAP_ATTRIBUTE  (FX                   , RADIAL_GRADIENT);
-  MAP_ATTRIBUTE  (FY                   , RADIAL_GRADIENT);
-  MAP_ATTRIBUTE  (HREF                 , RADIAL_GRADIENT, LINEAR_GRADIENT, IMAGE, USE);
-  MAP_ATTRIBUTE  (GRADIENT_UNITS       , RADIAL_GRADIENT, LINEAR_GRADIENT);
-  MAP_ATTRIBUTE  (SPREAD_METHOD        , RADIAL_GRADIENT, LINEAR_GRADIENT);
-  MAP_ATTRIBUTE  (GRADIENT_TRANSFORM   , RADIAL_GRADIENT, LINEAR_GRADIENT);
-  MAP_ATTRIBUTE  (OFFSET               , STOP);
-  MAP_ATTRIBUTE  (VIEW_BOX             , SVG, MARKER);
-  MAP_ATTRIBUTE  (POINTS               , POLYGON, POLYLINE);
-  MAP_ATTRIBUTE  (DX                   , TEXT);
-  MAP_ATTRIBUTE  (DY                   , TEXT);
-  MAP_ATTRIBUTE  (PRESERVE_ASPECT_RATIO, IMAGE, SVG);
-  MAP_ATTRIBUTE  (MARKER_UNITS         , MARKER);
-  MAP_ATTRIBUTE  (MARKER_HEIGHT        , MARKER);
-  MAP_ATTRIBUTE  (MARKER_WIDTH         , MARKER);
-  MAP_ATTRIBUTE  (REFX                 , MARKER);
-  MAP_ATTRIBUTE  (REFY                 , MARKER);
-  MAP_ATTRIBUTE  (ORIENT               , MARKER);
-  MAP_ATTRIBUTE  (MARKER_START         , PATH, LINE, POLYLINE, POLYGON);
-  MAP_ATTRIBUTE  (MARKER_MID           , PATH, LINE, POLYLINE, POLYGON);
-  MAP_ATTRIBUTE  (MARKER_END           , PATH, LINE, POLYLINE, POLYGON);
-  MAP_ATTRIBUTE  (MARKER               , PATH, LINE, POLYLINE, POLYGON);
+  MAP_ATTRIBUTE  (s::SVG_VERSION          , t::SVG);
+  MAP_ATTRIBUTE  (s::WIDTH                , t::IMAGE, t::RECT, t::SVG, t::USE);
+  MAP_ATTRIBUTE  (s::HEIGHT               , t::IMAGE, t::RECT, t::SVG, t::USE);
+  MAP_ATTRIBUTE  (s::D                    , t::PATH);
+  MAP_ATTRIBUTE  (s::TRANSFORM            , t::CIRCLE, t::CLIP_PATH, t::DEFS, t::ELLIPSE, t::G, t::IMAGE, t::LINE,
+    t::PATH, t::POLYGON, t::POLYLINE, t::RECT, t::TEXT, t::USE);
+  MAP_ATTRIBUTE  (s::X1                   , t::LINE, t::LINEAR_GRADIENT);
+  MAP_ATTRIBUTE  (s::Y1                   , t::LINE, t::LINEAR_GRADIENT);
+  MAP_ATTRIBUTE  (s::X2                   , t::LINE, t::LINEAR_GRADIENT);
+  MAP_ATTRIBUTE  (s::Y2                   , t::LINE, t::LINEAR_GRADIENT);
+  MAP_ATTRIBUTE  (s::X                    , t::IMAGE, t::RECT, t::SVG, t::TEXT, t::USE);
+  MAP_ATTRIBUTE  (s::Y                    , t::IMAGE, t::RECT, t::SVG, t::TEXT, t::USE);
+  MAP_ATTRIBUTE  (s::R                    , t::CIRCLE, t::RADIAL_GRADIENT);
+  MAP_ATTRIBUTE  (s::RX                   , t::ELLIPSE, t::RECT);
+  MAP_ATTRIBUTE  (s::RY                   , t::ELLIPSE, t::RECT);
+  MAP_ATTRIBUTE  (s::CX                   , t::CIRCLE, t::ELLIPSE, t::RADIAL_GRADIENT);
+  MAP_ATTRIBUTE  (s::CY                   , t::CIRCLE, t::ELLIPSE, t::RADIAL_GRADIENT);
+  MAP_ATTRIBUTE  (s::FX                   , t::RADIAL_GRADIENT);
+  MAP_ATTRIBUTE  (s::FY                   , t::RADIAL_GRADIENT);
+  MAP_ATTRIBUTE  (s::HREF                 , t::RADIAL_GRADIENT, t::LINEAR_GRADIENT, t::IMAGE, t::USE);
+  MAP_ATTRIBUTE  (s::GRADIENT_UNITS       , t::RADIAL_GRADIENT, t::LINEAR_GRADIENT);
+  MAP_ATTRIBUTE  (s::SPREAD_METHOD        , t::RADIAL_GRADIENT, t::LINEAR_GRADIENT);
+  MAP_ATTRIBUTE  (s::GRADIENT_TRANSFORM   , t::RADIAL_GRADIENT, t::LINEAR_GRADIENT);
+  MAP_ATTRIBUTE  (s::OFFSET               , t::STOP);
+  MAP_ATTRIBUTE  (s::VIEW_BOX             , t::SVG, t::MARKER);
+  MAP_ATTRIBUTE  (s::POINTS               , t::POLYGON, t::POLYLINE);
+  MAP_ATTRIBUTE  (s::DX                   , t::TEXT);
+  MAP_ATTRIBUTE  (s::DY                   , t::TEXT);
+  MAP_ATTRIBUTE  (s::PRESERVE_ASPECT_RATIO, t::IMAGE, t::SVG);
+  MAP_ATTRIBUTE  (s::MARKER_UNITS         , t::MARKER);
+  MAP_ATTRIBUTE  (s::MARKER_HEIGHT        , t::MARKER);
+  MAP_ATTRIBUTE  (s::MARKER_WIDTH         , t::MARKER);
+  MAP_ATTRIBUTE  (s::REFX                 , t::MARKER);
+  MAP_ATTRIBUTE  (s::REFY                 , t::MARKER);
+  MAP_ATTRIBUTE  (s::ORIENT               , t::MARKER);
+  MAP_ATTRIBUTE  (s::MARKER_START         , t::PATH, t::LINE, t::POLYLINE, t::POLYGON);
+  MAP_ATTRIBUTE  (s::MARKER_MID           , t::PATH, t::LINE, t::POLYLINE, t::POLYGON);
+  MAP_ATTRIBUTE  (s::MARKER_END           , t::PATH, t::LINE, t::POLYLINE, t::POLYGON);
+  MAP_ATTRIBUTE  (s::MARKER               , t::PATH, t::LINE, t::POLYLINE, t::POLYGON);
 
   check ();
 }
@@ -113,14 +115,15 @@ bool svg_attribute_element_mapping::can_be_specified (svg_item_type item_type, s
 
 void svg_attribute_element_mapping::fill_presentation_attribute (svg_attribute_type type)
 {
-  DO_MAP_ATTRIBUTE (type, SVG, G, A, PATH, DEFS, LINE, RECT, ELLIPSE, CIRCLE, USE, STOP, LINEAR_GRADIENT, RADIAL_GRADIENT, CLIP_PATH, IMAGE, TEXT, POLYGON, POLYLINE, STYLE);
+  typedef svg_item_type t;
+  MAP_ATTRIBUTE (type, t::SVG, t::G, t::A, t::PATH, t::DEFS, t::LINE, t::RECT, t::ELLIPSE, t::CIRCLE, t::USE, t::STOP,
+    t::LINEAR_GRADIENT, t::RADIAL_GRADIENT, t::CLIP_PATH, t::IMAGE, t::TEXT, t::POLYGON, t::POLYLINE, t::STYLE);
 }
 
 void svg_attribute_element_mapping::fill_all_items (svg_attribute_type type)
 {
-#define DECLARE_ITEM(ENUM,NAME,NAMESPACE,CLASS) m_map[(int)type].insert (svg_item_type::ENUM);
-  DECLARE_SVG_ITEM
-#undef DECLARE_ITEM
+  for (int i = 0; i < (int)svg_item_type::COUNT; i++)
+    m_map[(int)type].insert ((svg_item_type)i);
 }
 
 void svg_attribute_element_mapping::check ()

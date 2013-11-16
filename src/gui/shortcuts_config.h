@@ -51,6 +51,8 @@ private:
   void fill_mouse_default ();
   void fill_drag_default ();
   void fill_action_default ();
+  void set_mouse_shortcut (mouse_shortcut_enum index, mouse_event_type type, mouse_button button, keyboard_modifiers modifiers);
+  void set_mouse_drag_shortcut (mouse_drag_shortcut_enum index, mouse_event_type type, mouse_button button, keyboard_modifiers modifiers);
 };
 
 #endif // SHORTCUTS_CONFIG_H

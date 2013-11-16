@@ -1,23 +1,9 @@
 #include "gui/shortcuts_config.h"
 
-#include "common/common_utils.h"
-
 #include "gui/mouse_shortcuts_handler.h"
 #include "gui/actions_info.h"
 #include "gui/gui_action_id.h"
 
-
-
-#define ADD_MODIFIER(MODIFIER) keyboard_modifier::MODIFIER |
-
-#define MOUSE_SHORTCUT(MOUSE_EVENT_TYPE,MOUSE_BUTTON,...) \
-  EXPAND (mouse_shortcut (mouse_event_type::MOUSE_EVENT_TYPE, mouse_button::MOUSE_BUTTON, FOR_EACH (ADD_MODIFIER, __VA_ARGS__) keyboard_modifier::NONE))
-
-#define SET_MOUSE_SHORTCUT(INDEX,MOUSE_EVENT_TYPE,MOUSE_BUTTON,...) \
-  EXPAND (m_mouse_shortcuts[(int)mouse_shortcut_enum::INDEX] = MOUSE_SHORTCUT (MOUSE_EVENT_TYPE, MOUSE_BUTTON, __VA_ARGS__);)
-
-#define SET_MOUSE_DRAG_SHORTCUT(INDEX,MOUSE_EVENT_TYPE,MOUSE_BUTTON,...) \
-  EXPAND (m_drag_shortcuts[(int)mouse_drag_shortcut_enum::INDEX] = MOUSE_SHORTCUT (MOUSE_EVENT_TYPE, MOUSE_BUTTON, __VA_ARGS__);)
 
 shortcuts_config::shortcuts_config ()
 {
@@ -40,25 +26,29 @@ void shortcuts_config::fill_by_default ()
 
 void shortcuts_config::fill_mouse_default ()
 {
-///------------------------------------------------------------------------------------
-///                  |    SHORTCUT_NAME         | EVENT_TYPE|    BUTTON    | MODIFIERS
-  SET_MOUSE_SHORTCUT (SELECT_ITEM               , CLICK     , BUTTON_LEFT  , NO_MODIFIERS);
-  SET_MOUSE_SHORTCUT (ADD_ITEM_TO_SELECTION     , CLICK     , BUTTON_LEFT  , SHIFT       );
-  SET_MOUSE_SHORTCUT (FIND_CURRENT_OBJECT       , MOVE      , ANY_BUTTON   , ALL         );
-  SET_MOUSE_SHORTCUT (HIGHLIGHT_HANDLE          , MOVE      , ANY_BUTTON   , ALL         );
-  SET_MOUSE_SHORTCUT (SELECT_HANDLE             , CLICK     , BUTTON_LEFT  , ALL         );
+  typedef mouse_shortcut_enum m;
+  typedef mouse_event_type e;
+  typedef mouse_button b;
+  typedef keyboard_modifier k;
+  set_mouse_shortcut (m::SELECT_ITEM            , e::CLICK  , b::BUTTON_LEFT, k::NO_MODIFIERS);
+  set_mouse_shortcut (m::ADD_ITEM_TO_SELECTION  , e::CLICK  , b::BUTTON_LEFT, k::SHIFT       );
+  set_mouse_shortcut (m::FIND_CURRENT_OBJECT    , e::MOVE   , b::ANY_BUTTON , k::ALL         );
+  set_mouse_shortcut (m::HIGHLIGHT_HANDLE       , e::MOVE   , b::ANY_BUTTON , k::ALL         );
+  set_mouse_shortcut (m::SELECT_HANDLE          , e::CLICK  , b::BUTTON_LEFT, k::ALL         );
 }
 
 void shortcuts_config::fill_drag_default ()
 {
+  typedef mouse_drag_shortcut_enum m;
+  typedef mouse_event_type e;
+  typedef mouse_button b;
+  typedef keyboard_modifier k;
 
-  ///-----------------------------------------------------------------------------------------
-  ///                     |    SHORTCUT_NAME    | EVENT_TYPE|    BUTTON    | MODIFIERS
-  SET_MOUSE_DRAG_SHORTCUT (PAN                  , DRAG_START, BUTTON_MIDDLE, ALL                  );
-  SET_MOUSE_DRAG_SHORTCUT (RUBBERBAND_SELECTION , DRAG_START, BUTTON_LEFT  , NO_MODIFIERS, SHIFT  );
-  SET_MOUSE_DRAG_SHORTCUT (DRAG_OBJECTS         , DRAG_START, BUTTON_LEFT  , NO_MODIFIERS         );
-  SET_MOUSE_DRAG_SHORTCUT (CREATE_RECTANGLE     , DRAG_START, BUTTON_LEFT,   ALL                  );
-  SET_MOUSE_DRAG_SHORTCUT (DRAG_HANDLE          , DRAG_START, BUTTON_LEFT,   ALL                  );
+  set_mouse_drag_shortcut (m::PAN                  , e::DRAG_START, b::BUTTON_MIDDLE, k::ALL                      );
+  set_mouse_drag_shortcut (m::RUBBERBAND_SELECTION , e::DRAG_START, b::BUTTON_LEFT  , k::NO_MODIFIERS | k::SHIFT  );
+  set_mouse_drag_shortcut (m::DRAG_OBJECTS         , e::DRAG_START, b::BUTTON_LEFT  , k::NO_MODIFIERS             );
+  set_mouse_drag_shortcut (m::CREATE_RECTANGLE     , e::DRAG_START, b::BUTTON_LEFT  , k::ALL                      );
+  set_mouse_drag_shortcut (m::DRAG_HANDLE          , e::DRAG_START, b::BUTTON_LEFT  , k::ALL                      );
 }
 
 void shortcuts_config::fill_action_default ()
@@ -66,6 +56,16 @@ void shortcuts_config::fill_action_default ()
   actions_info info;
   for (int i = 0; i < (int)gui_action_id::COUNT; i++)
     m_action_shortcuts[i] = info.default_shortcut ((gui_action_id)i);
+}
+
+void shortcuts_config::set_mouse_shortcut (mouse_shortcut_enum index, mouse_event_type type, mouse_button button, keyboard_modifiers modifiers)
+{
+  m_mouse_shortcuts[(int)index] = mouse_shortcut (type, button, modifiers);
+}
+
+void shortcuts_config::set_mouse_drag_shortcut (mouse_drag_shortcut_enum index, mouse_event_type type, mouse_button button, keyboard_modifiers modifiers)
+{
+  m_drag_shortcuts[(int)index] = mouse_shortcut (type, button, modifiers);
 }
 
 
