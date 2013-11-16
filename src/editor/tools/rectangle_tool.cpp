@@ -4,7 +4,7 @@
 
 #include "editor/items_selection.h"
 
-#include "gui/mouse_shortcuts_handler.h"
+#include "gui/actions_applier.h"
 #include "gui/settings.h"
 
 #include "renderer/overlay_renderer.h"
@@ -23,7 +23,7 @@ rectangle_tool::rectangle_tool( svg_painter *painter )
   : abstract_tool (painter)
 {
   m_items_container = m_painter->item_container ();
-  ADD_SHORTCUT_DRAG (m_mouse_handler, CREATE_RECTANGLE,
+  ADD_SHORTCUT_DRAG (m_actions_applier, CREATE_RECTANGLE,
                      return start_rectangle_positioning (m_event.pos ()),
                      return continue_rectangle_positioning (m_event.pos ()),
                      return end_rectangle_positioning (m_event.pos ()));

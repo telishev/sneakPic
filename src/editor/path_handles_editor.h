@@ -10,7 +10,7 @@ class path_handles_editor : public handles_editor
 {
   path_anchors_selection *m_handles_selection;
 public:
-  path_handles_editor (overlay_renderer *overlay, svg_painter *painter, mouse_shortcuts_handler *mouse_handler);
+  path_handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier);
   virtual ~path_handles_editor ();
 
   void begin_changes ();

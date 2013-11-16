@@ -49,6 +49,7 @@
 #include "svg/svg_utils.h"
 #include "items_selection_renderer.h"
 
+using namespace std::placeholders;
 
 svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings)
   : abstract_painter (glwidget)
@@ -62,12 +63,14 @@ svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, even
   m_settings = settings;
   m_selection = new items_selection (document->item_container ());
   m_actions_applier = new actions_applier;
-  m_mouse_handler = create_mouse_shortcuts ();
+  m_mouse_handler = new mouse_shortcuts_handler (m_settings->shortcuts_cfg (), 
+                                                 std::bind (&svg_painter::process_mouse_event, this, _1, _2));
   update_status_bar_widgets ();
   set_document (document);
 
   CONNECT (m_selection, &items_selection::selection_changed, this, &svg_painter::selection_changed);
 
+  create_mouse_shortcuts ();
   m_actions_applier->register_action (gui_action_id::DELETE_ITEMS, this, &svg_painter::remove_items_in_selection);
 }
 
@@ -114,15 +117,7 @@ void svg_painter::set_document (svg_document *document)
 
 unsigned int svg_painter::mouse_event (const mouse_event_t &m_event)
 {
-
-  if (m_current_tool && m_current_tool->mouse_event (m_event))
-    return 0;
-
-  if (m_mouse_handler->process_mouse_event (m_event))
-    return 0;
-
-
-  return 0;
+  return m_mouse_handler->process_mouse_event (m_event);
 }
 
 void svg_painter::draw ()
@@ -272,15 +267,13 @@ bool svg_painter::select_item (const QPoint &pos, bool clear_selection)
   return true;
 }
 
-mouse_shortcuts_handler *svg_painter::create_mouse_shortcuts ()
+void svg_painter::create_mouse_shortcuts ()
 {
-  mouse_shortcuts_handler *handler = new mouse_shortcuts_handler (m_settings->shortcuts_cfg ());
-  ADD_SHORTCUT (handler, SELECT_ITEM           , return select_item (m_event.pos (), true));
-  ADD_SHORTCUT (handler, ADD_ITEM_TO_SELECTION , return select_item (m_event.pos (), false));
-  ADD_SHORTCUT (handler, FIND_CURRENT_OBJECT   , return find_current_object (m_event.pos ()));
+  ADD_SHORTCUT (m_actions_applier, SELECT_ITEM           , return select_item (m_event.pos (), true));
+  ADD_SHORTCUT (m_actions_applier, ADD_ITEM_TO_SELECTION , return select_item (m_event.pos (), false));
+  ADD_SHORTCUT (m_actions_applier, FIND_CURRENT_OBJECT   , return find_current_object (m_event.pos ()));
 
-  ADD_SHORTCUT_DRAG (handler, PAN, return start_pan (m_event.pos ()), return pan_picture (m_event.pos ()), return true);
-  return handler;
+  ADD_SHORTCUT_DRAG (m_actions_applier, PAN, return start_pan (m_event.pos ()), return pan_picture (m_event.pos ()), return true);
 }
 
 bool svg_painter::start_pan (const QPoint &pos)
@@ -430,4 +423,13 @@ bool svg_painter::remove_items_in_selection ()
   m_selection->clear ();
   document ()->apply_changes ();
   return true;
+}
+
+bool svg_painter::process_mouse_event (const mouse_event_t &event, mouse_shortcut_enum_union action)
+{
+  if (m_current_tool)
+    if (m_current_tool->mouse_event (event, action))
+      return true;
+
+  return m_actions_applier->apply_action (event, action);
 }

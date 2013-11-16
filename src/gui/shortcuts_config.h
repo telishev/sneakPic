@@ -8,24 +8,25 @@
 
 enum class gui_action_id;
 
+/// Higher actions have higher priority
 enum class mouse_shortcut_enum
 {
-  SELECT_ITEM,
-  ADD_ITEM_TO_SELECTION,
-  FIND_CURRENT_OBJECT,
   HIGHLIGHT_HANDLE,
+  FIND_CURRENT_OBJECT,
   SELECT_HANDLE,
+  ADD_ITEM_TO_SELECTION,
+  SELECT_ITEM,
 
   COUNT,
 };
 
 enum class mouse_drag_shortcut_enum
 {
+  CREATE_RECTANGLE,
   PAN,
   DRAG_HANDLE,
   DRAG_OBJECTS,
   RUBBERBAND_SELECTION,
-  CREATE_RECTANGLE,
 
   COUNT,
 };

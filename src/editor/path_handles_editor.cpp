@@ -6,17 +6,19 @@
 #include "editor/path_anchor_handle.h"
 #include "editor/path_preview_handle.h"
 #include "editor/path_handles_selection.h"
+#include "editor/path_control_point_handle.h"
 
 #include "path/svg_path.h"
 
 #include "svg/items/svg_item_path.h"
 #include "svg/attributes/svg_attribute_path_data.h"
 #include "svg/items/svg_item_type.h"
+#include "svg/svg_document.h"
 
 #include "renderer/svg_painter.h"
-#include "gui/mouse_shortcuts_handler.h"
-#include "path_control_point_handle.h"
-#include "svg/svg_document.h"
+
+#include "gui/actions_applier.h"
+#include "gui/shortcuts_config.h"
 
 class path_elements_handles : public element_handles
 {
@@ -104,12 +106,12 @@ private:
 };
 
 
-path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter *painter, mouse_shortcuts_handler *mouse_handler)
-  : handles_editor (overlay, painter, mouse_handler)
+path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
+  : handles_editor (overlay, painter, applier)
 {
   m_handles_selection = new path_anchors_selection (painter->selection (), painter->document ());
 
-  ADD_SHORTCUT (m_mouse_handler, SELECT_HANDLE, return select_handle (m_event));
+  ADD_SHORTCUT (m_applier, SELECT_HANDLE, return select_handle (m_event));
 }
 
 path_handles_editor::~path_handles_editor ()

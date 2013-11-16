@@ -4,26 +4,17 @@
 #include "common/memory_deallocation.h"
 
 #include "gui/mouse_filter.h"
+#include "gui/shortcuts_config.h"
 
 
-mouse_shortcuts_handler::mouse_shortcuts_handler (const shortcuts_config *cfg)
+mouse_shortcuts_handler::mouse_shortcuts_handler (const shortcuts_config *cfg, const mouse_callback_func_t &callback)
 {
   m_cfg = cfg;
+  m_mouse_callback = callback;
 }
 
 mouse_shortcuts_handler::~mouse_shortcuts_handler ()
 {
-}
-
-void mouse_shortcuts_handler::add_shortcut (mouse_shortcut_enum shortcut, const mouse_shortcut_func_t &func)
-{
-  DEBUG_ASSERT (!m_shortcuts[(int)shortcut]);
-  m_shortcuts[(int)shortcut] = func;
-}
-
-void mouse_shortcuts_handler::add_drag_shortcut (mouse_drag_shortcut_enum shortcut, const mouse_shortcut_func_t &start, const mouse_shortcut_func_t &drag, const mouse_shortcut_func_t &end)
-{
-  m_drag_shortcuts[(int)shortcut] = drag_shortcut_func_t (start, drag, end);
 }
 
 bool mouse_shortcuts_handler::process_mouse_event (const mouse_event_t &m_event)
@@ -41,7 +32,7 @@ bool mouse_shortcuts_handler::process_mouse_shortcuts (const mouse_event_t &m_ev
       mouse_shortcut shortcut = m_cfg->shortcut_mouse ((mouse_shortcut_enum)i);
       if (shortcut.is_applicable (m_event))
         {
-          if (m_shortcuts[i] && m_shortcuts[i] (m_event))
+          if (m_mouse_callback (m_event, mouse_shortcut_enum_union ((mouse_shortcut_enum)i)))
             return true;
         }
     }
@@ -64,9 +55,9 @@ bool mouse_shortcuts_handler::process_mouse_drag_shortcuts (const mouse_event_t 
 
 bool mouse_shortcuts_handler::process_mouse_drag_start (const mouse_event_t &m_event)
 {
-  for (const drag_shortcut_func_t *shortcut : get_applicable_shortcuts (m_event, false))
+  for (mouse_drag_shortcut_enum shortcut : get_applicable_shortcuts (m_event, false))
     {
-      if (shortcut->m_start (m_event))
+      if (m_mouse_callback (m_event, mouse_shortcut_enum_union (shortcut)))
         {
           m_drag_stack.push_back (shortcut);
           return true;
@@ -81,39 +72,39 @@ bool mouse_shortcuts_handler::process_mouse_drag (const mouse_event_t &m_event)
   if (m_drag_stack.empty ())
     return false;
 
-  return m_drag_stack.back ()->m_drag (m_event);
+  return m_mouse_callback (m_event, mouse_shortcut_enum_union (m_drag_stack.back ()));
 }
 
 bool mouse_shortcuts_handler::process_mouse_drag_end (const mouse_event_t &m_event)
 {
-  for (const drag_shortcut_func_t *shortcut : get_applicable_shortcuts (m_event, true))
+  for (mouse_drag_shortcut_enum shortcut : get_applicable_shortcuts (m_event, true))
     {
       auto it = std::find (m_drag_stack.begin (), m_drag_stack.end (), shortcut);
       if (it == m_drag_stack.end ())
         continue;
 
-      shortcut->m_end (m_event);
+      m_mouse_callback (m_event, mouse_shortcut_enum_union (shortcut));
       m_drag_stack.erase (it);
     }
 
   return false;
 }
 
-std::vector<const mouse_shortcuts_handler::drag_shortcut_func_t *>
+std::vector<mouse_drag_shortcut_enum>
 mouse_shortcuts_handler::get_applicable_shortcuts (const mouse_event_t &m_event, bool ignore_modifiers) const
 {
-  std::vector<const drag_shortcut_func_t *> result;
+  std::vector<mouse_drag_shortcut_enum> result;
   for (int i = 0; i < (int)mouse_drag_shortcut_enum::COUNT; i++)
     {
       mouse_shortcut shortcut = m_cfg->drag_shortcut_mouse ((mouse_drag_shortcut_enum)i);
       if (shortcut.is_applicable (m_event, ignore_modifiers))
         {
-          if (m_drag_shortcuts[i].m_drag)
-            result.push_back (&m_drag_shortcuts[i]);
+          result.push_back ((mouse_drag_shortcut_enum)i);
         }
     }
 
   return result;
 }
+
 
 

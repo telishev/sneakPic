@@ -2,7 +2,7 @@
 #define HANDLES_EDITOR_H
 
 class svg_painter;
-class mouse_shortcuts_handler;
+class actions_applier;
 class overlay_renderer;
 class handles_renderer;
 class element_handles;
@@ -21,7 +21,7 @@ class handles_editor
 {
 protected:
   svg_painter *m_painter;
-  mouse_shortcuts_handler *m_mouse_handler;
+  actions_applier *m_applier;
   overlay_renderer *m_overlay;
 
 private:
@@ -33,7 +33,7 @@ private:
   map_t m_handles;
 
 public:
-  handles_editor (overlay_renderer *overlay, svg_painter *painter, mouse_shortcuts_handler *mouse_handler);
+  handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier);
   ~handles_editor ();
 
   void update_handles ();

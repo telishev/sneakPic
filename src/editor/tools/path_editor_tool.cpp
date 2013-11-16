@@ -21,8 +21,8 @@
 path_editor_tool::path_editor_tool (svg_painter *painter)
   : abstract_tool (painter)
 {
-  m_path_editor = new path_handles_editor (m_overlay, m_painter, m_mouse_handler);
-  m_rubberband = new rubberband_selection (m_overlay, m_painter, m_mouse_handler);
+  m_path_editor = new path_handles_editor (m_overlay, m_painter, m_actions_applier);
+  m_rubberband = new rubberband_selection (m_overlay, m_painter, m_actions_applier);
 
   m_actions_applier->register_action (gui_action_id::DELETE_HANDLES, this, &path_editor_tool::delete_handles);
 }

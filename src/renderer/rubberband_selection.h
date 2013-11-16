@@ -7,7 +7,7 @@ class QRectF;
 class QPointF;
 class rubberband_renderer_item;
 class svg_painter;
-class mouse_shortcuts_handler;
+class actions_applier;
 class mouse_event_t;
 
 class rubberband_selection
@@ -17,9 +17,9 @@ class rubberband_selection
 
   rubberband_renderer_item *m_render_item;
   svg_painter *m_painter;
-  mouse_shortcuts_handler *m_mouse_handler;
+  actions_applier *m_applier;
 public:
-  rubberband_selection (overlay_renderer *overlay, svg_painter *painter, mouse_shortcuts_handler *mouse_handler);
+  rubberband_selection (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier);
   ~rubberband_selection ();
   
   bool start_selection (QPointF pos);

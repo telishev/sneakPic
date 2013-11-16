@@ -21,6 +21,7 @@ class svg_items_container;
 class items_selection_renderer;
 class actions_applier;
 class renderer_page;
+class mouse_shortcut_enum_union;
 
 enum class gui_action_id;
 
@@ -89,13 +90,14 @@ private:
   void update_drawing (QTransform transform);
   bool select_item (const QPoint &pos, bool clear_selection);
 
-  mouse_shortcuts_handler *create_mouse_shortcuts ();
+  void create_mouse_shortcuts ();
   bool start_pan (const QPoint &pos);
   bool pan_picture (const QPoint &pos);
   bool find_current_object (const QPoint &pos);
   void create_overlay_containers ();
   abstract_svg_item *get_current_item_for_point (const QPoint &pos);
   bool remove_items_in_selection ();
+  bool process_mouse_event (const mouse_event_t &event, mouse_shortcut_enum_union action);
 };
 
 #endif // SVG_PAINTER_H

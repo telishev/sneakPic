@@ -5,7 +5,7 @@
 #include "editor/items_selection.h"
 #include "editor/items_move_handler.h"
 
-#include "gui/mouse_shortcuts_handler.h"
+#include "gui/actions_applier.h"
 #include "gui/settings.h"
 
 #include "renderer/svg_painter.h"
@@ -21,10 +21,10 @@
 selector_tool::selector_tool (svg_painter *painter)
   : abstract_tool (painter)
 {
-  m_rubberband = new rubberband_selection (m_overlay, m_painter, m_mouse_handler);
+  m_rubberband = new rubberband_selection (m_overlay, m_painter, m_actions_applier);
   m_move_handler = new items_move_handler (m_painter->item_container (), m_overlay, m_painter->selection (), m_painter->document ());
 
-  ADD_SHORTCUT_DRAG (m_mouse_handler, DRAG_OBJECTS,
+  ADD_SHORTCUT_DRAG (m_actions_applier, DRAG_OBJECTS,
     return start_moving_object (m_event.pos ()),
     return move_object (m_event.pos ()),
     return end_moving_object ());

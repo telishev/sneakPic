@@ -16,7 +16,7 @@
 #include "renderer/overlay_renderer.h"
 #include "renderer/svg_painter.h"
 
-#include "gui/mouse_shortcuts_handler.h"
+#include "gui/actions_applier.h"
 #include "gui/shortcuts_config.h"
 #include "gui/mouse_filter.h"
 
@@ -48,7 +48,7 @@ public:
   }
 };
 
-rubberband_selection::rubberband_selection (overlay_renderer *overlay, svg_painter *painter, mouse_shortcuts_handler *mouse_handler)
+rubberband_selection::rubberband_selection (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
 {
   m_start_x = 0.0;
   m_start_y = 0.0;
@@ -57,9 +57,9 @@ rubberband_selection::rubberband_selection (overlay_renderer *overlay, svg_paint
   m_render_item = new rubberband_renderer_item;
   overlay->add_item (m_render_item, overlay_layer_type::TEMP);
   m_painter = painter;
-  m_mouse_handler = mouse_handler;
+  m_applier = applier;
 
-  ADD_SHORTCUT_DRAG (m_mouse_handler, RUBBERBAND_SELECTION,
+  ADD_SHORTCUT_DRAG (m_applier, RUBBERBAND_SELECTION,
                      return start_selection (m_event.pos ()),
                      return move_selection (m_event.pos ()),
                      return end_selection (m_event));

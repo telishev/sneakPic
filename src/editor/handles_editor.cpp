@@ -13,26 +13,28 @@
 #include "renderer/overlay_renderer.h"
 
 #include "gui/mouse_shortcuts_handler.h"
+#include "gui/shortcuts_config.h"
+#include "gui/actions_applier.h"
 
 
 
-handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter, mouse_shortcuts_handler *mouse_handler)
+handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
 {
   m_overlay = overlay;
   m_painter = painter;
-  m_mouse_handler = mouse_handler;
+  m_applier = applier;
   m_cur_handle = nullptr;
   m_highlighted_handle = nullptr;
 
   m_renderer = new handles_renderer (this);
   m_overlay->add_item (m_renderer, overlay_layer_type::TEMP);
 
-  ADD_SHORTCUT_DRAG (m_mouse_handler, DRAG_HANDLE,
+  ADD_SHORTCUT_DRAG (m_applier, DRAG_HANDLE,
                      return start_drag (m_event.pos ()),
                      return drag_handle (m_event.pos ()),
                      return end_drag (m_event.pos ()));
 
-  ADD_SHORTCUT (m_mouse_handler, HIGHLIGHT_HANDLE, return highlight_handle (m_event.pos ()));
+  ADD_SHORTCUT (m_applier, HIGHLIGHT_HANDLE, return highlight_handle (m_event.pos ()));
 }
 
 handles_editor::~handles_editor ()
