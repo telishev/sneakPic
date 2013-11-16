@@ -5,16 +5,12 @@ class svg_item_factory;
 class svg_items_container;
 
 class abstract_svg_item;
-class svg_item_svg;
 class renderer_items_container;
-class abstract_renderer_event;
 class rendered_items_cache;
-class selectors_container;
-class settings_t;
 class events_queue;
 class undo_handler;
 class items_edit_handler_t;
-class QXmlStreamReader;
+class document_change_sender;
 
 #include <QString>
 #include <QObject>
@@ -28,6 +24,7 @@ class svg_document : public QObject
   svg_items_container   *m_item_container;
   events_queue          *m_queue;
   items_edit_handler_t  *m_items_edit_handler;
+  document_change_sender *m_change_sender;
 
   abstract_svg_item *m_root;
   QString m_filename;
@@ -54,7 +51,7 @@ public:
 
   std::string create_overlay_name ();
 
-  void set_queue (events_queue *queue) { m_queue = queue; }
+  void set_queue (events_queue *queue);
 
   void apply_changes ();
   bool signals_enabled () const;
@@ -75,8 +72,9 @@ public:
 
 signals:
   void items_changed ();
+
 private:
-  void send_items_change (bool clear);
+  void update_renderer ();
 };
 
 #endif // SVG_DOCUMENT_H

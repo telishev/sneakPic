@@ -1,11 +1,5 @@
 #include "svg/svg_document.h"
 
-#include <QFile>
-#include <QDomDocument>
-#include <QTextStream>
-#include <QXmlStreamWriter>
-#include <QXmlStreamReader>
-
 #include "common/memory_deallocation.h"
 #include "common/debug_utils.h"
 
@@ -33,6 +27,7 @@
 #include "renderer/event_items_changed.h"
 #include "svg_reader.h"
 #include "svg_writer.h"
+#include "document_change_sender.h"
 
 
 
@@ -43,6 +38,7 @@ svg_document::svg_document ()
   m_items_edit_handler = new items_edit_handler_t (m_item_container);
   m_root = nullptr;
   m_queue = nullptr;
+  m_change_sender = nullptr;
   set_signals_enabled (false);
 }
 
@@ -51,6 +47,7 @@ svg_document::~svg_document ()
   FREE (m_item_factory);
   FREE (m_item_container);
   FREE (m_items_edit_handler);
+  FREE (m_change_sender);
 }
 
 bool svg_document::read_file (const QString &filename_arg)
@@ -127,7 +124,7 @@ void svg_document::apply_changes ()
     return;
 
   get_undo_handler ()->create_undo ();
-  send_items_change (true);
+  update_renderer ();
 }
 
 bool svg_document::signals_enabled () const
@@ -144,19 +141,13 @@ void svg_document::set_signals_enabled (bool enable)
 void svg_document::undo ()
 {
   get_undo_handler ()->undo (1);
-  send_items_change (true);
+  update_renderer ();
 }
 
 void svg_document::redo ()
 {
   get_undo_handler ()->redo (1);
-  send_items_change (true);
-}
-
-void svg_document::send_items_change (bool clear)
-{
-  m_queue->add_event_and_wait (m_items_edit_handler->create_changed_items_event (clear));
-  emit items_changed ();
+  update_renderer ();
 }
 
 undo_handler *svg_document::get_undo_handler () const
@@ -166,5 +157,20 @@ undo_handler *svg_document::get_undo_handler () const
 
 void svg_document::redraw ()
 {
-  send_items_change (false);
+  if (m_change_sender)
+    m_change_sender->set_redraw_needed ();
+  emit items_changed ();
+}
+
+void svg_document::set_queue (events_queue *queue)
+{
+  m_queue = queue;
+  m_change_sender = new document_change_sender (m_queue, m_items_edit_handler);
+}
+
+void svg_document::update_renderer ()
+{
+  if (m_change_sender)
+    m_change_sender->update ();
+  emit items_changed ();
 }

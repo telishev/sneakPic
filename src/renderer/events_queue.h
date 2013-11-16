@@ -37,6 +37,8 @@ public:
 
   bool is_interrupted () const;
   void reset_interrupt ();
+
+  bool is_event_finished (int event_id);
 };
 
 #endif // EVENTS_QUEUE_H

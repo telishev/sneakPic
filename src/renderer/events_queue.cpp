@@ -118,4 +118,10 @@ void events_queue::reset_interrupt ()
   m_interrupt = false;
 }
 
+bool events_queue::is_event_finished (int event_id)
+{
+  QMutexLocker ml (m_mutex);
+  return m_calculated_id >= event_id;
+}
+
 
