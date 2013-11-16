@@ -250,7 +250,7 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
   return *std::max_element (items.begin (), items.end (), compare_items_z_order);
 }
 
-bool svg_painter::select_item (const QPoint &pos, bool clear_selection)
+bool svg_painter::do_select_item (const QPoint &pos, bool clear_selection)
 {
   if (clear_selection)
     m_selection->clear ();
@@ -263,13 +263,19 @@ bool svg_painter::select_item (const QPoint &pos, bool clear_selection)
   return true;
 }
 
+bool svg_painter::select_item (const QPoint &pos)
+{
+  return do_select_item (pos, true);
+}
+
 void svg_painter::create_mouse_shortcuts ()
 {
-  ADD_SHORTCUT (m_actions_applier, SELECT_ITEM           , return select_item (m_event.pos (), true));
-  ADD_SHORTCUT (m_actions_applier, ADD_ITEM_TO_SELECTION , return select_item (m_event.pos (), false));
-  ADD_SHORTCUT (m_actions_applier, FIND_CURRENT_OBJECT   , return find_current_object (m_event.pos ()));
+  m_actions_applier->add_shortcut (mouse_shortcut_enum::SELECT_ITEM, this, &svg_painter::select_item);
+  m_actions_applier->add_shortcut (mouse_shortcut_enum::ADD_ITEM_TO_SELECTION, this, &svg_painter::add_item_to_selection);
+  m_actions_applier->add_shortcut (mouse_shortcut_enum::FIND_CURRENT_OBJECT, this, &svg_painter::find_current_object);
 
-  ADD_SHORTCUT_DRAG (m_actions_applier, PAN, return start_pan (m_event.pos ()), return pan_picture (m_event.pos ()), return true);
+  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::PAN, this, 
+    &svg_painter::start_pan, &svg_painter::pan_picture, &svg_painter::end_pan);
 }
 
 bool svg_painter::start_pan (const QPoint &pos)
@@ -428,4 +434,9 @@ bool svg_painter::process_mouse_event (const mouse_event_t &event, mouse_shortcu
       return true;
 
   return m_actions_applier->apply_action (event, action);
+}
+
+bool svg_painter::add_item_to_selection (const QPoint &pos)
+{
+  return do_select_item (pos, false);
 }

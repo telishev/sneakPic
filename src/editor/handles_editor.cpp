@@ -29,12 +29,8 @@ handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter,
   m_renderer = new handles_renderer (this);
   m_overlay->add_item (m_renderer, overlay_layer_type::TEMP);
 
-  ADD_SHORTCUT_DRAG (m_applier, DRAG_HANDLE,
-                     return start_drag (m_event.pos ()),
-                     return drag_handle (m_event.pos ()),
-                     return end_drag (m_event.pos ()));
-
-  ADD_SHORTCUT (m_applier, HIGHLIGHT_HANDLE, return highlight_handle (m_event.pos ()));
+  m_applier->add_drag_shortcut (mouse_drag_shortcut_enum::DRAG_HANDLE, this,
+                                &handles_editor::start_drag, &handles_editor::drag_handle, &handles_editor::end_drag);
 }
 
 handles_editor::~handles_editor ()

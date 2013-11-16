@@ -88,11 +88,14 @@ private:
   void reset_transform ();
   void send_changes (bool interrrupt_rendering);
   void update_drawing (QTransform transform);
-  bool select_item (const QPoint &pos, bool clear_selection);
+  bool do_select_item (const QPoint &pos, bool clear_selection);
+  bool select_item (const QPoint &pos);
+  bool add_item_to_selection (const QPoint &pos);
 
   void create_mouse_shortcuts ();
   bool start_pan (const QPoint &pos);
   bool pan_picture (const QPoint &pos);
+  bool end_pan (const QPoint &/*pos*/) { return true; }
   bool find_current_object (const QPoint &pos);
   void create_overlay_containers ();
   abstract_svg_item *get_current_item_for_point (const QPoint &pos);
@@ -101,5 +104,6 @@ private:
 };
 
 #endif // SVG_PAINTER_H
+
 
 

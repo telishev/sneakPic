@@ -23,10 +23,8 @@ rectangle_tool::rectangle_tool( svg_painter *painter )
   : abstract_tool (painter)
 {
   m_items_container = m_painter->item_container ();
-  ADD_SHORTCUT_DRAG (m_actions_applier, CREATE_RECTANGLE,
-                     return start_rectangle_positioning (m_event.pos ()),
-                     return continue_rectangle_positioning (m_event.pos ()),
-                     return end_rectangle_positioning (m_event.pos ()));
+  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::CREATE_RECTANGLE, this,
+    &rectangle_tool::start_rectangle_positioning, &rectangle_tool::continue_rectangle_positioning, &rectangle_tool::end_rectangle_positioning);
 
   m_renderer_item = new renderer_base_shape_item ("");
   m_renderer_item->set_ignore_bbox (true);

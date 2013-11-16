@@ -57,11 +57,8 @@ rubberband_selection::rubberband_selection (overlay_renderer *overlay, svg_paint
   m_painter = painter;
   m_applier = applier;
 
-  ADD_SHORTCUT_DRAG (m_applier, RUBBERBAND_SELECTION,
-                     return start_selection (m_event.pos ()),
-                     return move_selection (m_event.pos ()),
-                     return end_selection (m_event));
-
+  m_applier->add_drag_shortcut (mouse_drag_shortcut_enum::RUBBERBAND_SELECTION, this,
+    &rubberband_selection::start_selection, &rubberband_selection::move_selection, &rubberband_selection::end_selection);
 }
 
 rubberband_selection::~rubberband_selection ()

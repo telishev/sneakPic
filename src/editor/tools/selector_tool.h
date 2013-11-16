@@ -21,7 +21,7 @@ public:
 private:
   bool start_moving_object (const QPoint &pos);
   bool move_object (const QPoint &pos);
-  bool end_moving_object ();
+  bool end_moving_object (const QPoint &pos);
 };
 
 #endif // SELECTOR_TOOL_H

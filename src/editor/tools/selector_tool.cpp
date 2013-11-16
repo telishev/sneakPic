@@ -24,10 +24,8 @@ selector_tool::selector_tool (svg_painter *painter)
   m_rubberband = new rubberband_selection (m_overlay, m_painter, m_actions_applier);
   m_move_handler = new items_move_handler (m_painter->item_container (), m_overlay, m_painter->selection (), m_painter->document ());
 
-  ADD_SHORTCUT_DRAG (m_actions_applier, DRAG_OBJECTS,
-    return start_moving_object (m_event.pos ()),
-    return move_object (m_event.pos ()),
-    return end_moving_object ());
+  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::DRAG_OBJECTS, this,
+    &selector_tool::start_moving_object, &selector_tool::move_object, &selector_tool::end_moving_object);
 
 }
 
@@ -64,7 +62,7 @@ bool selector_tool::move_object (const QPoint &pos)
   return true;
 }
 
-bool selector_tool::end_moving_object ()
+bool selector_tool::end_moving_object (const QPoint &)
 {
   m_move_handler->end_move ();
   m_painter->redraw ();

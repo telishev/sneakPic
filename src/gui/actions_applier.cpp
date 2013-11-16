@@ -34,13 +34,13 @@ bool actions_applier::apply_action (gui_action_id id)
   return m_actions[(int)id] ();
 }
 
-void actions_applier::add_shortcut (mouse_shortcut_enum shortcut, const mouse_shortcut_func_t &func)
+void actions_applier::add_shortcut_func (mouse_shortcut_enum shortcut, const mouse_shortcut_func_t &func)
 {
   DEBUG_ASSERT (!m_shortcuts[(int)shortcut]);
   m_shortcuts[(int)shortcut] = func;
 }
 
-void actions_applier::add_drag_shortcut (mouse_drag_shortcut_enum shortcut, const mouse_shortcut_func_t &start, const mouse_shortcut_func_t &drag, const mouse_shortcut_func_t &end)
+void actions_applier::add_drag_shortcut_func (mouse_drag_shortcut_enum shortcut, const mouse_shortcut_func_t &start, const mouse_shortcut_func_t &drag, const mouse_shortcut_func_t &end)
 {
   m_drag_shortcuts[(int)shortcut] = drag_shortcut_func_t (start, drag, end);
 }

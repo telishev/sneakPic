@@ -23,6 +23,8 @@ public:
   keyboard_modifier modifier () const { return m_modifier; }
   mouse_event_type event_type () const { return m_event_type; }
   mouse_button button () const { return m_button; }
+
+  operator QPointF () const { return m_pos; }
 };
 
 class mouse_filter : public QObject

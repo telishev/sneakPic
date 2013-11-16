@@ -40,15 +40,15 @@ void shortcuts_config::fill_mouse_default ()
 void shortcuts_config::fill_drag_default ()
 {
   typedef mouse_drag_shortcut_enum m;
-  typedef mouse_event_type e;
   typedef mouse_button b;
   typedef keyboard_modifier k;
 
-  set_mouse_drag_shortcut (m::PAN                  , e::DRAG_START, b::BUTTON_MIDDLE, k::ALL                      );
-  set_mouse_drag_shortcut (m::RUBBERBAND_SELECTION , e::DRAG_START, b::BUTTON_LEFT  , k::NO_MODIFIERS | k::SHIFT  );
-  set_mouse_drag_shortcut (m::DRAG_OBJECTS         , e::DRAG_START, b::BUTTON_LEFT  , k::NO_MODIFIERS             );
-  set_mouse_drag_shortcut (m::CREATE_RECTANGLE     , e::DRAG_START, b::BUTTON_LEFT  , k::ALL                      );
-  set_mouse_drag_shortcut (m::DRAG_HANDLE          , e::DRAG_START, b::BUTTON_LEFT  , k::ALL                      );
+  set_mouse_drag_shortcut (m::PAN                  , b::BUTTON_MIDDLE, k::ALL                      );
+  set_mouse_drag_shortcut (m::RUBBERBAND_SELECTION , b::BUTTON_LEFT  , k::NO_MODIFIERS | k::SHIFT  );
+  set_mouse_drag_shortcut (m::HANDLES_SELECTION    , b::BUTTON_LEFT  , k::NO_MODIFIERS | k::SHIFT  );
+  set_mouse_drag_shortcut (m::DRAG_OBJECTS         , b::BUTTON_LEFT  , k::NO_MODIFIERS             );
+  set_mouse_drag_shortcut (m::CREATE_RECTANGLE     , b::BUTTON_LEFT  , k::ALL                      );
+  set_mouse_drag_shortcut (m::DRAG_HANDLE          , b::BUTTON_LEFT  , k::ALL                      );
 }
 
 void shortcuts_config::fill_action_default ()
@@ -63,9 +63,9 @@ void shortcuts_config::set_mouse_shortcut (mouse_shortcut_enum index, mouse_even
   m_mouse_shortcuts[(int)index] = mouse_shortcut (type, button, modifiers);
 }
 
-void shortcuts_config::set_mouse_drag_shortcut (mouse_drag_shortcut_enum index, mouse_event_type type, mouse_button button, keyboard_modifiers modifiers)
+void shortcuts_config::set_mouse_drag_shortcut (mouse_drag_shortcut_enum index,  mouse_button button, keyboard_modifiers modifiers)
 {
-  m_drag_shortcuts[(int)index] = mouse_shortcut (type, button, modifiers);
+  m_drag_shortcuts[(int)index] = mouse_shortcut (mouse_event_type::DRAG_START, button, modifiers);
 }
 
 

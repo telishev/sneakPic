@@ -111,7 +111,7 @@ path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter
 {
   m_handles_selection = new path_anchors_selection (painter->selection (), painter->document ());
 
-  ADD_SHORTCUT (m_applier, SELECT_HANDLE, return select_handle (m_event));
+  m_applier->add_shortcut (mouse_shortcut_enum::SELECT_HANDLE, this, &path_handles_editor::select_handle);
 }
 
 path_handles_editor::~path_handles_editor ()
