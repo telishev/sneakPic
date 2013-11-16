@@ -2,10 +2,7 @@
 
 #include "renderer/qt2skia.h"
 
-#pragma warning(push, 0)
-#include <SkPaint.h>
-#include <SkEmptyShader.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 renderer_painter_server_color::renderer_painter_server_color (const QColor &color)
 {

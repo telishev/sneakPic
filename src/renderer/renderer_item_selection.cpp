@@ -3,12 +3,7 @@
 #include <QRectF>
 #include <qmath.h>
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#include <SkDashPathEffect.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_state.h"

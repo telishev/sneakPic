@@ -6,9 +6,7 @@
 
 #include "svg/attributes/svg_attributes_enum.h"
 
-#pragma warning(push, 0)
-#include <SkDevice.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 renderer_graphics_item::renderer_graphics_item (const std::string &name)
   : abstract_renderer_item (name)

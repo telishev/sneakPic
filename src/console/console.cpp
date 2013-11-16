@@ -20,12 +20,7 @@
 #include "svg/svg_document.h"
 #include "svg/svg_utils.h"
 
-
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 
 void console_renderer::render_to_image (svg_document *doc, QString file_name, int width, int height)

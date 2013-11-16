@@ -1,16 +1,13 @@
 #ifndef QT2SKIA_H
 #define QT2SKIA_H
-#include <Qt>
-
-#pragma warning(push, 0)
-#include <SkPath.h>
-#pragma warning(pop)
 
 class SkMatrix;
 struct SkPoint;
 class SkPaint;
 class SkBitmap;
 struct SkRect;
+struct SkIRect;
+class SkPath;
 
 class QPointF;
 class QTransform;
@@ -38,7 +35,7 @@ public:
   static SkRect rect (const QRect &rect);
   static SkRect rect (const QRectF &rect);
   static SkIRect Irect (const QRect &rect);
-  static SkPath::FillType fill_rule (Qt::FillRule rule);
+  static int fill_rule (int rule);
   static SkIRect Irect (const QRectF &rect);
   
 };

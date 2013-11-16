@@ -8,12 +8,7 @@
 #include "renderer/rendered_items_cache.h"
 #include "renderer/render_cache_id.h"
 
-
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 #include <QRect>
 #include <QTransform>

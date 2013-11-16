@@ -8,12 +8,7 @@
 
 #include "svg/attributes/svg_attributes_enum.h"
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#include <SkPoint.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 
 renderer_item_image::renderer_item_image (const std::string &name)

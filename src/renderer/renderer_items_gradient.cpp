@@ -6,10 +6,7 @@
 
 #include <memory>
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkGradientShader.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 void renderer_base_gradient_item::set_opacity (double opacity)
 {

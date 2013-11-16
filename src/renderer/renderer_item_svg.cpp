@@ -6,11 +6,7 @@
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_config.h"
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 
 renderer_item_svg::renderer_item_svg (const std::string &name)

@@ -8,9 +8,7 @@
 
 #include <QColor>
 
-#pragma warning(push, 0)
-#include <SkPaint.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 
 abstract_renderer_item::abstract_renderer_item (const std::string &name)

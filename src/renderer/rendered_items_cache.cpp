@@ -9,11 +9,10 @@
 #include <QMutex>
 #include <QTransform>
 #include <QColor>
-
-#pragma warning(push, 0)
-#include <SkBitmap.h>
 #include <set>
-#pragma warning(pop)
+
+#include "skia/skia_includes.h"
+
 
 struct cache_bitmap_t
 {

@@ -1,10 +1,6 @@
 #include "renderer/renderer_overlay_path.h"
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 #include <QColor>
 

@@ -4,9 +4,7 @@
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_config.h"
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 
 renderer_page::renderer_page (double width, double height)

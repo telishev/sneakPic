@@ -19,13 +19,7 @@
 #include "renderer/renderer_config.h"
 #include "renderer/events_queue.h"
 
-
-
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 
 svg_renderer::svg_renderer (rendered_items_cache *cache, events_queue *queue)

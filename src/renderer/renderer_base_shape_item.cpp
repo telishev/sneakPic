@@ -13,13 +13,7 @@
 #include "renderer/renderer_items_container.h"
 #include "renderer/renderer_state.h"
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkDashPathEffect.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#include <SkPoint.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 renderer_base_shape_item::renderer_base_shape_item (const std::string &name)
   : renderer_graphics_item (name)

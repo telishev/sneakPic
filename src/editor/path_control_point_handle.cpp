@@ -7,9 +7,7 @@
 #include <QTransform>
 #include <QColor>
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 #include "common/debug_utils.h"
 

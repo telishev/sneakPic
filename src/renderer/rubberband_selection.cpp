@@ -1,9 +1,7 @@
 #include "renderer/rubberband_selection.h"
 
 #include <QRectF>
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 #include "editor/items_selection.h"
 

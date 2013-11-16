@@ -10,11 +10,7 @@
 #include <QPixmap>
 #include <QPainter>
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 renderer_item_group::renderer_item_group (const std::string &name)
   : abstract_renderer_item (name)

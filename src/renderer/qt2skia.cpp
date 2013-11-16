@@ -9,13 +9,9 @@
 #include <QRect>
 #include <QRectF>
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#include <SkPoint.h>
 #include "path/svg_path.h"
-#pragma warning(pop)
+#include "skia/skia_includes.h"
+
 
 SkMatrix qt2skia::matrix (const QTransform &tr)
 {
@@ -29,7 +25,7 @@ SkPoint qt2skia::point (const QPointF &point)
   return SkPoint::Make (SkFloatToScalar (point.x ()), SkFloatToScalar (point.y ()));
 }
 
-SkPath::FillType qt2skia::fill_rule (Qt::FillRule rule)
+int qt2skia::fill_rule (int rule)
 {
   switch (rule)
     {
@@ -81,7 +77,7 @@ SkPath qt2skia::path (const QPainterPath &qpath)
     path.close ();
   // Qt doesn't have any special definition if path is closed expect that it's first and last points are equal
 
-  path.setFillType (qt2skia::fill_rule (qpath.fillRule ()));
+  path.setFillType ((SkPath::FillType)qt2skia::fill_rule (qpath.fillRule ()));
   return path;
 }
 

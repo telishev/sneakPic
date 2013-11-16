@@ -1,10 +1,6 @@
 #include "renderer/svg_painter.h"
 
-#pragma warning(push, 0)
-#include <SkCanvas.h>
-#include <SkSurface.h>
-#include <SkDevice.h>
-#pragma warning(pop)
+#include "skia/skia_includes.h"
 
 #include <memory>
 
