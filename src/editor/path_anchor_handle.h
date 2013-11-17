@@ -32,6 +32,8 @@ public:
   int point_id () const { return m_anchor_id; }
   std::string item_name () const;
 
+  QPointF get_handle_center () const;
+
 protected:
   virtual int distance_to_mouse (QPoint screen_pos, QTransform transform) const override;
   virtual void set_mouse_hovered (bool hovered) override;
@@ -41,7 +43,6 @@ protected:
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
 
 private:
-  QPointF get_handle_center () const;
   QRect get_element_rect (QTransform transform) const;
 
   void apply_drag ();

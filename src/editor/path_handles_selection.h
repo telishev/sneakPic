@@ -31,7 +31,6 @@ public:
   void clear ();
 
   void update ();
-  void select_by_rect (const QRectF &rect);
 
   bool is_selected (const std::string &item, int id) const;
 

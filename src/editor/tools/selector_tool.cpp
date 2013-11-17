@@ -9,8 +9,8 @@
 #include "gui/settings.h"
 
 #include "renderer/svg_painter.h"
-#include "renderer/rubberband_selection.h"
 #include "renderer/overlay_renderer.h"
+#include "renderer/items_rubberband_selector.h"
 
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_items_container.h"
@@ -21,7 +21,7 @@
 selector_tool::selector_tool (svg_painter *painter)
   : abstract_tool (painter)
 {
-  m_rubberband = new rubberband_selection (m_overlay, m_painter, m_actions_applier);
+  m_rubberband = new items_rubberband_selector (m_overlay, m_painter, m_actions_applier);
   m_move_handler = new items_move_handler (m_painter->item_container (), m_overlay, m_painter->selection (), m_painter->document ());
 
   m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::DRAG_OBJECTS, this,

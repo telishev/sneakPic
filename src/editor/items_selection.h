@@ -36,6 +36,7 @@ public:
   items_selection (svg_items_container *container);
   ~items_selection ();
 
+  bool empty () { return m_selection.empty (); }
   int count () const;
   const set_type &selection () const { return m_selection; }
 
@@ -55,6 +56,7 @@ public:
   iterator end ();
 
   void remove_unavailable_items ();
+
 
 signals:
   void selection_changed ();

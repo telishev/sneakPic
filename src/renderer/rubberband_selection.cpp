@@ -46,18 +46,17 @@ public:
   }
 };
 
-rubberband_selection::rubberband_selection (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
+rubberband_selection::rubberband_selection (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier, mouse_drag_shortcut_enum drag_shortcut)
 {
   m_start_x = 0.0;
   m_start_y = 0.0;
   m_end_x = 0.0;
   m_end_y = 0.0;
   m_render_item = new rubberband_renderer_item;
-  overlay->add_item (m_render_item, overlay_layer_type::TEMP);
-  m_painter = painter;
+  overlay->add_item (m_render_item, overlay_layer_type::TEMP);  m_painter = painter;
   m_applier = applier;
 
-  m_applier->add_drag_shortcut (mouse_drag_shortcut_enum::RUBBERBAND_SELECTION, this,
+  m_applier->add_drag_shortcut (drag_shortcut, this,
     &rubberband_selection::start_selection, &rubberband_selection::move_selection, &rubberband_selection::end_selection);
 }
 
@@ -66,9 +65,12 @@ rubberband_selection::~rubberband_selection ()
   FREE (m_render_item);
 }
 
-bool rubberband_selection::start_selection (QPointF pos)
+bool rubberband_selection::start_selection (const mouse_event_t &m_event)
 {
-  QPointF start_point = m_painter->get_local_pos (QPointF (pos));
+  if (m_start_func && !m_start_func (m_event))
+    return false;
+
+  QPointF start_point = m_painter->get_local_pos (m_event.pos ());
   m_end_x = m_start_x = start_point.x ();
   m_end_y = m_start_y = start_point.y ();
   m_render_item->set_rect (selection_rect ());
@@ -76,9 +78,12 @@ bool rubberband_selection::start_selection (QPointF pos)
   return true;
 }
 
-bool rubberband_selection::move_selection (QPointF pos)
+bool rubberband_selection::move_selection (const mouse_event_t &m_event)
 {
-  QPointF start_point = m_painter->get_local_pos (QPointF (pos));
+  if (m_drag_func && !m_drag_func (m_event))
+    return false;
+
+  QPointF start_point = m_painter->get_local_pos (m_event.pos ());
   m_end_x = start_point.x ();
   m_end_y = start_point.y ();
   m_render_item->set_rect (selection_rect ());
@@ -88,11 +93,8 @@ bool rubberband_selection::move_selection (QPointF pos)
 
 bool rubberband_selection::end_selection (const mouse_event_t &event)
 {
-  items_selection *selection = m_painter->selection ();
-  if (event.modifier () != keyboard_modifier::SHIFT)
-    selection->clear ();
-
-  selection->add_items_for_rect (selection_rect (), m_painter->item_container ()->get_root ());
+  if (m_end_func && !m_end_func (event))
+    return false;
 
   m_start_x = 0.0;
   m_start_y = 0.0;

@@ -42,11 +42,6 @@ void path_anchors_selection::clear ()
   m_selected_anchors.clear ();
 }
 
-void path_anchors_selection::select_by_rect (const QRectF &/*rect*/)
-{
-
-}
-
 void path_anchors_selection::update ()
 {
   std::vector<std::string> removed_items;

@@ -7,6 +7,7 @@
 #include "editor/path_preview_handle.h"
 #include "editor/path_handles_selection.h"
 #include "editor/path_control_point_handle.h"
+#include "editor/items_selection.h"
 
 #include "path/svg_path.h"
 
@@ -15,6 +16,7 @@
 #include "svg/items/svg_item_type.h"
 #include "svg/svg_document.h"
 
+#include "renderer/rubberband_selection.h"
 #include "renderer/svg_painter.h"
 
 #include "gui/actions_applier.h"
@@ -23,6 +25,8 @@
 class path_elements_handles : public element_handles
 {
   std::vector<abstract_handle *> m_handles;
+  std::vector<path_anchor_handle *> m_anchor_handles;
+
   svg_path *m_path;
   svg_item_path *m_path_item;
   path_handles_editor *m_editor;
@@ -45,7 +49,11 @@ public:
           add_controls (i);
 
         for (int i = 0; i < total_anchors; i++)
-          m_handles.push_back (new path_anchor_handle (m_editor, m_path_item, i, m_path));
+          {
+            path_anchor_handle *handle = new path_anchor_handle (m_editor, m_path_item, i, m_path);
+            m_anchor_handles.push_back (handle);
+            m_handles.push_back (handle);
+          }
       }
 
   }
@@ -59,6 +67,8 @@ public:
 
     FREE (m_path);
   }
+
+  const std::vector<path_anchor_handle *> &anchor_handles () { return m_anchor_handles; }
 
 
 protected:
@@ -110,6 +120,21 @@ path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter
   : handles_editor (overlay, painter, applier)
 {
   m_handles_selection = new path_anchors_selection (painter->selection (), painter->document ());
+  m_rubberband = new rubberband_selection (overlay, painter, applier, mouse_drag_shortcut_enum::HANDLES_SELECTION);
+
+  m_rubberband->set_start_func ([=] (const mouse_event_t &)
+    {
+      return !painter->selection ()->empty ();
+    });
+
+  m_rubberband->set_end_func ([=] (const mouse_event_t &m_event)
+    {
+      if (m_event.modifier () != SHIFT)
+        m_handles_selection->clear ();
+
+      select_by_rect (m_rubberband->selection_rect ());
+      return true;
+    });
 
   m_applier->add_shortcut (mouse_shortcut_enum::SELECT_HANDLE, this, &path_handles_editor::select_handle);
 }
@@ -142,7 +167,7 @@ bool path_handles_editor::select_handle (const mouse_event_t &mevent)
   m_handles_selection->clear ();
   m_handles_selection->add_anchor (control_point->item_name (), control_point->point_id ());
   update_handles ();
-  m_painter->update ();
+  update ();
   return true;
 }
 
@@ -165,4 +190,26 @@ void path_handles_editor::update ()
 void path_handles_editor::update_handles_impl ()
 {
   m_handles_selection->update ();
+}
+
+void path_handles_editor::select_by_rect (const QRectF &rect)
+{
+  QRectF local_rect = m_painter->cur_transform ().mapRect (rect);
+  for (const auto &handle : *this)
+    {
+      /// TODO: do it without dynamic_cast
+      path_elements_handles *handles = dynamic_cast<path_elements_handles *> (handle.second.get ());
+      if (!handles)
+        continue;
+
+      for (auto control_point : handles->anchor_handles ())
+        {
+          QPointF center = control_point->get_handle_center ();
+          if (local_rect.contains (center))
+            m_handles_selection->add_anchor (control_point->item_name (), control_point->point_id ());
+        }
+    }
+
+  update_handles ();
+  update ();
 }
