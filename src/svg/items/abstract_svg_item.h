@@ -1,7 +1,7 @@
 #ifndef BASE_SVG_ITEM_H
 #define BASE_SVG_ITEM_H
 
-#include <unordered_map>
+#include <map>
 #include <utility>
 #include <functional>
 #include <vector>
@@ -37,7 +37,7 @@ enum class svg_attribute_type;
 class abstract_svg_item : public undoable
 {
   svg_document *m_document;
-  std::unordered_map<std::string, int> m_attributes;
+  std::map<std::string, int> m_attributes;
 
   std::string m_original_id;
   std::string m_own_id;
@@ -100,13 +100,13 @@ public:
   bool has_attribute (const std::string &type_name) const;
 
   /// checks for correctness
-  bool check ();
+  bool process_after_read ();
 
   bool is_cloned () const;
   /// creates cloned item, for "use" item
   abstract_svg_item *create_clone ();
 
-  void process_after_read ();
+  void register_item_name ();
 
   virtual const svg_graphics_item *to_graphics_item () const { return nullptr; }
   virtual svg_graphics_item *to_graphics_item () { return nullptr; }
@@ -121,7 +121,7 @@ public:
   void create_unique_name ();
 
 protected:
-  virtual bool check_item () = 0;
+  virtual bool process_item_after_read () { return true; }
 
   virtual abstract_state_t *create_state () override;
   virtual void load_from_state (const abstract_state_t *state) override;

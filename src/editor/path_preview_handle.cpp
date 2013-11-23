@@ -12,12 +12,12 @@
 #include "path/svg_path.h"
 
 #include "svg/items/svg_item_path.h"
+#include "svg/attributes/svg_attribute_path_data.h"
 
 
-path_preview_handle::path_preview_handle (svg_item_path *item, svg_path *path)
+path_preview_handle::path_preview_handle (svg_item_path *item)
 {
   m_item = item;
-  m_path = path;
 }
 
 path_preview_handle::~path_preview_handle ()
@@ -56,7 +56,8 @@ void path_preview_handle::draw (SkCanvas &canvas, const renderer_state &state, c
   canvas.resetMatrix ();
 
   QTransform transform = m_item->full_transform ();
-  svg_path path = *m_path;
+  auto path_data = m_item->get_computed_attribute<svg_attribute_path_data> ();
+  svg_path path = *path_data->path ();
   path.apply_transform (transform * state.transform ());
 
   SkPaint stroke_paint;

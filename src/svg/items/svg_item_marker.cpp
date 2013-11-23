@@ -60,7 +60,3 @@ abstract_renderer_item *svg_item_marker::create_renderer_item_for_marker (QPoint
   return renderer_item;
 }
 
-bool svg_item_marker::check_item ()
-{
-  return true;
-}

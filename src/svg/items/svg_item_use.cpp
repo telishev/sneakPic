@@ -61,7 +61,7 @@ svg_item_use::~svg_item_use ()
 {
 }
 
-bool svg_item_use::check_item ()
+bool svg_item_use::process_item_after_read ()
 {
   return update_children_tree ();
 }

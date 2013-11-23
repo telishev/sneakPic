@@ -19,9 +19,6 @@ public:
   virtual ~svg_item_marker () override;
   abstract_renderer_item *create_renderer_item_for_marker (QPointF target_point, QPointF bisector, QTransform transform, double stroke_width);
 
-protected:
-  virtual bool check_item () override;
-
 };
 
 

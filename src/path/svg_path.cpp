@@ -39,6 +39,11 @@ single_path_element *svg_path::element (size_t index)
   return nullptr;
 }
 
+const single_path_element *svg_path::element (size_t index) const
+{
+  return const_cast<svg_path *> (this)->element (index);
+}
+
 size_t svg_path::total_points () const
 {
   size_t total = 0;
@@ -139,7 +144,7 @@ size_t svg_path::prev_point (size_t index) const
   const single_subpath *subpath = 0;
   get_subpath_and_index (index, subpath, subpath_index);
   if (subpath_index == 0)
-    return subpath->first_point_is_last () ? global_index (subpath->size () - 1, subpath) : index;
+    return subpath->first_point_is_last () ? global_point_index (subpath->size () - 1, subpath) : index;
   else
     return index - 1;
 }
@@ -150,12 +155,12 @@ size_t svg_path::next_point (size_t index) const
   const single_subpath *subpath = 0;
   get_subpath_and_index (index, subpath, subpath_index);
   if (subpath_index == subpath->size () - 1)
-    return subpath->first_point_is_last () ? global_index (0, subpath) : index;
+    return subpath->first_point_is_last () ? global_point_index (0, subpath) : index;
   else
     return index + 1;
 }
 
-size_t svg_path::global_index (size_t local_index, const single_subpath *subpath) const
+size_t svg_path::global_point_index (size_t local_index, const single_subpath *subpath) const
 {
   size_t total = 0;
   for (const auto &cur_subpath : *this)
@@ -168,3 +173,45 @@ size_t svg_path::global_index (size_t local_index, const single_subpath *subpath
 
   return total + local_index;
 }
+
+int svg_path::point_to_element (size_t index, bool left_element) const
+{
+  size_t subpath_index = -1;
+  const single_subpath *subpath = 0;
+  get_subpath_and_index (index, subpath, subpath_index);
+  if (left_element)
+    {
+      if (index != 0)
+        return (int)global_element_index (index - 1, subpath);
+
+      if (!subpath->is_closed ())
+        return -1;
+
+      return (int)global_element_index (subpath->size () - 1, subpath);
+    }
+  else
+    {
+      if (index != subpath->total_handles ())
+        return (int)global_element_index (index, subpath);
+
+      if (!subpath->is_closed ())
+        return -1;
+
+      return (int)global_element_index (0, subpath);
+    }
+}
+
+size_t svg_path::global_element_index (size_t local_index, const single_subpath *subpath) const
+{
+  size_t total = 0;
+  for (const auto &cur_subpath : *this)
+    {
+      if (&cur_subpath == subpath)
+        break;
+
+      total += cur_subpath.size () - 1;
+    }
+
+  return total + local_index;
+}
+

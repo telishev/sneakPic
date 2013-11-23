@@ -11,12 +11,15 @@ class QColor;
 class svg_item_path;
 class svg_path;
 class path_handles_editor;
+class path_edit_operation;
+class SkCanvas;
+class SkPaint;
+class SkRect;
 
 struct single_path_element;
 
 class path_anchor_handle : public abstract_handle
 {
-  svg_path *m_path;
   svg_item_path *m_item;
   path_handles_editor *m_editor;
   int m_anchor_id;
@@ -25,8 +28,10 @@ class path_anchor_handle : public abstract_handle
   QPointF m_drag_cur;
   bool m_is_highlighted;
 
+  std::unique_ptr<path_edit_operation> m_edit_operation;
+
 public:
-  path_anchor_handle (path_handles_editor *editor, svg_item_path *item, int anchor_id, svg_path *path);
+  path_anchor_handle (path_handles_editor *editor, svg_item_path *item, int anchor_id);
   virtual ~path_anchor_handle ();
 
   int point_id () const { return m_anchor_id; }
@@ -46,8 +51,11 @@ private:
   QRect get_element_rect (QTransform transform) const;
 
   void apply_drag ();
-  void move_point (svg_path *path);
+  void move_point ();
   QColor current_color () const;
+  const svg_path *get_path () const;
+  void draw_anchor (SkCanvas &canvas, const SkRect &rect, SkPaint &paint) const;
+  bool is_cusp_node () const;
 };
 
 #endif // PATH_ANCHOR_HANDLE_H

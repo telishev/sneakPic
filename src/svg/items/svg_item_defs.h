@@ -9,9 +9,6 @@ class svg_item_defs : public abstract_svg_item
 public:
   svg_item_defs (svg_document *document) : abstract_svg_item (document) {}
   virtual ~svg_item_defs () override {}
-
-protected:
-  virtual bool check_item () override { return true; }
 };
 
 #endif // SVG_ITEM_DEFS_H

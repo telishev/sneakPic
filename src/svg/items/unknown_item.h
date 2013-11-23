@@ -27,9 +27,6 @@ public:
   virtual const char *namespace_uri () const override { return m_namespace_uri.c_str (); }
   virtual const char *namespace_name () const override { return m_namespace_name.c_str (); }
   virtual svg_namespaces_t namespace_type () const override { return svg_namespaces_t::UNKNOWN; }
-
-protected:
-  virtual bool check_item () override { return true; }
 };
 
 

@@ -15,11 +15,6 @@ svg_item_rect::~svg_item_rect ()
 {
 }
 
-bool svg_item_rect::check_item ()
-{
-  /// TODO: add check
-  return true;
-}
 QPainterPath svg_item_rect::get_path () const
 {
   const svg_attribute_x *x = get_computed_attribute <svg_attribute_x> ();

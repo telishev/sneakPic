@@ -18,14 +18,16 @@
 #include "svg/attributes/svg_attribute_path_data.h"
 #include "svg/items/svg_item_path.h"
 #include "path_handles_editor.h"
+#include "common/memory_deallocation.h"
+#include "operations/path_edit_operation.h"
+#include "svg/attributes/svg_attribute_nodetypes.h"
 
 
 static const int mouse_size_px = 7;
 
 
-path_anchor_handle::path_anchor_handle (path_handles_editor *editor, svg_item_path *item, int anchor_id, svg_path *path)
+path_anchor_handle::path_anchor_handle (path_handles_editor *editor, svg_item_path *item, int anchor_id)
 {
-  m_path = path;
   m_item = item;
   m_anchor_id = anchor_id;
   m_editor = editor;
@@ -34,7 +36,6 @@ path_anchor_handle::path_anchor_handle (path_handles_editor *editor, svg_item_pa
 
 path_anchor_handle::~path_anchor_handle ()
 {
-
 }
 
 int path_anchor_handle::distance_to_mouse (QPoint screen_pos, QTransform transform) const 
@@ -58,6 +59,7 @@ void path_anchor_handle::set_mouse_hovered (bool hovered)
 
 bool path_anchor_handle::start_drag (QPointF local_pos)
 {
+  m_edit_operation.reset (new path_edit_operation (m_item));
   m_drag_start = local_pos;
   return true;
 }
@@ -65,7 +67,7 @@ bool path_anchor_handle::start_drag (QPointF local_pos)
 bool path_anchor_handle::drag (QPointF local_pos)
 {
   m_drag_cur = local_pos;
-  move_point (m_path);
+  move_point ();
   m_editor->update ();
   return true;
 }
@@ -85,19 +87,18 @@ void path_anchor_handle::draw (SkCanvas &canvas, const renderer_state &state, co
   canvas.resetMatrix ();
 
   QRect element_rect = get_element_rect (state.transform ());
-  SkRect fill_rect = qt2skia::rect (element_rect);
-  SkRect stroke_rect = qt2skia::rect (element_rect);
+  SkRect rect = qt2skia::rect (element_rect);
 
   SkPaint fill_paint;
   fill_paint.setStyle (SkPaint::kFill_Style);
   fill_paint.setColor (qt2skia::color (current_color ()));
-  canvas.drawRect (fill_rect, fill_paint);
+  draw_anchor (canvas, rect, fill_paint);
 
   SkPaint stroke_paint;
   stroke_paint.setStrokeWidth (0.0);
   stroke_paint.setStyle (SkPaint::kStroke_Style);
   stroke_paint.setColor (SK_ColorBLACK);
-  canvas.drawRect (stroke_rect, stroke_paint);
+  draw_anchor (canvas, rect, stroke_paint);
 
   canvas.restore ();
 }
@@ -108,7 +109,7 @@ QPointF path_anchor_handle::get_handle_center () const
     return m_drag_cur;
 
   QTransform transform = m_item->full_transform ();
-  QPointF point = m_path->point (m_anchor_id);
+  QPointF point = get_path ()->point (m_anchor_id);
   return transform.map (point);
 }
 
@@ -122,19 +123,15 @@ QRect path_anchor_handle::get_element_rect (QTransform transform) const
 
 void path_anchor_handle::apply_drag ()
 {
+  move_point ();
   m_editor->begin_changes ();
-  {
-    auto path_data = m_item->get_attribute_for_change<svg_attribute_path_data> ();
-    move_point (path_data->path ());
-  }
-
+  m_edit_operation.reset ();
   m_editor->end_changes ();
 }
 
-void path_anchor_handle::move_point (svg_path *path)
+void path_anchor_handle::move_point ()
 {
-  QTransform transform = m_item->full_transform ().inverted ();
-  path->move_point (m_anchor_id, transform.map (m_drag_cur));
+  m_edit_operation->move_anchor (m_drag_cur, m_anchor_id);
 }
 
 QColor path_anchor_handle::current_color () const
@@ -148,4 +145,33 @@ QColor path_anchor_handle::current_color () const
 std::string path_anchor_handle::item_name () const
 {
   return m_item->name ();
+}
+
+const svg_path *path_anchor_handle::get_path () const
+{
+  auto path_data = m_item->get_computed_attribute<svg_attribute_path_data> ();
+  return path_data->path ();
+}
+
+void path_anchor_handle::draw_anchor (SkCanvas &canvas, const SkRect &rect, SkPaint &paint) const
+{
+  if (is_cusp_node ())
+    {
+      canvas.save ();
+      canvas.translate (rect.centerX (), rect.centerY ());
+      canvas.rotate (45);
+      SkRect moved_rect = rect;
+      moved_rect.offset (-rect.centerX (), -rect.centerY ());
+      paint.setAntiAlias (true);
+      canvas.drawRect (moved_rect, paint);
+      canvas.restore ();
+    }
+  else
+    canvas.drawRect (rect, paint);
+}
+
+bool path_anchor_handle::is_cusp_node () const
+{
+  auto nodetypes = m_item->get_computed_attribute<svg_attribute_nodetypes> ();
+  return nodetypes->node_type (m_anchor_id) == node_type_t::CUSP;
 }

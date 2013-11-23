@@ -16,10 +16,6 @@ svg_item_linear_gradient::~svg_item_linear_gradient ()
 
 }
 
-bool svg_item_linear_gradient::check_item ()
-{
-  return true;
-}
 
 renderer_base_gradient_item *svg_item_linear_gradient::create_gradient () const 
 {

@@ -13,10 +13,6 @@ svg_item_polyline::~svg_item_polyline ()
 {
 }
 
-bool svg_item_polyline::check_item ()
-{
-  return true;
-}
 
 QPainterPath svg_item_polyline::get_path () const 
 {

@@ -46,11 +46,6 @@ QPainterPath svg_item_clip_path::get_clip_path () const
   return path;
 }
 
-bool svg_item_clip_path::check_item ()
-{
-  return true;
-}
-
 QPainterPath svg_item_clip_path::get_single_child_path (const abstract_svg_item *child) const
 {
   const svg_base_shape_item *base_shape = dynamic_cast<const svg_base_shape_item *> (child);

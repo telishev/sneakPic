@@ -12,7 +12,7 @@ public:
   virtual ~svg_item_path () override;
 
 protected:
-  virtual bool check_item () override;
+  virtual bool process_item_after_read () override;
   virtual QPainterPath get_path () const override;
 };
 

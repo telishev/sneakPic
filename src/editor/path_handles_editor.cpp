@@ -27,7 +27,7 @@ class path_elements_handles : public element_handles
   std::vector<abstract_handle *> m_handles;
   std::vector<path_anchor_handle *> m_anchor_handles;
 
-  svg_path *m_path;
+  const svg_path *m_path;
   svg_item_path *m_path_item;
   path_handles_editor *m_editor;
 
@@ -40,17 +40,17 @@ public:
     auto path_data = path_item->get_computed_attribute<svg_attribute_path_data> ();
     if (!path_data->is_empty ())
       {
-        m_path = new svg_path (*path_data->path ());
+        m_path = path_data->path ();
         int total_anchors = (int)m_path->total_points ();
 
-        m_handles.push_back (new path_preview_handle (path_item, m_path));
+        m_handles.push_back (new path_preview_handle (path_item));
 
         for (int i = 0; i < total_anchors; i++)
           add_controls (i);
 
         for (int i = 0; i < total_anchors; i++)
           {
-            path_anchor_handle *handle = new path_anchor_handle (m_editor, m_path_item, i, m_path);
+            path_anchor_handle *handle = new path_anchor_handle (m_editor, m_path_item, i);
             m_anchor_handles.push_back (handle);
             m_handles.push_back (handle);
           }
@@ -64,8 +64,6 @@ public:
       {
         FREE (handle);
       }
-
-    FREE (m_path);
   }
 
   const std::vector<path_anchor_handle *> &anchor_handles () { return m_anchor_handles; }
@@ -109,7 +107,7 @@ private:
   void add_control (int handle_id, bool is_left)
   {
     if (m_path->control_point_exists (handle_id, is_left))
-      m_handles.push_back (new path_control_point_handle (m_editor, m_path_item, handle_id, is_left, m_path));
+      m_handles.push_back (new path_control_point_handle (m_editor, m_path_item, handle_id, is_left));
   }
 
 

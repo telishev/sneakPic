@@ -11,12 +11,12 @@ class QColor;
 class svg_item_path;
 class svg_path;
 class path_handles_editor;
+class path_edit_operation;
 
 struct single_path_element;
 
 class path_control_point_handle : public abstract_handle
 {
-  svg_path *m_path;
   svg_item_path *m_item;
   path_handles_editor *m_editor;
   int m_control_id;
@@ -25,9 +25,10 @@ class path_control_point_handle : public abstract_handle
   QPointF m_drag_start;
   QPointF m_drag_cur;
   bool m_is_highlighted;
+  std::unique_ptr<path_edit_operation> m_edit_operation;
 
 public:
-  path_control_point_handle (path_handles_editor *editor, svg_item_path *item, int anchor_id, bool is_left_handle, svg_path *path);
+  path_control_point_handle (path_handles_editor *editor, svg_item_path *item, int anchor_id, bool is_left_handle);
   virtual ~path_control_point_handle ();
 
 protected:
@@ -43,9 +44,11 @@ private:
   QPointF get_anchor_center () const;
 
   void apply_drag ();
-  void move_point (svg_path *path);
+  void move_point ();
   QColor current_color () const;
   QColor line_color () const;
+
+  const svg_path *get_path () const;
 };
 
 

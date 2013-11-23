@@ -17,9 +17,6 @@ public:
 
   void add_style_to_container (selectors_container *container);
 
-protected:
-  virtual bool check_item () override { return true; }
-
 private:
   bool read_item (const char *data, selectors_container *container);
 

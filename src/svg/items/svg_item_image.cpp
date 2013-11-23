@@ -27,10 +27,6 @@ svg_item_image::~svg_item_image ()
 {
 }
 
-bool svg_item_image::check_item ()
-{
-  return true;
-}
 
 renderer_graphics_item *svg_item_image::create_renderer_graphics_item () const
 {

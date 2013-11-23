@@ -27,8 +27,10 @@ namespace geom
   
   QRect inner_rect (QRectF rect);
   QPoint nearest_point (QPointF point);
-  double distance (QPoint first, QPoint second);
-  double norm (QPoint point);
+  double distance (QPointF first, QPointF second);
+  double norm (QPointF point);
+  QPointF normalized (QPointF point);
+  QPointF direction (QPointF begin, QPointF end);
 
 };
 

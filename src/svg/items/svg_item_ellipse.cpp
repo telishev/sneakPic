@@ -13,10 +13,6 @@ svg_item_ellipse::~svg_item_ellipse ()
 {
 }
 
-bool svg_item_ellipse::check_item ()
-{
-  return true;
-}
 
 QPainterPath svg_item_ellipse::get_path () const 
 {

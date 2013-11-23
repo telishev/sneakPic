@@ -64,7 +64,7 @@ public:
   T *create_new_svg_item ()
   {
     T *item = new T (this);
-    item->check ();
+    item->process_after_read ();
     return item;
   }
 

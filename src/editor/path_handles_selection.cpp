@@ -19,7 +19,7 @@ path_anchors_selection::path_anchors_selection (items_selection *selection, svg_
   m_changes_started = false;
 
   items_edit_handler_t *edit_handler = m_document->items_edit_handler ();
-  CONNECT (edit_handler, &items_edit_handler_t::attribute_change_start_signal, this, &path_anchors_selection::attribute_changed);
+  CONNECT (edit_handler, &items_edit_handler_t::attribute_change_end_signal, this, &path_anchors_selection::attribute_changed);
 }
 
 path_anchors_selection::~path_anchors_selection ()

@@ -13,6 +13,7 @@ enum class svg_namespaces_t
   XLINK,
   EMPTY,
   XML,
+  SNEAKPIC,
 };
 
 class svg_namespaces
@@ -29,6 +30,7 @@ public:
       case svg_namespaces_t::SVG : return svg_uri ();
       case svg_namespaces_t::XLINK: return xlink_uri ();
       case svg_namespaces_t::XML: return xml_uri ();
+      case svg_namespaces_t::SNEAKPIC: return sneakpic_uri ();
       case svg_namespaces_t::EMPTY: return "";
       default: return "";
       }
@@ -44,6 +46,7 @@ public:
     case svg_namespaces_t::SVG : return svg_name ();
     case svg_namespaces_t::XLINK: return xlink_name ();
     case svg_namespaces_t::XML: return xml_name ();
+    case svg_namespaces_t::SNEAKPIC: return sneakpic_name ();
     case svg_namespaces_t::EMPTY: return "";
     default: return "";
     }
@@ -55,6 +58,8 @@ public:
   static const char *svg_uri () { return "http://www.w3.org/2000/svg"; }
   static const char *xlink_uri () { return "http://www.w3.org/1999/xlink"; }
   static const char *xml_uri () { return "http://www.w3.org/XML/1998/namespace"; }
+  static const char *sneakpic_uri () { return "https://github.com/telishev/sneakPic"; }
+
 
   static const char *dc_name () { return "dc"; }
   static const char *cc_name () { return "cc"; }
@@ -62,6 +67,9 @@ public:
   static const char *svg_name () { return "svg"; }
   static const char *xlink_name () { return "xlink"; }
   static const char *xml_name () { return "xml"; }
+  static const char *sneakpic_name () { return "sneakpic"; }
+
+
 };
 
 #endif // SVG_NAMESPACES_H

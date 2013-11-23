@@ -13,10 +13,6 @@ svg_item_polygon::~svg_item_polygon ()
 {
 }
 
-bool svg_item_polygon::check_item ()
-{
-  return true;
-}
 
 QPainterPath svg_item_polygon::get_path () const 
 {

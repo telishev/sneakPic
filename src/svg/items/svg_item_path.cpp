@@ -3,6 +3,10 @@
 #include <QPainterPath>
 
 #include "svg/attributes/svg_attribute_path_data.h"
+#include "svg/attributes/svg_attribute_nodetypes.h"
+#include "svg/attributes/svg_attribute_linetypes.h"
+
+#include "path/svg_path.h"
 
 
 svg_item_path::svg_item_path (svg_document *document)
@@ -14,11 +18,14 @@ svg_item_path::~svg_item_path ()
 {
 }
 
-bool svg_item_path::check_item ()
+bool svg_item_path::process_item_after_read ()
 {
-  const svg_attribute_path_data *path_data = get_computed_attribute<svg_attribute_path_data> ();
-  if (path_data->is_empty ())
-    return true;
+  auto *path_data = get_computed_attribute<svg_attribute_path_data> ();
+  auto nodetypes = get_attribute_for_change<svg_attribute_nodetypes> ();
+  auto linetypes = get_attribute_for_change<svg_attribute_linetypes> ();
+
+  nodetypes->create_from_path (path_data->path (), true);
+  linetypes->create_from_path (path_data->path (), true);
 
   return true;
 }

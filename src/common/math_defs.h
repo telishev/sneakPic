@@ -3,11 +3,11 @@
 
 #include <math.h>
 
-#define MINIMAL_FOR_COMPARISON 1e-17
+#define MINIMAL_FOR_COMPARISON 1e-6
 
 static inline bool are_equal (double first, double second)
 {
-  return fabs (first - second) < MINIMAL_FOR_COMPARISON;
+  return 3 * fabs (first - second) < (first + second + 1.0) * MINIMAL_FOR_COMPARISON;
 }
 
 #endif // MATH_DEFS_H

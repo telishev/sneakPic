@@ -12,9 +12,6 @@ public:
   virtual ~svg_item_a () override;
 
   virtual abstract_renderer_item *create_renderer_item_impl () const override;
-
-protected:
-  virtual bool check_item () override;
 };
 
 #endif // SVG_ITEM_A_H

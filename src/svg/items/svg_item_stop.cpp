@@ -46,9 +46,5 @@ QColor svg_item_stop::color () const
   return color;
 }
 
-bool svg_item_stop::check_item ()
-{
-  return true;
-}
 
 

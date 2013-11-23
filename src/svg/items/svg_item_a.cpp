@@ -17,7 +17,3 @@ abstract_renderer_item *svg_item_a::create_renderer_item_impl () const
   return render_item;
 }
 
-bool svg_item_a::check_item ()
-{
-  return true;
-}

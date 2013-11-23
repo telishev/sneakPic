@@ -20,16 +20,16 @@
 #include "svg/attributes/svg_attribute_path_data.h"
 #include "svg/items/svg_item_path.h"
 #include "path_handles_editor.h"
+#include "operations/path_edit_operation.h"
 
 
 static const int handle_radius_px = 3;
 
 
 path_control_point_handle::path_control_point_handle (path_handles_editor *editor, svg_item_path *item, int control_id,
-                                                      bool is_left_handle, svg_path *path)
+                                                      bool is_left_handle)
 {
   m_left_handle = is_left_handle;
-  m_path = path;
   m_item = item;
   m_control_id = control_id;
   m_editor = editor;
@@ -59,13 +59,14 @@ void path_control_point_handle::set_mouse_hovered (bool hovered)
 bool path_control_point_handle::start_drag (QPointF local_pos)
 {
   m_drag_start = local_pos;
+  m_edit_operation.reset (new path_edit_operation (m_item));
   return true;
 }
 
 bool path_control_point_handle::drag (QPointF local_pos)
 {
   m_drag_cur = local_pos;
-  move_point (m_path);
+  move_point ();
   m_editor->update ();
   return true;
 }
@@ -116,32 +117,28 @@ QPointF path_control_point_handle::get_handle_center () const
     return m_drag_cur;
 
   QTransform transform = m_item->full_transform ();
-  QPointF point = m_path->control_point (m_control_id, m_left_handle);
+  QPointF point = get_path ()->control_point (m_control_id, m_left_handle);
   return transform.map (point);
 }
 
 QPointF path_control_point_handle::get_anchor_center () const
 {
   QTransform transform = m_item->full_transform ();
-  QPointF point = m_path->point (m_control_id);
+  QPointF point = get_path ()->point (m_control_id);
   return transform.map (point);
 }
 
 void path_control_point_handle::apply_drag ()
 {
+  move_point ();
   m_editor->begin_changes ();
-  {
-    auto path_data = m_item->get_attribute_for_change<svg_attribute_path_data> ();
-    move_point (path_data->path ());
-  }
-
+  m_edit_operation.reset ();
   m_editor->end_changes ();
 }
 
-void path_control_point_handle::move_point (svg_path *path)
+void path_control_point_handle::move_point ()
 {
-  QTransform transform = m_item->full_transform ().inverted ();
-  path->set_control_point (m_control_id, m_left_handle, transform.map (m_drag_cur));
+  m_edit_operation->move_control_point (m_drag_cur, m_control_id, m_left_handle);;
 }
 
 QColor path_control_point_handle::current_color () const
@@ -155,6 +152,12 @@ QColor path_control_point_handle::current_color () const
 QColor path_control_point_handle::line_color () const
 {
   return QColor ("lightblue");
+}
+
+const svg_path * path_control_point_handle::get_path () const
+{
+  auto path_data = m_item->get_computed_attribute<svg_attribute_path_data> ();
+  return path_data->path ();
 }
 
 

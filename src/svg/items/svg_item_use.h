@@ -20,7 +20,7 @@ public:
   void unlink ();
 
 protected:
-  virtual bool check_item () override;
+  virtual bool process_item_after_read () override;
   void base_transform_changed (const QTransform &before, const QTransform &after);
 
   virtual bool can_be_selected () const override;

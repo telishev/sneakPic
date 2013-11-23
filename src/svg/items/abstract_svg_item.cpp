@@ -23,7 +23,7 @@ class svg_item_state : public abstract_state_t
 {
 public:
   svg_document *m_document;
-  std::unordered_map<std::string, int> m_attributes;
+  std::map<std::string, int> m_attributes;
 
   std::string m_original_id;
   std::string m_own_id;
@@ -157,9 +157,9 @@ std::string abstract_svg_item::name () const
   return m_own_id;
 }
 
-bool abstract_svg_item::check ()
+bool abstract_svg_item::process_after_read ()
 {
-  if (!check_item ())
+  if (!is_cloned () && !process_item_after_read ())
     return false;
 
   /// for items that don't have a name, generate it
@@ -170,7 +170,7 @@ bool abstract_svg_item::check ()
     }
 
   for (int i = 0; i < children_count (); i++)
-    CHECK (child (i)->check ());
+    CHECK (child (i)->process_after_read ());
 
   return true;
 }
@@ -299,7 +299,7 @@ void abstract_svg_item::create_id_by_attr ()
     create_unique_name ();
 }
 
-void abstract_svg_item::process_after_read ()
+void abstract_svg_item::register_item_name ()
 {
   /// if item has a name, add it to container before children
   /// we cannot generate unique name right now for items that don't have it

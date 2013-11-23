@@ -13,10 +13,6 @@ svg_item_circle::~svg_item_circle ()
 {
 }
 
-bool svg_item_circle::check_item ()
-{
-  return true;
-}
 
 QPainterPath svg_item_circle::get_path () const
 {

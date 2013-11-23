@@ -16,11 +16,6 @@ svg_item_radial_gradient::~svg_item_radial_gradient ()
 
 }
 
-bool svg_item_radial_gradient::check_item ()
-{
-  return true;
-}
-
 renderer_base_gradient_item *svg_item_radial_gradient::create_gradient () const 
 {
   static const svg_attribute_cx default_cx (0.5);

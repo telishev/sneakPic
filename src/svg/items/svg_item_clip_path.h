@@ -15,9 +15,6 @@ public:
 
   QPainterPath get_clip_path () const;
 
-protected:
-  virtual bool check_item () override;
-
 private:
   QPainterPath get_single_child_path (const abstract_svg_item *child) const;
 };

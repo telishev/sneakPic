@@ -46,7 +46,7 @@ abstract_renderer_item *svg_item_svg::create_renderer_item_impl () const
   return render_item;
 }
 
-bool svg_item_svg::check_item ()
+bool svg_item_svg::process_item_after_read ()
 {
   const svg_attribute_view_box *view_box = get_computed_attribute<svg_attribute_view_box> ();
   if (!view_box->is_empty ())

@@ -22,11 +22,6 @@ svg_item_text::~svg_item_text ()
 {
 }
 
-bool svg_item_text::check_item ()
-{
-  return true;
-}
-
 QPainterPath svg_item_text::get_path () const
 {
   QString text;

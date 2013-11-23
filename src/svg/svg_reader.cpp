@@ -161,7 +161,7 @@ abstract_svg_item *svg_reader::process_new_item (QXmlStreamReader &reader, abstr
     }
 
   
-  child_item->process_after_read ();
+  child_item->register_item_name ();
   return child_item;
 }
 

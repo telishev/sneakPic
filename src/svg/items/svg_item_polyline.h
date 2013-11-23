@@ -13,7 +13,6 @@ public:
   virtual ~svg_item_polyline () override;
 
 protected:
-  virtual bool check_item () override;
   virtual QPainterPath get_path () const override;
 };
 

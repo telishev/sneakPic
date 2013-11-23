@@ -15,8 +15,6 @@ public:
 
   virtual abstract_renderer_item *create_renderer_item_impl () const override;
 
-protected:
-  virtual bool check_item () override { return true; }
 };
 
 

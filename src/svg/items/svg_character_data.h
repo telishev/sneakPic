@@ -25,9 +25,6 @@ public:
   virtual svg_namespaces_t namespace_type () const override { return svg_namespaces_t::UNKNOWN; }
 
   const char *char_data () const { return m_data.c_str (); }
-
-protected:
-  virtual bool check_item () override { return true; }
 };
 
 #endif // SVG_CHARACTER_DATA_H

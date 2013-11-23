@@ -16,12 +16,22 @@ QPoint geom::nearest_point (QPointF point)
   return QPoint (qRound (point.x ()), qRound (point.y ()));
 }
 
-double geom::distance (QPoint first, QPoint second)
+double geom::distance (QPointF first, QPointF second)
 {
   return norm (first - second);
 }
 
-double geom::norm (QPoint point)
+double geom::norm (QPointF point)
 {
   return sqrt (point.x () * point.x () + point.y () * point.y ());
+}
+
+QPointF geom::normalized (QPointF point)
+{
+  return point / norm (point);
+}
+
+QPointF geom::direction (QPointF begin, QPointF end)
+{
+  return normalized (end - begin);
 }

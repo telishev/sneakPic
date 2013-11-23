@@ -11,7 +11,6 @@ public:
   virtual ~svg_item_radial_gradient () override;
 
 protected:
-  virtual bool check_item () override;
   virtual renderer_base_gradient_item *create_gradient () const override;
 
 };

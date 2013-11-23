@@ -14,9 +14,6 @@ public:
 
   double offset () const;
   QColor color () const;
-
-protected:
-  virtual bool check_item () override;
 };
 
 

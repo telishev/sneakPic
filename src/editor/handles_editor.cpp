@@ -31,6 +31,8 @@ handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter,
 
   m_applier->add_drag_shortcut (mouse_drag_shortcut_enum::DRAG_HANDLE, this,
                                 &handles_editor::start_drag, &handles_editor::drag_handle, &handles_editor::end_drag);
+
+  m_applier->add_shortcut (mouse_shortcut_enum::HIGHLIGHT_HANDLE, this, &handles_editor::highlight_handle);
 }
 
 handles_editor::~handles_editor ()

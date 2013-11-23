@@ -12,11 +12,10 @@ struct single_path_element;
 
 class path_preview_handle : public abstract_handle
 {
-  svg_path *m_path;
   svg_item_path *m_item;
 
 public:
-  path_preview_handle (svg_item_path *item, svg_path *path);
+  path_preview_handle (svg_item_path *item);
   virtual ~path_preview_handle ();
 
 protected:

@@ -15,7 +15,6 @@ public:
   virtual ~svg_item_text () override;
 
 protected:
-  virtual bool check_item () override;
   virtual QPainterPath get_path () const override;
 
 };

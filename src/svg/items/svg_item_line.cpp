@@ -13,11 +13,6 @@ svg_item_line::~svg_item_line ()
 {
 }
 
-bool svg_item_line::check_item ()
-{
-  return true;
-}
-
 QPainterPath svg_item_line::get_path () const 
 {
   const svg_attribute_x1 *x1 = get_computed_attribute<svg_attribute_x1> ();

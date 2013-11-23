@@ -64,7 +64,7 @@ bool svg_document::read_file (const QString &filename_arg)
 
   DEBUG_ASSERT (m_root->type () == svg_item_type::SVG);
 
-  if (!m_root->check ())
+  if (!m_root->process_after_read ())
     return false;
 
   svg_graphics_item *graphics_item = m_root->to_graphics_item ();
