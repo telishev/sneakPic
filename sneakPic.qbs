@@ -11,7 +11,8 @@ Application {
         name: "Qt"
         submodules: ["core", "widgets", "svg", "xml", "opengl", "gui"]
     }
-  Depends { name: 'cpp'}
+  Depends { name: 'cpp'
+  }
 
   cpp.defines:{
 
@@ -44,7 +45,7 @@ Application {
       {
         if (qbs.toolchain.contains ('msvc'))
         {
-          flags = ["/MP", "/wd4996", "/we4062", "/W3", "/WX" ,"/Zc:wchar_t-", "/Gm-", "/w34100", "/w34189"];
+          flags = ["/wd4996", "/we4062", "/W3", "/WX" ,"/Zc:wchar_t-", "/Gm-", "/w34100", "/w34189", "/Fd" + product.buildDirectory + "sneakPic.pdb"];
         }
       }
     else
@@ -81,7 +82,9 @@ Application {
     return paths;
   }
 
-   cpp.libraryPaths:
+  cpp.cxxPrecompiledHeader: "src/precompiled/precompiled_header.h"
+
+  cpp.libraryPaths:
    {
     var paths;
     if (qbs.buildVariant === 'debug')

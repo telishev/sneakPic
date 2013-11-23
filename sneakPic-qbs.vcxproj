@@ -41,18 +41,21 @@
     <NMakePreprocessorDefinitions>
     </NMakePreprocessorDefinitions>
     <NMakeOutput>qbs-msvc-debug\bin\sneakPic.exe</NMakeOutput>
-	<NMakeIncludeSearchPath>"src\gtest";"$(SKIA_DIR)\include\core";"$(SKIA_DIR)\include\config";"$(SKIA_DIR)\include\effects";"src";"$(QT5_DIR)\include";"$(QT5_DIR)\include\QtOpenGL";"$(QT5_DIR)\include\QtSvg";"$(QT5_DIR)\include\QtWidgets";"$(QT5_DIR)\include\QtXml";"$(QT5_DIR)\include\QtGui";"$(QT5_DIR)\include\QtANGLE";"$(QT5_DIR)\include\QtCore";"build";"src\ui";$(QT5_DIR)\mkspecs\win32-msvc2012;"qbs-msvc-debug\GeneratedFiles\sneakPic";"qbs-msvc-release\GeneratedFiles\sneakPic"</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>"src\gtest";"$(SKIA_DIR)\include\core";"$(SKIA_DIR)\include\config";"$(SKIA_DIR)\include\effects";"src";"$(QT5_DIR)\include";"$(QT5_DIR)\include\QtOpenGL";"$(QT5_DIR)\include\QtSvg";"$(QT5_DIR)\include\QtWidgets";"$(QT5_DIR)\include\QtXml";"$(QT5_DIR)\include\QtGui";"$(QT5_DIR)\include\QtANGLE";"$(QT5_DIR)\include\QtCore";"build";"src\ui";$(QT5_DIR)\mkspecs\win32-msvc2012;"qbs-msvc-debug\GeneratedFiles\sneakPic";"qbs-msvc-release\GeneratedFiles\sneakPic"</NMakeIncludeSearchPath>
     <OutDir>$(TEMP)</OutDir>
     <IntDir>$(TEMP)</IntDir>
+    <NMakeForcedIncludes>src\precompiled\precompiled_header.h</NMakeForcedIncludes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <NMakeBuildCommandLine>qbs build release</NMakeBuildCommandLine>
-    <NMakeCleanCommandLine>qbs clean release</NMakeCleanCommandLine>	<NMakeIncludeSearchPath>"src\gtest";"$(SKIA_DIR)\include\core";"$(SKIA_DIR)\include\config";"$(SKIA_DIR)\include\effects";"src";"$(QT5_DIR)\include";"$(QT5_DIR)\include\QtOpenGL";"$(QT5_DIR)\include\QtSvg";"$(QT5_DIR)\include\QtWidgets";"$(QT5_DIR)\include\QtXml";"$(QT5_DIR)\include\QtGui";"$(QT5_DIR)\include\QtANGLE";"$(QT5_DIR)\include\QtCore";"build";"src\ui";$(QT5_DIR)\mkspecs\win32-msvc2012;"qbs-msvc-debug\GeneratedFiles\sneakPic";"qbs-msvc-release\GeneratedFiles\sneakPic"</NMakeIncludeSearchPath>
+    <NMakeCleanCommandLine>qbs clean release</NMakeCleanCommandLine>
+    <NMakeIncludeSearchPath>"src\gtest";"$(SKIA_DIR)\include\core";"$(SKIA_DIR)\include\config";"$(SKIA_DIR)\include\effects";"src";"$(QT5_DIR)\include";"$(QT5_DIR)\include\QtOpenGL";"$(QT5_DIR)\include\QtSvg";"$(QT5_DIR)\include\QtWidgets";"$(QT5_DIR)\include\QtXml";"$(QT5_DIR)\include\QtGui";"$(QT5_DIR)\include\QtANGLE";"$(QT5_DIR)\include\QtCore";"build";"src\ui";$(QT5_DIR)\mkspecs\win32-msvc2012;"qbs-msvc-debug\GeneratedFiles\sneakPic";"qbs-msvc-release\GeneratedFiles\sneakPic"</NMakeIncludeSearchPath>
     <NMakePreprocessorDefinitions>
     </NMakePreprocessorDefinitions>
     <NMakeOutput>qbs-msvc-release\bin\sneakPic.exe</NMakeOutput>
-	<OutDir>$(TEMP)</OutDir>
+    <OutDir>$(TEMP)</OutDir>
     <IntDir>$(TEMP)</IntDir>
+    <NMakeForcedIncludes>src\precompiled\precompiled_header.h</NMakeForcedIncludes>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
