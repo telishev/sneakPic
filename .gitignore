@@ -9,6 +9,8 @@
 /test/*.html
 /test/*.css
 /qbs-*/
+/ipch
+/src/precompiled/*.cpp
 build.bat
 
 Makefile

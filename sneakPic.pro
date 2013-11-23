@@ -16,6 +16,9 @@ include (skia.pri)
 RESOURCES += $$PROJ_DIR/resource/sneakPic.qrc
 
 CONFIG += warn_on build_all debug_and_release
+CONFIG += warn_on build_all debug_and_release precompile_header
+
+PRECOMPILED_HEADER = src/precompiled/precompiled_header.h 
 
 INCLUDEPATH += src
 INCLUDEPATH += src/ui
