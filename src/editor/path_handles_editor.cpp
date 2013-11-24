@@ -12,8 +12,9 @@
 #include "path/svg_path.h"
 
 #include "svg/items/svg_item_path.h"
-#include "svg/attributes/svg_attribute_path_data.h"
 #include "svg/items/svg_item_type.h"
+#include "svg/attributes/svg_attribute_path_data.h"
+#include "svg/attributes/svg_attribute_linetypes.h"
 #include "svg/svg_document.h"
 
 #include "renderer/rubberband_selection.h"
@@ -30,6 +31,7 @@ class path_elements_handles : public element_handles
   const svg_path *m_path;
   svg_item_path *m_path_item;
   path_handles_editor *m_editor;
+  const svg_attribute_linetypes *m_line_types;
 
 public:
   path_elements_handles (path_handles_editor *editor, svg_item_path *path_item)
@@ -37,6 +39,7 @@ public:
     m_editor = editor;
     m_path_item = path_item;
     m_path = nullptr;
+    m_line_types = path_item->get_computed_attribute<svg_attribute_linetypes> ();
     auto path_data = path_item->get_computed_attribute<svg_attribute_path_data> ();
     if (!path_data->is_empty ())
       {
@@ -107,7 +110,11 @@ private:
   void add_control (int handle_id, bool is_left)
   {
     if (m_path->control_point_exists (handle_id, is_left))
-      m_handles.push_back (new path_control_point_handle (m_editor, m_path_item, handle_id, is_left));
+      {
+        int segment_id = m_path->point_to_element (handle_id, is_left);
+        if (segment_id >= 0 && !m_line_types->is_line_segment (segment_id))
+          m_handles.push_back (new path_control_point_handle (m_editor, m_path_item, handle_id, is_left));
+      }
   }
 
 
