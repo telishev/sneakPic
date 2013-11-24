@@ -49,6 +49,7 @@ void handles_editor::update_handles ()
   m_cur_handle = nullptr;
   m_highlighted_handle = nullptr;
   update_handles_impl ();
+  highlight_handle (QCursor::pos ());
 }
 
 element_handles *handles_editor::handles_for_item (const std::string &item) const
