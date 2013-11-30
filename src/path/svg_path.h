@@ -4,38 +4,64 @@
 #include "path/single_subpath.h"
 
 class QTransform;
+class svg_path_iterator;
 
-class svg_path : public std::vector<single_subpath>
+class svg_path 
 {
-  typedef std::vector<single_subpath> vec_t;
+  std::vector<single_subpath> m_subpath;
 public:
   svg_path ();
   ~svg_path ();
 
-  size_t total_elements () const;
-  single_path_element *element (size_t index);
-  const single_path_element *element (size_t index) const;
-
-  int point_to_element (size_t point_id, bool left_element) const;
   size_t total_points () const;
-  QPointF point (size_t index) const;
-  void set_point (size_t index, QPointF point);
-  void move_point (size_t index, QPointF point);
+  size_t total_segments () const;
 
-  size_t prev_point (size_t index) const;
-  size_t next_point (size_t index) const;
+  /// i'm too lazy to write const iterator(
+  /// TODO: write const iterator or something
+  svg_path_iterator begin () const;
+  svg_path_iterator end () const;
 
-  bool control_point_exists (size_t index, bool left_cp) const;
-  QPointF control_point (size_t index, bool left_cp) const;
-  void set_control_point (size_t index, bool left_cp, QPointF point);
+  void clear ();
 
   void apply_transform (const QTransform &transform);
 
-private:
-  size_t global_point_index (size_t local_index, const single_subpath *subpath) const;
-  size_t global_element_index (size_t local_index, const single_subpath *subpath) const;
-  void get_subpath_and_index (size_t global_index, const single_subpath *&subpath, size_t &index) const;
-  void get_subpath_and_index (size_t global_index, single_subpath *&subpath, size_t &index);
+  const std::vector<single_subpath> &subpath () const { return m_subpath; }
+
+  friend class svg_path_iterator;
+  friend class path_builder;
 };
+
+class svg_path_iterator
+{
+  svg_path *m_path;
+  size_t m_subpath_index;
+  subpath_iterator m_subpath_iterator;
+public:
+  svg_path_iterator ();
+  svg_path_iterator (svg_path &path, size_t subpath_index, size_t subpath_point);
+  ~svg_path_iterator ();
+
+  svg_path_iterator &operator ++ ();
+  bool operator == (const svg_path_iterator &rhs) const;
+  bool operator != (const svg_path_iterator &rhs) const;
+
+  bool is_valid () const { return m_path != 0; }
+
+  svg_path_iterator neighbour (bool is_left) const;
+  svg_path_iterator left () const;
+  svg_path_iterator right () const;
+
+  const QPointF &anchor_point () const;
+  QPointF &anchor_point ();
+
+  const QPointF &control_point (bool is_left) const;
+  QPointF &control_point (bool is_left);
+  bool has_control_point (bool is_left);
+
+  size_t point_index () const;
+  int segment_index (bool is_left) const;
+  single_path_segment segment (bool is_left) const;
+};
+
 
 #endif // SVG_PATH_H

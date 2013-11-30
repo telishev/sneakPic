@@ -3,6 +3,7 @@
 
 
 #include "editor/abstract_handle.h"
+#include "path/svg_path.h"
 #include <QPointF>
 
 class QRect;
@@ -13,13 +14,13 @@ class svg_path;
 class path_handles_editor;
 class path_edit_operation;
 
-struct single_path_element;
+struct single_path_point;
 
 class path_control_point_handle : public abstract_handle
 {
   svg_item_path *m_item;
   path_handles_editor *m_editor;
-  int m_control_id;
+  svg_path_iterator m_path_it;
   bool m_left_handle;
 
   QPointF m_drag_start;
@@ -28,7 +29,7 @@ class path_control_point_handle : public abstract_handle
   std::unique_ptr<path_edit_operation> m_edit_operation;
 
 public:
-  path_control_point_handle (path_handles_editor *editor, svg_item_path *item, int anchor_id, bool is_left_handle);
+  path_control_point_handle (path_handles_editor *editor, svg_item_path *item, svg_path_iterator path_it, bool is_left_handle);
   virtual ~path_control_point_handle ();
 
 protected:

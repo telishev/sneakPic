@@ -8,7 +8,7 @@ class QRect;
 class svg_path;
 class svg_painter;
 
-struct single_path_element;
+struct single_path_point;
 
 class path_preview_handle : public abstract_handle
 {

@@ -36,11 +36,17 @@ bool svg_attribute_linetypes::write (QString &data, bool /*to_css*/) const
 
 void svg_attribute_linetypes::create_from_path (const svg_path *path, bool dont_create_if_exists)
 {
-  if (dont_create_if_exists && m_is_line_segment.size () == path->total_elements ())
+  if (dont_create_if_exists && m_is_line_segment.size () == path->total_segments ())
     return;
 
-  m_is_line_segment.resize (path->total_elements ());
+  m_is_line_segment.resize (path->total_segments ());
 
-  for (size_t i = 0; i < path->total_elements (); i++)
-    m_is_line_segment[i] = path->element (i)->is_line ();
+  for (auto it = path->begin (); it != path->end (); ++it)
+    {
+      int segment_index = it.segment_index (false);
+      if (segment_index < 0)
+        continue;
+
+      m_is_line_segment[segment_index] = it.segment (false).is_line ();
+    }
 }

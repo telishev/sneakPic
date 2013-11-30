@@ -28,13 +28,23 @@ svg_attribute_path_data::~svg_attribute_path_data ()
 
 bool svg_attribute_path_data::write (QString &data, bool /*to_css*/) const 
 {
-  for (const auto &subpath : *m_path)
+  for (const auto &subpath : m_path->subpath ())
     {
-      data += QString ("M %1 ").arg (point_to_str (subpath.first_point ()));
-      for (const auto &element : subpath)
+      auto elements = subpath.elements ();
+      data += QString ("M %1 ").arg (point_to_str (elements.front ().point));
+      for (size_t i = 0; i < elements.size (); i++)
         {
-          data += QString ("C %1 %2 %3 ").arg (point_to_str (element.c1), point_to_str (element.c2),
-                                              point_to_str (element.end));
+          size_t next_element = i + 1;
+          if (next_element == elements.size ())
+            {
+              if (!subpath.is_closed ())
+                continue;
+              else
+                next_element = 0;
+            }
+
+          data += QString ("C %1 %2 %3 ").arg (point_to_str (elements[i].c2), point_to_str (elements[next_element].c1),
+                                              point_to_str (elements[next_element].point));
         }
 
       if (subpath.is_closed ())
@@ -236,16 +246,26 @@ bool svg_attribute_path_data::read_arc (const char *&data, path_builder &builder
 QPainterPath svg_attribute_path_data::create_painter_path () const
 {
   QPainterPath path;
-  for (const auto &subpath : *m_path)
+  for (const auto &subpath : m_path->subpath ())
     {
-      path.moveTo (subpath.first_point ());
-      for (const auto &element : subpath)
+      auto elements = subpath.elements ();
+      path.moveTo (elements.front ().point);
+      for (size_t i = 0; i < elements.size (); i++)
         {
-          path.cubicTo (element.c1, element.c2, element.end);
+          size_t next_element = i + 1;
+          if (next_element == elements.size ())
+            {
+              if (!subpath.is_closed ())
+                continue;
+              else
+                next_element = 0;
+            }
+
+          path.cubicTo (elements[i].c2, elements[next_element].c1, elements[next_element].point);
         }
 
       if (subpath.is_closed ())
-       path.closeSubpath ();
+        path.closeSubpath ();
     }
   return path;
 }

@@ -11,21 +11,21 @@
 
 #include "path/svg_path.h"
 #include "skia/skia_includes.h"
+namespace qt2skia {
 
-
-SkMatrix qt2skia::matrix (const QTransform &tr)
+SkMatrix matrix (const QTransform &tr)
 {
   SkMatrix matrix;
   matrix.setAll (tr.m11 (), tr.m21 (), tr.m31 (), tr.m12 (), tr.m22 (), tr.m32 (), tr.m13 (), tr.m23 (), tr.m33 ());
   return matrix;
 }
 
-SkPoint qt2skia::point (const QPointF &point)
+SkPoint point (const QPointF &point)
 {
   return SkPoint::Make (SkFloatToScalar (point.x ()), SkFloatToScalar (point.y ()));
 }
 
-int qt2skia::fill_rule (int rule)
+int fill_rule (int rule)
 {
   switch (rule)
     {
@@ -37,7 +37,7 @@ int qt2skia::fill_rule (int rule)
   return SkPath::FillType::kWinding_FillType;
 }
 
-SkPath qt2skia::path (const QPainterPath &qpath)
+SkPath path (const QPainterPath &qpath)
 {
   SkPath path;
   int count = qpath.elementCount ();
@@ -47,16 +47,16 @@ SkPath qt2skia::path (const QPainterPath &qpath)
       switch  (elem.type)
         {
         case QPainterPath::MoveToElement:
-          path.moveTo (qt2skia::point (elem));
+          path.moveTo (point (elem));
           break;
         case QPainterPath::LineToElement:
-          path.lineTo (qt2skia::point (elem));
+          path.lineTo (point (elem));
           break;
         case QPainterPath::CurveToElement:
           {
             QPainterPath::Element control2 = qpath.elementAt (++i);
             QPainterPath::Element end = qpath.elementAt (++i);
-            path.cubicTo (qt2skia::point (elem), qt2skia::point (control2), qt2skia::point (end));
+            path.cubicTo (point (elem), point (control2), point (end));
             break;
           }
         default:
@@ -66,7 +66,7 @@ SkPath qt2skia::path (const QPainterPath &qpath)
 
   if (count == 1)
     {
-      path.lineTo (qt2skia::point (qpath.elementAt (0)));
+      path.lineTo (point (qpath.elementAt (0)));
       path.close ();
     }
 
@@ -77,19 +77,30 @@ SkPath qt2skia::path (const QPainterPath &qpath)
     path.close ();
   // Qt doesn't have any special definition if path is closed expect that it's first and last points are equal
 
-  path.setFillType ((SkPath::FillType)qt2skia::fill_rule (qpath.fillRule ()));
+  path.setFillType ((SkPath::FillType)fill_rule (qpath.fillRule ()));
   return path;
 }
 
-SkPath qt2skia::path (const svg_path &path)
+SkPath path (const svg_path &path)
 {
   SkPath sk_path;
-  for (const auto & subpath : path)
+  for (const auto &subpath : path.subpath ())
     {
-      sk_path.moveTo (qt2skia::point (subpath.front ().start));
-      for (const auto & element : subpath)
-        sk_path.cubicTo (qt2skia::point (element.c1), qt2skia::point (element.c2),
-                         qt2skia::point (element.end));
+      auto elements = subpath.elements ();
+      sk_path.moveTo (point (elements.front ().point));
+      for (size_t i = 0; i < elements.size (); i++)
+        {
+          size_t next_element = i + 1;
+          if (next_element == elements.size ())
+            {
+              if (!subpath.is_closed ())
+                continue;
+              else
+                next_element = 0;
+            }
+
+          sk_path.cubicTo (point (elements[i].c2), point (elements[next_element].c1), point (elements[next_element].point));
+        }
 
       if (subpath.is_closed ())
         sk_path.close ();
@@ -98,12 +109,12 @@ SkPath qt2skia::path (const svg_path &path)
   return sk_path;
 }
 
-SkColor qt2skia::color (const QColor &color)
+SkColor color (const QColor &color)
 {
   return SkColorSetARGBInline (color.alpha (), color.red (), color.green (), color.blue ());
 }
 
-SkBitmap qt2skia::image (const QImage &image_arg)
+SkBitmap image (const QImage &image_arg)
 {
   SkBitmap bitmap = SkBitmap ();
   bitmap.setConfig (SkBitmap::Config::kARGB_8888_Config, image_arg.width (), image_arg.height ());
@@ -111,28 +122,31 @@ SkBitmap qt2skia::image (const QImage &image_arg)
   return bitmap;
 }
 
-QImage qt2skia::qimage (const SkBitmap &bitmap)
+QImage qimage (const SkBitmap &bitmap)
 {
   SkAutoLockPixels image_lock (bitmap);
   return QImage ((unsigned char *)bitmap.getPixels (), bitmap.width (), bitmap.height (), (int)bitmap.rowBytes (), QImage::Format_ARGB32_Premultiplied);
 }
 
-SkRect qt2skia::rect (const QRect &rect)
+SkRect rect (const QRect &rect)
 {
   return SkRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());
 }
 
-SkRect qt2skia::rect (const QRectF &rect)
+SkRect rect (const QRectF &rect)
 {
   return SkRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());
 }
 
-SkIRect qt2skia::Irect (const QRect &rect)
+SkIRect Irect (const QRect &rect)
 {
   return SkIRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());
 }
 
-SkIRect qt2skia::Irect (const QRectF &rect)
+SkIRect Irect (const QRectF &rect)
 {
   return SkIRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());
 }
+
+
+};

@@ -1,43 +1,69 @@
 #ifndef SINGLE_SUBPATH_H
 #define SINGLE_SUBPATH_H
 
-#include "path/single_path_element.h"
+#include "path/single_path_point.h"
 
 #include <vector>
 
 class QTransform;
+class subpath_iterator;
 
 
-class single_subpath : public std::vector<single_path_element>
+class single_subpath
 {
   bool m_is_closed;
-  typedef std::vector<single_path_element> vec_t;
+  std::vector<single_path_point> m_elements;
 
 public:
   single_subpath ();
   ~single_subpath ();
 
+  size_t total_points () const;
+  size_t total_segments () const;
+
+  /// i'm too lazy to write const iterator(
+  /// TODO: write const iterator or something
+  subpath_iterator begin () const;
+  subpath_iterator end () const;
+
   bool is_closed () const { return m_is_closed; }
   void set_closed (bool val) { m_is_closed = val; }
 
-  bool first_point_is_last () const;
-
-  QPointF first_point () const;
-  QPointF last_point () const;
-
-  QPointF point (size_t index) const;
-  void set_point (size_t index, QPointF point);
-
   void apply_transform (const QTransform &transform);
-  int total_handles () const;
 
-  QPointF control_point (size_t subpath_index, bool left_cp) const;
-  void set_control_point (size_t subpath_index, bool left_cp, QPointF point);
-  bool control_point_exists (size_t subpath_index, bool left_cp) const;
+  const std::vector<single_path_point> &elements () const { return m_elements; } 
 
-private:
-  QPointF *get_control_point (size_t subpath_index, bool left_cp, QPointF &substitute);
-  const QPointF *get_control_point (size_t subpath_index, bool left_cp, QPointF &substitute) const;
+  friend class subpath_iterator;
+  friend class path_builder;
 };
+
+class subpath_iterator
+{
+  single_subpath *m_subpath;
+  size_t m_point_num;
+public:
+  subpath_iterator ();
+  subpath_iterator (single_subpath &subpath, size_t point_num);
+  ~subpath_iterator () {}
+
+  subpath_iterator &operator ++ ();
+  bool operator == (const subpath_iterator &rhs) const;
+  bool operator != (const subpath_iterator &rhs) const;
+
+  bool is_valid () const { return m_subpath != 0;}
+  size_t point_num () const { return m_point_num; }
+
+  subpath_iterator neighbour (bool is_left) const;
+  subpath_iterator left () const;
+  subpath_iterator right () const;
+
+  const QPointF &anchor_point () const;
+  QPointF &anchor_point ();
+
+  const QPointF &control_point (bool is_left) const;
+  QPointF &control_point (bool is_left);
+  bool has_control_point (bool is_left);
+};
+
 
 #endif // SINGLE_SUBPATH_H

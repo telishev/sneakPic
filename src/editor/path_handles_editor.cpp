@@ -44,16 +44,14 @@ public:
     if (!path_data->is_empty ())
       {
         m_path = path_data->path ();
-        int total_anchors = (int)m_path->total_points ();
-
         m_handles.push_back (new path_preview_handle (path_item));
 
-        for (int i = 0; i < total_anchors; i++)
-          add_controls (i);
+        for (auto it = m_path->begin (); it != m_path->end (); ++it)
+          add_controls (it);
 
-        for (int i = 0; i < total_anchors; i++)
+        for (auto it = m_path->begin (); it != m_path->end (); ++it)
           {
-            path_anchor_handle *handle = new path_anchor_handle (m_editor, m_path_item, i);
+            path_anchor_handle *handle = new path_anchor_handle (m_editor, m_path_item, it);
             m_anchor_handles.push_back (handle);
             m_handles.push_back (handle);
           }
@@ -79,41 +77,41 @@ protected:
   }
 
 private:
-  bool has_controls (int handle_id)
+  bool has_controls (svg_path_iterator it)
   {
-    if (is_selected (handle_id))
+    if (is_selected (it))
       return true;
 
-    if (is_selected ((int)m_path->prev_point (handle_id)))
+    if (is_selected (it.left ()))
       return true;
 
-    if (is_selected ((int)m_path->next_point (handle_id)))
+    if (is_selected (it.right ()))
       return true;
 
     return false;
   }
 
-  bool is_selected (int handle_id)
+  bool is_selected (svg_path_iterator it)
   {
-    return m_editor->handles_selection ()->is_selected (m_path_item->name (), handle_id);
+    return m_editor->handles_selection ()->is_selected (m_path_item->name (), (int)it.point_index ());
   }
 
-  void add_controls (int handle_id)
+  void add_controls (svg_path_iterator it)
   {
-    if (!has_controls (handle_id))
+    if (!has_controls (it))
       return;
 
-    add_control (handle_id, false);
-    add_control (handle_id, true);
+    add_control (it, false);
+    add_control (it, true);
   }
 
-  void add_control (int handle_id, bool is_left)
+  void add_control (svg_path_iterator it, bool is_left)
   {
-    if (m_path->control_point_exists (handle_id, is_left))
+    if (it.has_control_point (is_left))
       {
-        int segment_id = m_path->point_to_element (handle_id, is_left);
+        int segment_id = it.segment_index (is_left);
         if (segment_id >= 0 && !m_line_types->is_line_segment (segment_id))
-          m_handles.push_back (new path_control_point_handle (m_editor, m_path_item, handle_id, is_left));
+          m_handles.push_back (new path_control_point_handle (m_editor, m_path_item, it, is_left));
       }
   }
 

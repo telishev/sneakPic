@@ -26,9 +26,9 @@ public:
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 
-  node_type_t node_type (int node) const { return m_node_type[node]; }
+  node_type_t node_type (size_t node) const { return m_node_type[node]; }
 
-  void set_node_type (int node, node_type_t type) { m_node_type[node] = type; }
+  void set_node_type (size_t node, node_type_t type) { m_node_type[node] = type; }
 
   void create_from_path (const svg_path *path, bool dont_create_if_exists = false);
 

@@ -2,6 +2,7 @@
 #define PATH_ANCHOR_HANDLE_H
 
 #include "editor/abstract_handle.h"
+#include "path/svg_path.h"
 #include <QPointF>
 #include <string>
 
@@ -16,13 +17,13 @@ class SkCanvas;
 class SkPaint;
 class SkRect;
 
-struct single_path_element;
+struct single_path_point;
 
 class path_anchor_handle : public abstract_handle
 {
   svg_item_path *m_item;
   path_handles_editor *m_editor;
-  int m_anchor_id;
+  svg_path_iterator m_path_it;
 
   QPointF m_drag_start;
   QPointF m_drag_cur;
@@ -31,10 +32,10 @@ class path_anchor_handle : public abstract_handle
   std::unique_ptr<path_edit_operation> m_edit_operation;
 
 public:
-  path_anchor_handle (path_handles_editor *editor, svg_item_path *item, int anchor_id);
+  path_anchor_handle (path_handles_editor *editor, svg_item_path *item, svg_path_iterator path_it);
   virtual ~path_anchor_handle ();
 
-  int point_id () const { return m_anchor_id; }
+  int point_id () const { return (int)m_path_it.point_index (); }
   std::string item_name () const;
 
   QPointF get_handle_center () const;

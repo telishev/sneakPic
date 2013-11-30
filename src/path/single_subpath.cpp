@@ -10,136 +10,124 @@ single_subpath::~single_subpath ()
 
 }
 
-QPointF single_subpath::first_point () const
-{
-  return front ().start;
-}
-
-QPointF single_subpath::last_point () const
-{
-  return back ().end;
-}
-
-bool single_subpath::first_point_is_last () const
-{
-  return m_is_closed && first_point () == last_point ();
-}
-
-void single_subpath::set_point (size_t index, QPointF point)
-{
-  if (index == 0)
-    {
-      if (first_point_is_last ())
-        {
-          back ().end = point;
-          front ().start = point;
-        }
-      else
-        front ().start = point;
-    }
-  else if (index == size ())
-    {
-      if (first_point_is_last ())
-        {
-          back ().end = point;
-          front ().start = point;
-        }
-      else
-        back ().end = point;
-    }
-  else
-    {
-      (*this)[index - 1].end = point;
-      (*this)[index].start = point;
-    }
-}
-
-QPointF single_subpath::point (size_t index) const
-{
-  if (index == 0)
-    return front ().start;
-  else
-    return (*this)[index - 1].end;
-}
-
 void single_subpath::apply_transform (const QTransform &transform)
 {
-  for (auto &element : *this)
+  for (auto &element : m_elements)
     element.apply_transform (transform);
 }
 
-int single_subpath::total_handles () const
+size_t single_subpath::total_points () const
 {
-  if (first_point_is_last ())
-    return (int)size ();
+  return m_elements.size ();
+}
+
+subpath_iterator single_subpath::begin () const
+{
+  return subpath_iterator (const_cast<single_subpath &> (*this), 0);
+}
+
+
+subpath_iterator single_subpath::end () const
+{
+  return subpath_iterator ();
+}
+
+size_t single_subpath::total_segments () const
+{
+  if (total_points () < 2)
+    return 0;
+
+  return m_is_closed ? total_points () : total_points () - 1;
+}
+
+subpath_iterator::subpath_iterator (single_subpath &subpath, size_t point_num)
+  : m_subpath (&subpath), m_point_num (point_num)
+{}
+
+subpath_iterator::subpath_iterator ()
+{
+  m_subpath = 0;
+  m_point_num = 0;
+}
+
+subpath_iterator &subpath_iterator::operator++ ()
+{
+  if (!m_subpath)
+    return *this;
+
+  if (m_point_num + 1 < m_subpath->total_points ())
+    m_point_num++;
   else
-    return (int)size () + 1;
+    *this = subpath_iterator ();
+    
+  return *this;
 }
 
-QPointF single_subpath::control_point (size_t subpath_index, bool left_cp) const
+
+bool subpath_iterator::operator== (const subpath_iterator &rhs) const
 {
-  QPointF substitute;
-  const QPointF *point = get_control_point (subpath_index, left_cp, substitute);
-  return point ? *point : substitute;
+  return m_subpath == rhs.m_subpath && m_point_num == rhs.m_point_num;
 }
 
-QPointF * single_subpath::get_control_point (size_t subpath_index, bool left_cp, QPointF &substitute)
+bool subpath_iterator::operator!= (const subpath_iterator &rhs) const
 {
-  if (subpath_index == 0)
-    {
-      if (!left_cp)
-        return &front ().c1;
-      else
-        {
-          if (first_point_is_last ())
-            return &back ().c2;
-          else
-            {
-              substitute = front ().start;
-              return nullptr;
-            }
-        }
-    }
-  else if (subpath_index == size ())
-    {
-      if (left_cp)
-        return &back ().c2;
-      else
-        {
-          if (first_point_is_last ())
-            return &front ().c1;
-          else
-            {
-              substitute = back ().end;
-              return nullptr;
-            }
-        }
-    }
+  return !(*this == rhs);
+}
+
+subpath_iterator subpath_iterator::neighbour (bool is_left) const
+{
+  return is_left ? left () : right ();
+}
+
+subpath_iterator subpath_iterator::left () const
+{
+  if (m_point_num != 0)
+    return subpath_iterator ( *m_subpath, m_point_num - 1);
+  else if (m_subpath->is_closed ())
+    return subpath_iterator ( *m_subpath, m_subpath->total_points () - 1);
+
+  return subpath_iterator ();
+}
+
+subpath_iterator subpath_iterator::right () const
+{
+  if (m_point_num != m_subpath->total_points () - 1)
+    return subpath_iterator ( *m_subpath, m_point_num + 1);
+  else if (m_subpath->is_closed ())
+    return subpath_iterator ( *m_subpath, 0);
+
+  return subpath_iterator ();
+}
+
+QPointF &subpath_iterator::anchor_point ()
+{
+  return m_subpath->m_elements[m_point_num].point;
+}
+
+const QPointF & subpath_iterator::anchor_point () const
+{
+  return const_cast<subpath_iterator *>(this)->anchor_point ();
+}
+
+QPointF &subpath_iterator::control_point (bool is_left)
+{
+  single_path_point &element = m_subpath->m_elements[m_point_num];
+  return is_left ? element.c1 : element.c2;
+}
+
+const QPointF & subpath_iterator::control_point (bool is_left) const
+{
+  return const_cast<subpath_iterator *>(this)->control_point (is_left);
+}
+
+bool subpath_iterator::has_control_point (bool is_left)
+{
+  if (m_subpath->is_closed ())
+    return true;
+
+  if (is_left)
+    return m_point_num != 0;
   else
-    {
-      if (left_cp)
-        return &(*this)[subpath_index - 1].c2;
-      else
-        return &(*this)[subpath_index].c1;
-    }
+    return m_point_num != m_subpath->total_points () - 1;
 }
 
-const QPointF *single_subpath::get_control_point (size_t subpath_index, bool left_cp, QPointF &substitute) const
-{
-  return const_cast<single_subpath *>(this)->get_control_point (subpath_index, left_cp, substitute);
-}
-
-void single_subpath::set_control_point (size_t subpath_index, bool left_cp, QPointF point)
-{
-  QPointF tmp;
-  QPointF *result = get_control_point (subpath_index, left_cp, tmp);
-  if (result)
-    *result = point;
-}
-
-bool single_subpath::control_point_exists (size_t subpath_index, bool left_cp) const
-{
-  QPointF substitute;
-  const QPointF *point = get_control_point (subpath_index, left_cp, substitute);
-  return point != nullptr;
-}

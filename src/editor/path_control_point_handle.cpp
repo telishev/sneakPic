@@ -26,12 +26,12 @@
 static const int handle_radius_px = 3;
 
 
-path_control_point_handle::path_control_point_handle (path_handles_editor *editor, svg_item_path *item, int control_id,
+path_control_point_handle::path_control_point_handle (path_handles_editor *editor, svg_item_path *item, svg_path_iterator path_it,
                                                       bool is_left_handle)
 {
   m_left_handle = is_left_handle;
   m_item = item;
-  m_control_id = control_id;
+  m_path_it = path_it;
   m_editor = editor;
   m_is_highlighted = false;
 }
@@ -117,14 +117,14 @@ QPointF path_control_point_handle::get_handle_center () const
     return m_drag_cur;
 
   QTransform transform = m_item->full_transform ();
-  QPointF point = get_path ()->control_point (m_control_id, m_left_handle);
+  QPointF point = m_path_it.control_point (m_left_handle);
   return transform.map (point);
 }
 
 QPointF path_control_point_handle::get_anchor_center () const
 {
   QTransform transform = m_item->full_transform ();
-  QPointF point = get_path ()->point (m_control_id);
+  QPointF point = m_path_it.anchor_point ();
   return transform.map (point);
 }
 
@@ -138,7 +138,7 @@ void path_control_point_handle::apply_drag ()
 
 void path_control_point_handle::move_point ()
 {
-  m_edit_operation->move_control_point (m_drag_cur, m_control_id, m_left_handle);;
+  m_edit_operation->move_control_point (m_drag_cur, m_path_it, m_left_handle);
 }
 
 QColor path_control_point_handle::current_color () const

@@ -3,6 +3,7 @@
 #include "common/debug_utils.h"
 
 #include "path/svg_path.h"
+#include "path/geom_helpers.h"
 
 
 svg_attribute_nodetypes::svg_attribute_nodetypes ()
@@ -68,23 +69,24 @@ void svg_attribute_nodetypes::create_from_path (const svg_path *path, bool dont_
 
   m_node_type.clear ();
   m_node_type.resize (path->total_points (), node_type_t::CUSP);
+  size_t cur_point = 0;
 
-  for (size_t i = 0; i < path->total_points (); i++)
+  for (auto it = path->begin (); it != path->end (); ++it, cur_point++)
     {
-      if (   !path->control_point_exists (i, false)
-          || !path->control_point_exists (i, true))
+      if (   !it.has_control_point (false)
+          || !it.has_control_point (true))
         continue;
 
-      QPointF left_cp = path->control_point (i, true);
-      QPointF right_cp = path->control_point (i, false);
-      QPointF anchor = path->point (i);
+      QPointF left_cp = it.control_point (true);
+      QPointF right_cp = it.control_point (false);
+      QPointF anchor = it.anchor_point ();
 
       if (!geom::are_line (anchor, left_cp, right_cp))
         continue;
 
       if (right_cp - anchor == anchor - left_cp)
-        m_node_type[i] = node_type_t::SYMMETRIC;
+        m_node_type[cur_point] = node_type_t::SYMMETRIC;
       else
-        m_node_type[i] = node_type_t::SMOOTH;
+        m_node_type[cur_point] = node_type_t::SMOOTH;
     }
 }

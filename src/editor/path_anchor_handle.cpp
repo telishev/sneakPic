@@ -26,10 +26,10 @@
 static const int mouse_size_px = 7;
 
 
-path_anchor_handle::path_anchor_handle (path_handles_editor *editor, svg_item_path *item, int anchor_id)
+path_anchor_handle::path_anchor_handle (path_handles_editor *editor, svg_item_path *item, svg_path_iterator path_it)
 {
   m_item = item;
-  m_anchor_id = anchor_id;
+  m_path_it = path_it;
   m_editor = editor;
   m_is_highlighted = false;
 }
@@ -109,7 +109,7 @@ QPointF path_anchor_handle::get_handle_center () const
     return m_drag_cur;
 
   QTransform transform = m_item->full_transform ();
-  QPointF point = get_path ()->point (m_anchor_id);
+  QPointF point = m_path_it.anchor_point ();
   return transform.map (point);
 }
 
@@ -131,7 +131,7 @@ void path_anchor_handle::apply_drag ()
 
 void path_anchor_handle::move_point ()
 {
-  m_edit_operation->move_anchor (m_drag_cur, m_anchor_id);
+  m_edit_operation->move_anchor (m_drag_cur, m_path_it);
 }
 
 QColor path_anchor_handle::current_color () const
@@ -173,5 +173,5 @@ void path_anchor_handle::draw_anchor (SkCanvas &canvas, const SkRect &rect, SkPa
 bool path_anchor_handle::is_cusp_node () const
 {
   auto nodetypes = m_item->get_computed_attribute<svg_attribute_nodetypes> ();
-  return nodetypes->node_type (m_anchor_id) == node_type_t::CUSP;
+  return nodetypes->node_type ((int)m_path_it.point_index ()) == node_type_t::CUSP;
 }

@@ -9,12 +9,12 @@ path_builder::path_builder (svg_path &dst_path)
 {
   m_prev_is_curve = false;
   m_prev_is_quad = false;
-  if (!m_dst_path.empty ())
+  if (!m_dst_path.m_subpath.empty ())
     {
-      m_cur_position = m_dst_path.back ().back ().end;
+      m_cur_position = m_dst_path.m_subpath.back ().m_elements.back ().point;
       m_new_subpath_pending = false;
       m_prev_is_curve = true;
-      m_prev_curve_c = m_dst_path.back ().back ().c2;
+      m_prev_curve_c = m_dst_path.m_subpath.back ().m_elements.back ().c1;
     }
   else
     m_new_subpath_pending = true;
@@ -28,11 +28,22 @@ path_builder::~path_builder ()
 void path_builder::close_subpath ()
 {
   m_new_subpath_pending = true;
-  if (m_dst_path.empty () || m_dst_path.back ().empty ())
+  if (m_dst_path.m_subpath.empty () || m_dst_path.m_subpath.back ().m_elements.empty ())
     return;
 
-  m_dst_path.back ().set_closed (true);
-  m_cur_position = m_dst_path.back ().front ().start;
+  m_dst_path.m_subpath.back ().set_closed (true);
+  auto &elements = m_dst_path.m_subpath.back ().m_elements;
+  auto &front_elem = elements.front ();
+  auto &back_elem = elements.back ();
+
+  /// if first point equals last, remove it and move its first control point to first element
+  if (elements.size () > 1 && front_elem.point == back_elem.point)
+    {
+      front_elem.c1 = back_elem.c1;
+      elements.pop_back ();
+    }
+
+  m_cur_position =  m_dst_path.m_subpath.back ().m_elements.front ().point;
 }
 
 void path_builder::move_to (QPointF dst, bool relative)
@@ -49,7 +60,8 @@ void path_builder::line_to (QPointF dst, bool relative)
   if (relative)
     dst += m_cur_position;
 
-  m_dst_path.back ().push_back (single_path_element::make_line (m_cur_position, dst));
+  single_subpath &cur_subpath = m_dst_path.m_subpath.back ();
+  cur_subpath.m_elements.push_back (single_path_point (dst, dst, dst));
   m_cur_position = dst;
   clear_prev ();
 }
@@ -112,7 +124,10 @@ void path_builder::curve_to (QPointF dst, QPointF c1, QPointF c2, bool relative)
       c2 += m_cur_position;
     }
 
-  m_dst_path.back ().push_back (single_path_element (m_cur_position, dst, c1, c2));
+  single_subpath &cur_subpath = m_dst_path.m_subpath.back ();
+  single_path_point &last_point = cur_subpath.m_elements.back ();
+  last_point.c2 = c1;
+  cur_subpath.m_elements.push_back (single_path_point (dst, c2, dst));
   m_cur_position = dst;
   set_prev_curve_c (c2);
 }
@@ -145,7 +160,9 @@ void path_builder::check_new_subpath ()
   if (m_new_subpath_pending)
     {
       m_new_subpath_pending = false;
-      m_dst_path.push_back (single_subpath ());
+      single_subpath subpath;
+      subpath.m_elements.push_back (single_path_point (m_cur_position, m_cur_position, m_cur_position));
+      m_dst_path.m_subpath.push_back (subpath);
     }
 }
 

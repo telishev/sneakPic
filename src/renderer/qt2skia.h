@@ -22,21 +22,20 @@ class svg_path;
 
 typedef unsigned int SkColor;
 
-class qt2skia
+namespace qt2skia
 {
-public:
-  static SkMatrix matrix (const QTransform &tr);
-  static SkPoint point (const QPointF &point);
-  static SkPath path (const QPainterPath &qpath);
-  static SkPath path (const svg_path &path);
-  static SkColor color (const QColor &color);
-  static QImage qimage (const SkBitmap &img);
-  static SkBitmap image (const QImage &image_arg);
-  static SkRect rect (const QRect &rect);
-  static SkRect rect (const QRectF &rect);
-  static SkIRect Irect (const QRect &rect);
-  static int fill_rule (int rule);
-  static SkIRect Irect (const QRectF &rect);
+  SkMatrix matrix (const QTransform &tr);
+  SkPoint point (const QPointF &point);
+  SkPath path (const QPainterPath &qpath);
+  SkPath path (const svg_path &path);
+  SkColor color (const QColor &color);
+  QImage qimage (const SkBitmap &img);
+  SkBitmap image (const QImage &image_arg);
+  SkRect rect (const QRect &rect);
+  SkRect rect (const QRectF &rect);
+  SkIRect Irect (const QRect &rect);
+  int fill_rule (int rule);
+  SkIRect Irect (const QRectF &rect);
   
 };
 
