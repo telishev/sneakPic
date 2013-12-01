@@ -95,6 +95,8 @@ void items_selection::remove_unavailable_items ()
       else
         it = m_selection.erase (it);
     }
+
+  emit selection_changed ();
 }
 
 abstract_svg_item *items_selection::iterator::operator* ()

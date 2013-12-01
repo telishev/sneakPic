@@ -28,7 +28,6 @@ void style_controller::set_painter (svg_painter *painter)
 {
   m_containers[(int) selected_style::SELECTED_STYLE]->get_fill_style ()->init (painter->selection ());
   CONNECT (painter->selection (), &items_selection::selection_changed, this, &style_controller::selection_or_items_changed);
-  CONNECT (painter->document (), &svg_document::items_changed, this, &style_controller::selection_or_items_changed);
   m_painter = painter;
 }
 
