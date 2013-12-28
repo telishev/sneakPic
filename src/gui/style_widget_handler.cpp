@@ -69,8 +69,9 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
 void style_widget_handler::target_items_changed ()
 {
   TEMPORARY_DISCONNECT (m_target_items_changed_connection);
+  update_color_in_controllers ();
   m_color_indicator->color_changed_externally ();
-  m_color_selector_widget_handler->color_changed_momentarily ();
+  m_color_selector_widget_handler->update_colors_momentarily ();
 }
 
 void style_widget_handler::selected_style_changed ()

@@ -140,9 +140,9 @@ void color_rectangular_selector::mousePressEvent (QMouseEvent *event)
 
 void color_rectangular_selector::set_color_from_pos (QPoint pos)
 {
-  emit color_changed_momentarily ();
   set_param_by_x_type (m_color, ((pos.x () - BORDER_WIDTH) * get_x_param_maximum ()) / (width () - BORDER_WIDTH * 2));
   set_param_by_y_type (m_color, ((pos.y () - BORDER_WIDTH) * get_y_param_maximum ()) / (height () - BORDER_WIDTH * 2));
+  emit color_changed_momentarily ();
   update ();
 }
 
