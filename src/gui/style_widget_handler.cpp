@@ -5,11 +5,13 @@
 #include "editor/fill_style.h"
 #include "editor/style_container.h"
 #include "editor/style_controller.h"
+#include "editor/tools/tools_container.h"
 
-#include "gui/color_selectors/color_indicator.h"
 #include "gui/color_selector_widget_handler.h"
+#include "gui/color_selectors/color_indicator.h"
 #include "gui/connection.h"
 #include "gui/dock_widget_builder.h"
+#include "gui/gui_action_id.h"
 #include "gui/utils/qt_utils.h"
 
 #include <QButtonGroup>
@@ -54,6 +56,7 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
     }
   m_target_style->button ((int) m_style_controller->current_style ())->setChecked (true);
   CONNECT (m_target_style, (void (QButtonGroup::*) (int)) &QButtonGroup::buttonClicked, this, &style_widget_handler::selected_style_changed);
+  m_target_style_layout->parentWidget ()->hide ();
 
   finish_with_spacer (m_target_style_layout);
 
@@ -97,6 +100,29 @@ void style_widget_handler::update_color_in_controllers ()
   QColor *color =  m_style_controller->active_container ()->get_fill_style ()->color ();
   m_color_selector_widget_handler->set_color (color);
   m_color_indicator->set_color (color);
+}
+
+void style_widget_handler::update_on_tool_changed ()
+{
+  gui_action_id id = m_tools_container->current_tool_id ();
+  switch (id)
+    {
+    case gui_action_id::TOOL_SELECTOR:
+    case gui_action_id::TOOL_PATH_EDITOR:
+      m_target_style->button ((int) selected_style::SELECTED_STYLE)->click ();
+      break;
+    case gui_action_id::TOOL_RECTANGLE:
+      m_target_style->button ((int) selected_style::EDITOR_STYLE)->click ();
+      break;
+    default:
+      break;
+    };
+}
+
+void style_widget_handler::set_tools_containter (const tools_container *tools_container_arg)
+{
+  m_tools_container = tools_container_arg;
+  CONNECT (m_tools_container, &tools_container::tool_changed, this, &style_widget_handler::update_on_tool_changed);
 }
 
 const char *enum_to_string (selected_style value)

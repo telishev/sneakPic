@@ -33,6 +33,7 @@ public:
   void update_tools (svg_painter *painter);
 
   abstract_tool *current_tool () const;
+  gui_action_id current_tool_id () const;
   std::vector<gui_action_id> tool_actions () const;
   bool action_triggered (gui_action_id id);
 
@@ -51,7 +52,7 @@ private:
 
   template<typename T>
   void add_info (gui_action_id id);
-  
+
 };
 
 #endif // TOOLS_CONTAINER_H

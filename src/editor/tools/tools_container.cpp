@@ -40,6 +40,11 @@ void tools_container::update_tools (svg_painter *painter)
   update_actions ();
 }
 
+gui_action_id tools_container::current_tool_id () const
+{
+  return m_cur_tool;
+}
+
 abstract_tool *tools_container::current_tool () const
 {
   return m_tools.at (m_cur_tool).get ();

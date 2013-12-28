@@ -49,7 +49,6 @@ main_window::main_window ()
   m_style_controller = new style_controller (m_settings);
   m_style_widget_handler = new style_widget_handler (m_dock_widget_builder, m_style_controller);
 
-
   m_menu_builder = new menu_builder (menuBar (), m_actions, createPopupMenu ());
 
   update_window_title ();
@@ -194,6 +193,7 @@ void main_window::open_file (const QString filename)
     }
 
   create_painter ();
+  m_style_widget_handler->set_tools_containter (m_document->get_tools_container ());
   add_file_to_recent (filename);
   update_recent_menu ();
   ui->glwidget->repaint ();

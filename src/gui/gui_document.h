@@ -48,6 +48,8 @@ public:
   QString get_filename () const;
   bool action_triggered (gui_action_id id);
 
+  const tools_container *get_tools_container () { return m_tools_container; }
+
 private slots:
   void update_timeout ();
   void tool_changed ();
@@ -56,6 +58,6 @@ private:
   bool undo ();
   bool redo ();
 };
-  
+
 
 #endif // GUI_DOCUMENT_H
