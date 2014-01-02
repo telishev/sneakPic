@@ -30,7 +30,8 @@ public:
   selected_style current_style () {return m_current_style; }
   void switch_to (selected_style current_style_arg );
 public slots:
-  void update_color_momentarily ();
+  void update_fill_color_momentarily ();
+  void update_stroke_color_momentarily ();
   void apply_changes ();
 private slots:
   void selection_or_items_changed ();

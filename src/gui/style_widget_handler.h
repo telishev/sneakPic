@@ -29,12 +29,16 @@ class style_widget_handler : public QObject
   Q_OBJECT
 
   dock_widget_builder *m_dock_widget_builder;
-  color_selector_widget_handler *m_color_selector_widget_handler;
+  color_selector_widget_handler *m_fill_color_selector_widget_handler;
+  color_selector_widget_handler *m_stroke_color_selector_widget_handler;
   QWidget *m_widget;
   QVBoxLayout *m_layout;
+  QVBoxLayout *m_style_selector_layout;
   QTabWidget *m_style_type_widget;
-  color_indicator *m_color_indicator;
-  QColor *m_placeholder_color; // For playing around while nothing is opened
+  color_indicator *m_fill_color_indicator;
+  color_indicator *m_stroke_color_indicator;
+  QColor *m_fill_placeholder_color; // For playing around while nothing is opened
+  QColor *m_stroke_placeholder_color;
 
   selected_style m_cur_target_style;
   QButtonGroup *m_target_style;
