@@ -15,15 +15,14 @@
 
 color_selector_widget_handler::color_selector_widget_handler (QColor *color)
 {
-  m_color_selector_widget = new QWidget (0);
-  m_layout = new QVBoxLayout ();
-  m_color_selector_widget->setLayout (m_layout);
-  m_tab_widget = new QTabWidget (m_color_selector_widget);
-  m_layout->addWidget (m_tab_widget);
+  m_color_selector_layout = create_inner_vbox_layout ();
+  m_color_selector_layout->parentWidget ()->setSizePolicy (QSizePolicy::Preferred, QSizePolicy::Maximum);
+  m_tab_widget = new QTabWidget (m_color_selector_layout->parentWidget ());
+  m_color_selector_layout->addWidget (m_tab_widget);
   m_color = color;
 
   add_color_selectors ();
-  m_color_selector_widget->setObjectName ("Color");
+  m_color_selector_layout->parentWidget ()->setObjectName ("Color");
 }
 
 void color_selector_widget_handler::update_colors_momentarily ()
@@ -141,18 +140,17 @@ void color_selector_widget_handler::create_hsv_tab ()
   m_color_widgets << hue_widget;
   hsv_layout->addWidget (hue_widget);
 
-  finish_with_spacer (hsv_layout);
+  hsv_layout->addStretch ();
   QGridLayout *alpha_layout = create_common_grid_layout (hsv_tab_layout->parentWidget ());
   add_typical_scroller_widget (alpha_layout, color_single_selector_type::HSV_ALPHA);
   hsv_tab_layout->addWidget (alpha_layout->parentWidget ());
-  finish_with_spacer (hsv_tab_layout);
+  hsv_tab_layout->addStretch ();
   m_tab_widget->addTab (hsv_tab_layout->parentWidget (), QIcon (), "HSV");
 }
 
 void color_selector_widget_handler::create_cmyk_widget ()
 {
-  QWidget *cmyk_widget = new QWidget (m_tab_widget);
-  QGridLayout *cmyk_layout = new QGridLayout (cmyk_widget);
+  QGridLayout *cmyk_layout = create_common_grid_layout (m_tab_widget);
   cmyk_layout->setVerticalSpacing (5);
   cmyk_layout->setHorizontalSpacing (10);
   add_typical_scroller_widget (cmyk_layout, color_single_selector_type::CMYK_CYAN);
@@ -161,12 +159,12 @@ void color_selector_widget_handler::create_cmyk_widget ()
   add_typical_scroller_widget (cmyk_layout, color_single_selector_type::CMYK_BLACK);
   add_typical_scroller_widget (cmyk_layout, color_single_selector_type::CMYK_ALPHA);
   finish_with_spacer (cmyk_layout);
-  m_tab_widget->addTab (cmyk_widget, QIcon (), "CMYK");
+  m_tab_widget->addTab (cmyk_layout->parentWidget (), QIcon (), "CMYK");
 }
 
 QWidget *color_selector_widget_handler::widget ()
 {
-  return m_color_selector_widget;
+  return m_color_selector_layout->parentWidget ();
 }
 
 void color_selector_widget_handler::set_color (QColor *color)

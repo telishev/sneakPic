@@ -21,7 +21,7 @@ void fill_style::init (settings_t *settings_arg)
   m_color = settings_arg->fill_color ();
 }
 
-void fill_style::update_color_from_selection ()
+void fill_style::update_from_selection ()
 {
   if (!m_selection)
     {
@@ -73,7 +73,7 @@ void fill_style::set_selection_color ()
 void fill_style::init (items_selection *selection)
 {
   m_selection = selection;
-  update_color_from_selection ();
+  update_from_selection ();
   // In this case should update each time selection is updated
 }
 

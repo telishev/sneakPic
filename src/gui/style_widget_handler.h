@@ -9,6 +9,7 @@ class dock_widget_builder;
 
 class QButtonGroup;
 class QColor;
+class QDoubleSpinBox;
 class QSignalMapper;
 class QTabWidget;
 class QVBoxLayout;
@@ -31,6 +32,7 @@ class style_widget_handler : public QObject
   dock_widget_builder *m_dock_widget_builder;
   color_selector_widget_handler *m_fill_color_selector_widget_handler;
   color_selector_widget_handler *m_stroke_color_selector_widget_handler;
+  QVBoxLayout *m_stroke_style_layout;
   QWidget *m_widget;
   QVBoxLayout *m_layout;
   QVBoxLayout *m_style_selector_layout;
@@ -39,6 +41,8 @@ class style_widget_handler : public QObject
   color_indicator *m_stroke_color_indicator;
   QColor *m_fill_placeholder_color; // For playing around while nothing is opened
   QColor *m_stroke_placeholder_color;
+
+  QDoubleSpinBox *m_stroke_width_spinbox;
 
   selected_style m_cur_target_style;
   QButtonGroup *m_target_style;
@@ -60,7 +64,7 @@ private slots:
   void update_on_tool_changed ();
 
 private:
-  void update_color_in_controllers ();
+  void update_style_controllers ();
 };
 
 #endif // STYLE_WIDGET_HANDLER_H

@@ -20,3 +20,8 @@ settings_t::~settings_t ()
   FREE (m_fill_color);
   FREE (m_stroke_color);
 }
+
+void settings_t::set_stroke_width (double value)
+{
+  m_line_width = value;
+}

@@ -29,12 +29,13 @@ public:
   void set_painter (svg_painter *painter);
   selected_style current_style () {return m_current_style; }
   void switch_to (selected_style current_style_arg );
+  double stroke_width ();
 public slots:
   void update_fill_color_momentarily ();
   void update_stroke_color_momentarily ();
   void apply_changes ();
-private slots:
   void selection_or_items_changed ();
+  void update_line_width (double value);
 signals:
   void target_items_changed ();
 };

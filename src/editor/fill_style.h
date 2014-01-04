@@ -20,7 +20,7 @@ public:
   void init (items_selection *selection);
   QColor *color () { return m_color; }
   void apply_color_to_selection ();
-  void update_color_from_selection ();
+  void update_from_selection ();
 private:
   void set_selection_color ();
 };

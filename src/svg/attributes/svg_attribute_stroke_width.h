@@ -19,6 +19,9 @@ public:
 
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
+
+  void set_value (double value);
+  double value () const;
 };
 #endif // SVG_ATTRIBUTE_STROKE_WIDTH_H
 

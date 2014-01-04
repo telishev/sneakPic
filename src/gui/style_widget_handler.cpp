@@ -14,8 +14,11 @@
 #include "gui/dock_widget_builder.h"
 #include "gui/gui_action_id.h"
 #include "gui/utils/qt_utils.h"
+#include "gui/utils/override_undo_filter.h"
 
 #include <QButtonGroup>
+#include <QDoubleSpinBox>
+#include <QLabel>
 #include <QRadioButton>
 #include <QSignalMapper>
 #include <QTabWidget>
@@ -23,6 +26,8 @@
 #include <QWidget>
 
 #include <stddef.h>
+
+#include <QPushButton>
 
 static int TARGET_STYLE_ROLE = Qt::UserRole;
 
@@ -54,7 +59,7 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
     QHBoxLayout *layout = create_inner_hbox_layout (m_widget);
     layout->addWidget (m_fill_color_indicator);
     layout->addWidget (m_stroke_color_indicator);
-    finish_with_spacer (layout);
+    layout->addStretch ();
   }
 
   m_target_style = new QButtonGroup (m_widget);
@@ -72,13 +77,36 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
   CONNECT (m_target_style, (void (QButtonGroup::*) (int)) &QButtonGroup::buttonClicked, this, &style_widget_handler::selected_style_changed);
   m_target_style_layout->parentWidget ()->hide ();
 
-  finish_with_spacer (m_target_style_layout);
+  m_target_style_layout->addStretch ();
 
   m_style_type_widget = new QTabWidget (m_widget);
   m_layout->addWidget (m_style_type_widget);
 
-  m_style_type_widget->addTab (m_fill_color_selector_widget_handler->widget (), QIcon (), "Fill");
-  m_style_type_widget->addTab (m_stroke_color_selector_widget_handler->widget (), QIcon (), "Stroke");
+  {
+    QVBoxLayout *layout = create_common_vbox_layout ();
+    layout->addWidget (m_fill_color_selector_widget_handler->widget ());
+    layout->addStretch ();
+    m_style_type_widget->addTab (layout->parentWidget (), QIcon (), "Fill");
+  }
+
+  m_stroke_style_layout = create_common_vbox_layout (nullptr);
+  m_stroke_style_layout->addWidget (m_stroke_color_selector_widget_handler->widget ());
+
+  {
+    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    layout->addWidget (new QLabel ("Width:"));
+    layout->addWidget (m_stroke_width_spinbox = new QDoubleSpinBox (layout->parentWidget ()));
+    m_stroke_width_spinbox->installEventFilter (new override_undo_filter (m_stroke_width_spinbox));
+    m_stroke_width_spinbox->setSingleStep (0.1);
+    m_stroke_width_spinbox->setMaximum (1000.0);
+    m_stroke_width_spinbox->setDecimals (3);
+    m_stroke_width_spinbox->setKeyboardTracking (false);
+    CONNECT (m_stroke_width_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_line_width);
+    layout->addStretch ();
+  }
+
+  m_stroke_style_layout->addStretch ();
+  m_style_type_widget->addTab (m_stroke_style_layout->parentWidget (), QIcon (), "Stroke");
 
   m_dock_widget_builder->add_widget (m_widget, Qt::RightDockWidgetArea, visibility_state::visible, Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
@@ -88,7 +116,7 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
 void style_widget_handler::target_items_changed ()
 {
   TEMPORARY_DISCONNECT (m_target_items_changed_connection);
-  update_color_in_controllers ();
+  update_style_controllers ();
   m_fill_color_indicator->color_changed_externally ();
   m_fill_color_selector_widget_handler->update_colors_momentarily ();
   m_stroke_color_indicator->color_changed_externally ();
@@ -105,7 +133,7 @@ void style_widget_handler::selected_style_changed ()
   if (checked != m_style_controller->current_style ()) // synchronize with radio button
     m_style_controller->switch_to (checked);
 
-  update_color_in_controllers ();
+  update_style_controllers ();
 }
 
 style_widget_handler::~style_widget_handler ()
@@ -113,7 +141,7 @@ style_widget_handler::~style_widget_handler ()
   FREE (m_fill_placeholder_color);
 }
 
-void style_widget_handler::update_color_in_controllers ()
+void style_widget_handler::update_style_controllers ()
 {
   QColor *color =  m_style_controller->active_container ()->get_fill_style ()->color ();
   m_fill_color_selector_widget_handler->set_color (color);
@@ -122,6 +150,8 @@ void style_widget_handler::update_color_in_controllers ()
   color =  m_style_controller->active_container ()->get_stroke_style ()->color ();
   m_stroke_color_selector_widget_handler->set_color (color);
   m_stroke_color_indicator->set_color (color);
+
+  m_stroke_width_spinbox->setValue (m_style_controller->stroke_width ());
 }
 
 void style_widget_handler::update_on_tool_changed ()

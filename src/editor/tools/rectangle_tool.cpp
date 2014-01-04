@@ -15,6 +15,7 @@
 #include "svg/attributes/svg_attributes_length_type.h"
 #include "svg/attributes/svg_attributes_fill_stroke.h"
 #include "svg/attributes/svg_attributes_number.h"
+#include "svg/attributes/svg_attribute_stroke_width.h"
 #include "svg/items/svg_items_container.h"
 #include "svg/items/svg_item_rect.h"
 #include "svg/svg_document.h"
@@ -54,14 +55,16 @@ void rectangle_tool::update_preview (QPointF &current_pos)
   path.addRect (get_rect (current_pos));
   m_renderer_item->set_visibility (true);
   m_renderer_item->set_painter_path (path);
+
   renderer_painter_server_color fill_server (*(m_painter->settings ()->fill_color ()));
   fill_server.set_opacity (m_painter->settings ()->fill_color ()->alphaF ());
   m_renderer_item->set_fill_server (&fill_server);
 
-  QColor lacuna;
-  renderer_painter_server_color stroke_server (lacuna);
-  stroke_server.set_opacity (0);
+  renderer_painter_server_color stroke_server (*(m_painter->settings ()->stroke_color ()));
+  stroke_server.set_opacity (m_painter->settings ()->stroke_color ()->alphaF ());
   m_renderer_item->set_stroke_server (&stroke_server);
+
+  m_renderer_item->set_stroke_width (m_painter->settings ()->stroke_width ());
 }
 
 bool rectangle_tool::continue_rectangle_positioning (const QPoint &pos)
@@ -94,11 +97,20 @@ void rectangle_tool::insert_item (const QPointF &pos )
   rect_item->get_attribute_for_change<svg_attribute_y> ()->set_value (rect.top ());
   rect_item->get_attribute_for_change<svg_attribute_width> ()->set_value (rect.width ());
   rect_item->get_attribute_for_change<svg_attribute_height> ()->set_value (rect.height ());
+
+  rect_item->get_attribute_for_change<svg_attribute_stroke_width> ()->set_value (m_painter->settings ()->stroke_width ());
+
   {
     auto fill = rect_item->get_attribute_for_change<svg_attribute_fill> ();
     fill->set_to_color (*m_painter->settings ()->fill_color ());
+    rect_item->get_attribute_for_change<svg_attribute_fill_opacity> ()->set_value (m_painter->settings ()->fill_color ()->alphaF ());
   }
-  rect_item->get_attribute_for_change<svg_attribute_fill_opacity> ()->set_value (m_painter->settings ()->fill_color ()->alphaF ());
+
+  {
+    auto stroke = rect_item->get_attribute_for_change<svg_attribute_stroke> ();
+    stroke->set_to_color (*m_painter->settings ()->stroke_color ());
+    rect_item->get_attribute_for_change<svg_attribute_stroke_opacity> ()->set_value (m_painter->settings ()->stroke_color ()->alphaF ());
+  }
 
   rect_item->update_bbox ();
   m_painter->document ()->root ()->push_back (rect_item);

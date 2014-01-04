@@ -20,6 +20,12 @@ style_controller::style_controller (settings_t *settings_arg)
   m_painter = 0;
 }
 
+void style_controller::update_line_width (double value)
+{
+  active_container ()->get_stroke_style ()->update_line_width (value);
+  apply_changes ();
+};
+
 style_container *style_controller::active_container ()
 {
   return m_containers[(int) m_current_style];
@@ -62,11 +68,14 @@ void style_controller::apply_changes ()
     m_painter->document ()->apply_changes ();
 }
 
-
 void style_controller::selection_or_items_changed ()
 {
-  active_container ()->get_fill_style ()->update_color_from_selection ();
-  active_container ()->get_stroke_style ()->update_color_from_selection ();
+  active_container ()->get_fill_style ()->update_from_selection ();
+  active_container ()->get_stroke_style ()->update_from_selection ();
   emit target_items_changed ();
 }
 
+double style_controller::stroke_width ()
+{
+  return active_container ()->get_stroke_style ()->stroke_width ();
+}

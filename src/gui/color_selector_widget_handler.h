@@ -17,8 +17,7 @@ class color_selector_widget_handler : public QObject
 {
   Q_OBJECT
 
-  QWidget *m_color_selector_widget;
-  QLayout *m_layout;
+  QLayout *m_color_selector_layout;
   QTabWidget *m_tab_widget;
   QColor *m_color;
   QList <color_selector *> m_color_widgets;
