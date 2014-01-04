@@ -20,13 +20,24 @@ style_controller::style_controller (settings_t *settings_arg)
   m_painter = 0;
 }
 
-void style_controller::update_line_width (double value)
+void style_controller::update_stroke_width (double value)
 {
   active_container ()->get_stroke_style ()->update_line_width (value);
   apply_changes ();
 };
 
+void style_controller::update_linejoin (Qt::PenJoinStyle value)
+{
+  active_container ()->get_stroke_style ()->update_linejoin (value);
+  apply_changes ();
+};
+
 style_container *style_controller::active_container ()
+{
+  return m_containers[(int) m_current_style];
+}
+
+const style_container *style_controller::active_container () const
 {
   return m_containers[(int) m_current_style];
 }
@@ -75,7 +86,12 @@ void style_controller::selection_or_items_changed ()
   emit target_items_changed ();
 }
 
-double style_controller::stroke_width ()
+double style_controller::stroke_width () const
 {
   return active_container ()->get_stroke_style ()->stroke_width ();
+}
+
+Qt::PenJoinStyle style_controller::stroke_linejoin () const
+{
+  return active_container ()->get_stroke_style ()->stroke_linejoin ();
 }

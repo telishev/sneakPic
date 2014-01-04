@@ -1,6 +1,6 @@
 #include "override_undo_filter.h"
 
-#include <QEvent>
+#include <QKeyEvent>
 #include <QWidget>
 
 bool override_undo_filter::eventFilter (QObject *target, QEvent *anEvent)
@@ -9,7 +9,11 @@ bool override_undo_filter::eventFilter (QObject *target, QEvent *anEvent)
   switch (type)
     {
     case QEvent::ShortcutOverride:
-      return true;
+      {
+        QKeyEvent *key_event = static_cast <QKeyEvent *> (anEvent);
+        if (key_event->matches (QKeySequence::Undo) || key_event->matches (QKeySequence::Redo))
+          return true;
+      }
     default:
       break;
     }

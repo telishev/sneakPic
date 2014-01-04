@@ -17,6 +17,7 @@
 #include "gui/utils/override_undo_filter.h"
 
 #include <QButtonGroup>
+#include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QLabel>
 #include <QRadioButton>
@@ -28,6 +29,8 @@
 #include <stddef.h>
 
 #include <QPushButton>
+
+Q_DECLARE_METATYPE (Qt::PenJoinStyle);
 
 static int TARGET_STYLE_ROLE = Qt::UserRole;
 
@@ -92,6 +95,7 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
   m_stroke_style_layout = create_common_vbox_layout (nullptr);
   m_stroke_style_layout->addWidget (m_stroke_color_selector_widget_handler->widget ());
 
+  // stroke width
   {
     QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
     layout->addWidget (new QLabel ("Width:"));
@@ -101,8 +105,20 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
     m_stroke_width_spinbox->setMaximum (1000.0);
     m_stroke_width_spinbox->setDecimals (3);
     m_stroke_width_spinbox->setKeyboardTracking (false);
-    CONNECT (m_stroke_width_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_line_width);
+    CONNECT (m_stroke_width_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_width);
     layout->addStretch ();
+  }
+
+  // stroke linejoin
+  {
+    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    layout->addWidget (new QLabel ("Join:"));
+    layout->addWidget (m_stroke_linejoin_combobox = new QComboBox (layout->parentWidget ()));
+    layout->addStretch ();
+    m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_miter.png"), "Miter", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::SvgMiterJoin));
+    m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_round.png"), "Round", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::RoundJoin));
+    m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_bevel.png"), "Bevel", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::BevelJoin));
+    CONNECT (m_stroke_linejoin_combobox, (void (QComboBox::*) (int)) &QComboBox::currentIndexChanged, this, &style_widget_handler::update_linejoin);
   }
 
   m_stroke_style_layout->addStretch ();
@@ -112,6 +128,11 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
 
   selected_style_changed ();
 };
+
+void style_widget_handler::update_linejoin (int index)
+{
+  m_style_controller->update_linejoin (m_stroke_linejoin_combobox->itemData (index).value <Qt::PenJoinStyle> ());
+}
 
 void style_widget_handler::target_items_changed ()
 {
@@ -152,6 +173,11 @@ void style_widget_handler::update_style_controllers ()
   m_stroke_color_indicator->set_color (color);
 
   m_stroke_width_spinbox->setValue (m_style_controller->stroke_width ());
+
+  {
+    int index = m_stroke_linejoin_combobox->findData (QVariant::fromValue<Qt::PenJoinStyle> (m_style_controller->stroke_linejoin ()));
+    m_stroke_linejoin_combobox->setCurrentIndex (index);
+  }
 }
 
 void style_widget_handler::update_on_tool_changed ()

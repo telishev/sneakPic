@@ -19,5 +19,8 @@ public:
 
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
+
+  void set_value (Qt::PenJoinStyle value) { m_linejoin = value; };
+  Qt::PenJoinStyle value () const {return m_linejoin; }
 };
 #endif // SVG_ATTRIBUTE_STROKE_LINEJOIN_H

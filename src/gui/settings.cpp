@@ -12,6 +12,8 @@ settings_t::settings_t ()
   m_shortcuts->fill_by_default ();
   m_fill_color = new QColor ();
   m_stroke_color = new QColor ();
+  m_stroke_linejoin = Qt::PenJoinStyle::SvgMiterJoin;
+  m_stroke_width = 0.0;
 }
 
 settings_t::~settings_t ()
@@ -23,5 +25,10 @@ settings_t::~settings_t ()
 
 void settings_t::set_stroke_width (double value)
 {
-  m_line_width = value;
+  m_stroke_width = value;
+}
+
+void settings_t::set_stroke_linejoin (Qt::PenJoinStyle value)
+{
+  m_stroke_linejoin = value;
 }

@@ -10,6 +10,7 @@
 #include "editor/items_selection.h"
 #include "editor/stroke_style.h"
 
+#include "svg/attributes/svg_attribute_stroke_linejoin.h"
 #include "svg/attributes/svg_attribute_stroke_width.h"
 #include "svg/attributes/svg_attributes_fill_stroke.h"
 #include "svg/attributes/svg_attributes_number.h"
@@ -22,6 +23,7 @@ stroke_style::stroke_style ()
   m_selection = 0;
   m_stroke_width = 0;
   m_settings = 0;
+  m_linejoin = Qt::PenJoinStyle::SvgMiterJoin;
 }
 
 void stroke_style::init (settings_t *settings_arg)
@@ -43,8 +45,10 @@ void stroke_style::update_from_selection ()
       return;
     }
 
-  m_stroke_width = (* (m_selection->begin ()))->get_computed_attribute <svg_attribute_stroke_width> ()->value ();
-  auto stroke = (* (m_selection->begin ()))->get_computed_attribute <svg_attribute_stroke> ();
+  abstract_svg_item *selected_item = *m_selection->begin ();
+  m_stroke_width = selected_item->get_computed_attribute <svg_attribute_stroke_width> ()->value ();
+  m_linejoin = selected_item->get_computed_attribute <svg_attribute_stroke_linejoin> ()->value ();
+  auto stroke = selected_item->get_computed_attribute <svg_attribute_stroke> ();
   auto stroke_opacity = (* (m_selection->begin ()))->get_computed_attribute <svg_attribute_stroke_opacity> ();
   if (stroke == 0)
   {
@@ -116,4 +120,24 @@ void stroke_style::update_line_width (double value)
            (* (m_selection->begin ()))->get_attribute_for_change <svg_attribute_stroke_width> ()->set_value (value);
         }
     }
+}
+
+void stroke_style::update_linejoin (Qt::PenJoinStyle value)
+{
+  m_linejoin = value;
+
+  if (m_settings)
+    m_settings->set_stroke_linejoin (value);
+  else
+  {
+    if (is_single_item_selected ())
+    {
+      (* (m_selection->begin ()))->get_attribute_for_change <svg_attribute_stroke_linejoin> ()->set_value (value);
+    }
+  }
+}
+
+Qt::PenJoinStyle stroke_style::stroke_linejoin () const
+{
+  return m_linejoin;
 }

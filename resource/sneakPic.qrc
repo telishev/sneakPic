@@ -1,6 +1,9 @@
 <RCC>
     <qresource prefix="/">
         <file>cursor.png</file>
+        <file>linejoin_bevel.png</file>
+        <file>linejoin_miter.png</file>
+        <file>linejoin_round.png</file>
         <file>rectangle.png</file>
     </qresource>
 </RCC>

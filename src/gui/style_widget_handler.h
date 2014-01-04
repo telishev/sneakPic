@@ -9,6 +9,7 @@ class dock_widget_builder;
 
 class QButtonGroup;
 class QColor;
+class QComboBox;
 class QDoubleSpinBox;
 class QSignalMapper;
 class QTabWidget;
@@ -43,6 +44,7 @@ class style_widget_handler : public QObject
   QColor *m_stroke_placeholder_color;
 
   QDoubleSpinBox *m_stroke_width_spinbox;
+  QComboBox *m_stroke_linejoin_combobox;
 
   selected_style m_cur_target_style;
   QButtonGroup *m_target_style;
@@ -62,6 +64,7 @@ private slots:
   void selected_style_changed ();
   void target_items_changed ();
   void update_on_tool_changed ();
+  void update_linejoin (int index);
 
 private:
   void update_style_controllers ();

@@ -15,6 +15,7 @@
 #include "svg/attributes/svg_attributes_length_type.h"
 #include "svg/attributes/svg_attributes_fill_stroke.h"
 #include "svg/attributes/svg_attributes_number.h"
+#include "svg/attributes/svg_attribute_stroke_linejoin.h"
 #include "svg/attributes/svg_attribute_stroke_width.h"
 #include "svg/items/svg_items_container.h"
 #include "svg/items/svg_item_rect.h"
@@ -65,6 +66,7 @@ void rectangle_tool::update_preview (QPointF &current_pos)
   m_renderer_item->set_stroke_server (&stroke_server);
 
   m_renderer_item->set_stroke_width (m_painter->settings ()->stroke_width ());
+  m_renderer_item->set_stroke_linejoin (m_painter->settings ()->stroke_linejoin ());
 }
 
 bool rectangle_tool::continue_rectangle_positioning (const QPoint &pos)
@@ -99,6 +101,7 @@ void rectangle_tool::insert_item (const QPointF &pos )
   rect_item->get_attribute_for_change<svg_attribute_height> ()->set_value (rect.height ());
 
   rect_item->get_attribute_for_change<svg_attribute_stroke_width> ()->set_value (m_painter->settings ()->stroke_width ());
+  rect_item->get_attribute_for_change<svg_attribute_stroke_linejoin> ()->set_value (m_painter->settings ()->stroke_linejoin ());
 
   {
     auto fill = rect_item->get_attribute_for_change<svg_attribute_fill> ();

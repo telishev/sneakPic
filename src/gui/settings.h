@@ -10,7 +10,9 @@ class settings_t
   shortcuts_config *m_shortcuts;
   QColor *m_fill_color;
   QColor *m_stroke_color;
-  double m_line_width;
+  double m_stroke_width;
+  Qt::PenJoinStyle m_stroke_linejoin;
+
 public:
   settings_t ();
   ~settings_t ();
@@ -18,8 +20,10 @@ public:
   shortcuts_config *shortcuts_cfg () const { return m_shortcuts; }
   QColor *fill_color () const { return m_fill_color; }
   QColor *stroke_color () const { return m_stroke_color; }
-  double stroke_width () const { return m_line_width; }
+  double stroke_width () const { return m_stroke_width; }
+  Qt::PenJoinStyle stroke_linejoin () const { return m_stroke_linejoin; }
   void set_stroke_width ( double value );
+  void set_stroke_linejoin( Qt::PenJoinStyle value );
 };
 
 #endif // SETTINGS_H

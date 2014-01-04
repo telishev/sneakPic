@@ -14,6 +14,7 @@ public:
   style_container ();
   fill_style *get_fill_style () { return m_fill_style; }
   stroke_style *get_stroke_style () { return m_stroke_style; }
+  const stroke_style *get_stroke_style () const { return m_stroke_style; }
   void init (settings_t *settings);
   void init (items_selection *selection);
 };

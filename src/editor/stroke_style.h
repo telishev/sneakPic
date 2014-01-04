@@ -6,6 +6,11 @@ class QColor;
 class items_selection;
 class settings_t;
 
+namespace Qt
+{
+  enum PenJoinStyle : int;
+};
+
 class stroke_style
 {
   QColor *m_color;
@@ -13,7 +18,7 @@ class stroke_style
   items_selection *m_selection;
   double m_stroke_width;
   settings_t *m_settings;
-
+  Qt::PenJoinStyle m_linejoin;
 public:
   stroke_style ();
   ~stroke_style ();
@@ -23,11 +28,14 @@ public:
   void apply_color_to_selection ();
   void update_line_width (double value);
   QColor *color () { return m_color; }
-  double stroke_width () { return m_stroke_width; };
+  double stroke_width () const { return m_stroke_width; };
+  Qt::PenJoinStyle stroke_linejoin () const;
+  void update_linejoin( Qt::PenJoinStyle value );
 
 private:
   void set_selection_color ();
   bool is_single_item_selected ();
+
 };
 
 #endif // STROKE_STYLE_H
