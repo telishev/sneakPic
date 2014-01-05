@@ -31,7 +31,10 @@ void color_selector_widget_handler::update_colors_momentarily ()
   {
     widget->color_changed_externally ();
   }
-  emit color_changed_momentarily ();
+  if (m_color)
+    emit color_changed_momentarily (*m_color);
+  else
+    emit color_changed_momentarily (QColor (127, 127, 127, 127));
 }
 
 void color_selector_widget_handler::update_colors_finally ()
@@ -173,4 +176,6 @@ void color_selector_widget_handler::set_color (QColor *color)
     {
       widget->set_color (color);
     }
+
+  m_color = color;
 }

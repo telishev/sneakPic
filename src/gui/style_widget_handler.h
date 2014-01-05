@@ -38,8 +38,6 @@ class style_widget_handler : public QObject
   QVBoxLayout *m_layout;
   QVBoxLayout *m_style_selector_layout;
   QTabWidget *m_style_type_widget;
-  color_indicator *m_fill_color_indicator;
-  color_indicator *m_stroke_color_indicator;
   QColor *m_fill_placeholder_color; // For playing around while nothing is opened
   QColor *m_stroke_placeholder_color;
 
@@ -72,6 +70,7 @@ public:
   ~style_widget_handler ();
   void set_style_controller (style_controller *style_controller_arg);
   void set_tools_containter(const tools_container *tools_container_arg);
+ void send_color_changes ();
 
 private slots:
   void selected_style_changed ();
@@ -82,6 +81,10 @@ private slots:
 
 private:
   void update_style_controllers ();
+
+signals:
+  void fill_color_changed (QColor&);
+  void stroke_color_changed (QColor&);
 };
 
 #endif // STYLE_WIDGET_HANDLER_H

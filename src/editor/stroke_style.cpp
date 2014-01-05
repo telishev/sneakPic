@@ -32,6 +32,10 @@ void stroke_style::init (settings_t *settings_arg)
 {
   m_settings = settings_arg;
   m_color = settings_arg->stroke_color ();
+  m_linecap = settings_arg->stroke_linecap ();
+  m_linejoin = settings_arg->stroke_linejoin ();
+  m_miterlimit = settings_arg->stroke_miterlimit ();
+  m_width = settings_arg->stroke_width ();
 }
 
 void stroke_style::update_from_selection ()

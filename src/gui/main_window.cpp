@@ -51,6 +51,9 @@ main_window::main_window ()
 
   m_menu_builder = new menu_builder (menuBar (), m_actions, createPopupMenu ());
 
+  CONNECT (m_style_widget_handler, &style_widget_handler::stroke_color_changed, m_tools_builder, &tools_widget_builder::update_stroke_color);
+  CONNECT (m_style_widget_handler, &style_widget_handler::fill_color_changed, m_tools_builder, &tools_widget_builder::update_fill_color);
+
   update_window_title ();
   m_actions->action (gui_action_id::OPEN_RECENT)->setMenu (&m_recent_menu);
   load_recent_menu ();

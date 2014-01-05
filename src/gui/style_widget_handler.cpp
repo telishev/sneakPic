@@ -43,27 +43,18 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
   m_stroke_placeholder_color = new QColor ();
   m_layout = new QVBoxLayout (m_widget);
   m_fill_color_selector_widget_handler = new color_selector_widget_handler (m_fill_placeholder_color);
-  m_fill_color_indicator = new color_indicator (m_widget, m_fill_placeholder_color);
-  m_stroke_color_indicator = new color_indicator (m_widget, m_stroke_placeholder_color);
   m_cur_target_style = selected_style::EDITOR_STYLE;
   m_style_controller = style_controller_arg;
-  CONNECT (m_fill_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, m_fill_color_indicator, &color_selector::color_changed_externally);
+  CONNECT (m_fill_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, this, &style_widget_handler::fill_color_changed);
   CONNECT (m_fill_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, m_style_controller, &style_controller::update_fill_color_momentarily);
   CONNECT (m_fill_color_selector_widget_handler, &color_selector_widget_handler::color_changing_finished, m_style_controller, &style_controller::apply_changes);
 
   m_stroke_color_selector_widget_handler = new color_selector_widget_handler (m_fill_placeholder_color);
-  CONNECT (m_stroke_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, m_stroke_color_indicator, &color_selector::color_changed_externally);
+  CONNECT (m_stroke_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, this, &style_widget_handler::stroke_color_changed);
   CONNECT (m_stroke_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, m_style_controller, &style_controller::update_stroke_color_momentarily);
   CONNECT (m_stroke_color_selector_widget_handler, &color_selector_widget_handler::color_changing_finished, m_style_controller, &style_controller::apply_changes);
 
   m_target_items_changed_connection = CONNECT (m_style_controller, &style_controller::target_items_changed, this, &style_widget_handler::target_items_changed);
-
-  {
-    QHBoxLayout *layout = create_inner_hbox_layout (m_widget);
-    layout->addWidget (m_fill_color_indicator);
-    layout->addWidget (m_stroke_color_indicator);
-    layout->addStretch ();
-  }
 
   init_target_style_controller ();
 
@@ -72,6 +63,7 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
 
   {
     QVBoxLayout *layout = create_common_vbox_layout ();
+    layout->addWidget (new QLabel ("Color:"));
     layout->addWidget (m_fill_color_selector_widget_handler->widget ());
     layout->addStretch ();
     m_style_type_widget->addTab (layout->parentWidget (), QIcon (), "Fill");
@@ -104,13 +96,27 @@ void style_widget_handler::update_linecap (int index)
   m_style_controller->update_linecap (m_stroke_linecap_combobox->itemData (index).value <Qt::PenCapStyle> ());
 }
 
+void style_widget_handler::send_color_changes ()
+{
+  QColor lacuna (127, 127, 127, 127);
+  if (m_style_controller->active_container ()->get_fill_style ()->color ())
+    emit fill_color_changed (*m_style_controller->active_container ()->get_fill_style ()->color ());
+  else
+    emit fill_color_changed (lacuna);
+
+  if (m_style_controller->active_container ()->get_stroke_style ()->color ())
+    emit stroke_color_changed (*m_style_controller->active_container ()->get_stroke_style ()->color ());
+  else
+    emit stroke_color_changed (lacuna);
+}
+
 void style_widget_handler::target_items_changed ()
 {
   TEMPORARY_DISCONNECT (m_target_items_changed_connection);
   update_style_controllers ();
-  m_fill_color_indicator->color_changed_externally ();
+  send_color_changes ();
+
   m_fill_color_selector_widget_handler->update_colors_momentarily ();
-  m_stroke_color_indicator->color_changed_externally ();
   m_stroke_color_selector_widget_handler->update_colors_momentarily ();
 }
 
@@ -136,11 +142,11 @@ void style_widget_handler::update_style_controllers ()
 {
   QColor *color =  m_style_controller->active_container ()->get_fill_style ()->color ();
   m_fill_color_selector_widget_handler->set_color (color);
-  m_fill_color_indicator->set_color (color);
 
   color =  m_style_controller->active_container ()->get_stroke_style ()->color ();
   m_stroke_color_selector_widget_handler->set_color (color);
-  m_stroke_color_indicator->set_color (color);
+
+  send_color_changes ();
 
   m_stroke_width_spinbox->setValue (m_style_controller->stroke_width ());
   m_stroke_miterlimit_spinbox->setValue (m_style_controller->stroke_miterlimit ());

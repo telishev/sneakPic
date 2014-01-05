@@ -2,7 +2,7 @@
 
 #include <QPainter>
 
-static int COLOR_INDICATOR_DEFAULT_SIZE = 50;
+static int COLOR_INDICATOR_DEFAULT_SIZE = 25;
 
 QSize color_indicator::sizeHint () const
 {
