@@ -1,6 +1,9 @@
 <RCC>
     <qresource prefix="/">
         <file>cursor.png</file>
+        <file>linecap_butt.png</file>
+        <file>linecap_cap.png</file>
+        <file>linecap_round.png</file>
         <file>linejoin_bevel.png</file>
         <file>linejoin_miter.png</file>
         <file>linejoin_round.png</file>

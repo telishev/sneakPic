@@ -12,6 +12,8 @@ class settings_t
   QColor *m_stroke_color;
   double m_stroke_width;
   Qt::PenJoinStyle m_stroke_linejoin;
+  double m_stroke_miterlimit;
+  Qt::PenCapStyle m_stroke_linecap;
 
 public:
   settings_t ();
@@ -22,8 +24,12 @@ public:
   QColor *stroke_color () const { return m_stroke_color; }
   double stroke_width () const { return m_stroke_width; }
   Qt::PenJoinStyle stroke_linejoin () const { return m_stroke_linejoin; }
-  void set_stroke_width ( double value );
-  void set_stroke_linejoin( Qt::PenJoinStyle value );
+  double stroke_miterlimit () const { return m_stroke_miterlimit; }
+  void set_stroke_width (double value);
+  void set_stroke_linejoin (Qt::PenJoinStyle value);
+  void set_stroke_miterlimit (double value);
+  void set_stroke_linecap (Qt::PenCapStyle value) { m_stroke_linecap = value; }
+  Qt::PenCapStyle stroke_linecap () {return m_stroke_linecap; }
 };
 
 #endif // SETTINGS_H

@@ -1,6 +1,7 @@
 #ifndef QT_UTILS_H
 #define QT_UTILS_H
 
+class QDoubleSpinBox;
 class QGridLayout;
 class QHBoxLayout;
 class QLayout;
@@ -19,5 +20,6 @@ QHBoxLayout *create_inner_hbox_layout (QLayout *parent_layout);
 QVBoxLayout *create_inner_vbox_layout (QWidget *parent = nullptr);
 QVBoxLayout *create_inner_vbox_layout (QLayout *parent_layout);
 void finish_with_spacer (QGridLayout *layout);
+QDoubleSpinBox *create_double_spinbox (QWidget *parent, double maximum, int precision = 3, double single_step = 0.1, double minimum = 0.0);
 #endif // QT_UTILS_H
 

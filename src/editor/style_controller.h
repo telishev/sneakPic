@@ -32,7 +32,10 @@ public:
   void switch_to (selected_style current_style_arg );
   double stroke_width () const;
   Qt::PenJoinStyle stroke_linejoin () const;
+  Qt::PenCapStyle stroke_linecap () const;
   void update_linejoin (Qt::PenJoinStyle value);
+  void update_linecap (Qt::PenCapStyle value);
+  double stroke_miterlimit () const;
 
 public slots:
   void update_fill_color_momentarily ();
@@ -40,6 +43,7 @@ public slots:
   void apply_changes ();
   void selection_or_items_changed ();
   void update_stroke_width (double value);
+  void update_stroke_miterlimit (double value);
 signals:
   void target_items_changed ();
 };

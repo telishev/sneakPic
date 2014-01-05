@@ -18,5 +18,7 @@ public:
 
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
+  void set_value (double value) { m_miterlimit = value; }
+  double value () const { return m_miterlimit; }
 };
 #endif // SVG_ATTRIBUTE_STROKE_MITERLIMIT_H

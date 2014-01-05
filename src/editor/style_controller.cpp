@@ -22,13 +22,25 @@ style_controller::style_controller (settings_t *settings_arg)
 
 void style_controller::update_stroke_width (double value)
 {
-  active_container ()->get_stroke_style ()->update_line_width (value);
+  active_container ()->get_stroke_style ()->update_width (value);
+  apply_changes ();
+};
+
+void style_controller::update_stroke_miterlimit (double value)
+{
+  active_container ()->get_stroke_style ()->update_miterlimit (value);
   apply_changes ();
 };
 
 void style_controller::update_linejoin (Qt::PenJoinStyle value)
 {
   active_container ()->get_stroke_style ()->update_linejoin (value);
+  apply_changes ();
+};
+
+void style_controller::update_linecap (Qt::PenCapStyle value)
+{
+  active_container ()->get_stroke_style ()->update_linecap (value);
   apply_changes ();
 };
 
@@ -91,7 +103,17 @@ double style_controller::stroke_width () const
   return active_container ()->get_stroke_style ()->stroke_width ();
 }
 
+double style_controller::stroke_miterlimit () const
+{
+  return active_container ()->get_stroke_style ()->stroke_miterlimit ();
+}
+
 Qt::PenJoinStyle style_controller::stroke_linejoin () const
 {
   return active_container ()->get_stroke_style ()->stroke_linejoin ();
+}
+
+Qt::PenCapStyle style_controller::stroke_linecap () const
+{
+  return active_container ()->get_stroke_style ()->stroke_linecap ();
 }

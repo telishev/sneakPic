@@ -13,7 +13,8 @@ settings_t::settings_t ()
   m_fill_color = new QColor ();
   m_stroke_color = new QColor ();
   m_stroke_linejoin = Qt::PenJoinStyle::SvgMiterJoin;
-  m_stroke_width = 0.0;
+  m_stroke_width = 1.0;
+  m_stroke_miterlimit = 4.0;
 }
 
 settings_t::~settings_t ()
@@ -31,4 +32,9 @@ void settings_t::set_stroke_width (double value)
 void settings_t::set_stroke_linejoin (Qt::PenJoinStyle value)
 {
   m_stroke_linejoin = value;
+}
+
+void settings_t::set_stroke_miterlimit (double value)
+{
+  m_stroke_miterlimit = value;
 }

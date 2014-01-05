@@ -1,6 +1,9 @@
-#include "qt_utils.h"
+#include "gui/utils/qt_utils.h"
 // File to contain some stuff which have to do with Qt, later some parts may be moved to separate files
 
+#include "gui/utils/override_undo_filter.h"
+
+#include <QDoubleSpinBox>
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -88,3 +91,15 @@ QVBoxLayout *create_inner_vbox_layout (QLayout *parent_layout)
 {
   return create_inner_vbox_layout (parent_layout->parentWidget ());
 }
+
+QDoubleSpinBox *create_double_spinbox (QWidget *parent, double maximum, int precision, double single_step, double minimum)
+{
+  QDoubleSpinBox *spinbox = new QDoubleSpinBox (parent);
+  spinbox->setMaximum (maximum);
+  spinbox->setMinimum (minimum);
+  spinbox->setDecimals (precision);
+  spinbox->setSingleStep (single_step);
+  spinbox->installEventFilter (new override_undo_filter (spinbox));
+  spinbox->setKeyboardTracking (false);
+  return spinbox;
+};

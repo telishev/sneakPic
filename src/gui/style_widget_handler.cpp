@@ -14,7 +14,6 @@
 #include "gui/dock_widget_builder.h"
 #include "gui/gui_action_id.h"
 #include "gui/utils/qt_utils.h"
-#include "gui/utils/override_undo_filter.h"
 
 #include <QButtonGroup>
 #include <QComboBox>
@@ -31,6 +30,7 @@
 #include <QPushButton>
 
 Q_DECLARE_METATYPE (Qt::PenJoinStyle);
+Q_DECLARE_METATYPE (Qt::PenCapStyle);
 
 static int TARGET_STYLE_ROLE = Qt::UserRole;
 
@@ -93,18 +93,14 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
   }
 
   m_stroke_style_layout = create_common_vbox_layout (nullptr);
+  m_stroke_style_layout->addWidget (new QLabel ("Color:"));
   m_stroke_style_layout->addWidget (m_stroke_color_selector_widget_handler->widget ());
 
   // stroke width
   {
     QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
     layout->addWidget (new QLabel ("Width:"));
-    layout->addWidget (m_stroke_width_spinbox = new QDoubleSpinBox (layout->parentWidget ()));
-    m_stroke_width_spinbox->installEventFilter (new override_undo_filter (m_stroke_width_spinbox));
-    m_stroke_width_spinbox->setSingleStep (0.1);
-    m_stroke_width_spinbox->setMaximum (1000.0);
-    m_stroke_width_spinbox->setDecimals (3);
-    m_stroke_width_spinbox->setKeyboardTracking (false);
+    layout->addWidget (m_stroke_width_spinbox = create_double_spinbox (layout->parentWidget (), 1000.0));
     CONNECT (m_stroke_width_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_width);
     layout->addStretch ();
   }
@@ -121,6 +117,27 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
     CONNECT (m_stroke_linejoin_combobox, (void (QComboBox::*) (int)) &QComboBox::currentIndexChanged, this, &style_widget_handler::update_linejoin);
   }
 
+  // stroke miterlimit
+  {
+    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    layout->addWidget (new QLabel ("Miter limit:"));
+    layout->addWidget (m_stroke_miterlimit_spinbox = create_double_spinbox (layout->parentWidget (), 100.0, 2));
+    CONNECT (m_stroke_miterlimit_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_miterlimit);
+    layout->addStretch ();
+  }
+
+  // stroke linecap
+  {
+    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    layout->addWidget (new QLabel ("Cap:"));
+    layout->addWidget (m_stroke_linecap_combobox = new QComboBox (layout->parentWidget ()));
+    layout->addStretch ();
+    m_stroke_linecap_combobox->addItem (QIcon (":/linecap_butt.png"), "Butt", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::FlatCap));
+    m_stroke_linecap_combobox->addItem (QIcon (":/linecap_round.png"), "Round", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::RoundCap));
+    m_stroke_linecap_combobox->addItem (QIcon (":/linecap_cap.png"), "Cap", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::SquareCap));
+    CONNECT (m_stroke_linecap_combobox, (void (QComboBox::*) (int)) &QComboBox::currentIndexChanged, this, &style_widget_handler::update_linecap);
+  }
+
   m_stroke_style_layout->addStretch ();
   m_style_type_widget->addTab (m_stroke_style_layout->parentWidget (), QIcon (), "Stroke");
 
@@ -132,6 +149,11 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
 void style_widget_handler::update_linejoin (int index)
 {
   m_style_controller->update_linejoin (m_stroke_linejoin_combobox->itemData (index).value <Qt::PenJoinStyle> ());
+}
+
+void style_widget_handler::update_linecap (int index)
+{
+  m_style_controller->update_linecap (m_stroke_linecap_combobox->itemData (index).value <Qt::PenCapStyle> ());
 }
 
 void style_widget_handler::target_items_changed ()
@@ -173,10 +195,20 @@ void style_widget_handler::update_style_controllers ()
   m_stroke_color_indicator->set_color (color);
 
   m_stroke_width_spinbox->setValue (m_style_controller->stroke_width ());
+  m_stroke_miterlimit_spinbox->setValue (m_style_controller->stroke_miterlimit ());
 
   {
-    int index = m_stroke_linejoin_combobox->findData (QVariant::fromValue<Qt::PenJoinStyle> (m_style_controller->stroke_linejoin ()));
+    Qt::PenJoinStyle join_style = m_style_controller->stroke_linejoin ();
+    int index = m_stroke_linejoin_combobox->findData (QVariant::fromValue<Qt::PenJoinStyle> (join_style));
     m_stroke_linejoin_combobox->setCurrentIndex (index);
+
+    m_stroke_miterlimit_spinbox->setEnabled (join_style == Qt::PenJoinStyle::SvgMiterJoin);
+  }
+
+  {
+    Qt::PenCapStyle cap_style = m_style_controller->stroke_linecap ();
+    int index = m_stroke_linecap_combobox->findData (QVariant::fromValue<Qt::PenCapStyle> (cap_style));
+    m_stroke_linecap_combobox->setCurrentIndex (index);
   }
 }
 

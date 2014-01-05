@@ -10,7 +10,9 @@
 #include "editor/items_selection.h"
 #include "editor/stroke_style.h"
 
+#include "svg/attributes/svg_attribute_stroke_linecap.h"
 #include "svg/attributes/svg_attribute_stroke_linejoin.h"
+#include "svg/attributes/svg_attribute_stroke_miterlimit.h"
 #include "svg/attributes/svg_attribute_stroke_width.h"
 #include "svg/attributes/svg_attributes_fill_stroke.h"
 #include "svg/attributes/svg_attributes_number.h"
@@ -21,7 +23,7 @@ stroke_style::stroke_style ()
   m_internal_color = new QColor ();
   m_color = 0;
   m_selection = 0;
-  m_stroke_width = 0;
+  m_width = 0;
   m_settings = 0;
   m_linejoin = Qt::PenJoinStyle::SvgMiterJoin;
 }
@@ -46,8 +48,10 @@ void stroke_style::update_from_selection ()
     }
 
   abstract_svg_item *selected_item = *m_selection->begin ();
-  m_stroke_width = selected_item->get_computed_attribute <svg_attribute_stroke_width> ()->value ();
+  m_width = selected_item->get_computed_attribute <svg_attribute_stroke_width> ()->value ();
   m_linejoin = selected_item->get_computed_attribute <svg_attribute_stroke_linejoin> ()->value ();
+  m_miterlimit = selected_item->get_computed_attribute <svg_attribute_stroke_miterlimit> ()->value ();
+  m_linecap = selected_item->get_computed_attribute <svg_attribute_stroke_linecap> ()->value ();
   auto stroke = selected_item->get_computed_attribute <svg_attribute_stroke> ();
   auto stroke_opacity = (* (m_selection->begin ()))->get_computed_attribute <svg_attribute_stroke_opacity> ();
   if (stroke == 0)
@@ -107,9 +111,9 @@ void stroke_style::apply_color_to_selection ()
   set_selection_color ();
 }
 
-void stroke_style::update_line_width (double value)
+void stroke_style::update_width (double value)
 {
-  m_stroke_width = value;
+  m_width = value;
 
   if (m_settings)
     m_settings->set_stroke_width (value);
@@ -120,6 +124,21 @@ void stroke_style::update_line_width (double value)
            (* (m_selection->begin ()))->get_attribute_for_change <svg_attribute_stroke_width> ()->set_value (value);
         }
     }
+}
+
+void stroke_style::update_miterlimit (double value)
+{
+  m_miterlimit = value;
+
+  if (m_settings)
+    m_settings->set_stroke_miterlimit (value);
+  else
+  {
+    if (is_single_item_selected ())
+    {
+      (* (m_selection->begin ()))->get_attribute_for_change <svg_attribute_stroke_miterlimit> ()->set_value (value);
+    }
+  }
 }
 
 void stroke_style::update_linejoin (Qt::PenJoinStyle value)
@@ -137,7 +156,27 @@ void stroke_style::update_linejoin (Qt::PenJoinStyle value)
   }
 }
 
+void stroke_style::update_linecap (Qt::PenCapStyle value)
+{
+  m_linecap = value;
+
+  if (m_settings)
+    m_settings->set_stroke_linecap (value);
+  else
+  {
+    if (is_single_item_selected ())
+    {
+      (* (m_selection->begin ()))->get_attribute_for_change <svg_attribute_stroke_linecap> ()->set_value (value);
+    }
+  }
+}
+
 Qt::PenJoinStyle stroke_style::stroke_linejoin () const
 {
   return m_linejoin;
+}
+
+Qt::PenCapStyle stroke_style::stroke_linecap () const
+{
+  return m_linecap;
 }

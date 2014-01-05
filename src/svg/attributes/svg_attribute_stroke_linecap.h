@@ -18,5 +18,8 @@ public:
 
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
+
+  Qt::PenCapStyle value () const { return m_linecap;}
+  void set_value (Qt::PenCapStyle value) { m_linecap = value; }
 };
 #endif // SVG_ATTRIBUTE_STROKE_LINECAP_H

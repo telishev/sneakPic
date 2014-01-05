@@ -45,6 +45,8 @@ class style_widget_handler : public QObject
 
   QDoubleSpinBox *m_stroke_width_spinbox;
   QComboBox *m_stroke_linejoin_combobox;
+  QDoubleSpinBox *m_stroke_miterlimit_spinbox;
+  QComboBox *m_stroke_linecap_combobox;
 
   selected_style m_cur_target_style;
   QButtonGroup *m_target_style;
@@ -65,6 +67,7 @@ private slots:
   void target_items_changed ();
   void update_on_tool_changed ();
   void update_linejoin (int index);
+  void update_linecap (int index);
 
 private:
   void update_style_controllers ();
