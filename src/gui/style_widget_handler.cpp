@@ -65,22 +65,7 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
     layout->addStretch ();
   }
 
-  m_target_style = new QButtonGroup (m_widget);
-  m_target_style_mapper = new QSignalMapper (m_target_style);
-  QHBoxLayout *m_target_style_layout = create_inner_hbox_layout (m_widget);
-  for (int i = 0; i < (int) selected_style::COUNT; i++)
-    {
-      QRadioButton *button = new QRadioButton (enum_to_string ((selected_style) i), m_widget);
-      if ((selected_style) i == m_cur_target_style)
-        button->setChecked (true);
-      m_target_style->addButton (button, i);
-      m_target_style_layout->addWidget (button);
-    }
-  m_target_style->button ((int) m_style_controller->current_style ())->setChecked (true);
-  CONNECT (m_target_style, (void (QButtonGroup::*) (int)) &QButtonGroup::buttonClicked, this, &style_widget_handler::selected_style_changed);
-  m_target_style_layout->parentWidget ()->hide ();
-
-  m_target_style_layout->addStretch ();
+  init_target_style_controller ();
 
   m_style_type_widget = new QTabWidget (m_widget);
   m_layout->addWidget (m_style_type_widget);
@@ -96,47 +81,10 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
   m_stroke_style_layout->addWidget (new QLabel ("Color:"));
   m_stroke_style_layout->addWidget (m_stroke_color_selector_widget_handler->widget ());
 
-  // stroke width
-  {
-    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
-    layout->addWidget (new QLabel ("Width:"));
-    layout->addWidget (m_stroke_width_spinbox = create_double_spinbox (layout->parentWidget (), 1000.0));
-    CONNECT (m_stroke_width_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_width);
-    layout->addStretch ();
-  }
-
-  // stroke linejoin
-  {
-    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
-    layout->addWidget (new QLabel ("Join:"));
-    layout->addWidget (m_stroke_linejoin_combobox = new QComboBox (layout->parentWidget ()));
-    layout->addStretch ();
-    m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_miter.png"), "Miter", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::SvgMiterJoin));
-    m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_round.png"), "Round", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::RoundJoin));
-    m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_bevel.png"), "Bevel", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::BevelJoin));
-    CONNECT (m_stroke_linejoin_combobox, (void (QComboBox::*) (int)) &QComboBox::currentIndexChanged, this, &style_widget_handler::update_linejoin);
-  }
-
-  // stroke miterlimit
-  {
-    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
-    layout->addWidget (new QLabel ("Miter limit:"));
-    layout->addWidget (m_stroke_miterlimit_spinbox = create_double_spinbox (layout->parentWidget (), 100.0, 2));
-    CONNECT (m_stroke_miterlimit_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_miterlimit);
-    layout->addStretch ();
-  }
-
-  // stroke linecap
-  {
-    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
-    layout->addWidget (new QLabel ("Cap:"));
-    layout->addWidget (m_stroke_linecap_combobox = new QComboBox (layout->parentWidget ()));
-    layout->addStretch ();
-    m_stroke_linecap_combobox->addItem (QIcon (":/linecap_butt.png"), "Butt", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::FlatCap));
-    m_stroke_linecap_combobox->addItem (QIcon (":/linecap_round.png"), "Round", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::RoundCap));
-    m_stroke_linecap_combobox->addItem (QIcon (":/linecap_cap.png"), "Cap", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::SquareCap));
-    CONNECT (m_stroke_linecap_combobox, (void (QComboBox::*) (int)) &QComboBox::currentIndexChanged, this, &style_widget_handler::update_linecap);
-  }
+  init_stroke_width_controller ();
+  init_linejoin_controller();
+  init_miterlimit_controller();
+  init_linecap_controller();
 
   m_stroke_style_layout->addStretch ();
   m_style_type_widget->addTab (m_stroke_style_layout->parentWidget (), QIcon (), "Stroke");
@@ -234,6 +182,76 @@ void style_widget_handler::set_tools_containter (const tools_container *tools_co
   m_tools_container = tools_container_arg;
   CONNECT (m_tools_container, &tools_container::tool_changed, this, &style_widget_handler::update_on_tool_changed);
   update_on_tool_changed ();
+}
+
+void style_widget_handler::init_linejoin_controller ()
+{
+  {
+    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    layout->addWidget (new QLabel ("Join:"));
+    layout->addWidget (m_stroke_linejoin_combobox = new QComboBox (layout->parentWidget ()));
+    layout->addStretch ();
+    m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_miter.png"), "Miter", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::SvgMiterJoin));
+    m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_round.png"), "Round", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::RoundJoin));
+    m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_bevel.png"), "Bevel", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::BevelJoin));
+    CONNECT (m_stroke_linejoin_combobox, (void (QComboBox::*) (int)) &QComboBox::currentIndexChanged, this, &style_widget_handler::update_linejoin);
+  }
+}
+
+void style_widget_handler::init_miterlimit_controller ()
+{
+  {
+    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    layout->addWidget (new QLabel ("Miter limit:"));
+    layout->addWidget (m_stroke_miterlimit_spinbox = create_double_spinbox (layout->parentWidget (), 100.0, 2));
+    CONNECT (m_stroke_miterlimit_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_miterlimit);
+    layout->addStretch ();
+  }
+}
+
+void style_widget_handler::init_stroke_width_controller ()
+{
+  {
+    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    layout->addWidget (new QLabel ("Width:"));
+    layout->addWidget (m_stroke_width_spinbox = create_double_spinbox (layout->parentWidget (), 1000.0));
+    CONNECT (m_stroke_width_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_width);
+    layout->addStretch ();
+  }
+}
+
+void style_widget_handler::init_linecap_controller ()
+{
+  {
+    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    layout->addWidget (new QLabel ("Cap:"));
+    layout->addWidget (m_stroke_linecap_combobox = new QComboBox (layout->parentWidget ()));
+    layout->addStretch ();
+    m_stroke_linecap_combobox->addItem (QIcon (":/linecap_butt.png"), "Butt", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::FlatCap));
+    m_stroke_linecap_combobox->addItem (QIcon (":/linecap_round.png"), "Round", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::RoundCap));
+    m_stroke_linecap_combobox->addItem (QIcon (":/linecap_cap.png"), "Cap", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::SquareCap));
+    CONNECT (m_stroke_linecap_combobox, (void (QComboBox::*) (int)) &QComboBox::currentIndexChanged, this, &style_widget_handler::update_linecap);
+  }
+}
+
+void style_widget_handler::init_target_style_controller ()
+{
+  m_target_style = new QButtonGroup (m_widget);
+  m_target_style_mapper = new QSignalMapper (m_target_style);
+  QHBoxLayout *m_target_style_layout = create_inner_hbox_layout (m_widget);
+  for (int i = 0; i < (int) selected_style::COUNT; i++)
+  {
+    QRadioButton *button = new QRadioButton (enum_to_string ((selected_style) i), m_widget);
+    if ((selected_style) i == m_cur_target_style)
+      button->setChecked (true);
+    m_target_style->addButton (button, i);
+    m_target_style_layout->addWidget (button);
+  }
+  m_target_style->button ((int) m_style_controller->current_style ())->setChecked (true);
+  CONNECT (m_target_style, (void (QButtonGroup::*) (int)) &QButtonGroup::buttonClicked, this, &style_widget_handler::selected_style_changed);
+  m_target_style_layout->parentWidget ()->hide ();
+
+  m_target_style_layout->addStretch ();
 }
 
 const char *enum_to_string (selected_style value)

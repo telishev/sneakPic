@@ -58,6 +58,17 @@ class style_widget_handler : public QObject
 
 public:
   style_widget_handler (dock_widget_builder *dock_widget_builder_arg, style_controller *style_controller_arg);
+
+  void init_target_style_controller();
+
+  void init_linecap_controller();
+
+  void init_stroke_width_controller();
+
+  void init_miterlimit_controller();
+
+  void init_linejoin_controller();
+
   ~style_widget_handler ();
   void set_style_controller (style_controller *style_controller_arg);
   void set_tools_containter(const tools_container *tools_container_arg);
