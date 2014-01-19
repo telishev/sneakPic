@@ -46,8 +46,6 @@ private:
 
   void apply_drag ();
   void move_point ();
-  QColor current_color () const;
-  QColor line_color () const;
 
   const svg_path *get_path () const;
 };

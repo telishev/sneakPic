@@ -19,10 +19,12 @@ enum class gui_action_id
   TOOL_SELECTOR,
   TOOL_PATH_EDITOR,
   TOOL_RECTANGLE,
+  TOOL_PEN,
 
   /// Other
   DELETE_HANDLES,
   DELETE_ITEMS,
+  FINISH_PATH,
 
   /// Count
   COUNT,

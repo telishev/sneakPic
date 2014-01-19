@@ -34,10 +34,12 @@ actions_info::actions_info ()
   add_action (gui_action_id::TOOL_SELECTOR, "Select Objects", QKeySequence (), QIcon (":/cursor.png"));
   add_action (gui_action_id::TOOL_PATH_EDITOR, "Edit Paths by Nodes", QKeySequence (), QIcon (":/cursor.png"));
   add_action (gui_action_id::TOOL_RECTANGLE, "Create Rectangles", QKeySequence (), QIcon (":/rectangle.png"));
+  add_action (gui_action_id::TOOL_PEN, "Create Bezier Curves", QKeySequence (), QIcon (":/pen.png"));
 
   /// Other
   add_action (gui_action_id::DELETE_HANDLES, "Delete Handles", QKeySequence ("Del"));
   add_action (gui_action_id::DELETE_ITEMS, "Delete", QKeySequence ("Del"));
+  add_action (gui_action_id::FINISH_PATH, "Finish Path", QKeySequence (Qt::Key_Return));
 }
 
 actions_info::~actions_info ()

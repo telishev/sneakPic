@@ -20,6 +20,7 @@ public:
   /// TODO: write const iterator or something
   svg_path_iterator begin () const;
   svg_path_iterator end () const;
+  svg_path_iterator last_point () const;
 
   void clear ();
 

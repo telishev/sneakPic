@@ -5,9 +5,6 @@
 
 #include <QPointF>
 
-class mouse_shortcuts_handler;
-class overlay_renderer;
-class renderable_item;
 class renderer_base_shape_item;
 class svg_items_container;
 

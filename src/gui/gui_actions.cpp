@@ -70,7 +70,7 @@ void gui_actions::action_triggered (int id)
   m_callback ((gui_action_id)id);
 }
 
-void gui_actions::shortcut_triggered (QKeySequence sequnce)
+bool gui_actions::shortcut_triggered (QKeySequence sequnce)
 {
   for (int i = 0; i < (int)gui_action_id::COUNT; i++)
     {
@@ -79,8 +79,10 @@ void gui_actions::shortcut_triggered (QKeySequence sequnce)
         continue;
 
       if (m_callback (id))
-        return;
+        return true;
     }
+
+  return false;
 }
 
 bool gui_actions::eventFilter (QObject *watched, QEvent *qevent)

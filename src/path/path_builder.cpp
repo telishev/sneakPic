@@ -186,3 +186,12 @@ void path_builder::clear_prev ()
   m_prev_is_quad = false;
 }
 
+void path_builder::set_curve_c (QPointF c)
+{
+  m_prev_is_curve = true;
+  m_prev_curve_c = 2 * m_cur_position - c;
+  svg_path_iterator last_point = m_dst_path.last_point ();
+  last_point.control_point (true) = m_prev_curve_c;
+  last_point.control_point (false) = c;
+}
+

@@ -18,6 +18,7 @@ gl_widget::gl_widget (QWidget *parent)
 {
   m_cur_painter = nullptr;
   setAutoFillBackground (false);
+  setFocusPolicy (Qt::ClickFocus);
 
   m_mouse_filter_object = new mouse_filter (this);
 

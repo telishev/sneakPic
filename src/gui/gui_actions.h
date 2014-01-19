@@ -44,7 +44,7 @@ private slots:
   void action_triggered (int id);
 
 private:
-  void shortcut_triggered (QKeySequence sequnce);
+  bool shortcut_triggered (QKeySequence sequnce);
 
   virtual bool eventFilter (QObject *watched, QEvent *event) override;
 };

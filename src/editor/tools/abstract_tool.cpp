@@ -55,3 +55,8 @@ void abstract_tool::configure ()
 
 }
 
+void abstract_tool::update ()
+{
+  m_painter->redraw ();
+}
+

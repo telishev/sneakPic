@@ -17,6 +17,8 @@ class SkCanvas;
 class SkPaint;
 class SkRect;
 
+enum class node_type_t : char;
+
 struct single_path_point;
 
 class path_anchor_handle : public abstract_handle
@@ -53,10 +55,8 @@ private:
 
   void apply_drag ();
   void move_point ();
-  QColor current_color () const;
   const svg_path *get_path () const;
-  void draw_anchor (SkCanvas &canvas, const SkRect &rect, SkPaint &paint) const;
-  bool is_cusp_node () const;
+  node_type_t node_type () const;
 };
 
 #endif // PATH_ANCHOR_HANDLE_H

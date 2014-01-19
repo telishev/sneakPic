@@ -26,8 +26,10 @@ public:
   void curve_to_short (QPointF dst, QPointF control_point2, bool relative);
   void arc_to (QPointF dst, double rx, double ry, double x_axis_rotation, int large_arc_flag, int sweep_flag, bool relative);
 
-private:
+  void set_curve_c (QPointF c);
   void check_new_subpath ();
+
+private:
   void set_prev_quad_c (QPointF c);
   void set_prev_curve_c (QPointF c);
   void clear_prev ();

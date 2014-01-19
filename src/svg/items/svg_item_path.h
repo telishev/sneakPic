@@ -11,8 +11,8 @@ public:
   svg_item_path (svg_document *document);
   virtual ~svg_item_path () override;
 
-protected:
   virtual bool process_item_after_read () override;
+protected:
   virtual QPainterPath get_path () const override;
 };
 

@@ -25,6 +25,8 @@ public:
   abstract_tool (svg_painter *painter);
   virtual ~abstract_tool ();
 
+  void update ();
+
   virtual void activate ();
   virtual void deactivate ();
 

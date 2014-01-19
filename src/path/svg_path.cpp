@@ -42,10 +42,17 @@ svg_path_iterator svg_path::end () const
   return svg_path_iterator ();
 }
 
+svg_path_iterator svg_path::last_point () const
+{
+  return svg_path_iterator (const_cast<svg_path &>(*this), m_subpath.size () - 1, m_subpath.back ().total_points () - 1);
+}
+
 void svg_path::clear ()
 {
   m_subpath.clear ();
 }
+
+
 
 svg_path_iterator::svg_path_iterator ()
 {

@@ -21,9 +21,8 @@
 #include "svg/items/svg_item_path.h"
 #include "path_handles_editor.h"
 #include "operations/path_edit_operation.h"
+#include "renderer/path_control_point_renderer.h"
 
-
-static const int handle_radius_px = 3;
 
 
 path_control_point_handle::path_control_point_handle (path_handles_editor *editor, svg_item_path *item, svg_path_iterator path_it,
@@ -80,35 +79,9 @@ bool path_control_point_handle::end_drag (QPointF local_pos)
   return true;
 }
 
-void path_control_point_handle::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config * /*config*/) const 
+void path_control_point_handle::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const 
 {
-  canvas.save ();
-  canvas.resetMatrix ();
-
-  QPoint center = geom::nearest_point (state.transform ().map (get_handle_center ()));
-  QPoint anchor_center = geom::nearest_point (state.transform ().map (get_anchor_center ()));
-  SkPath path;
-  path.addCircle (SkFloatToScalar (center.x ()), SkFloatToScalar (center.y ()), SkFloatToScalar (handle_radius_px));
-
-  /// draw line
-  SkPaint stroke_paint;
-  stroke_paint.setStrokeWidth (0.0);
-  stroke_paint.setStyle (SkPaint::kStroke_Style);
-
-  stroke_paint.setColor (qt2skia::color (line_color ()));
-  canvas.drawLine (anchor_center.x (), anchor_center.y (), center.x (), center.y (), stroke_paint);
-
-  /// draw circle
-  SkPaint fill_paint;
-  fill_paint.setStyle (SkPaint::kFill_Style);
-  fill_paint.setColor (qt2skia::color (current_color ()));
-  canvas.drawPath (path, fill_paint);
-
-  /// draw circle outline
-  stroke_paint.setColor (SK_ColorBLACK);
-  canvas.drawPath (path, stroke_paint);
-
-  canvas.restore ();
+  path_control_point_renderer (get_anchor_center (), get_handle_center (), m_is_highlighted).draw (canvas, state, config);
 }
 
 QPointF path_control_point_handle::get_handle_center () const
@@ -139,19 +112,6 @@ void path_control_point_handle::apply_drag ()
 void path_control_point_handle::move_point ()
 {
   m_edit_operation->move_control_point (m_drag_cur, m_path_it, m_left_handle);
-}
-
-QColor path_control_point_handle::current_color () const
-{
-  if (m_is_highlighted)
-    return QColor ("lightcoral");
-  else
-    return Qt::transparent;
-}
-
-QColor path_control_point_handle::line_color () const
-{
-  return QColor ("lightblue");
 }
 
 const svg_path * path_control_point_handle::get_path () const

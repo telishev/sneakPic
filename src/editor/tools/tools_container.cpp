@@ -6,12 +6,14 @@
 
 #include "editor/tools/selector_tool.h"
 #include "editor/tools/rectangle_tool.h"
+#include "editor/tools/pen_tool.h"
 
 #include "gui/gui_action_id.h"
 #include "gui/gui_actions.h"
 #include "gui/connection.h"
 
 #include "path_editor_tool.h"
+
 
 
 tools_container::tools_container (gui_actions *actions)
@@ -103,6 +105,7 @@ void tools_container::init_tools_info ()
   add_info<selector_tool> (gui_action_id::TOOL_SELECTOR);
   add_info<path_editor_tool> (gui_action_id::TOOL_PATH_EDITOR);
   add_info<rectangle_tool> (gui_action_id::TOOL_RECTANGLE);
+  add_info<pen_tool> (gui_action_id::TOOL_PEN);
 }
 
 bool tools_container::action_triggered (gui_action_id id)

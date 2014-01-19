@@ -22,6 +22,7 @@
 #include "svg/items/svg_items_container.h"
 #include "svg/items/svg_item_rect.h"
 #include "svg/svg_document.h"
+#include "editor/operations/add_item_operation.h"
 
 rectangle_tool::rectangle_tool( svg_painter *painter )
   : abstract_tool (painter)
@@ -104,30 +105,7 @@ void rectangle_tool::insert_item (const QPointF &pos )
   rect_item->get_attribute_for_change<svg_attribute_width> ()->set_value (rect.width ());
   rect_item->get_attribute_for_change<svg_attribute_height> ()->set_value (rect.height ());
 
-  rect_item->get_attribute_for_change<svg_attribute_stroke_width> ()->set_value (m_painter->settings ()->stroke_width ());
-  rect_item->get_attribute_for_change<svg_attribute_stroke_linejoin> ()->set_value (m_painter->settings ()->stroke_linejoin ());
-  rect_item->get_attribute_for_change<svg_attribute_stroke_miterlimit> ()->set_value (m_painter->settings ()->stroke_miterlimit ());
-  rect_item->get_attribute_for_change<svg_attribute_stroke_linecap> ()->set_value (m_painter->settings ()->stroke_linecap ());
-
-  {
-    auto fill = rect_item->get_attribute_for_change<svg_attribute_fill> ();
-    fill->set_to_color (*m_painter->settings ()->fill_color ());
-    rect_item->get_attribute_for_change<svg_attribute_fill_opacity> ()->set_value (m_painter->settings ()->fill_color ()->alphaF ());
-  }
-
-  {
-    auto stroke = rect_item->get_attribute_for_change<svg_attribute_stroke> ();
-    stroke->set_to_color (*m_painter->settings ()->stroke_color ());
-    rect_item->get_attribute_for_change<svg_attribute_stroke_opacity> ()->set_value (m_painter->settings ()->stroke_color ()->alphaF ());
-  }
-
-  rect_item->update_bbox ();
-  m_painter->document ()->root ()->push_back (rect_item);
-
-  items_selection *selection = m_painter->selection ();
-  selection->clear ();
-  selection->add_item (rect_item);
-
+  add_item_operation (m_painter).apply (rect_item);
   m_painter->document ()->apply_changes ();
 }
 
