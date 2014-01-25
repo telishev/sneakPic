@@ -1,8 +1,8 @@
 #ifndef PATH_ANCHOR_HANDLE_H
 #define PATH_ANCHOR_HANDLE_H
 
-#include "editor/abstract_handle.h"
-#include "path/svg_path.h"
+#include "editor/base_anchor_handle.h"
+
 #include <QPointF>
 #include <string>
 
@@ -21,15 +21,12 @@ enum class node_type_t : char;
 
 struct single_path_point;
 
-class path_anchor_handle : public abstract_handle
+class path_anchor_handle : public base_anchor_handle
 {
-  svg_item_path *m_item;
   path_handles_editor *m_editor;
-  svg_path_iterator m_path_it;
 
   QPointF m_drag_start;
   QPointF m_drag_cur;
-  bool m_is_highlighted;
 
   std::unique_ptr<path_edit_operation> m_edit_operation;
 
@@ -40,23 +37,20 @@ public:
   int point_id () const { return (int)m_path_it.point_index (); }
   std::string item_name () const;
 
-  QPointF get_handle_center () const;
+  virtual QPointF get_handle_center () const override;
 
 protected:
-  virtual int distance_to_mouse (QPoint screen_pos, QTransform transform) const override;
   virtual void set_mouse_hovered (bool hovered) override;
   virtual bool start_drag (QPointF local_pos) override;
   virtual bool drag (QPointF local_pos) override;
   virtual bool end_drag (QPointF local_pos) override;
-  virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
+  virtual node_type_t node_type () const override;
+  virtual QTransform get_path_transform () const;
 
 private:
-  QRect get_element_rect (QTransform transform) const;
-
   void apply_drag ();
   void move_point ();
   const svg_path *get_path () const;
-  node_type_t node_type () const;
 };
 
 #endif // PATH_ANCHOR_HANDLE_H

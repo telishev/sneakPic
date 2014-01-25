@@ -27,6 +27,7 @@ public:
   void apply_transform (const QTransform &transform);
 
   const std::vector<single_subpath> &subpath () const { return m_subpath; }
+  std::vector<single_subpath> &subpath () { return m_subpath; }
 
   friend class svg_path_iterator;
   friend class path_builder;
@@ -39,6 +40,7 @@ class svg_path_iterator
   subpath_iterator m_subpath_iterator;
 public:
   svg_path_iterator ();
+  svg_path_iterator (svg_path &path, size_t subpath_index, subpath_iterator iterator);
   svg_path_iterator (svg_path &path, size_t subpath_index, size_t subpath_point);
   ~svg_path_iterator ();
 
@@ -62,6 +64,10 @@ public:
   size_t point_index () const;
   int segment_index (bool is_left) const;
   single_path_segment segment (bool is_left) const;
+
+  single_subpath &subpath ();
+  size_t get_subpath_index () const;
+  size_t get_subpath_point () const;
 };
 
 

@@ -39,3 +39,8 @@ QPainterPath svg_item_path::get_path () const
 
   return path_data->create_painter_path ();
 }
+
+const svg_path * svg_item_path::get_svg_path () const
+{
+  return get_computed_attribute<svg_attribute_path_data> ()->path ();
+}

@@ -53,7 +53,6 @@ void svg_path::clear ()
 }
 
 
-
 svg_path_iterator::svg_path_iterator ()
 {
   m_path = 0;
@@ -65,6 +64,13 @@ svg_path_iterator::svg_path_iterator (svg_path &path, size_t subpath_index, size
   m_path = &path;
   m_subpath_index = subpath_index;
   m_subpath_iterator = subpath_iterator (m_path->m_subpath[m_subpath_index], subpath_point);
+}
+
+svg_path_iterator::svg_path_iterator (svg_path &path, size_t subpath_index, subpath_iterator iterator)
+{
+  m_path = &path;
+  m_subpath_index = subpath_index;
+  m_subpath_iterator = iterator;
 }
 
 svg_path_iterator::~svg_path_iterator ()
@@ -191,5 +197,20 @@ single_path_segment svg_path_iterator::segment (bool is_left) const
     return single_path_segment ();
 
   return single_path_segment (left_it.anchor_point (), right_it.anchor_point (), left_it.control_point (false), right_it.control_point (true));
+}
+
+single_subpath & svg_path_iterator::subpath ()
+{
+  return m_path->m_subpath[m_subpath_index];
+}
+
+size_t svg_path_iterator::get_subpath_index () const
+{
+  return m_subpath_index;
+}
+
+size_t svg_path_iterator::get_subpath_point () const
+{
+  return m_subpath_iterator.point_num ();
 }
 

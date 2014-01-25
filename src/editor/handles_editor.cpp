@@ -153,5 +153,11 @@ bool handles_editor::highlight_handle (QPointF pos)
     return false;
 
   m_highlighted_handle->set_mouse_hovered (true);
+  m_painter->update ();
   return true;
+}
+
+void handles_editor::set_handle_for_item (const char *name, element_handles *handles)
+{
+  m_handles[name].reset (handles);
 }

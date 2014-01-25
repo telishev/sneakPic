@@ -42,9 +42,12 @@ public:
   map_t::const_iterator end () const { return m_handles.end (); }
   element_handles *handles_for_item (const std::string &item) const;
 
+  void set_handle_for_item (const char *name, element_handles *handles);
+
 protected:
   virtual element_handles *create_handles_for_item (abstract_svg_item *item) = 0;
   virtual void update_handles_impl () {}
+
   abstract_handle *get_handle_by_pos (QPointF screen_pos) const;
 
 private:

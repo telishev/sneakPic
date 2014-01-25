@@ -25,6 +25,7 @@ public:
   /// TODO: write const iterator or something
   subpath_iterator begin () const;
   subpath_iterator end () const;
+  subpath_iterator last_point () const;
 
   bool is_closed () const { return m_is_closed; }
   void set_closed (bool val) { m_is_closed = val; }
@@ -32,6 +33,9 @@ public:
   void apply_transform (const QTransform &transform);
 
   const std::vector<single_path_point> &elements () const { return m_elements; } 
+  std::vector<single_path_point> &elements () { return m_elements; }
+
+  void reverse ();
 
   friend class subpath_iterator;
   friend class path_builder;

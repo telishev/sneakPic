@@ -4,7 +4,7 @@
 #include "svg/svg_arc_data.h"
 
 
-path_builder::path_builder (svg_path &dst_path)
+path_builder::path_builder (svg_path &dst_path )
   : m_dst_path (dst_path)
 {
   m_prev_is_curve = false;

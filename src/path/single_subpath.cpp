@@ -32,12 +32,24 @@ subpath_iterator single_subpath::end () const
   return subpath_iterator ();
 }
 
+subpath_iterator single_subpath::last_point () const
+{
+  return subpath_iterator (const_cast<single_subpath &> (*this), total_points () - 1);
+}
+
 size_t single_subpath::total_segments () const
 {
   if (total_points () < 2)
     return 0;
 
   return m_is_closed ? total_points () : total_points () - 1;
+}
+
+void single_subpath::reverse ()
+{
+  m_elements = std::vector<single_path_point> (m_elements.rbegin (), m_elements.rend ());
+  for (auto &elem : m_elements)
+    std::swap (elem.c1, elem.c2);
 }
 
 subpath_iterator::subpath_iterator (single_subpath &subpath, size_t point_num)
