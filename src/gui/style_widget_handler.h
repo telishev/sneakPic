@@ -51,6 +51,7 @@ class style_widget_handler : public QObject
   QSignalMapper *m_target_style_mapper;
   std::unique_ptr <connection> m_target_items_changed_connection;
   const tools_container *m_tools_container;
+  std::vector<std::unique_ptr<connection>> m_controller_connections;
 
   style_controller *m_style_controller;
 

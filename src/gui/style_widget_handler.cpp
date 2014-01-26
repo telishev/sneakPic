@@ -73,6 +73,7 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
   m_stroke_style_layout->addWidget (new QLabel ("Color:"));
   m_stroke_style_layout->addWidget (m_stroke_color_selector_widget_handler->widget ());
 
+  m_controller_connections.clear ();
   init_stroke_width_controller ();
   init_linejoin_controller();
   init_miterlimit_controller();
@@ -113,11 +114,18 @@ void style_widget_handler::send_color_changes ()
 void style_widget_handler::target_items_changed ()
 {
   TEMPORARY_DISCONNECT (m_target_items_changed_connection);
+
+  for (const auto &_connection : m_controller_connections)
+    _connection->disconnect ();
+
   update_style_controllers ();
   send_color_changes ();
 
   m_fill_color_selector_widget_handler->update_colors_momentarily ();
   m_stroke_color_selector_widget_handler->update_colors_momentarily ();
+
+  for (const auto &_connection : m_controller_connections)
+    _connection->connect ();
 }
 
 void style_widget_handler::selected_style_changed ()
@@ -176,6 +184,7 @@ void style_widget_handler::update_on_tool_changed ()
       m_target_style->button ((int) selected_style::SELECTED_STYLE)->click ();
       break;
     case gui_action_id::TOOL_RECTANGLE:
+    case gui_action_id::TOOL_PEN:
       m_target_style->button ((int) selected_style::EDITOR_STYLE)->click ();
       break;
     default:
@@ -200,7 +209,7 @@ void style_widget_handler::init_linejoin_controller ()
     m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_miter.png"), "Miter", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::SvgMiterJoin));
     m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_round.png"), "Round", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::RoundJoin));
     m_stroke_linejoin_combobox->addItem (QIcon (":/linejoin_bevel.png"), "Bevel", QVariant::fromValue <Qt::PenJoinStyle> (Qt::PenJoinStyle::BevelJoin));
-    CONNECT (m_stroke_linejoin_combobox, (void (QComboBox::*) (int)) &QComboBox::currentIndexChanged, this, &style_widget_handler::update_linejoin);
+    m_controller_connections.push_back (CONNECT (m_stroke_linejoin_combobox, (void (QComboBox::*) (int)) &QComboBox::currentIndexChanged, this, &style_widget_handler::update_linejoin));
   }
 }
 
@@ -210,7 +219,7 @@ void style_widget_handler::init_miterlimit_controller ()
     QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
     layout->addWidget (new QLabel ("Miter limit:"));
     layout->addWidget (m_stroke_miterlimit_spinbox = create_double_spinbox (layout->parentWidget (), 100.0, 2));
-    CONNECT (m_stroke_miterlimit_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_miterlimit);
+    m_controller_connections.push_back (CONNECT (m_stroke_miterlimit_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_miterlimit));
     layout->addStretch ();
   }
 }
@@ -221,7 +230,7 @@ void style_widget_handler::init_stroke_width_controller ()
     QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
     layout->addWidget (new QLabel ("Width:"));
     layout->addWidget (m_stroke_width_spinbox = create_double_spinbox (layout->parentWidget (), 1000.0));
-    CONNECT (m_stroke_width_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_width);
+    m_controller_connections.push_back (CONNECT (m_stroke_width_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_width));
     layout->addStretch ();
   }
 }
@@ -236,7 +245,7 @@ void style_widget_handler::init_linecap_controller ()
     m_stroke_linecap_combobox->addItem (QIcon (":/linecap_butt.png"), "Butt", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::FlatCap));
     m_stroke_linecap_combobox->addItem (QIcon (":/linecap_round.png"), "Round", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::RoundCap));
     m_stroke_linecap_combobox->addItem (QIcon (":/linecap_cap.png"), "Cap", QVariant::fromValue <Qt::PenCapStyle> (Qt::PenCapStyle::SquareCap));
-    CONNECT (m_stroke_linecap_combobox, (void (QComboBox::*) (int)) &QComboBox::currentIndexChanged, this, &style_widget_handler::update_linecap);
+    m_controller_connections.push_back (CONNECT (m_stroke_linecap_combobox, (void (QComboBox::*) (int)) &QComboBox::currentIndexChanged, this, &style_widget_handler::update_linecap));
   }
 }
 
