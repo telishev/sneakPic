@@ -15,7 +15,7 @@
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_state.h"
 
-#include "path/svg_path_geom.h"
+#include "path/svg_path.h"
 
 #include "svg/attributes/svg_attribute_path_data.h"
 #include "svg/items/svg_item_path.h"
@@ -111,7 +111,7 @@ void path_control_point_handle::apply_drag ()
 
 void path_control_point_handle::move_point ()
 {
-  m_edit_operation->move_control_point (m_drag_cur, m_path_it, m_left_handle);
+  m_edit_operation->get_svg_path ()->move_control_point (m_drag_cur, m_path_it, m_left_handle);
 }
 
 const svg_path_geom * path_control_point_handle::get_path () const

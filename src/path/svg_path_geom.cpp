@@ -52,6 +52,15 @@ void svg_path_geom::clear ()
   m_subpath.clear ();
 }
 
+svg_path_geom_iterator svg_path_geom::subpath_begin (int subpath_index) const
+{
+  return svg_path_geom_iterator (const_cast<svg_path_geom &>(*this), subpath_index, m_subpath[subpath_index].begin ());
+}
+
+svg_path_geom_iterator svg_path_geom::subpath_last_point (int subpath_index) const
+{
+  return svg_path_geom_iterator (const_cast<svg_path_geom &>(*this), subpath_index, m_subpath[subpath_index].last_point ());
+}
 
 svg_path_geom_iterator::svg_path_geom_iterator ()
 {

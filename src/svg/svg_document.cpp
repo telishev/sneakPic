@@ -174,3 +174,9 @@ void svg_document::update_renderer ()
     m_change_sender->update ();
   emit items_changed ();
 }
+
+void svg_document::process_new_item (abstract_svg_item *item)
+{
+  get_undo_handler ()->add_item (item);
+  item->process_after_read ();
+}

@@ -13,6 +13,8 @@
 
 #include "svg/svg_arc_data.h"
 #include "path/path_builder.h"
+#include "path/svg_path.h"
+#include "svg/attributes/svg_attribute_nodetypes.h"
 
 
 
@@ -62,7 +64,10 @@ bool svg_attribute_path_data::read (const char *data, bool /*from_css*/)
   typedef bool (svg_attribute_path_data::*func_type) (const char *&, path_builder &, bool);
   func_type commands[255] = {};
   m_path->clear ();
-  path_builder builder (*m_path);
+  std::vector<bool> is_line_segment;
+  std::vector<node_type_t> node_type;
+  svg_path path (m_path, &is_line_segment, &node_type, QTransform ());
+  path_builder builder (path);
 
   commands['M'] = &svg_attribute_path_data::read_move;
   commands['Z'] = &svg_attribute_path_data::read_end_subpath;

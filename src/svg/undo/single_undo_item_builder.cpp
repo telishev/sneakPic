@@ -3,6 +3,7 @@
 #include "svg/undo/undoable.h"
 #include "svg/undo/undoable_items_container.h"
 #include "svg/undo/single_undo_item.h"
+#include "common/debug_utils.h"
 
 
 
@@ -50,6 +51,7 @@ void single_undo_item_builder::register_item (undoable *item)
 void single_undo_item_builder::register_new_item (undoable *item)
 {
   int id = item->undo_id ();
+  DEBUG_ASSERT (m_changed_items.find (id) == m_changed_items.end ());
   m_changed_items[id].reset (nullptr);
 }
 

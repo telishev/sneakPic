@@ -4,7 +4,7 @@
 #include "editor/tools/abstract_tool.h"
 
 class path_preview_renderer;
-class svg_path_geom;
+class unique_svg_path;
 class path_builder;
 class anchor_handle_renderer;
 class path_control_point_renderer;
@@ -18,12 +18,13 @@ class pen_tool : public abstract_tool
   std::unique_ptr<path_preview_renderer> m_preview_renderer;
   std::unique_ptr<path_control_point_renderer> m_left_cp_renderer;
   std::unique_ptr<path_control_point_renderer> m_right_cp_renderer;
-  std::unique_ptr<svg_path_geom> m_current_path;
+  std::unique_ptr<unique_svg_path> m_current_path;
   std::unique_ptr<path_builder> m_path_builder;
   std::unique_ptr<pen_handles> m_pen_handles;
 
   std::unique_ptr<snap_point_t> m_path_snap_start;
   std::unique_ptr<snap_point_t> m_path_snap_end;
+  bool m_prev_point_was_line;
 
 public:
   pen_tool (svg_painter *painter);
@@ -42,7 +43,7 @@ private:
 
   QPointF snap_point (QPointF point);
 
-  void add_new_point (QPoint pos);
+  void add_new_point (QPoint pos, bool is_line);
   svg_item_path *add_new_path ();
   svg_item_path *merge_with_path (svg_item_path *path_dst, svg_path_geom_iterator dst_it, svg_item_path *path_src, svg_path_geom_iterator src_it);
 };

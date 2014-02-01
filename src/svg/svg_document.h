@@ -64,7 +64,7 @@ public:
   T *create_new_svg_item ()
   {
     T *item = new T (this);
-    item->process_after_read ();
+    process_new_item (item);
     return item;
   }
 
@@ -75,6 +75,7 @@ signals:
 
 private:
   void update_renderer ();
+  void process_new_item (abstract_svg_item *item);
 };
 
 #endif // SVG_DOCUMENT_H

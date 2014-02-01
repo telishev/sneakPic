@@ -6,6 +6,7 @@
 
 #include "editor/operations/add_item_operation.h"
 
+#include "path/svg_path.h"
 #include "path/svg_path_geom.h"
 #include "path/path_builder.h"
 
@@ -23,6 +24,7 @@
 #include "editor/pen_handles.h"
 #include "editor/operations/merge_path_operation.h"
 #include "editor/items_selection.h"
+#include "editor/operations/path_edit_operation.h"
 
 
 
@@ -45,6 +47,7 @@ pen_tool::pen_tool (svg_painter *painter)
     &pen_tool::add_segment_start, &pen_tool::add_segment_move, &pen_tool::add_segment_end);
 
   m_actions_applier->register_action (gui_action_id::FINISH_PATH, this, &pen_tool::finish_path_add);
+  m_prev_point_was_line = false;
 }
 
 pen_tool::~pen_tool ()
@@ -54,7 +57,7 @@ pen_tool::~pen_tool ()
 
 bool pen_tool::add_segment_simple (const QPoint &pos)
 {
-  add_new_point (pos);
+  add_new_point (pos, true);
   if (m_path_snap_end)
     finish_path_add ();
 
@@ -64,7 +67,7 @@ bool pen_tool::add_segment_simple (const QPoint &pos)
 
 bool pen_tool::add_segment_start (const QPoint &pos)
 {
-  add_new_point (pos);
+  add_new_point (pos, false);
   update ();
   return true;
 }
@@ -168,22 +171,28 @@ QPointF pen_tool::snap_point (QPointF point)
   return path ? path->full_transform ().map (it.anchor_point ()) : it.anchor_point ();
 }
 
-void pen_tool::add_new_point (QPoint pos)
+void pen_tool::add_new_point (QPoint pos, bool is_line)
 {
   QPointF local_pos = snap_point (pos);
   if (!m_current_path)
     {
-      m_current_path.reset (new svg_path_geom);
-      m_preview_renderer->set_path (m_current_path.get ());
-      m_path_builder.reset (new path_builder (*m_current_path));
+      m_current_path.reset (new unique_svg_path);
+      m_preview_renderer->set_path (m_current_path->path ()->get_geom ());
+      m_path_builder.reset (new path_builder (*m_current_path->path ()));
       m_path_builder->move_to (local_pos, false);
       m_path_builder->check_new_subpath ();
 
-      m_pen_handles->set_new_path (m_current_path.get ());
+      m_pen_handles->set_new_path (m_current_path->path ()->get_geom ());
     }
   else
-    m_path_builder->curve_to_short (local_pos, local_pos, false);
+    {
+      if (is_line && m_prev_point_was_line)
+        m_path_builder->line_to (local_pos, false);
+      else
+        m_path_builder->curve_to_short (local_pos, local_pos, false);
+    }
 
+  m_prev_point_was_line = is_line;
   m_left_cp_renderer->set_visible (true);
   m_left_cp_renderer->set_anchor (local_pos);
   m_left_cp_renderer->set_control_point (local_pos);
@@ -195,18 +204,23 @@ void pen_tool::add_new_point (QPoint pos)
 svg_item_path *pen_tool::add_new_path ()
 {
   auto path_item = m_painter->document ()->create_new_svg_item<svg_item_path> ();
-  *path_item->get_attribute_for_change<svg_attribute_path_data> ()->path () = *m_current_path;
   add_item_operation (m_painter).apply (path_item);
-
-  ///TODO: remove it
-  path_item->process_item_after_read ();
+  path_edit_operation (path_item).get_svg_path ()->copy_from (*m_current_path->path ());
+  
   return path_item;
 }
 
 svg_item_path *pen_tool::merge_with_path (svg_item_path *path_dst, svg_path_geom_iterator dst_it, svg_item_path *path_src, svg_path_geom_iterator src_it)
 {
-  merge_path_operation merge_op;
-  merge_op.apply (path_dst, dst_it, path_src, src_it);
+  {
+    path_edit_operation dst (path_dst);
+    path_edit_operation src (path_src);
+    merge_path_operation ().apply (dst.get_svg_path (), dst_it, src.get_svg_path (), src_it);
+  }
+
+  if (path_src != path_dst && path_src->parent ())
+    path_src->parent ()->remove_child (path_src);
+
   return path_dst;
 }
 

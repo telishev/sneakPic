@@ -8,7 +8,7 @@
 
 #include "common/debug_utils.h"
 
-#include "path/svg_path_geom.h"
+#include "path/svg_path.h"
 
 #include "svg/attributes/svg_attribute_path_data.h"
 #include "svg/items/svg_item_path.h"
@@ -79,7 +79,7 @@ void path_anchor_handle::apply_drag ()
 
 void path_anchor_handle::move_point ()
 {
-  m_edit_operation->move_anchor (m_drag_cur, m_path_it);
+  m_edit_operation->get_svg_path ()->move_anchor (m_drag_cur, m_path_it);
 }
 
 std::string path_anchor_handle::item_name () const

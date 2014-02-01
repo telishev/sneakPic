@@ -21,5 +21,7 @@ public:
   void set_is_line_segment (size_t segment, bool is_line) { m_is_line_segment[segment] = is_line; }
 
   void create_from_path (const svg_path_geom *path, bool dont_create_if_exists = false);
+
+  std::vector<bool> *get_is_line_segment () { return &m_is_line_segment; }
 };
 #endif // SVG_ATTRIBUTE_LINETYPES_H

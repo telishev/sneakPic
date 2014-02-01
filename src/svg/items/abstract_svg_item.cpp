@@ -358,7 +358,11 @@ void abstract_svg_item::insert_child (int position, abstract_svg_item *new_child
   register_item_change ();
   if (!m_children)
     m_children = new std::vector<int>;
-  int id = m_document->get_undo_handler ()->add_item (new_child);
+
+  int id = new_child->undo_id ();
+  if (id < 0 || !m_document->get_undo_handler ()->get_item (id))
+    id = m_document->get_undo_handler ()->add_item (new_child);
+
   m_children->insert (m_children->begin () + position, id);
   new_child->m_parent = undo_id ();
   signal_child_inserted (new_child->name (), position);

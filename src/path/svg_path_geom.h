@@ -1,5 +1,5 @@
-#ifndef SVG_PATH_H
-#define SVG_PATH_H
+#ifndef SVG_PATH_GEOM_H
+#define SVG_PATH_GEOM_H
 
 #include "path/single_subpath.h"
 
@@ -21,6 +21,9 @@ public:
   svg_path_geom_iterator begin () const;
   svg_path_geom_iterator end () const;
   svg_path_geom_iterator last_point () const;
+
+  svg_path_geom_iterator subpath_begin (int subpath_index) const;
+  svg_path_geom_iterator subpath_last_point (int subpath_index) const;
 
   void clear ();
 
@@ -71,4 +74,4 @@ public:
 };
 
 
-#endif // SVG_PATH_H
+#endif // SVG_PATH_GEOM_H

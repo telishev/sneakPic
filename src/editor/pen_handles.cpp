@@ -31,7 +31,7 @@ element_handles *pen_handles::create_handles_for_item (abstract_svg_item *item)
   svg_item_path *path_item = static_cast<svg_item_path *> (item);
   std::vector<abstract_handle *> handles;
   auto path_data = path_item->get_computed_attribute<svg_attribute_path_data> ();
-  svg_path_geom *path = path_data->path ();
+  svg_path_geom *path = const_cast<svg_path_geom *> (path_data->path ());
   const auto &subpath = path->subpath ();
   for (size_t i = 0; i < subpath.size (); i++)
     {

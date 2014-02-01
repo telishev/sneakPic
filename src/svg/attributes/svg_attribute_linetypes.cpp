@@ -14,6 +14,7 @@ svg_attribute_linetypes::~svg_attribute_linetypes ()
 
 bool svg_attribute_linetypes::read (const char *data, bool /*from_css*/)
 {
+  m_is_line_segment.clear ();
   for (const char *cur_data = data; *cur_data; cur_data++)
     {
       bool is_line = false;

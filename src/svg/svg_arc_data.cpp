@@ -70,7 +70,7 @@ static void pathArcSegment(path_builder &builder,
     builder.curve_to (QPointF (a00 * x3 + a01 * y3, a10 * x3 + a11 * y3),
                       QPointF (a00 * x1 + a01 * y1, a10 * x1 + a11 * y1),
                       QPointF (a00 * x2 + a01 * y2, a10 * x2 + a11 * y2),
-                      false);
+                      false, true);
 }
 
 // the arc handling code underneath is from XSVG (BSD license)

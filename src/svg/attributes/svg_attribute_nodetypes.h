@@ -32,6 +32,8 @@ public:
 
   void create_from_path (const svg_path_geom *path, bool dont_create_if_exists = false);
 
+  std::vector<node_type_t> *get_node_type ()  { return &m_node_type; }
+
 private:
   char node_type_to_char (node_type_t type) const;
   node_type_t char_to_node_type (char val) const;

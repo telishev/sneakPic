@@ -7,20 +7,23 @@ template <typename T>
 class attribute_pointer;
 
 class svg_attribute_path_data;
+class svg_attribute_linetypes;
+class svg_attribute_nodetypes;
 class svg_item_path;
-class svg_path_geom_iterator;
-class QPointF;
+class svg_path;
 
 class path_edit_operation
 {
-  svg_item_path *m_path_item;
   std::unique_ptr<attribute_pointer<svg_attribute_path_data>> m_path_data;
+  std::unique_ptr<attribute_pointer<svg_attribute_linetypes>> m_linetypes;
+  std::unique_ptr<attribute_pointer<svg_attribute_nodetypes>> m_nodetypes;
+  std::unique_ptr<svg_path> m_svg_path;
+
 public:
   path_edit_operation (svg_item_path *path);
   ~path_edit_operation ();
 
-  void move_anchor (QPointF dst, svg_path_geom_iterator it);
-  void move_control_point (QPointF dst, svg_path_geom_iterator it, bool is_left);
+  svg_path *get_svg_path () const { return m_svg_path.get (); }
 };
 
 #endif // PATH_EDIT_OPERATION_H

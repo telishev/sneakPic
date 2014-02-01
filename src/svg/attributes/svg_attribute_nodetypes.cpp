@@ -18,6 +18,7 @@ svg_attribute_nodetypes::~svg_attribute_nodetypes ()
 
 bool svg_attribute_nodetypes::read (const char *data, bool /*from_css*/)
 {
+  m_node_type.clear ();
   for (const char *cur_data = data; *cur_data; cur_data++)
     {
       node_type_t type = char_to_node_type (*cur_data);
