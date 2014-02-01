@@ -3,14 +3,14 @@
 
 
 #include "editor/abstract_handle.h"
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 #include <QPointF>
 
 class QRect;
 class QColor;
 
 class svg_item_path;
-class svg_path;
+class svg_path_geom;
 class path_handles_editor;
 class path_edit_operation;
 
@@ -20,7 +20,7 @@ class path_control_point_handle : public abstract_handle
 {
   svg_item_path *m_item;
   path_handles_editor *m_editor;
-  svg_path_iterator m_path_it;
+  svg_path_geom_iterator m_path_it;
   bool m_left_handle;
 
   QPointF m_drag_start;
@@ -29,7 +29,7 @@ class path_control_point_handle : public abstract_handle
   std::unique_ptr<path_edit_operation> m_edit_operation;
 
 public:
-  path_control_point_handle (path_handles_editor *editor, svg_item_path *item, svg_path_iterator path_it, bool is_left_handle);
+  path_control_point_handle (path_handles_editor *editor, svg_item_path *item, svg_path_geom_iterator path_it, bool is_left_handle);
   virtual ~path_control_point_handle ();
 
 protected:
@@ -47,7 +47,7 @@ private:
   void apply_drag ();
   void move_point ();
 
-  const svg_path *get_path () const;
+  const svg_path_geom *get_path () const;
 };
 
 

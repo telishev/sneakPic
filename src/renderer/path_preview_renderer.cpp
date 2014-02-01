@@ -1,6 +1,6 @@
 #include "renderer/path_preview_renderer.h"
 
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 
 #include "skia/skia_includes.h"
 
@@ -8,7 +8,7 @@
 #include "renderer/renderer_state.h"
 
 
-path_preview_renderer::path_preview_renderer (const svg_path *path, QColor color)
+path_preview_renderer::path_preview_renderer (const svg_path_geom *path, QColor color)
 {
   m_path = path;
   m_color = color;
@@ -19,7 +19,7 @@ path_preview_renderer::~path_preview_renderer ()
 
 }
 
-void path_preview_renderer::set_path (const svg_path *path)
+void path_preview_renderer::set_path (const svg_path_geom *path)
 {
   m_path = path;
 }
@@ -32,7 +32,7 @@ void path_preview_renderer::draw (SkCanvas &canvas, const renderer_state &state,
   canvas.save ();
   canvas.resetMatrix ();
 
-  svg_path path = *m_path;
+  svg_path_geom path = *m_path;
   path.apply_transform (state.transform ());
 
   SkPaint stroke_paint;

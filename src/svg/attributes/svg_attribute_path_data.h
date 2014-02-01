@@ -6,14 +6,14 @@
 #include <vector>
 
 class QPainterPath;
-class svg_path;
+class svg_path_geom;
 class path_builder;
 
 class svg_attribute_path_data : public abstract_attribute
 {
   SVG_ATTRIBUTE
 
-  svg_path *m_path;
+  svg_path_geom *m_path;
 public:
   svg_attribute_path_data ();
   virtual ~svg_attribute_path_data ();
@@ -22,7 +22,7 @@ public:
   virtual bool write (QString &data, bool to_css = false) const override;
 
   QPainterPath create_painter_path () const;
-  svg_path *path () const { return m_path; }
+  svg_path_geom *path () const { return m_path; }
 
 private:
   bool is_upper (char v) const;

@@ -1,10 +1,10 @@
 #include "path/path_builder.h"
 
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 #include "svg/svg_arc_data.h"
 
 
-path_builder::path_builder (svg_path &dst_path )
+path_builder::path_builder (svg_path_geom &dst_path )
   : m_dst_path (dst_path)
 {
   m_prev_is_curve = false;
@@ -190,7 +190,7 @@ void path_builder::set_curve_c (QPointF c)
 {
   m_prev_is_curve = true;
   m_prev_curve_c = 2 * m_cur_position - c;
-  svg_path_iterator last_point = m_dst_path.last_point ();
+  svg_path_geom_iterator last_point = m_dst_path.last_point ();
   last_point.control_point (true) = m_prev_curve_c;
   last_point.control_point (false) = c;
 }

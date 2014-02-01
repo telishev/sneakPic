@@ -7,7 +7,7 @@
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_state.h"
 
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 #include "svg/attributes/svg_attribute_nodetypes.h"
 
 

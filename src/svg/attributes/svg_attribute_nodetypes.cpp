@@ -2,7 +2,7 @@
 
 #include "common/debug_utils.h"
 
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 #include "path/geom_helpers.h"
 
 
@@ -62,7 +62,7 @@ node_type_t svg_attribute_nodetypes::char_to_node_type (char val) const
   return node_type_t::COUNT;
 }
 
-void svg_attribute_nodetypes::create_from_path (const svg_path *path, bool dont_create_if_exists)
+void svg_attribute_nodetypes::create_from_path (const svg_path_geom *path, bool dont_create_if_exists)
 {
   if (dont_create_if_exists && m_node_type.size () == path->total_points ())
     return;

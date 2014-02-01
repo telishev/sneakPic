@@ -1,5 +1,5 @@
 #include "svg_attribute_linetypes.h"
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 
 
 svg_attribute_linetypes::svg_attribute_linetypes ()
@@ -34,7 +34,7 @@ bool svg_attribute_linetypes::write (QString &data, bool /*to_css*/) const
   return true;
 }
 
-void svg_attribute_linetypes::create_from_path (const svg_path *path, bool dont_create_if_exists)
+void svg_attribute_linetypes::create_from_path (const svg_path_geom *path, bool dont_create_if_exists)
 {
   if (dont_create_if_exists && m_is_line_segment.size () == path->total_segments ())
     return;

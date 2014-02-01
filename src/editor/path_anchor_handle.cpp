@@ -8,7 +8,7 @@
 
 #include "common/debug_utils.h"
 
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 
 #include "svg/attributes/svg_attribute_path_data.h"
 #include "svg/items/svg_item_path.h"
@@ -18,7 +18,7 @@
 #include "svg/attributes/svg_attribute_nodetypes.h"
 
 
-path_anchor_handle::path_anchor_handle (path_handles_editor *editor, svg_item_path *item, svg_path_iterator path_it)
+path_anchor_handle::path_anchor_handle (path_handles_editor *editor, svg_item_path *item, svg_path_geom_iterator path_it)
   : base_anchor_handle (path_it, item)
 {
   m_editor = editor;
@@ -87,7 +87,7 @@ std::string path_anchor_handle::item_name () const
   return m_item->name ();
 }
 
-const svg_path *path_anchor_handle::get_path () const
+const svg_path_geom *path_anchor_handle::get_path () const
 {
   auto path_data = m_item->get_computed_attribute<svg_attribute_path_data> ();
   return path_data->path ();

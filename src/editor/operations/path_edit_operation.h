@@ -8,7 +8,7 @@ class attribute_pointer;
 
 class svg_attribute_path_data;
 class svg_item_path;
-class svg_path_iterator;
+class svg_path_geom_iterator;
 class QPointF;
 
 class path_edit_operation
@@ -19,8 +19,8 @@ public:
   path_edit_operation (svg_item_path *path);
   ~path_edit_operation ();
 
-  void move_anchor (QPointF dst, svg_path_iterator it);
-  void move_control_point (QPointF dst, svg_path_iterator it, bool is_left);
+  void move_anchor (QPointF dst, svg_path_geom_iterator it);
+  void move_control_point (QPointF dst, svg_path_geom_iterator it, bool is_left);
 };
 
 #endif // PATH_EDIT_OPERATION_H

@@ -9,7 +9,7 @@
 #include "editor/path_control_point_handle.h"
 #include "editor/items_selection.h"
 
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 
 #include "svg/items/svg_item_path.h"
 #include "svg/items/svg_item_type.h"
@@ -28,7 +28,7 @@ class path_elements_handles : public element_handles
   std::vector<abstract_handle *> m_handles;
   std::vector<path_anchor_handle *> m_anchor_handles;
 
-  const svg_path *m_path;
+  const svg_path_geom *m_path;
   svg_item_path *m_path_item;
   path_handles_editor *m_editor;
   const svg_attribute_linetypes *m_line_types;
@@ -77,7 +77,7 @@ protected:
   }
 
 private:
-  bool has_controls (svg_path_iterator it)
+  bool has_controls (svg_path_geom_iterator it)
   {
     if (is_selected (it))
       return true;
@@ -91,12 +91,12 @@ private:
     return false;
   }
 
-  bool is_selected (svg_path_iterator it)
+  bool is_selected (svg_path_geom_iterator it)
   {
     return m_editor->handles_selection ()->is_selected (m_path_item->name (), (int)it.point_index ());
   }
 
-  void add_controls (svg_path_iterator it)
+  void add_controls (svg_path_geom_iterator it)
   {
     if (!has_controls (it))
       return;
@@ -105,7 +105,7 @@ private:
     add_control (it, true);
   }
 
-  void add_control (svg_path_iterator it, bool is_left)
+  void add_control (svg_path_geom_iterator it, bool is_left)
   {
     if (it.has_control_point (is_left))
       {

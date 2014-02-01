@@ -6,7 +6,7 @@
 
 #include "editor/operations/add_item_operation.h"
 
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 #include "path/path_builder.h"
 
 #include "svg/items/svg_item_path.h"
@@ -154,7 +154,7 @@ void pen_tool::activate ()
 
 QPointF pen_tool::snap_point (QPointF point)
 {
-  svg_path_iterator it;
+  svg_path_geom_iterator it;
   svg_item_path *path = 0;
   if (!m_pen_handles->get_path_by_pos (point, it, path))
     return m_painter->get_local_pos (point);
@@ -173,7 +173,7 @@ void pen_tool::add_new_point (QPoint pos)
   QPointF local_pos = snap_point (pos);
   if (!m_current_path)
     {
-      m_current_path.reset (new svg_path);
+      m_current_path.reset (new svg_path_geom);
       m_preview_renderer->set_path (m_current_path.get ());
       m_path_builder.reset (new path_builder (*m_current_path));
       m_path_builder->move_to (local_pos, false);
@@ -203,7 +203,7 @@ svg_item_path *pen_tool::add_new_path ()
   return path_item;
 }
 
-svg_item_path *pen_tool::merge_with_path (svg_item_path *path_dst, svg_path_iterator dst_it, svg_item_path *path_src, svg_path_iterator src_it)
+svg_item_path *pen_tool::merge_with_path (svg_item_path *path_dst, svg_path_geom_iterator dst_it, svg_item_path *path_src, svg_path_geom_iterator src_it)
 {
   merge_path_operation merge_op;
   merge_op.apply (path_dst, dst_it, path_src, src_it);

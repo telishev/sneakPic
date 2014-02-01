@@ -3,7 +3,7 @@
 
 #include "svg/attributes/abstract_attribute.h"
 
-class svg_path;
+class svg_path_geom;
 
 class svg_attribute_linetypes : public abstract_attribute
 {
@@ -20,6 +20,6 @@ public:
   bool is_line_segment (size_t segment) const { return m_is_line_segment[segment]; }
   void set_is_line_segment (size_t segment, bool is_line) { m_is_line_segment[segment] = is_line; }
 
-  void create_from_path (const svg_path *path, bool dont_create_if_exists = false);
+  void create_from_path (const svg_path_geom *path, bool dont_create_if_exists = false);
 };
 #endif // SVG_ATTRIBUTE_LINETYPES_H

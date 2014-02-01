@@ -5,17 +5,17 @@
 
 #include <QColor>
 
-class svg_path;
+class svg_path_geom;
 
 class path_preview_renderer : public renderable_item
 {
-  const svg_path *m_path;
+  const svg_path_geom *m_path;
   QColor m_color;
 public:
-  path_preview_renderer (const svg_path *path, QColor color);
+  path_preview_renderer (const svg_path_geom *path, QColor color);
   ~path_preview_renderer ();
 
-  void set_path (const svg_path *path);
+  void set_path (const svg_path_geom *path);
   void set_color (QColor color);
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
 };

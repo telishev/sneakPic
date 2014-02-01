@@ -5,7 +5,7 @@
 #include <QTransform>
 #include <QColor>
 
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 
 #include "svg/items/svg_item_path.h"
 #include "svg/attributes/svg_attribute_path_data.h"
@@ -51,7 +51,7 @@ void path_preview_handle::draw (SkCanvas &canvas, const renderer_state &state, c
 {
   QTransform transform = m_item->full_transform ();
   auto path_data = m_item->get_computed_attribute<svg_attribute_path_data> ();
-  svg_path path = *path_data->path ();
+  svg_path_geom path = *path_data->path ();
   path.apply_transform (transform);
 
   path_preview_renderer renderer (&path, QColor ("slateblue"));

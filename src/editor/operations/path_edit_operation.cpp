@@ -8,7 +8,7 @@
 #include "svg/attributes/svg_attribute_nodetypes.h"
 #include "svg/attributes/svg_attribute_linetypes.h"
 
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 
 
 path_edit_operation::path_edit_operation (svg_item_path *path)
@@ -22,7 +22,7 @@ path_edit_operation::~path_edit_operation ()
 
 }
 
-void path_edit_operation::move_anchor (QPointF dst, svg_path_iterator it)
+void path_edit_operation::move_anchor (QPointF dst, svg_path_geom_iterator it)
 {
   QTransform transform = m_path_item->full_transform ().inverted ();
   auto linetypes = m_path_item->get_computed_attribute<svg_attribute_linetypes> ();
@@ -48,7 +48,7 @@ void path_edit_operation::move_anchor (QPointF dst, svg_path_iterator it)
   
 }
 
-void path_edit_operation::move_control_point (QPointF dst, svg_path_iterator it, bool is_left)
+void path_edit_operation::move_control_point (QPointF dst, svg_path_geom_iterator it, bool is_left)
 {
   QTransform transform = m_path_item->full_transform ().inverted ();
   QPointF control_point = transform.map (dst);

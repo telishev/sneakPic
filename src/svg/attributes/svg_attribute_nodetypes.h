@@ -3,7 +3,7 @@
 
 #include "svg/attributes/abstract_attribute.h"
 
-class svg_path;
+class svg_path_geom;
 
 enum class node_type_t : char
 {
@@ -30,7 +30,7 @@ public:
 
   void set_node_type (size_t node, node_type_t type) { m_node_type[node] = type; }
 
-  void create_from_path (const svg_path *path, bool dont_create_if_exists = false);
+  void create_from_path (const svg_path_geom *path, bool dont_create_if_exists = false);
 
 private:
   char node_type_to_char (node_type_t type) const;

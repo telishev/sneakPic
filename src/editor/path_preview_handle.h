@@ -5,7 +5,7 @@
 
 class svg_item_path;
 class QRect;
-class svg_path;
+class svg_path_geom;
 class svg_painter;
 
 struct single_path_point;

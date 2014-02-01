@@ -9,7 +9,7 @@
 #include <QRect>
 #include <QRectF>
 
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 #include "skia/skia_includes.h"
 namespace qt2skia {
 
@@ -81,7 +81,7 @@ SkPath path (const QPainterPath &qpath)
   return path;
 }
 
-SkPath path (const svg_path &path)
+SkPath path (const svg_path_geom &path)
 {
   SkPath sk_path;
   for (const auto &subpath : path.subpath ())

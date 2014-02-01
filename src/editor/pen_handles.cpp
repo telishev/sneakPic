@@ -8,7 +8,7 @@
 
 #include "editor/element_handles.h"
 #include "svg/attributes/svg_attribute_path_data.h"
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 #include "base_anchor_handle.h"
 
 
@@ -31,7 +31,7 @@ element_handles *pen_handles::create_handles_for_item (abstract_svg_item *item)
   svg_item_path *path_item = static_cast<svg_item_path *> (item);
   std::vector<abstract_handle *> handles;
   auto path_data = path_item->get_computed_attribute<svg_attribute_path_data> ();
-  svg_path *path = path_data->path ();
+  svg_path_geom *path = path_data->path ();
   const auto &subpath = path->subpath ();
   for (size_t i = 0; i < subpath.size (); i++)
     {
@@ -40,15 +40,15 @@ element_handles *pen_handles::create_handles_for_item (abstract_svg_item *item)
 
       auto first = subpath[i].begin ();
       auto last = subpath[i].last_point ();
-      handles.push_back (new base_anchor_handle (svg_path_iterator (*path, i, first), path_item));
+      handles.push_back (new base_anchor_handle (svg_path_geom_iterator (*path, i, first), path_item));
       if (last != first)
-        handles.push_back (new base_anchor_handle (svg_path_iterator (*path, i, last), path_item));
+        handles.push_back (new base_anchor_handle (svg_path_geom_iterator (*path, i, last), path_item));
     }
 
   return new element_handles_vector (handles); 
 }
 
-bool pen_handles::get_path_by_pos (QPointF screen_pos, svg_path_iterator &it, svg_item_path *&path)
+bool pen_handles::get_path_by_pos (QPointF screen_pos, svg_path_geom_iterator &it, svg_item_path *&path)
 {
   abstract_handle *handle = get_handle_by_pos (screen_pos);
   base_anchor_handle *base_handle = dynamic_cast<base_anchor_handle *> (handle);
@@ -70,7 +70,7 @@ void pen_handles::update_handles_impl ()
   set_handle_for_item ("#new_path", new element_handles_vector (handles));
 }
 
-void pen_handles::set_new_path (svg_path *new_path)
+void pen_handles::set_new_path (svg_path_geom *new_path)
 {
   m_new_path = new_path;
   update_handles ();

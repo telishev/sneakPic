@@ -9,7 +9,7 @@
 #include <functional>
 #include <QString>
 #include <QPainterPath>
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 
 #include "svg/svg_arc_data.h"
 #include "path/path_builder.h"
@@ -18,7 +18,7 @@
 
 svg_attribute_path_data::svg_attribute_path_data ()
 {
-  m_path = new svg_path;
+  m_path = new svg_path_geom;
 }
 
 svg_attribute_path_data::~svg_attribute_path_data ()

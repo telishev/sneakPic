@@ -1,18 +1,18 @@
 #ifndef PATH_BUILDER_H
 #define PATH_BUILDER_H
 
-class svg_path;
+class svg_path_geom;
 #include <QPointF>
 
 class path_builder
 {
-  svg_path &m_dst_path;
+  svg_path_geom &m_dst_path;
   QPointF m_cur_position;
   QPointF m_prev_quad_c; bool m_prev_is_quad;
   QPointF m_prev_curve_c; bool m_prev_is_curve;
   bool m_new_subpath_pending;
 public:
-  path_builder (svg_path &dst_path);
+  path_builder (svg_path_geom &dst_path);
   ~path_builder ();
 
   void close_subpath ();

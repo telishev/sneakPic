@@ -10,7 +10,7 @@ class QRect;
 class QColor;
 
 class svg_item_path;
-class svg_path;
+class svg_path_geom;
 class path_handles_editor;
 class path_edit_operation;
 class SkCanvas;
@@ -31,7 +31,7 @@ class path_anchor_handle : public base_anchor_handle
   std::unique_ptr<path_edit_operation> m_edit_operation;
 
 public:
-  path_anchor_handle (path_handles_editor *editor, svg_item_path *item, svg_path_iterator path_it);
+  path_anchor_handle (path_handles_editor *editor, svg_item_path *item, svg_path_geom_iterator path_it);
   virtual ~path_anchor_handle ();
 
   int point_id () const { return (int)m_path_it.point_index (); }
@@ -50,7 +50,7 @@ protected:
 private:
   void apply_drag ();
   void move_point ();
-  const svg_path *get_path () const;
+  const svg_path_geom *get_path () const;
 };
 
 #endif // PATH_ANCHOR_HANDLE_H

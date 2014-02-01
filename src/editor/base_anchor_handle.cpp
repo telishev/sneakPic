@@ -7,7 +7,7 @@
 #include "svg/items/svg_item_path.h"
 
 
-base_anchor_handle::base_anchor_handle (svg_path_iterator path_it, svg_item_path *item)
+base_anchor_handle::base_anchor_handle (svg_path_geom_iterator path_it, svg_item_path *item)
 {
   m_path_it = path_it;
   m_is_highlighted = false;
@@ -87,7 +87,7 @@ QTransform base_anchor_handle::get_path_transform () const
   return m_item ? m_item->full_transform () : QTransform ();
 }
 
-void base_anchor_handle::set_path_iterator (svg_path_iterator path_it)
+void base_anchor_handle::set_path_iterator (svg_path_geom_iterator path_it)
 {
   m_path_it = path_it;
 }

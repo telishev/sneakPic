@@ -15,7 +15,7 @@
 #include "renderer/qt2skia.h"
 #include "renderer/renderer_state.h"
 
-#include "path/svg_path.h"
+#include "path/svg_path_geom.h"
 
 #include "svg/attributes/svg_attribute_path_data.h"
 #include "svg/items/svg_item_path.h"
@@ -25,7 +25,7 @@
 
 
 
-path_control_point_handle::path_control_point_handle (path_handles_editor *editor, svg_item_path *item, svg_path_iterator path_it,
+path_control_point_handle::path_control_point_handle (path_handles_editor *editor, svg_item_path *item, svg_path_geom_iterator path_it,
                                                       bool is_left_handle)
 {
   m_left_handle = is_left_handle;
@@ -114,7 +114,7 @@ void path_control_point_handle::move_point ()
   m_edit_operation->move_control_point (m_drag_cur, m_path_it, m_left_handle);
 }
 
-const svg_path * path_control_point_handle::get_path () const
+const svg_path_geom * path_control_point_handle::get_path () const
 {
   auto path_data = m_item->get_computed_attribute<svg_attribute_path_data> ();
   return path_data->path ();
