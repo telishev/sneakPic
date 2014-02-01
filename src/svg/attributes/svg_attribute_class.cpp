@@ -16,6 +16,7 @@ svg_attribute_class::~svg_attribute_class ()
 
 bool svg_attribute_class::read (const char *data, bool /*from_css*/)
 {
+  m_class_names.clear ();
   trim_whitespace_left (data);
   while (*data)
     {

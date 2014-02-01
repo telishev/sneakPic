@@ -16,6 +16,7 @@ svg_attribute_points::~svg_attribute_points ()
 
 bool svg_attribute_points::read (const char *data, bool /* from_css */)
 {
+  m_point_list.clear ();
   double x, y;
   while (*data)
     {

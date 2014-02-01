@@ -13,9 +13,13 @@
 
 bool svg_base_attribute_marker_usage::read (const char *data, bool /*from_css*/ /*= false*/)
 {
+  FREE (m_element);
   if (strcmp (data, "none") == 0)
-    m_element = nullptr;
-
+    {
+      m_element = nullptr;
+      return true;
+    }
+  
   m_element = new svg_data_type_iri;
   m_element->read (QString (data));
   if (m_element->get_type () != iri_type::document_fragment)

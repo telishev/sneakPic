@@ -18,6 +18,7 @@ QList <double> svg_base_attribute_length_list::value () const
 
 bool svg_base_attribute_length_list::read (const char *data, bool from_css)
 {
+  m_value.clear ();
   while (*data)
     {
       svg_data_type_length single_value;
