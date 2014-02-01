@@ -40,6 +40,8 @@ actions_info::actions_info ()
   add_action (gui_action_id::DELETE_HANDLES, "Delete Handles", QKeySequence ("Del"));
   add_action (gui_action_id::DELETE_ITEMS, "Delete", QKeySequence ("Del"));
   add_action (gui_action_id::FINISH_PATH, "Finish Path", QKeySequence (Qt::Key_Return));
+  add_action (gui_action_id::CANCEL_EDITING, "Cancel Editing", QKeySequence (Qt::Key_Escape));
+  
 }
 
 actions_info::~actions_info ()

@@ -47,6 +47,7 @@ pen_tool::pen_tool (svg_painter *painter)
     &pen_tool::add_segment_start, &pen_tool::add_segment_move, &pen_tool::add_segment_end);
 
   m_actions_applier->register_action (gui_action_id::FINISH_PATH, this, &pen_tool::finish_path_add);
+  m_actions_applier->register_action (gui_action_id::CANCEL_EDITING, this, &pen_tool::cancel_editing);
   m_prev_point_was_line = false;
 }
 
@@ -127,14 +128,7 @@ bool pen_tool::finish_path_add ()
       m_painter->selection ()->add_item (cur_path);
     }
 
-  m_current_path.reset ();
-  m_path_snap_end.reset ();
-  m_path_snap_start.reset ();
-  m_preview_renderer->set_path (nullptr);
-  m_left_cp_renderer->set_visible (false);
-  m_right_cp_renderer->set_visible (false);
-  m_pen_handles->set_new_path (nullptr);
-  update ();
+  finish_editing ();
   m_painter->document ()->apply_changes ();
   return true;
 }
@@ -222,6 +216,27 @@ svg_item_path *pen_tool::merge_with_path (svg_item_path *path_dst, svg_path_geom
     path_src->parent ()->remove_child (path_src);
 
   return path_dst;
+}
+
+bool pen_tool::cancel_editing ()
+{
+  if (!m_current_path)
+    return false;
+
+  finish_editing ();
+  return true;
+}
+
+void pen_tool::finish_editing ()
+{
+  m_current_path.reset ();
+  m_path_snap_end.reset ();
+  m_path_snap_start.reset ();
+  m_preview_renderer->set_path (nullptr);
+  m_left_cp_renderer->set_visible (false);
+  m_right_cp_renderer->set_visible (false);
+  m_pen_handles->set_new_path (nullptr);
+  update ();
 }
 
 

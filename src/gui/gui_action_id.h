@@ -25,6 +25,7 @@ enum class gui_action_id
   DELETE_HANDLES,
   DELETE_ITEMS,
   FINISH_PATH,
+  CANCEL_EDITING,
 
   /// Count
   COUNT,
