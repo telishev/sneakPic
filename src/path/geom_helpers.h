@@ -31,7 +31,12 @@ namespace geom
   double norm (QPointF point);
   QPointF normalized (QPointF point);
   QPointF direction (QPointF begin, QPointF end);
-
+  double angle (QPointF point);
+  double angle (QPointF begin, QPointF end);
+  double dot (QPointF begin, QPointF end);
+  double cross (QPointF begin, QPointF end);
+  double angle_between (QPointF begin, QPointF end);
+  QPointF vector_from_angle (double angle, double norm);
 };
 
 #endif // GEOM_HELPERS_H

@@ -22,6 +22,11 @@
 
 #include "gui/actions_applier.h"
 #include "gui/shortcuts_config.h"
+#include "gui/gui_action_id.h"
+#include "operations/path_edit_operation.h"
+#include "operations/anchor_type_change_operation.h"
+#include "svg/attributes/svg_attribute_nodetypes.h"
+#include "path/svg_path.h"
 
 class path_elements_handles : public element_handles
 {
@@ -140,6 +145,8 @@ path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter
     });
 
   m_applier->add_shortcut (mouse_shortcut_enum::SELECT_HANDLE, this, &path_handles_editor::select_handle);
+  m_applier->add_shortcut (mouse_shortcut_enum::CHANGE_HANDLE_TYPE, this, &path_handles_editor::change_handle);
+  m_applier->register_action (gui_action_id::DELETE_HANDLES, this, &path_handles_editor::delete_selected_handles);
 }
 
 path_handles_editor::~path_handles_editor ()
@@ -159,11 +166,7 @@ element_handles *path_handles_editor::create_handles_for_item (abstract_svg_item
 bool path_handles_editor::select_handle (const mouse_event_t &mevent)
 {
   QPoint pos = mevent.pos ();
-  abstract_handle *handle = get_handle_by_pos (pos);
-  if (!handle)
-    return false;
-
-  path_anchor_handle *control_point = dynamic_cast<path_anchor_handle *> (handle);
+  path_anchor_handle *control_point = get_path_anchor (pos);
   if (!control_point)
     return false;
 
@@ -215,4 +218,40 @@ void path_handles_editor::select_by_rect (const QRectF &rect)
 
   update_handles ();
   update ();
+}
+
+bool path_handles_editor::delete_selected_handles ()
+{
+  const auto &selected_anchors = m_handles_selection->selected_anchors ();
+  if (selected_anchors.empty ())
+    return false;
+
+  return true;
+}
+
+bool path_handles_editor::change_handle (const QPoint &pos)
+{
+  path_anchor_handle *control_point = get_path_anchor (pos);
+  if (!control_point)
+    return false;
+
+  {
+    path_edit_operation op (control_point->item ());
+    node_type_t node_type = node_type_t::CUSP;
+    if ((*op.get_svg_path ()->get_node_type ())[control_point->path_iterator ().point_index ()] == node_type_t::CUSP)
+      node_type = node_type_t::SMOOTH;
+    anchor_type_change_operation (op.get_svg_path ()).apply (control_point->path_iterator (), node_type);
+  }
+
+  m_painter->document ()->apply_changes ();
+  return true;
+}
+
+path_anchor_handle *path_handles_editor::get_path_anchor (const QPoint &pos) const
+{
+  abstract_handle *handle = get_handle_by_pos (pos);
+  if (!handle)
+    return nullptr;
+
+  return dynamic_cast<path_anchor_handle *> (handle);
 }

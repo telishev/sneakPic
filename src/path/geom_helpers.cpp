@@ -1,6 +1,7 @@
 #include "geom_helpers.h"
 
 #include <QRect>
+#include <math.h>
 
 QRect geom::inner_rect (QRectF rect)
 {
@@ -34,4 +35,34 @@ QPointF geom::normalized (QPointF point)
 QPointF geom::direction (QPointF begin, QPointF end)
 {
   return normalized (end - begin);
+}
+
+double geom::angle (QPointF point)
+{
+  return atan2 (point.y (), point.x ());
+}
+
+double geom::angle (QPointF begin, QPointF end)
+{
+  return angle (end - begin);
+}
+
+QPointF geom::vector_from_angle (double angle, double norm)
+{
+  return norm * QPointF (cos (angle), sin (angle));
+}
+
+double geom::dot (QPointF begin, QPointF end)
+{
+  return begin.x () * end.x () + begin.y () * end.y ();
+}
+
+double geom::cross (QPointF begin, QPointF end)
+{
+  return begin.x () * end.y () - begin.y () * end.x ();
+}
+
+double geom::angle_between (QPointF begin, QPointF end)
+{
+  return atan2 (cross (end, begin), dot (end, begin));
 }

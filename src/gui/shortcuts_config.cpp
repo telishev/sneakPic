@@ -36,6 +36,7 @@ void shortcuts_config::fill_mouse_default ()
   set_mouse_shortcut (m::HIGHLIGHT_HANDLE       , e::MOVE   , b::ANY_BUTTON , k::ALL         );
   set_mouse_shortcut (m::SELECT_HANDLE          , e::CLICK  , b::BUTTON_LEFT, k::ALL         );
   set_mouse_shortcut (m::PEN_ADD_SEGMENT_SIMPLE , e::CLICK  , b::BUTTON_LEFT, k::ALL         );
+  set_mouse_shortcut (m::CHANGE_HANDLE_TYPE     , e::CLICK  , b::BUTTON_LEFT, k::CTRL        );
 }
 
 void shortcuts_config::fill_drag_default ()

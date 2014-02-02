@@ -23,19 +23,12 @@ path_editor_tool::path_editor_tool (svg_painter *painter)
 {
   m_path_editor = new path_handles_editor (m_overlay, m_painter, m_actions_applier);
   m_rubberband = new items_rubberband_selector (m_overlay, m_painter, m_actions_applier);
-
-  m_actions_applier->register_action (gui_action_id::DELETE_HANDLES, this, &path_editor_tool::delete_handles);
 }
 
 path_editor_tool::~path_editor_tool ()
 {
   FREE (m_rubberband);
   FREE (m_path_editor);
-}
-
-bool path_editor_tool::delete_handles ()
-{
-  return true;
 }
 
 void path_editor_tool::configure ()

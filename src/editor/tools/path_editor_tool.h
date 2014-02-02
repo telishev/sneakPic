@@ -19,8 +19,6 @@ public:
   ~path_editor_tool ();
 
 private:
-  bool delete_handles ();
-
   virtual void configure () override;
   virtual void activate () override;
 

@@ -11,6 +11,7 @@ enum class gui_action_id;
 /// Higher actions have higher priority
 enum class mouse_shortcut_enum
 {
+  CHANGE_HANDLE_TYPE,
   PEN_ADD_SEGMENT_SIMPLE,
   HIGHLIGHT_HANDLE,
   FIND_CURRENT_OBJECT,

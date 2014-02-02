@@ -7,6 +7,7 @@ class path_anchors_selection;
 class rubberband_selection;
 class mouse_event_t;
 class QRectF;
+class path_anchor_handle;
 
 class path_handles_editor : public handles_editor
 {
@@ -28,8 +29,10 @@ protected:
 
 private:
   bool select_handle (const mouse_event_t &mevent);
+  bool change_handle (const QPoint &pos);
   void select_by_rect (const QRectF &rect);
-
+  bool delete_selected_handles ();
+  path_anchor_handle *get_path_anchor (const QPoint &pos) const;
 };
 
 #endif // PATH_HANDLES_EDITOR_H
