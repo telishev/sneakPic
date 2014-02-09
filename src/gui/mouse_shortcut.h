@@ -58,6 +58,8 @@ enum class mouse_button
   BUTTONS_COUNT,
 };
 
+bool contains_modifier (keyboard_modifier pressed, keyboard_modifier buttons);
+
 class mouse_shortcut
 {
   mouse_button m_button;

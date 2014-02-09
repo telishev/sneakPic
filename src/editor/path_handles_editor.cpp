@@ -170,7 +170,8 @@ bool path_handles_editor::select_handle (const mouse_event_t &mevent)
   if (!control_point)
     return false;
 
-  m_handles_selection->clear ();
+  if (!contains_modifier (mevent.modifier (), SHIFT))
+    m_handles_selection->clear ();
   m_handles_selection->add_anchor (control_point->item_name (), control_point->point_id ());
   update_handles ();
   update ();
