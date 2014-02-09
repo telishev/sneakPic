@@ -58,29 +58,13 @@ bool svg_document::read_file (const QString &filename_arg)
   if (!reader.read_file (m_filename))
     return false;
 
-  m_root = reader.root ();
-  if (!m_root)
-    return false;
+  return finalize_doc_creation (reader);
 
-  DEBUG_ASSERT (m_root->type () == svg_item_type::SVG);
-
-  if (!m_root->process_after_read ())
-    return false;
-
-  svg_graphics_item *graphics_item = m_root->to_graphics_item ();
-  if (!graphics_item)
-    return false;
-
-  m_item_container->set_root (m_root->name ());
-  get_undo_handler ()->clear ();
-  graphics_item->update_bbox ();
-  set_signals_enabled (true);
-  return true;
 }
 
 QString svg_document::get_filename ()
 {
-  return m_filename;
+  return m_filename.isEmpty () ? "New Document" : m_filename;
 }
 
 bool svg_document::write_file (const QString &filename_arg)
@@ -179,4 +163,35 @@ void svg_document::process_new_item (abstract_svg_item *item)
 {
   get_undo_handler ()->add_item (item);
   item->process_after_read ();
+}
+
+bool svg_document::create_new_document ()
+{
+  svg_reader reader (get_undo_handler (), m_item_factory, this);
+  if (!reader.create_new_document ())
+    return false;
+
+  return finalize_doc_creation (reader);
+}
+
+bool svg_document::finalize_doc_creation (svg_reader &reader)
+{
+  m_root = reader.root ();
+  if (!m_root)
+    return false;
+
+  DEBUG_ASSERT (m_root->type () == svg_item_type::SVG);
+
+  if (!m_root->process_after_read ())
+    return false;
+
+  svg_graphics_item *graphics_item = m_root->to_graphics_item ();
+  if (!graphics_item)
+    return false;
+
+  m_item_container->set_root (m_root->name ());
+  get_undo_handler ()->clear ();
+  graphics_item->update_bbox ();
+  set_signals_enabled (true);
+  return true;
 }

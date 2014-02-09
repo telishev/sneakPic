@@ -6,6 +6,7 @@ enum class gui_action_id
 {
 
   //// Menu
+  NEW,
   OPEN,
   OPEN_RECENT,
   SAVE,

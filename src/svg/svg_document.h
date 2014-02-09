@@ -11,6 +11,7 @@ class events_queue;
 class undo_handler;
 class items_edit_handler_t;
 class document_change_sender;
+class svg_reader;
 
 #include <QString>
 #include <QObject>
@@ -69,6 +70,7 @@ public:
   }
 
   void redraw ();
+  bool create_new_document ();
 
 signals:
   void items_changed ();
@@ -76,6 +78,7 @@ signals:
 private:
   void update_renderer ();
   void process_new_item (abstract_svg_item *item);
+  bool finalize_doc_creation (svg_reader &reader);
 };
 
 #endif // SVG_DOCUMENT_H

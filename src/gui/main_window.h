@@ -54,7 +54,7 @@ public:
 private slots:
   void zoom_description_changed (const QString &description);
   void open_file (const QString filename);
-
+  bool create_new_document ();
 
 private:
   void add_file_to_recent (QString file_path);
@@ -67,6 +67,8 @@ private:
   bool action_triggered (gui_action_id id);
   bool open_file_clicked ();
   bool save_file_clicked ();
+  void update_on_document_create ();
+  
 };
 
 

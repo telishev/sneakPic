@@ -60,14 +60,16 @@ main_window::main_window ()
   update_recent_menu ();
   m_zoom_label = new QLabel;
   statusBar ()->addPermanentWidget (m_zoom_label);
-  this->restoreGeometry (m_qsettings->value ("main_window_geometry").toByteArray ());
-  this->restoreState (m_qsettings->value ("main_window_state").toByteArray ());
+  restoreGeometry (m_qsettings->value ("main_window_geometry").toByteArray ());
+  restoreState (m_qsettings->value ("main_window_state").toByteArray ());
 
   m_actions_applier = new actions_applier;
+  m_actions_applier->register_action (gui_action_id::NEW, this, &main_window::create_new_document);
   m_actions_applier->register_action (gui_action_id::OPEN, this, &main_window::open_file_clicked);
   m_actions_applier->register_action (gui_action_id::SAVE_AS, this, &main_window::save_file_clicked);
   m_actions_applier->register_action (gui_action_id::QUIT, (QWidget *)this, &QWidget::close);
 
+  QTimer::singleShot (10, this, SLOT (create_new_document ()));
 }
 
 main_window::~main_window ()
@@ -195,8 +197,7 @@ void main_window::open_file (const QString filename)
       return;
     }
 
-  create_painter ();
-  m_style_widget_handler->set_tools_containter (m_document->get_tools_container ());
+  update_on_document_create ();
   add_file_to_recent (filename);
   update_recent_menu ();
   ui->glwidget->repaint ();
@@ -222,5 +223,25 @@ bool main_window::action_triggered (gui_action_id id)
       return true;
 
   return m_actions_applier->apply_action (id);
+}
+
+void main_window::update_on_document_create ()
+{
+  create_painter ();
+  m_style_widget_handler->set_tools_containter (m_document->get_tools_container ());
+}
+
+bool main_window::create_new_document ()
+{
+  FREE (m_document);
+  DO_ON_EXIT (update_window_title ());
+  m_document = new gui_document (m_settings, m_actions);
+  if (!m_document->create_new_document ())
+    return false;
+
+  update_on_document_create ();
+  update_window_title ();
+  ui->glwidget->repaint ();
+  return true;
 }
 

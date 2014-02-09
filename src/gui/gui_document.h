@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QString>
 
+#include <functional>
+
 class QTimer;
 class settings_t;
 class rendered_items_cache;
@@ -45,6 +47,8 @@ public:
   bool open_file (const QString &filename);
   bool save_file (const QString &filename);
 
+  bool create_new_document ();
+
   QString get_filename () const;
   bool action_triggered (gui_action_id id);
 
@@ -57,6 +61,7 @@ private slots:
 private:
   bool undo ();
   bool redo ();
+  bool create_new_document_impl (std::function <bool (svg_document *)> create_func);
 };
 
 

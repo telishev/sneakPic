@@ -28,6 +28,8 @@ public:
   bool read_file (const QString &filename);
   abstract_svg_item *root () const { return m_root; }
 
+  bool create_new_document ();
+
 private:
   abstract_svg_item *process_new_item (QXmlStreamReader &reader, abstract_svg_item *cur_item);
   void add_style (abstract_svg_item *child_item, svg_attribute_style *style);

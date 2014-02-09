@@ -29,6 +29,7 @@ void menu_builder::update_menu ()
 
 void menu_builder::create_file_menu (QMenu *menu)
 {
+  add_action (menu, gui_action_id::NEW);
   add_action (menu, gui_action_id::OPEN);
   add_action (menu, gui_action_id::OPEN_RECENT);
   menu->addSeparator ();

@@ -22,6 +22,7 @@ actions_info::actions_info ()
 {
   m_info.resize ((int)gui_action_id::COUNT);
 
+  add_action (gui_action_id::NEW, "New", QKeySequence::New);
   add_action (gui_action_id::OPEN, "Open...", QKeySequence::Open);
   add_action (gui_action_id::OPEN_RECENT, "Open Recent");
   add_action (gui_action_id::SAVE, "Save...", QKeySequence::Save);

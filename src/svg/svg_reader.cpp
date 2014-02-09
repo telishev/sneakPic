@@ -20,6 +20,7 @@
 #include "items/svg_item_style.h"
 #include "css/selectors_container.h"
 #include "attributes/svg_attribute_element_mapping.h"
+#include "attributes/svg_attributes_length_type.h"
 
 svg_reader::svg_reader (undo_handler *handler, svg_item_factory *item_factory, svg_document *document)
 {
@@ -199,6 +200,21 @@ void svg_reader::process_selectors (abstract_svg_item *root)
 
   for (int i = 0; i < root->children_count (); i++)
     process_selectors (root->child (i));
+}
+
+bool svg_reader::create_new_document ()
+{
+  m_root = m_item_factory->create_item (svg_item_type::SVG);
+  m_undo_handler->add_item (m_root);
+  {
+    auto width = m_root->get_attribute_for_change<svg_attribute_width> ();
+    auto height = m_root->get_attribute_for_change<svg_attribute_height> ();
+    width->set_value (210, svg_length_units::MM);
+    height->set_value (297, svg_length_units::MM);
+  }
+
+  m_root->process_after_read ();
+  return true;
 }
 
 

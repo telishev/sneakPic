@@ -61,16 +61,7 @@ gui_document::~gui_document ()
 
 bool gui_document::open_file (const QString &filename)
 {
-  m_doc = new svg_document ();
-  m_doc->set_queue (m_queue);
-  if (!m_doc->read_file (filename))
-    {
-      return false;
-    }
-
-  renderer_items_container *renderer_items = m_doc->create_rendered_items (m_cache);
-  m_queue->add_event (new event_container_changed (renderer_items));
-  return true;
+  return create_new_document_impl ([=] (svg_document *doc) { return doc->read_file (filename); });
 }
 
 bool gui_document::save_file (const QString &filename)
@@ -125,4 +116,21 @@ bool gui_document::action_triggered (gui_action_id id)
     return true;
 
   return m_actions_applier->apply_action (id);
+}
+
+bool gui_document::create_new_document ()
+{
+  return create_new_document_impl ([] (svg_document *doc) { return doc->create_new_document (); });
+}
+
+bool gui_document::create_new_document_impl (std::function <bool (svg_document *)> create_func)
+{
+  m_doc = new svg_document ();
+  m_doc->set_queue (m_queue);
+  if (!create_func (m_doc))
+    return false;
+
+  renderer_items_container *renderer_items = m_doc->create_rendered_items (m_cache);
+  m_queue->add_event (new event_container_changed (renderer_items));
+  return true;
 }
