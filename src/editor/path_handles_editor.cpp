@@ -235,6 +235,7 @@ bool path_handles_editor::change_handle (const QPoint &pos)
   if (!control_point)
     return false;
 
+  begin_changes ();
   {
     path_edit_operation op (control_point->item ());
     node_type_t node_type = node_type_t::CUSP;
@@ -242,8 +243,7 @@ bool path_handles_editor::change_handle (const QPoint &pos)
       node_type = node_type_t::SMOOTH;
     anchor_type_change_operation (op.get_svg_path ()).apply (control_point->path_iterator (), node_type);
   }
-
-  m_painter->document ()->apply_changes ();
+  end_changes ();
   return true;
 }
 
