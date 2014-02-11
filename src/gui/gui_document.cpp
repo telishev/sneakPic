@@ -134,3 +134,8 @@ bool gui_document::create_new_document_impl (std::function <bool (svg_document *
   m_queue->add_event (new event_container_changed (renderer_items));
   return true;
 }
+
+bool gui_document::is_new_document ()
+{
+  return m_doc->is_new_document ();
+}

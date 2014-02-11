@@ -28,6 +28,7 @@
 #include "common/memory_deallocation.h"
 
 #include "svg/svg_document.h"
+#include "svg/undo/undo_handler.h"
 
 #include "dock_widget_builder.h"
 #include "renderer/svg_painter.h"
@@ -48,6 +49,7 @@ main_window::main_window ()
   m_tools_builder = new tools_widget_builder (m_actions, m_dock_widget_builder);
   m_style_controller = new style_controller (m_settings);
   m_style_widget_handler = new style_widget_handler (m_dock_widget_builder, m_style_controller);
+  m_last_saved_position = 0;
 
   m_menu_builder = new menu_builder (menuBar (), m_actions, createPopupMenu ());
 
@@ -66,8 +68,10 @@ main_window::main_window ()
   m_actions_applier = new actions_applier;
   m_actions_applier->register_action (gui_action_id::NEW, this, &main_window::create_new_document);
   m_actions_applier->register_action (gui_action_id::OPEN, this, &main_window::open_file_clicked);
-  m_actions_applier->register_action (gui_action_id::SAVE_AS, this, &main_window::save_file_clicked);
+  m_actions_applier->register_action (gui_action_id::SAVE, this, &main_window::save_clicked);
+  m_actions_applier->register_action (gui_action_id::SAVE_AS, this, &main_window::save_as_clicked);
   m_actions_applier->register_action (gui_action_id::QUIT, (QWidget *)this, &QWidget::close);
+
 
   QTimer::singleShot (10, this, SLOT (create_new_document ()));
 }
@@ -140,18 +144,24 @@ bool main_window::open_file_clicked ()
   return true;
 }
 
-bool main_window::save_file_clicked ()
+bool main_window::save_as_clicked ()
 {
   if (!m_document)
     return true;
 
   QString filename = QFileDialog::getSaveFileName (this, "Save File", m_document->get_filename (), "Scalable Vector Graphics (*.svg)");
   if (filename.isEmpty ())
-    return true;
+    return false;
 
-  m_document->save_file (filename);
-  update_window_title ();
+  save_document (filename);
   return true;
+}
+
+void main_window::save_document (QString &filename)
+{
+  m_document->save_file (filename);
+  update_undo_position ();
+  update_window_title ();
 }
 
 void main_window::add_file_to_recent (QString file_path)
@@ -181,11 +191,24 @@ QString main_window::get_last_file_open_dir () const
 
 void main_window::update_window_title ()
 {
-  setWindowTitle (QString ("sneakPic%1").arg (m_document ? QString (" - %1").arg (m_document->get_filename ()) : ""));
+  QString title = QString ("sneakPic");
+  if (m_document && !m_document->get_filename ().isEmpty ())
+    {
+      title.prepend (" - ");
+      title.prepend (m_document->get_filename ());
+    }
+
+  if (!is_doc_saved ())
+    title.prepend ('*');
+  if (windowTitle () != title) // kinda superstitious protection
+    setWindowTitle (title);
 }
 
 void main_window::open_file (const QString filename)
 {
+  if (!closing_document_check ())
+    return;
+
   FREE (m_document);
   DO_ON_EXIT (update_window_title ());
 
@@ -197,6 +220,7 @@ void main_window::open_file (const QString filename)
       return;
     }
 
+  m_last_saved_position = 0;
   update_on_document_create ();
   add_file_to_recent (filename);
   update_recent_menu ();
@@ -229,6 +253,15 @@ void main_window::update_on_document_create ()
 {
   create_painter ();
   m_style_widget_handler->set_tools_containter (m_document->get_tools_container ());
+  CONNECT (m_document->doc (), &svg_document::undo_redo_done, this, &main_window::update_window_title);
+  CONNECT (m_document->doc (), &svg_document::changes_done, this, &main_window::undo_invalidation_check);
+}
+
+void main_window::undo_invalidation_check ()
+{
+  if (m_last_saved_position >= cur_undo_pos ())
+    m_last_saved_position = -1;
+  update_window_title ();
 }
 
 bool main_window::create_new_document ()
@@ -245,3 +278,58 @@ bool main_window::create_new_document ()
   return true;
 }
 
+void main_window::update_undo_position ()
+{
+  m_last_saved_position = cur_undo_pos();
+}
+
+int main_window::cur_undo_pos ()
+{
+  return m_document ? m_document->doc ()->get_undo_handler ()->cur_undo_position () : 0;
+}
+
+bool main_window::is_doc_saved ()
+{
+  return m_last_saved_position == cur_undo_pos ();
+}
+
+bool main_window::closing_document_check ()
+{
+  if (!is_doc_saved ())
+  {
+    auto result = QMessageBox::question (this, "sneakPic", "Save changed file '" + QFileInfo (m_document->get_filename ()).fileName () + "' before exit?", QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+    if (result == QMessageBox::Cancel)
+    {
+      return false;
+    }
+
+    if (result == QMessageBox::Yes)
+    {
+      if (!save_clicked ())
+      {
+        return false;
+      }
+    }
+
+    return true;
+  }
+  else
+    return true;
+}
+
+void main_window::closeEvent (QCloseEvent *event)
+{
+  if (closing_document_check ())
+    event->accept ();
+  else
+    event->ignore ();
+}
+
+bool main_window::save_clicked ()
+{
+  if (m_document->is_new_document ())
+    return save_as_clicked ();
+  else
+    save_document (m_document->get_filename ());
+  return true;
+}

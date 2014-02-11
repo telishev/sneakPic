@@ -47,18 +47,24 @@ class main_window : public QMainWindow
 
   std::vector <QString> m_recent_files;
   style_controller *m_style_controller;
+  int m_last_saved_position;
+
 public:
   main_window ();
   ~main_window ();
+  virtual void closeEvent(QCloseEvent *event);
 
 private slots:
   void zoom_description_changed (const QString &description);
   void open_file (const QString filename);
   bool create_new_document ();
+  void update_window_title ();
+  void undo_invalidation_check ();
+
+  bool is_doc_saved ();
 
 private:
   void add_file_to_recent (QString file_path);
-  void update_window_title ();
   void load_recent_menu ();
   void save_recent_menu ();
   void update_recent_menu ();
@@ -66,10 +72,14 @@ private:
   void create_painter ();
   bool action_triggered (gui_action_id id);
   bool open_file_clicked ();
-  bool save_file_clicked ();
+  bool save_as_clicked ();
+  bool save_clicked ();
   void update_on_document_create ();
-  
-};
+  void update_undo_position();
+  int cur_undo_pos();
+  void save_document (QString &filename);
+  bool closing_document_check ();
 
+};
 
 #endif // MAIN_WINDOW_H

@@ -34,6 +34,7 @@ void menu_builder::create_file_menu (QMenu *menu)
   add_action (menu, gui_action_id::OPEN_RECENT);
   menu->addSeparator ();
 
+  add_action (menu, gui_action_id::SAVE);
   add_action (menu, gui_action_id::SAVE_AS);
   menu->addSeparator ();
   add_action (menu, gui_action_id::QUIT);

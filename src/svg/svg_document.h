@@ -71,9 +71,12 @@ public:
 
   void redraw ();
   bool create_new_document ();
+  bool is_new_document ();
 
 signals:
   void items_changed ();
+  void undo_redo_done ();
+  void changes_done ();
 
 private:
   void update_renderer ();

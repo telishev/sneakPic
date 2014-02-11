@@ -47,12 +47,14 @@ public:
   bool open_file (const QString &filename);
   bool save_file (const QString &filename);
 
+  bool is_new_document ();
   bool create_new_document ();
 
   QString get_filename () const;
   bool action_triggered (gui_action_id id);
 
   const tools_container *get_tools_container () { return m_tools_container; }
+  const svg_document* doc () const { return m_doc; }
 
 private slots:
   void update_timeout ();

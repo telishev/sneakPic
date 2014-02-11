@@ -25,7 +25,7 @@ actions_info::actions_info ()
   add_action (gui_action_id::NEW, "New", QKeySequence::New);
   add_action (gui_action_id::OPEN, "Open...", QKeySequence::Open);
   add_action (gui_action_id::OPEN_RECENT, "Open Recent");
-  add_action (gui_action_id::SAVE, "Save...", QKeySequence::Save);
+  add_action (gui_action_id::SAVE, "Save", QKeySequence::Save);
   add_action (gui_action_id::SAVE_AS, "Save As...", QKeySequence::SaveAs);
   add_action (gui_action_id::UNDO, "Undo", QKeySequence::Undo);
   add_action (gui_action_id::REDO, "Redo", QKeySequence::Redo);
@@ -42,7 +42,7 @@ actions_info::actions_info ()
   add_action (gui_action_id::DELETE_ITEMS, "Delete", QKeySequence ("Del"));
   add_action (gui_action_id::FINISH_PATH, "Finish Path", QKeySequence (Qt::Key_Return));
   add_action (gui_action_id::CANCEL_EDITING, "Cancel Editing", QKeySequence (Qt::Key_Escape));
-  
+
 }
 
 actions_info::~actions_info ()

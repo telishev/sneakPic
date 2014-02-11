@@ -67,6 +67,11 @@ QString svg_document::get_filename ()
   return m_filename.isEmpty () ? "New Document" : m_filename;
 }
 
+bool svg_document::is_new_document ()
+{
+  return m_filename.isEmpty ();
+}
+
 bool svg_document::write_file (const QString &filename_arg)
 {
   m_filename = filename_arg;
@@ -108,6 +113,7 @@ void svg_document::apply_changes ()
     return;
 
   get_undo_handler ()->create_undo ();
+  emit changes_done ();
   update_renderer ();
 }
 
@@ -126,12 +132,14 @@ void svg_document::undo ()
 {
   get_undo_handler ()->undo (1);
   update_renderer ();
+  emit undo_redo_done ();
 }
 
 void svg_document::redo ()
 {
   get_undo_handler ()->redo (1);
   update_renderer ();
+  emit undo_redo_done ();
 }
 
 undo_handler *svg_document::get_undo_handler () const

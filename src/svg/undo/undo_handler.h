@@ -20,7 +20,7 @@ public:
   undo_handler ();
   ~undo_handler ();
 
-  void create_undo (); 
+  void create_undo ();
 
   void undo (int positions);
   void redo (int positions);
@@ -36,6 +36,7 @@ public:
   int assign_id (undoable *item);
 
   void set_signals_enabled (bool enabled) { m_signals_enabled = enabled; }
+  int cur_undo_position () { return m_cur_undo_position; }
 
 private:
   void register_new_item (undoable *item);
