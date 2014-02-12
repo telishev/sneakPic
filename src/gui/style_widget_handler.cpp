@@ -46,12 +46,12 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
   m_cur_target_style = selected_style::EDITOR_STYLE;
   m_style_controller = style_controller_arg;
   CONNECT (m_fill_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, this, &style_widget_handler::fill_color_changed);
-  CONNECT (m_fill_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, m_style_controller, &style_controller::update_fill_color_momentarily);
+  m_controller_connections.push_back (CONNECT (m_fill_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, m_style_controller, &style_controller::update_fill_color_momentarily));
   CONNECT (m_fill_color_selector_widget_handler, &color_selector_widget_handler::color_changing_finished, m_style_controller, &style_controller::apply_changes);
 
   m_stroke_color_selector_widget_handler = new color_selector_widget_handler (m_fill_placeholder_color);
   CONNECT (m_stroke_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, this, &style_widget_handler::stroke_color_changed);
-  CONNECT (m_stroke_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, m_style_controller, &style_controller::update_stroke_color_momentarily);
+  m_controller_connections.push_back (CONNECT (m_stroke_color_selector_widget_handler, &color_selector_widget_handler::color_changed_momentarily, m_style_controller, &style_controller::update_stroke_color_momentarily));
   CONNECT (m_stroke_color_selector_widget_handler, &color_selector_widget_handler::color_changing_finished, m_style_controller, &style_controller::apply_changes);
 
   m_target_items_changed_connection = CONNECT (m_style_controller, &style_controller::target_items_changed, this, &style_widget_handler::target_items_changed);
@@ -73,7 +73,6 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
   m_stroke_style_layout->addWidget (new QLabel ("Color:"));
   m_stroke_style_layout->addWidget (m_stroke_color_selector_widget_handler->widget ());
 
-  m_controller_connections.clear ();
   init_stroke_width_controller ();
   init_linejoin_controller();
   init_miterlimit_controller();
