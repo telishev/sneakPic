@@ -32,7 +32,7 @@ class main_window : public QMainWindow
   Ui_main_window *ui;
   QSettings *m_qsettings;
   QMenu m_recent_menu;
-  QSignalMapper *m_signal_mapper;
+  std::unique_ptr <QSignalMapper> m_recent_files_signal_mapper;
   QLabel *m_zoom_label;
 
   settings_t *m_settings;

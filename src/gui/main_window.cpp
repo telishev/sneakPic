@@ -43,13 +43,14 @@ main_window::main_window ()
   m_document = nullptr;
   m_qsettings = new QSettings ("SneakPic");
   m_settings = new settings_t;
-  m_signal_mapper = nullptr;
   m_actions = new gui_actions (m_settings->shortcuts_cfg (), [&] (gui_action_id id) { return action_triggered (id); }, this);
   m_dock_widget_builder = new dock_widget_builder (this);
   m_tools_builder = new tools_widget_builder (m_actions, m_dock_widget_builder);
   m_style_controller = new style_controller (m_settings);
   m_style_widget_handler = new style_widget_handler (m_dock_widget_builder, m_style_controller);
   m_last_saved_position = 0;
+  m_recent_files_signal_mapper.reset (new QSignalMapper ());
+  CONNECT (m_recent_files_signal_mapper.get (), (void (QSignalMapper::*) (const QString&)) &QSignalMapper::mapped, this, &main_window::open_file);
 
   m_menu_builder = new menu_builder (menuBar (), m_actions, createPopupMenu ());
 
@@ -117,9 +118,6 @@ void main_window::save_recent_menu ()
 void main_window::update_recent_menu ()
 {
   m_recent_menu.clear ();
-  if (m_signal_mapper)
-    m_signal_mapper->deleteLater ();
-  m_signal_mapper = new QSignalMapper (this);
   int size = (int) m_recent_files.size ();
 
   for (int i = size - 1; i >= 0; i--)
@@ -127,10 +125,9 @@ void main_window::update_recent_menu ()
       QAction *action = m_recent_menu.addAction (QString ("%1.%2")
                                                  .arg (size - i)
                                                  .arg (QFileInfo (m_recent_files[i]).fileName ()),
-                                                 m_signal_mapper, SLOT (map ()), size - i <= 10 ? QKeySequence (Qt::CTRL + Qt::Key_0 + (size - i) % 10) : QKeySequence ());
-      m_signal_mapper->setMapping (action, m_recent_files[i]);
+                                                 m_recent_files_signal_mapper.get (), SLOT (map ()), size - i <= 10 ? QKeySequence (Qt::CTRL + Qt::Key_0 + (size - i) % 10) : QKeySequence ());
+      m_recent_files_signal_mapper->setMapping (action, m_recent_files[i]);
     }
-  CONNECT (m_signal_mapper, (void (QSignalMapper::*) (const QString&)) &QSignalMapper::mapped, this, &main_window::open_file);
 }
 
 
