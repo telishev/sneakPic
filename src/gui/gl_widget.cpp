@@ -52,6 +52,11 @@ void gl_widget::wheelEvent (QWheelEvent *qevent)
   qevent->accept ();
 }
 
+const QPoint &gl_widget::cursor_pos ()
+{
+  return mapFromGlobal (QCursor::pos ());
+};
+
 /// If mouse leaves widget area
 void gl_widget::leaveEvent (QEvent *qevent)
 {

@@ -17,13 +17,13 @@ class tools_container;
 class gl_widget;
 class gui_actions;
 class actions_applier;
+class copy_paste_handler;
 
 enum class gui_action_id;
 
 class gui_document : public QObject
 {
   Q_OBJECT
-public:
   settings_t  *m_settings;
   gui_actions *m_actions;
 
@@ -36,6 +36,7 @@ public:
   svg_painter  *m_painter;
   tools_container *m_tools_container;
   actions_applier *m_actions_applier;
+  std::unique_ptr<copy_paste_handler> m_copy_paste_handler;
 
 public:
   gui_document (settings_t *settings, gui_actions *actions);
@@ -64,6 +65,7 @@ private:
   bool undo ();
   bool redo ();
   bool create_new_document_impl (std::function <bool (svg_document *)> create_func);
+  bool paste ();
 };
 
 

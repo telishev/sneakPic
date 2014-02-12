@@ -22,6 +22,8 @@ public:
   std::string get_fragment_name () const;
   QImage *get_image_data (const QString &svg_name) const;
   iri_type get_data_type () const;
+
+  svg_data_type_iri *iri () { return &m_iri; };
 };
 
 #endif // SVG_ATTRIBUTE_XLINK_HREF_H

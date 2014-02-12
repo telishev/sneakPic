@@ -21,10 +21,10 @@ class svg_document : public QObject
 {
   Q_OBJECT
 
-  svg_item_factory      *m_item_factory;
-  svg_items_container   *m_item_container;
-  events_queue          *m_queue;
-  items_edit_handler_t  *m_items_edit_handler;
+  svg_item_factory       *m_item_factory;
+  svg_items_container    *m_item_container;
+  events_queue           *m_queue;
+  items_edit_handler_t   *m_items_edit_handler;
   document_change_sender *m_change_sender;
 
   abstract_svg_item *m_root;

@@ -19,7 +19,7 @@ bool svg_attribute_xlink_href::read (const char *data, bool /*from_css*/)
   return m_iri.read (data);
 }
 
-bool svg_attribute_xlink_href::write (QString &data, bool /*to_css*/) const 
+bool svg_attribute_xlink_href::write (QString &data, bool /*to_css*/) const
 {
   return m_iri.write (data);
 }

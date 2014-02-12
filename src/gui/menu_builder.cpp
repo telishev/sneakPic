@@ -22,9 +22,9 @@ void menu_builder::update_menu ()
 {
   m_bar->clear ();
   create_file_menu (m_bar->addMenu ("File"));
+  create_edit_menu (m_bar->addMenu ("Edit"));
   m_view_menu->setTitle ("View");
   m_bar->addMenu (m_view_menu);
-  create_edit_menu (m_bar->addMenu ("Edit"));
 }
 
 void menu_builder::create_file_menu (QMenu *menu)
@@ -49,4 +49,6 @@ void menu_builder::create_edit_menu (QMenu *menu)
 {
   add_action (menu, gui_action_id::UNDO);
   add_action (menu, gui_action_id::REDO);
+  menu->addSeparator ();
+  add_action (menu, gui_action_id::PASTE);
 }

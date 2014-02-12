@@ -20,6 +20,8 @@
 #include "renderer/svg_painter.h"
 #include "renderer/event_container_changed.h"
 
+#include "svg/copy_paste_handler.h"
+
 #include "svg/svg_document.h"
 
 
@@ -44,6 +46,7 @@ gui_document::gui_document (settings_t *settings, gui_actions *actions)
 
   m_actions_applier->register_action (gui_action_id::UNDO, this, &gui_document::undo);
   m_actions_applier->register_action (gui_action_id::REDO, this, &gui_document::redo);
+  m_actions_applier->register_action (gui_action_id::PASTE, this, &gui_document::paste);
 }
 
 gui_document::~gui_document ()
@@ -73,6 +76,7 @@ svg_painter *gui_document::create_painter (gl_widget *widget)
 {
   FREE (m_painter);
   m_painter = new svg_painter (widget, m_cache, m_queue, m_doc, m_settings);
+  m_copy_paste_handler.reset (new copy_paste_handler (m_painter));
   m_tools_container->update_tools (m_painter);
   m_painter->set_current_tool (m_tools_container->current_tool ());
   widget->set_painter (m_painter);
@@ -99,6 +103,12 @@ bool gui_document::undo ()
 bool gui_document::redo ()
 {
   m_doc->redo ();
+  return true;
+}
+
+bool gui_document::paste ()
+{
+  m_copy_paste_handler->paste ();
   return true;
 }
 

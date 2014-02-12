@@ -14,6 +14,8 @@
 #include "svg/items/svg_graphics_item.h"
 #include "svg/items/svg_character_data.h"
 
+#include "svg/copy_paste_handler.h"
+
 #include "svg/css/selectors_container.h"
 
 #include "svg/svg_namespaces.h"
