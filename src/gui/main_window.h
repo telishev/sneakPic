@@ -45,7 +45,7 @@ class main_window : public QMainWindow
   dock_widget_builder *m_dock_widget_builder;
   style_widget_handler *m_style_widget_handler;
 
-  std::vector <QString> m_recent_files;
+  std::deque <QString> m_recent_files;
   style_controller *m_style_controller;
   int m_last_saved_position;
 

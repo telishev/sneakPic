@@ -36,7 +36,7 @@ bool svg_writer::write (const QString &filename)
   writer.writeStartDocument();
   write_item (m_root, writer);
   writer.writeEndDocument();
-  return false;
+  return true;
 }
 
 void svg_writer::get_used_namespaces (const abstract_svg_item *root, std::map<QString, QString> &map) const

@@ -2,6 +2,7 @@
 #include <math.h>
 #include <QtCore>
 
+#include <deque>
 #include <vector>
 #include <string>
 #include <map>

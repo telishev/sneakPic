@@ -120,12 +120,13 @@ void main_window::update_recent_menu ()
   m_recent_menu.clear ();
   int size = (int) m_recent_files.size ();
 
-  for (int i = size - 1; i >= 0; i--)
+  for (int i = 0; i < size; i++)
     {
+      int num = (i + 1) % 10;
       QAction *action = m_recent_menu.addAction (QString ("%1.%2")
-                                                 .arg (size - i)
+                                                 .arg (num)
                                                  .arg (QFileInfo (m_recent_files[i]).fileName ()),
-                                                 m_recent_files_signal_mapper.get (), SLOT (map ()), size - i <= 10 ? QKeySequence (Qt::CTRL + Qt::Key_0 + (size - i) % 10) : QKeySequence ());
+                                                 m_recent_files_signal_mapper.get (), SLOT (map ()), i <= 10 ? QKeySequence (Qt::CTRL + Qt::Key_0 + num) : QKeySequence ());
       m_recent_files_signal_mapper->setMapping (action, m_recent_files[i]);
     }
 }
@@ -146,7 +147,7 @@ bool main_window::save_as_clicked ()
   if (!m_document)
     return true;
 
-  QString filename = QFileDialog::getSaveFileName (this, "Save File", m_document->get_filename (), "Scalable Vector Graphics (*.svg)");
+  QString filename = QFileDialog::getSaveFileName (this, "Save File", !m_document->is_new_document () ? m_document->get_filename () : get_last_file_open_dir (), "Scalable Vector Graphics (*.svg)");
   if (filename.isEmpty ())
     return false;
 
@@ -156,9 +157,11 @@ bool main_window::save_as_clicked ()
 
 void main_window::save_document (QString &filename)
 {
-  m_document->save_file (filename);
+  if (!m_document->save_file (filename))
+    return;
   update_undo_position ();
   update_window_title ();
+  add_file_to_recent (filename);
 }
 
 void main_window::add_file_to_recent (QString file_path)
@@ -174,7 +177,9 @@ void main_window::add_file_to_recent (QString file_path)
   if (m_recent_files.size () == RECENT_FILES_NUMBER)
     m_recent_files.erase (m_recent_files.begin ());
 
-  m_recent_files.push_back (file_path);
+  m_recent_files.push_front (file_path);
+
+  update_recent_menu ();
 }
 
 QString main_window::get_last_file_open_dir () const
@@ -220,7 +225,6 @@ void main_window::open_file (const QString filename)
   m_last_saved_position = 0;
   update_on_document_create ();
   add_file_to_recent (filename);
-  update_recent_menu ();
   ui->glwidget->repaint ();
 }
 
@@ -263,6 +267,9 @@ void main_window::undo_invalidation_check ()
 
 bool main_window::create_new_document ()
 {
+  if (!closing_document_check ())
+    return false;
+
   FREE (m_document);
   DO_ON_EXIT (update_window_title ());
   m_document = new gui_document (m_settings, m_actions);
@@ -294,7 +301,7 @@ bool main_window::closing_document_check ()
 {
   if (!is_doc_saved ())
   {
-    auto result = QMessageBox::question (this, "sneakPic", "Save changed file '" + QFileInfo (m_document->get_filename ()).fileName () + "' before exit?", QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
+    auto result = QMessageBox::question (this, "sneakPic", "Save changed file '" + QFileInfo (m_document->get_filename ()).fileName () + "'?", QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel);
     if (result == QMessageBox::Cancel)
     {
       return false;

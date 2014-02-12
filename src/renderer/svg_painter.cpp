@@ -59,7 +59,7 @@ svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, even
   m_settings = settings;
   m_selection = new items_selection (document->item_container ());
   m_actions_applier = new actions_applier;
-  m_mouse_handler = new mouse_shortcuts_handler (m_settings->shortcuts_cfg (), 
+  m_mouse_handler = new mouse_shortcuts_handler (m_settings->shortcuts_cfg (),
                                                  std::bind (&svg_painter::process_mouse_event, this, _1, _2));
   update_status_bar_widgets ();
   set_document (document);
@@ -274,7 +274,7 @@ void svg_painter::create_mouse_shortcuts ()
   m_actions_applier->add_shortcut (mouse_shortcut_enum::ADD_ITEM_TO_SELECTION, this, &svg_painter::add_item_to_selection);
   m_actions_applier->add_shortcut (mouse_shortcut_enum::FIND_CURRENT_OBJECT, this, &svg_painter::find_current_object);
 
-  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::PAN, this, 
+  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::PAN, this,
     &svg_painter::start_pan, &svg_painter::pan_picture, &svg_painter::end_pan);
 }
 
