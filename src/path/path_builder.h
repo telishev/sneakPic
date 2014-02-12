@@ -29,9 +29,9 @@ public:
   void set_curve_c (QPointF c);
   void check_new_subpath ();
 
+  void set_prev_curve_c (QPointF c);
 private:
   void set_prev_quad_c (QPointF c);
-  void set_prev_curve_c (QPointF c);
   void clear_prev ();
 };
 

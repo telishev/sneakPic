@@ -16,9 +16,11 @@ class pen_tool : public abstract_tool
 {
   typedef std::pair<svg_item_path *, svg_path_geom_iterator> snap_point_t;
   std::unique_ptr<path_preview_renderer> m_preview_renderer;
+  std::unique_ptr<path_preview_renderer> m_auxiliary_preview_renderer;
   std::unique_ptr<path_control_point_renderer> m_left_cp_renderer;
   std::unique_ptr<path_control_point_renderer> m_right_cp_renderer;
   std::unique_ptr<unique_svg_path> m_current_path;
+  std::unique_ptr<unique_svg_path> m_auxiliary_path;
   std::unique_ptr<path_builder> m_path_builder;
   std::unique_ptr<pen_handles> m_pen_handles;
 
@@ -39,6 +41,7 @@ private:
   bool add_segment_start (const QPoint &pos);
   bool add_segment_move (const QPoint &pos);
   bool add_segment_end (const QPoint &pos);
+  bool update_auxiliary_pen_preview (const QPoint &pos);
   bool finish_path_add ();
   bool cancel_editing ();
   void finish_editing ();
@@ -49,7 +52,6 @@ private:
   svg_item_path *add_new_path ();
   svg_item_path *merge_with_path (svg_item_path *path_dst, svg_path_geom_iterator dst_it, svg_item_path *path_src, svg_path_geom_iterator src_it);
 };
-
 
 #endif // PEN_TOOL_H
 

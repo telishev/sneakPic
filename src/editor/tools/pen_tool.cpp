@@ -34,14 +34,17 @@ pen_tool::pen_tool (svg_painter *painter)
 {
   m_pen_handles.reset (new pen_handles (m_overlay, m_painter, m_actions_applier));
   m_preview_renderer.reset (new path_preview_renderer (0, QColor ("slateblue")));
+  m_auxiliary_preview_renderer.reset (new path_preview_renderer (0, QColor ("red")));
   m_left_cp_renderer.reset (new path_control_point_renderer);
   m_right_cp_renderer.reset (new path_control_point_renderer);
-  
+
   m_overlay->add_item (m_preview_renderer.get (), overlay_layer_type::TEMP);
+  m_overlay->add_item (m_auxiliary_preview_renderer.get (), overlay_layer_type::TEMP);
   m_overlay->add_item (m_left_cp_renderer.get (), overlay_layer_type::TEMP);
   m_overlay->add_item (m_right_cp_renderer.get (), overlay_layer_type::TEMP);
 
   m_actions_applier->add_shortcut (mouse_shortcut_enum::PEN_ADD_SEGMENT_SIMPLE, this, &pen_tool::add_segment_simple);
+  m_actions_applier->add_shortcut (mouse_shortcut_enum::UPDATE_AUXILIARY_PEN_PREVIEW, this, &pen_tool::update_auxiliary_pen_preview);
 
   m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::PEN_ADD_SEGMENT_DRAG, this,
     &pen_tool::add_segment_start, &pen_tool::add_segment_move, &pen_tool::add_segment_end);
@@ -54,6 +57,27 @@ pen_tool::pen_tool (svg_painter *painter)
 pen_tool::~pen_tool ()
 {
 
+}
+
+bool pen_tool::update_auxiliary_pen_preview (const QPoint &pos)
+{
+
+  if (m_current_path)
+    {
+      QPointF local_pos = m_painter->get_local_pos (pos);
+      svg_path_geom *cur_path = m_current_path->path ()->get_geom ();
+      m_auxiliary_path.reset (new unique_svg_path);
+      m_auxiliary_preview_renderer->set_path (m_auxiliary_path->path ()->get_geom ());
+      path_builder builder (*m_auxiliary_path->path ());
+      builder.move_to (cur_path->last_point ().anchor_point (), false);
+      if (cur_path->total_points () > 1)
+        builder.set_prev_curve_c (cur_path->last_point ().control_point (true));
+      builder.curve_to_short (local_pos, local_pos, false);
+       m_painter->update ();
+      return true;
+    }
+
+  return false;
 }
 
 bool pen_tool::add_segment_simple (const QPoint &pos)
@@ -70,6 +94,7 @@ bool pen_tool::add_segment_start (const QPoint &pos)
 {
   add_new_point (pos, false);
   update ();
+  m_auxiliary_preview_renderer->set_path (nullptr);
   return true;
 }
 
@@ -155,7 +180,7 @@ QPointF pen_tool::snap_point (QPointF point)
   svg_item_path *path = 0;
   if (!m_pen_handles->get_path_by_pos (point, it, path))
     return m_painter->get_local_pos (point);
- 
+
   if (m_current_path)
     m_path_snap_end.reset (new snap_point_t (path, it));
   else
@@ -172,6 +197,7 @@ void pen_tool::add_new_point (QPoint pos, bool is_line)
     {
       m_current_path.reset (new unique_svg_path);
       m_preview_renderer->set_path (m_current_path->path ()->get_geom ());
+
       m_path_builder.reset (new path_builder (*m_current_path->path ()));
       m_path_builder->move_to (local_pos, false);
       m_path_builder->check_new_subpath ();
@@ -200,7 +226,7 @@ svg_item_path *pen_tool::add_new_path ()
   auto path_item = m_painter->document ()->create_new_svg_item<svg_item_path> ();
   add_item_operation (m_painter).apply (path_item);
   path_edit_operation (path_item).get_svg_path ()->copy_from (*m_current_path->path ());
-  
+
   return path_item;
 }
 
@@ -233,6 +259,7 @@ void pen_tool::finish_editing ()
   m_path_snap_end.reset ();
   m_path_snap_start.reset ();
   m_preview_renderer->set_path (nullptr);
+  m_auxiliary_preview_renderer->set_path (nullptr);
   m_left_cp_renderer->set_visible (false);
   m_right_cp_renderer->set_visible (false);
   m_pen_handles->set_new_path (nullptr);
