@@ -70,12 +70,12 @@ void gui_actions::action_triggered (int id)
   m_callback ((gui_action_id)id);
 }
 
-bool gui_actions::shortcut_triggered (QKeySequence sequnce)
+bool gui_actions::shortcut_triggered (QKeySequence sequence)
 {
   for (int i = 0; i < (int)gui_action_id::COUNT; i++)
     {
       gui_action_id id = (gui_action_id)i;
-      if (m_cfg->action_shortcut (id) != sequnce)
+      if (m_cfg->action_shortcut (id) != sequence)
         continue;
 
       if (m_callback (id))

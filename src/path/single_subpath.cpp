@@ -52,6 +52,11 @@ void single_subpath::reverse ()
     std::swap (elem.c1, elem.c2);
 }
 
+void single_subpath::erase (size_t point_num)
+{
+  m_elements.erase (m_elements.begin () + point_num);
+}
+
 subpath_iterator::subpath_iterator (single_subpath &subpath, size_t point_num)
   : m_subpath (&subpath), m_point_num (point_num)
 {}
@@ -71,7 +76,7 @@ subpath_iterator &subpath_iterator::operator++ ()
     m_point_num++;
   else
     *this = subpath_iterator ();
-    
+
   return *this;
 }
 

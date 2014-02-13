@@ -2,6 +2,7 @@
 
 #include "gui/actions_applier.h"
 #include "gui/gui_action_id.h"
+#include "gui/gl_widget.h"
 #include "gui/shortcuts_config.h"
 
 #include "editor/operations/add_item_operation.h"
@@ -51,6 +52,7 @@ pen_tool::pen_tool (svg_painter *painter)
 
   m_actions_applier->register_action (gui_action_id::FINISH_PATH, this, &pen_tool::finish_path_add);
   m_actions_applier->register_action (gui_action_id::CANCEL_EDITING, this, &pen_tool::cancel_editing);
+  m_actions_applier->register_action (gui_action_id::CANCEL_CURVE, this, &pen_tool::cancel_curve);
   m_prev_point_was_line = false;
 }
 
@@ -61,10 +63,15 @@ pen_tool::~pen_tool ()
 
 bool pen_tool::update_auxiliary_pen_preview (const QPoint &pos)
 {
+  QPoint dest_pos;
+  if (pos.isNull ())
+    dest_pos = m_painter->glwidget ()->cursor_pos ();
+  else
+    dest_pos = pos;
 
   if (m_current_path)
     {
-      QPointF local_pos = m_painter->get_local_pos (pos);
+      QPointF local_pos = m_painter->get_local_pos (dest_pos);
       svg_path_geom *cur_path = m_current_path->path ()->get_geom ();
       m_auxiliary_path.reset (new unique_svg_path);
       m_auxiliary_preview_renderer->set_path (m_auxiliary_path->path ()->get_geom ());
@@ -244,6 +251,27 @@ svg_item_path *pen_tool::merge_with_path (svg_item_path *path_dst, svg_path_geom
   return path_dst;
 }
 
+bool pen_tool::cancel_curve ()
+{
+  if (!m_current_path)
+    return false;
+
+  auto geom = m_current_path->path ()->get_geom ();
+  geom->erase (geom->last_point ());
+
+  if (m_current_path->path ()->get_geom ()->total_points () == 0)
+  {
+    finish_editing ();
+    return true;
+  }
+
+  update_cp_renderers ();
+  update_auxiliary_pen_preview ();
+
+  update ();
+  return true;
+}
+
 bool pen_tool::cancel_editing ()
 {
   if (!m_current_path)
@@ -251,6 +279,29 @@ bool pen_tool::cancel_editing ()
 
   finish_editing ();
   return true;
+}
+
+void pen_tool::update_cp_renderers ()
+{
+
+  auto last_point = m_current_path->path ()->get_geom ()->last_point ();
+  if (last_point.has_control_point (true))
+    {
+      m_left_cp_renderer->set_visible (true);
+      m_left_cp_renderer->set_anchor (last_point.anchor_point ());
+      m_left_cp_renderer->set_control_point (last_point.control_point (true));
+    }
+  else
+    m_left_cp_renderer->set_visible (false);
+
+  if (last_point.has_control_point (false))
+    {
+      m_right_cp_renderer->set_visible (true);
+      m_right_cp_renderer->set_anchor (last_point.anchor_point ());
+      m_right_cp_renderer->set_control_point (last_point.control_point (false));
+    }
+  else
+    m_right_cp_renderer->set_visible (false);
 }
 
 void pen_tool::finish_editing ()

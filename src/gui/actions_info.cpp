@@ -20,31 +20,33 @@ action_description::~action_description ()
 
 actions_info::actions_info ()
 {
-  m_info.resize ((int)gui_action_id::COUNT);
+  typedef gui_action_id A;
+  m_info.resize ((int) A::COUNT);
 
-  add_action (gui_action_id::NEW, "New", QKeySequence::New);
-  add_action (gui_action_id::OPEN, "Open...", QKeySequence::Open);
-  add_action (gui_action_id::OPEN_RECENT, "Open Recent");
-  add_action (gui_action_id::SAVE, "Save", QKeySequence::Save);
-  add_action (gui_action_id::SAVE_AS, "Save As...", QKeySequence::SaveAs);
-  add_action (gui_action_id::UNDO, "Undo", QKeySequence::Undo);
-  add_action (gui_action_id::REDO, "Redo", QKeySequence::Redo);
-  add_action (gui_action_id::COPY, "Copy", QKeySequence::Copy);
-  add_action (gui_action_id::PASTE, "Paste", QKeySequence::Paste);
-  add_action (gui_action_id::CUT, "Cut", QKeySequence::Cut);
-  add_action (gui_action_id::QUIT, "Exit", QKeySequence ("Alt+F4"));
+  add_action (A::NEW, "New", QKeySequence::New);
+  add_action (A::OPEN, "Open...", QKeySequence::Open);
+  add_action (A::OPEN_RECENT, "Open Recent");
+  add_action (A::SAVE, "Save", QKeySequence::Save);
+  add_action (A::SAVE_AS, "Save As...", QKeySequence::SaveAs);
+  add_action (A::UNDO, "Undo", QKeySequence::Undo);
+  add_action (A::REDO, "Redo", QKeySequence::Redo);
+  add_action (A::COPY, "Copy", QKeySequence::Copy);
+  add_action (A::PASTE, "Paste", QKeySequence::Paste);
+  add_action (A::CUT, "Cut", QKeySequence::Cut);
+  add_action (A::QUIT, "Exit", QKeySequence ("Alt+F4"));
 
   /// Tools
-  add_action (gui_action_id::TOOL_SELECTOR, "Select Objects", QKeySequence (), QIcon (":/cursor.png"));
-  add_action (gui_action_id::TOOL_PATH_EDITOR, "Edit Paths by Nodes", QKeySequence (), QIcon (":/cursor.png"));
-  add_action (gui_action_id::TOOL_RECTANGLE, "Create Rectangles", QKeySequence (), QIcon (":/rectangle.png"));
-  add_action (gui_action_id::TOOL_PEN, "Create Bezier Curves", QKeySequence (), QIcon (":/pen.png"));
+  add_action (A::TOOL_SELECTOR, "Select Objects", QKeySequence (), QIcon (":/cursor.png"));
+  add_action (A::TOOL_PATH_EDITOR, "Edit Paths by Nodes", QKeySequence (), QIcon (":/cursor.png"));
+  add_action (A::TOOL_RECTANGLE, "Create Rectangles", QKeySequence (), QIcon (":/rectangle.png"));
+  add_action (A::TOOL_PEN, "Create Bezier Curves", QKeySequence (), QIcon (":/pen.png"));
 
   /// Other
-  add_action (gui_action_id::DELETE_HANDLES, "Delete Handles", QKeySequence ("Del"));
-  add_action (gui_action_id::DELETE_ITEMS, "Delete", QKeySequence ("Del"));
-  add_action (gui_action_id::FINISH_PATH, "Finish Path", QKeySequence (Qt::Key_Return));
-  add_action (gui_action_id::CANCEL_EDITING, "Cancel Editing", QKeySequence (Qt::Key_Escape));
+  add_action (A::CANCEL_CURVE, "Cancel Curve", QKeySequence (Qt::Key_Delete));
+  add_action (A::DELETE_HANDLES, "Delete Handles", QKeySequence (Qt::Key_Delete));
+  add_action (A::DELETE_ITEMS, "Delete", QKeySequence (Qt::Key_Delete));
+  add_action (A::FINISH_PATH, "Finish Path", QKeySequence (Qt::Key_Return));
+  add_action (A::CANCEL_EDITING, "Cancel Editing", QKeySequence (Qt::Key_Escape));
 
 }
 

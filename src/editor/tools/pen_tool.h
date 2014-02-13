@@ -41,10 +41,12 @@ private:
   bool add_segment_start (const QPoint &pos);
   bool add_segment_move (const QPoint &pos);
   bool add_segment_end (const QPoint &pos);
-  bool update_auxiliary_pen_preview (const QPoint &pos);
+  bool update_auxiliary_pen_preview (const QPoint &pos = QPoint ());
   bool finish_path_add ();
   bool cancel_editing ();
+  bool cancel_curve ();
   void finish_editing ();
+  void update_cp_renderers ();
 
   QPointF snap_point (QPointF point);
 

@@ -32,11 +32,11 @@ public:
 
   void apply_transform (const QTransform &transform);
 
-  const std::vector<single_path_point> &elements () const { return m_elements; } 
+  const std::vector<single_path_point> &elements () const { return m_elements; }
   std::vector<single_path_point> &elements () { return m_elements; }
 
   void reverse ();
-
+  void erase( size_t point_num );
   friend class subpath_iterator;
   friend class path_builder;
 };

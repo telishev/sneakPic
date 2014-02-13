@@ -62,6 +62,11 @@ svg_path_geom_iterator svg_path_geom::subpath_last_point (int subpath_index) con
   return svg_path_geom_iterator (const_cast<svg_path_geom &>(*this), subpath_index, m_subpath[subpath_index].last_point ());
 }
 
+void svg_path_geom::erase (svg_path_geom_iterator iterator)
+{
+  iterator.subpath ().erase (iterator.get_subpath_point ());
+}
+
 svg_path_geom_iterator::svg_path_geom_iterator ()
 {
   m_path = 0;

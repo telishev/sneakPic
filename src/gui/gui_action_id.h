@@ -26,6 +26,7 @@ enum class gui_action_id
   TOOL_PEN,
 
   /// Other
+  CANCEL_CURVE,
   DELETE_HANDLES,
   DELETE_ITEMS,
   FINISH_PATH,
