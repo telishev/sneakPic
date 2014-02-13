@@ -17,6 +17,7 @@ public:
   virtual abstract_renderer_item *create_renderer_item_impl () const override;
   virtual void update_bbox_impl () override;
   virtual bool can_be_selected () const override { return true; }
+  virtual renderable_item * create_outline_renderer() const;
 
 protected:
   virtual QPainterPath get_boundaries () const = 0; // In this function path around item should be returned (even if it's raster image for example)
