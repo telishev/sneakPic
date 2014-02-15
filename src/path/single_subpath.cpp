@@ -137,7 +137,7 @@ const QPointF & subpath_iterator::control_point (bool is_left) const
   return const_cast<subpath_iterator *>(this)->control_point (is_left);
 }
 
-bool subpath_iterator::has_control_point (bool is_left)
+bool subpath_iterator::has_control_point (bool is_left) const
 {
   if (m_subpath->is_closed ())
     return true;

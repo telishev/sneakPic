@@ -21,6 +21,7 @@ public:
   svg_path_geom_iterator begin () const;
   svg_path_geom_iterator end () const;
   svg_path_geom_iterator last_point () const;
+  svg_path_geom_iterator point (size_t point_index) const;
 
   svg_path_geom_iterator subpath_begin (int subpath_index) const;
   svg_path_geom_iterator subpath_last_point (int subpath_index) const;
@@ -51,6 +52,7 @@ public:
   svg_path_geom_iterator &operator ++ ();
   bool operator == (const svg_path_geom_iterator &rhs) const;
   bool operator != (const svg_path_geom_iterator &rhs) const;
+  bool operator < (const svg_path_geom_iterator &rhs) const;
 
   bool is_valid () const { return m_path != 0; }
 
@@ -63,7 +65,7 @@ public:
 
   const QPointF &control_point (bool is_left) const;
   QPointF &control_point (bool is_left);
-  bool has_control_point (bool is_left);
+  bool has_control_point (bool is_left) const;
 
   size_t point_index () const;
   int segment_index (bool is_left) const;

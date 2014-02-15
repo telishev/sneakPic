@@ -67,6 +67,23 @@ void svg_path_geom::erase (svg_path_geom_iterator iterator)
   iterator.subpath ().erase (iterator.get_subpath_point ());
 }
 
+svg_path_geom_iterator svg_path_geom::point (size_t point_index) const
+{
+  size_t subpath_sum = 0;
+  for (size_t i = 0; i < m_subpath.size (); i++)
+    {
+      if (subpath_sum + m_subpath[i].total_points () < point_index)
+        {
+          subpath_sum += m_subpath[i].total_points ();
+          continue;
+        }
+
+      return svg_path_geom_iterator (const_cast<svg_path_geom &>(*this), i, point_index - subpath_sum);
+    }
+
+  return end ();
+}
+
 svg_path_geom_iterator::svg_path_geom_iterator ()
 {
   m_path = 0;
@@ -162,7 +179,7 @@ const QPointF & svg_path_geom_iterator::control_point (bool is_left) const
   return m_subpath_iterator.control_point (is_left);
 }
 
-bool svg_path_geom_iterator::has_control_point (bool is_left)
+bool svg_path_geom_iterator::has_control_point (bool is_left) const
 {
   return m_subpath_iterator.has_control_point (is_left);
 }
@@ -226,5 +243,10 @@ size_t svg_path_geom_iterator::get_subpath_index () const
 size_t svg_path_geom_iterator::get_subpath_point () const
 {
   return m_subpath_iterator.point_num ();
+}
+
+bool svg_path_geom_iterator::operator< (const svg_path_geom_iterator &rhs) const
+{
+  return std::make_pair (m_subpath_index, get_subpath_point ()) < std::make_pair (rhs.m_subpath_index, rhs.get_subpath_point ());
 }
 

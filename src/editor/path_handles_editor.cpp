@@ -27,6 +27,8 @@
 #include "operations/anchor_type_change_operation.h"
 #include "svg/attributes/svg_attribute_nodetypes.h"
 #include "path/svg_path.h"
+#include "operations/remove_anchors_operation.h"
+#include "svg/items/svg_items_container.h"
 
 class path_elements_handles : public element_handles
 {
@@ -223,10 +225,42 @@ void path_handles_editor::select_by_rect (const QRectF &rect)
 
 bool path_handles_editor::delete_selected_handles ()
 {
-  const auto &selected_anchors = m_handles_selection->selected_anchors ();
+  auto selected_anchors = m_handles_selection->selected_anchors ();
   if (selected_anchors.empty ())
     return false;
 
+  {
+    svg_items_container *container = m_painter->document ()->item_container ();
+    for (auto &it : selected_anchors)
+      {
+        svg_item_path *item = dynamic_cast<svg_item_path *> (container->get_item (it.first));
+        if (!item)
+          continue;
+
+        bool need_to_remove = false;
+        {
+          path_edit_operation edit_op (item);
+          svg_path *svg_path = edit_op.get_svg_path ();
+          remove_anchors_operation op (svg_path);
+          std::set<svg_path_geom_iterator> anchors_for_item;
+          for (int point_index : it.second)
+            anchors_for_item.insert (svg_path->get_geom ()->point (point_index));
+
+          op.apply (anchors_for_item);
+          if (svg_path->get_geom ()->total_points () == 0)
+            need_to_remove = true;
+        }
+
+        if (need_to_remove)
+          {
+            if (item->parent ())
+              item->parent ()->remove_child (item);
+          }
+      }
+  }
+  
+  m_handles_selection->clear ();
+  m_painter->document ()->apply_changes ();
   return true;
 }
 

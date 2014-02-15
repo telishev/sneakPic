@@ -66,7 +66,7 @@ public:
 
   const QPointF &control_point (bool is_left) const;
   QPointF &control_point (bool is_left);
-  bool has_control_point (bool is_left);
+  bool has_control_point (bool is_left) const;
 };
 
 
