@@ -202,7 +202,6 @@ void path_handles_editor::update_handles_impl ()
 
 void path_handles_editor::select_by_rect (const QRectF &rect)
 {
-  QRectF local_rect = m_painter->cur_transform ().mapRect (rect);
   for (const auto &handle : *this)
     {
       /// TODO: do it without dynamic_cast
@@ -213,7 +212,7 @@ void path_handles_editor::select_by_rect (const QRectF &rect)
       for (auto control_point : handles->anchor_handles ())
         {
           QPointF center = control_point->get_handle_center ();
-          if (local_rect.contains (center))
+          if (rect.contains (center))
             m_handles_selection->add_anchor (control_point->item_name (), control_point->point_id ());
         }
     }
