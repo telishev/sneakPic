@@ -11,6 +11,7 @@ class copy_paste_handler
 public:
   copy_paste_handler (svg_painter *painter);
 
+  void copy ();
   void paste ();
 
 private:

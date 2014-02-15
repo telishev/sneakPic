@@ -29,7 +29,9 @@ actions_info::actions_info ()
   add_action (gui_action_id::SAVE_AS, "Save As...", QKeySequence::SaveAs);
   add_action (gui_action_id::UNDO, "Undo", QKeySequence::Undo);
   add_action (gui_action_id::REDO, "Redo", QKeySequence::Redo);
+  add_action (gui_action_id::COPY, "Copy", QKeySequence::Copy);
   add_action (gui_action_id::PASTE, "Paste", QKeySequence::Paste);
+  add_action (gui_action_id::CUT, "Cut", QKeySequence::Cut);
   add_action (gui_action_id::QUIT, "Exit", QKeySequence ("Alt+F4"));
 
   /// Tools

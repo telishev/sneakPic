@@ -8,20 +8,44 @@
 #include "svg/svg_document.h"
 
 #include "editor/operations/add_item_operation.h"
+#include "editor/items_selection.h"
+
 #include "renderer/svg_painter.h"
 #include "attributes/svg_attribute_xlink_href.h"
 #include "attributes/svg_attributes_length_type.h"
 #include "gui/gl_widget.h"
+#include "internal_clipboard_format.h"
+
+void copy_paste_handler::copy ()
+{
+  items_selection *selection = m_painter->selection ();
+  if (selection->empty ())
+    return;
+
+  internal_clipboard_format format (m_painter->document ());
+
+  format.fill_by_selection (selection);
+  QClipboard *clipboard = QApplication::clipboard();
+  QMimeData *data = new QMimeData;
+  data->setData (format.mime_type (), format.pack ());
+  clipboard->setMimeData (data);
+}
 
 void copy_paste_handler::paste ()
 {
   const QClipboard *clipboard = QApplication::clipboard();
   const QMimeData *mimeData = clipboard->mimeData();
+  internal_clipboard_format format (m_painter->document ());
+  QPointF pos = local_cursor_pos ();
 
-  if (mimeData->hasImage())
+  if (mimeData->hasFormat (format.mime_type ()))
+    {
+      format.unpack (mimeData->data (format.mime_type ()));
+      format.apply_to_doc (m_painter, pos);
+    }
+  else if (mimeData->hasImage())
     {
       QImage image = qvariant_cast<QImage> (mimeData->imageData());
-      QPointF pos = local_cursor_pos ();
       pos.setX (pos.x () - image.width () / 2);
       pos.setY (pos.y () - image.height () / 2);
       paste_image (image, pos);
@@ -51,4 +75,5 @@ const QPointF &copy_paste_handler::local_cursor_pos ()
 {
   return m_painter->get_local_pos (m_painter->glwidget ()->cursor_pos ());
 }
+
 

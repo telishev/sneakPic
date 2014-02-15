@@ -10,6 +10,7 @@ add_item_operation::add_item_operation (svg_painter *painter, bool clear_selecti
 {
   m_painter = painter;
   m_clear_selection = clear_selection;
+  m_apply_style = true;
 }
 
 add_item_operation::~add_item_operation ()
@@ -19,7 +20,8 @@ add_item_operation::~add_item_operation ()
 
 void add_item_operation::apply (abstract_svg_item *item)
 {
-  apply_style_operation (m_painter->settings ()).apply (item);
+  if (m_apply_style)
+    apply_style_operation (m_painter->settings ()).apply (item);
 
   if (item->to_graphics_item ())
     item->to_graphics_item ()->update_bbox ();

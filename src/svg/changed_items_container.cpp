@@ -137,7 +137,7 @@ svg_graphics_item *items_edit_handler_t::get_graphics_item (const std::string &i
 
 void items_edit_handler_t::set_item_changed (const std::string &item)
 {
-  m_changed_items.insert (item);
+  set_children_changed (item);
 }
 
 void items_edit_handler_t::set_item_layout_changed (const std::string &item)
@@ -158,5 +158,6 @@ void items_edit_handler_t::set_children_changed (const std::string &parent_name)
     return;
 
   for (int i = 0; i < item->children_count (); i++)
-    set_children_changed (item->child (i)->name ());
+    if (item->child (i))
+      set_children_changed (item->child (i)->name ());
 }

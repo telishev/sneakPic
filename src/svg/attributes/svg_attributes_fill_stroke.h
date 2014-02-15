@@ -36,6 +36,8 @@ public:
   paint_server_type server_type () const { return m_server_type; };
   QColor color () const { return m_color; };
 
+  const svg_data_type_iri &iri () const { return m_iri; }
+  svg_data_type_iri &iri () { return m_iri; }
 
   renderer_paint_server *create_paint_server (const svg_items_container *container) const;
 

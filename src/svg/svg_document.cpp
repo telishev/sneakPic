@@ -77,8 +77,8 @@ bool svg_document::is_new_document ()
 bool svg_document::write_file (const QString &filename_arg)
 {
   m_filename = filename_arg;
-  svg_writer writer (m_root);
-  return writer.write (filename_arg);
+  svg_writer writer;
+  return writer.write_to_file (filename_arg, m_root);
 }
 
 renderer_items_container *svg_document::create_rendered_items (rendered_items_cache *cache)

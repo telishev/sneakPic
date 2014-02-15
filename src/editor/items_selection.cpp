@@ -71,14 +71,14 @@ bool items_selection::contains (const std::string &name) const
   return m_selection.find (name) != m_selection.end ();
 }
 
-items_selection::iterator items_selection::begin ()
+items_selection::selection_iterator items_selection::begin ()
 {
-  return items_selection::iterator (m_container, m_selection.begin ());
+  return items_selection::selection_iterator (m_container, m_selection.begin ());
 }
 
-items_selection::iterator items_selection::end ()
+items_selection::selection_iterator items_selection::end ()
 {
-  return items_selection::iterator (m_container, m_selection.end ());
+  return items_selection::selection_iterator (m_container, m_selection.end ());
 }
 
 int items_selection::count () const
@@ -99,23 +99,29 @@ void items_selection::remove_unavailable_items ()
   emit selection_changed ();
 }
 
-abstract_svg_item *items_selection::iterator::operator* ()
+abstract_svg_item *items_selection::selection_iterator::operator* ()
 {
   return m_container->get_item (*m_it);
 }
 
-items_selection::iterator::iterator (svg_items_container *container, set_type::iterator it)
+items_selection::selection_iterator::selection_iterator (svg_items_container *container, set_type::iterator it)
 {
   m_container = container;
   m_it = it;
 }
 
-bool items_selection::iterator::operator!= (const iterator &other) const
+bool items_selection::selection_iterator::operator!= (const selection_iterator &other) const
 {
   return (this->m_it != other.m_it);
 }
 
-items_selection::iterator &items_selection::iterator::operator++ ()
+bool items_selection::selection_iterator::operator== (const selection_iterator &other) const
+{
+  return (this->m_it == other.m_it);
+}
+
+
+items_selection::selection_iterator &items_selection::selection_iterator::operator++ ()
 {
   this->m_it++;
   return *this;

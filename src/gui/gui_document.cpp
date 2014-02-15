@@ -23,6 +23,7 @@
 #include "svg/copy_paste_handler.h"
 
 #include "svg/svg_document.h"
+#include "editor/items_selection.h"
 
 
 gui_document::gui_document (settings_t *settings, gui_actions *actions)
@@ -46,6 +47,8 @@ gui_document::gui_document (settings_t *settings, gui_actions *actions)
 
   m_actions_applier->register_action (gui_action_id::UNDO, this, &gui_document::undo);
   m_actions_applier->register_action (gui_action_id::REDO, this, &gui_document::redo);
+  m_actions_applier->register_action (gui_action_id::COPY, this, &gui_document::copy);
+  m_actions_applier->register_action (gui_action_id::CUT, this, &gui_document::cut);
   m_actions_applier->register_action (gui_action_id::PASTE, this, &gui_document::paste);
 }
 
@@ -111,6 +114,26 @@ bool gui_document::paste ()
   m_copy_paste_handler->paste ();
   return true;
 }
+
+bool gui_document::copy ()
+{
+  if (m_painter->selection ()->empty ())
+    return false;
+
+  m_copy_paste_handler->copy ();
+  return true;
+}
+
+
+bool gui_document::cut ()
+{
+  if (m_painter->selection ()->empty ())
+    return false;
+
+  m_copy_paste_handler->copy ();
+  return m_painter->remove_items_in_selection ();
+}
+
 
 void gui_document::tool_changed ()
 {

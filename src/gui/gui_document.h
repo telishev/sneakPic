@@ -66,6 +66,8 @@ private:
   bool redo ();
   bool create_new_document_impl (std::function <bool (svg_document *)> create_func);
   bool paste ();
+  bool copy ();
+  bool cut ();
 };
 
 

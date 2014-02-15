@@ -65,7 +65,7 @@ public:
 
   void redraw ();
   bool action_triggered (gui_action_id id);
-
+  bool remove_items_in_selection ();
 signals:
   void zoom_description_changed (const QString &description);
 
@@ -99,7 +99,6 @@ private:
   bool find_current_object (const QPoint &pos);
   void create_overlay_containers ();
   abstract_svg_item *get_current_item_for_point (const QPoint &pos);
-  bool remove_items_in_selection ();
   bool process_mouse_event (const mouse_event_t &event, mouse_shortcut_enum_union action);
 };
 

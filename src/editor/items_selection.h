@@ -3,6 +3,7 @@
 
 #include <set>
 #include <QObject>
+#include <xutility>
 
 class abstract_svg_item;
 class svg_document;
@@ -17,18 +18,19 @@ class items_selection : public QObject
   set_type m_selection;
   svg_items_container *m_container;
 public:
-  class iterator
+  class selection_iterator : public std::iterator<std::forward_iterator_tag, abstract_svg_item *>
   {
     set_type::iterator m_it;
     svg_items_container *m_container;
 
   private:
-    iterator (svg_items_container *container, set_type::iterator it);
+    selection_iterator (svg_items_container *container, set_type::iterator it);
 
   public:
     abstract_svg_item *operator* ();
-    bool operator != (const iterator &) const;
-    iterator &operator++();
+    bool operator != (const selection_iterator &) const;
+    bool operator == (const selection_iterator &) const;
+    selection_iterator &operator++();
 
     friend class items_selection;
   };
@@ -52,8 +54,8 @@ public:
 
   void add_items_for_rect (const QRectF &rect, const abstract_svg_item *root);
 
-  iterator begin ();
-  iterator end ();
+  selection_iterator begin ();
+  selection_iterator end ();
 
   void remove_unavailable_items ();
 

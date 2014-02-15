@@ -10,4 +10,6 @@
 #include <functional>
 #include <set>
 
+#include "common/common_algorithms.h"
+
 //#include <unordered_set>

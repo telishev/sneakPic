@@ -14,7 +14,9 @@ enum class gui_action_id
   QUIT,
   UNDO,
   REDO,
+  COPY,
   PASTE,
+  CUT,
 
 
   //// Tools

@@ -9,9 +9,8 @@
 #include "svg/svg_namespaces.h"
 #include "items/svg_character_data.h"
 
-svg_writer::svg_writer (const abstract_svg_item *root)
+svg_writer::svg_writer ()
 {
-  m_root = root;
 }
 
 svg_writer::~svg_writer ()
@@ -19,7 +18,7 @@ svg_writer::~svg_writer ()
 
 }
 
-bool svg_writer::write (const QString &filename)
+bool svg_writer::write_to_file (const QString &filename, const abstract_svg_item *root)
 {
   QFile file (filename);
   if (!file.open (QIODevice::WriteOnly))
@@ -27,14 +26,13 @@ bool svg_writer::write (const QString &filename)
 
   QXmlStreamWriter writer (&file);
   writer.setAutoFormatting(true);
-  std::map<QString, QString> namespaces;
-  get_used_namespaces (m_root, namespaces);
+  std::map<QString, QString> namespaces = get_used_namespaces (root);
   for (auto namespace_pair : namespaces)
     writer.writeNamespace (namespace_pair.first, namespace_pair.second);
 
   writer.writeDefaultNamespace (svg_namespaces::svg_uri ());
   writer.writeStartDocument();
-  write_item (m_root, writer);
+  write_item (root, writer);
   writer.writeEndDocument();
   return true;
 }
@@ -57,6 +55,13 @@ void svg_writer::get_used_namespaces (const abstract_svg_item *root, std::map<QS
 
   for (int i = 0; i < root->children_count (); i++)
     get_used_namespaces (root->child (i), map);
+}
+
+std::map<QString, QString> svg_writer::get_used_namespaces (const abstract_svg_item *root) const
+{
+  std::map<QString, QString> map;
+  get_used_namespaces (root, map);
+  return map;
 }
 
 void svg_writer::write_item (const abstract_svg_item *root, QXmlStreamWriter &writer) const

@@ -44,6 +44,7 @@
 #include "svg/items/svg_items_container.h"
 #include "svg/svg_utils.h"
 #include "items_selection_renderer.h"
+#include "svg/items/items_comparison.h"
 
 using namespace std::placeholders;
 
@@ -201,33 +202,6 @@ void svg_painter::send_changes (bool interrrupt_rendering)
   set_configure_needed (configure_type::REDRAW_BASE);
 }
 
-static void fill_parents_list (const abstract_svg_item *item, std::vector<const abstract_svg_item *> &parents)
-{
-  for (const abstract_svg_item *parent = item; parent; parent = parent->parent ())
-    parents.push_back (parent);
-
-  std::reverse (parents.begin (), parents.end ());
-}
-
-static bool compare_items_z_order (const abstract_svg_item *first, const abstract_svg_item *second)
-{
-  std::vector<const abstract_svg_item *> first_parents, second_parents;
-  fill_parents_list (first, first_parents);
-  fill_parents_list (second, second_parents);
-
-  size_t min_size = std::min (first_parents.size (), second_parents.size ());
-
-  for (size_t i = 0; i < min_size; i++)
-    {
-      if (first_parents[i] == second_parents[i])
-        continue;
-
-      return first_parents[i]->child_index () < second_parents[i]->child_index ();
-    }
-
-  return false;
-}
-
 abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
 {
   int radius = 3;
@@ -247,7 +221,7 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
   if (items.empty ())
     return nullptr;
 
-  return *std::max_element (items.begin (), items.end (), compare_items_z_order);
+  return *std::max_element (items.begin (), items.end (), items_comparison_z_order ());
 }
 
 bool svg_painter::do_select_item (const QPoint &pos, bool clear_selection)

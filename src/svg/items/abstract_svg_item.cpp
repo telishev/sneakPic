@@ -383,15 +383,8 @@ void abstract_svg_item::move_child (int position, abstract_svg_item *child)
 {
   register_item_change ();
   int prev_pos = child->child_index ();
-  int new_pos = position;
-  if (position == prev_pos)
-    return;
-  if (position > prev_pos)
-    new_pos--;
-
-  m_children->erase (std::remove (m_children->begin (), m_children->end (), child->undo_id ()), m_children->end ());
-  m_children->insert (m_children->begin () + new_pos, child->undo_id ());
-
+  auto it_child = m_children->begin () +  prev_pos;
+  slide (it_child, it_child + 1, m_children->begin () + position);
   signal_child_moved (child->name (), prev_pos, position);
 }
 

@@ -23,6 +23,7 @@ public:
   QImage *get_image_data (const QString &svg_name) const;
   iri_type get_data_type () const;
 
+  const svg_data_type_iri *iri () const { return &m_iri; };
   svg_data_type_iri *iri () { return &m_iri; };
 };
 

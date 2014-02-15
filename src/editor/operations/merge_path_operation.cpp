@@ -5,14 +5,6 @@
 #include "path/svg_path.h"
 #include "svg/attributes/svg_attribute_path_data.h"
 
-template<typename Iter>
-std::pair<Iter,Iter> slide(Iter begin, Iter end, Iter target)
-{
-  if (target < begin) return std::make_pair( target, std::rotate(target, begin, end) );
-  if (end < target) return std::make_pair( std::rotate( begin, end, target ), target );
-  return std::make_pair( begin, end );
-}
-
 merge_path_operation::merge_path_operation ()
 {
 }

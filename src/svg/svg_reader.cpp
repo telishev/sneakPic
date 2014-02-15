@@ -27,7 +27,6 @@ svg_reader::svg_reader (undo_handler *handler, svg_item_factory *item_factory, s
   m_item_factory = item_factory;
   m_undo_handler = handler;
   m_document = document;
-  m_root = nullptr;
 
   m_selectors = new selectors_container;
 }
@@ -45,67 +44,7 @@ bool svg_reader::read_file (const QString &filename)
 
 
   QXmlStreamReader reader (&file);
-  abstract_svg_item *cur_item = nullptr;
-  while (!reader.atEnd ())
-    {
-      switch (reader.readNext ())
-        {
-          case QXmlStreamReader::Invalid:
-          case QXmlStreamReader::NoToken:
-            return false;
-          case QXmlStreamReader::Comment:
-          case QXmlStreamReader::DTD:
-          case QXmlStreamReader::EndDocument:
-          case QXmlStreamReader::EntityReference:
-          case QXmlStreamReader::ProcessingInstruction:
-          case QXmlStreamReader::StartDocument:
-            break;
-
-          case QXmlStreamReader::Characters:
-            {
-              if (!cur_item)
-                DEBUG_PAUSE ("cur_item must not be nullptr");
-
-              QString char_data = reader.text ().toString ().trimmed ();
-              if (!char_data.isEmpty ())
-                {
-                  svg_character_data *data = new svg_character_data (m_document, reader.text ().toUtf8 ().constData ());
-                  cur_item->push_back (data);
-                }
-              break;
-            }
-          case QXmlStreamReader::EndElement:
-            {
-              if (!cur_item)
-                DEBUG_PAUSE ("cur_item must not be nullptr");
-
-              if (cur_item->type () == svg_item_type::STYLE)
-                {
-                  svg_item_style *style = static_cast<svg_item_style *>(cur_item);
-                  style->add_style_to_container (m_selectors);
-                  abstract_svg_item *parent = cur_item->parent ();
-                  parent->remove_child (cur_item);
-                  cur_item = parent;
-                }
-              else
-                cur_item = cur_item->parent ();
-              break;
-            }
-          case QXmlStreamReader::StartElement:
-            {
-              cur_item = process_new_item (reader, cur_item);
-              break;
-            }
-
-        }
-    }
-
-  if (reader.hasError () || !m_root)
-    return false;
-
-  if (!m_selectors->empty ())
-    process_selectors (m_root);
-  return true;
+  return read_steam (reader);
 }
 
 abstract_svg_item *svg_reader::process_new_item (QXmlStreamReader &reader, abstract_svg_item *cur_item)
@@ -121,7 +60,7 @@ abstract_svg_item *svg_reader::process_new_item (QXmlStreamReader &reader, abstr
   else
     {
       m_undo_handler->add_item (child_item);
-      m_root = child_item;
+      m_root.push_back ( child_item);
     }
 
   QXmlStreamAttributes attributes = reader.attributes ();
@@ -204,16 +143,98 @@ void svg_reader::process_selectors (abstract_svg_item *root)
 
 bool svg_reader::create_new_document ()
 {
-  m_root = m_item_factory->create_item (svg_item_type::SVG);
-  m_undo_handler->add_item (m_root);
+  abstract_svg_item *root_item = m_item_factory->create_item (svg_item_type::SVG);
+  m_root.push_back (root_item);
+  m_undo_handler->add_item (root_item);
   {
-    auto width = m_root->get_attribute_for_change<svg_attribute_width> ();
-    auto height = m_root->get_attribute_for_change<svg_attribute_height> ();
+    auto width = root_item->get_attribute_for_change<svg_attribute_width> ();
+    auto height = root_item->get_attribute_for_change<svg_attribute_height> ();
     width->set_value (210, svg_length_units::MM);
     height->set_value (297, svg_length_units::MM);
   }
 
-  m_root->process_after_read ();
+  root_item->process_after_read ();
+  return true;
+}
+
+abstract_svg_item * svg_reader::root () const
+{
+  DEBUG_ASSERT (m_root.size () == 1);
+  return m_root.front ();
+}
+
+bool svg_reader::read_steam (QXmlStreamReader &reader)
+{
+  abstract_svg_item *cur_item = nullptr;
+  int current_pos = 0;
+  while (!reader.atEnd () || current_pos < 0)
+    {
+      switch (reader.readNext ())
+        {
+          case QXmlStreamReader::Invalid:
+          case QXmlStreamReader::NoToken:
+            return false;
+          case QXmlStreamReader::Comment:
+          case QXmlStreamReader::DTD:
+          case QXmlStreamReader::EndDocument:
+          case QXmlStreamReader::EntityReference:
+          case QXmlStreamReader::ProcessingInstruction:
+          case QXmlStreamReader::StartDocument:
+            break;
+
+          case QXmlStreamReader::Characters:
+            {
+              if (!cur_item)
+                DEBUG_PAUSE ("cur_item must not be nullptr");
+
+              QString char_data = reader.text ().toString ().trimmed ();
+              if (!char_data.isEmpty ())
+                {
+                  svg_character_data *data = new svg_character_data (m_document, reader.text ().toUtf8 ().constData ());
+                  cur_item->push_back (data);
+                }
+              break;
+            }
+          case QXmlStreamReader::EndElement:
+            {
+              if (current_pos <= 0)
+                break;
+
+              if (!cur_item)
+                DEBUG_PAUSE ("cur_item must not be nullptr");
+
+              if (cur_item->type () == svg_item_type::STYLE)
+                {
+                  svg_item_style *style = static_cast<svg_item_style *>(cur_item);
+                  style->add_style_to_container (m_selectors);
+                  abstract_svg_item *parent = cur_item->parent ();
+                  parent->remove_child (cur_item);
+                  cur_item = parent;
+                }
+              else
+                cur_item = cur_item->parent ();
+
+              current_pos--;
+              break;
+            }
+          case QXmlStreamReader::StartElement:
+            {
+              cur_item = process_new_item (reader, cur_item);
+              current_pos++;
+              break;
+            }
+
+        }
+    }
+
+  if (reader.hasError () || m_root.empty ())
+    return false;
+
+  if (!m_selectors->empty ())
+    {
+      for (auto &&item : m_root)
+        process_selectors (item);
+    }
   return true;
 }
 
