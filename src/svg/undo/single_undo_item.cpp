@@ -59,8 +59,8 @@ void single_undo_item::apply (diff_direction_t direction)
       abstract_state_diff_t *diff = element.m_diff;
 
       undoable *item = m_items_container->get_item (id);
-      std::unique_ptr<abstract_state_t> cur_state (item ? item->create_state () : nullptr);
-      std::unique_ptr<abstract_state_t> new_state (diff->apply_diff (cur_state.get (), direction));
+      unique_ptr<abstract_state_t> cur_state (item ? item->create_state () : nullptr);
+      unique_ptr<abstract_state_t> new_state (diff->apply_diff (cur_state.get (), direction));
       if (new_state)
         {
           if (!item)

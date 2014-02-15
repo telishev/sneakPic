@@ -29,7 +29,7 @@ undoable *undoable_items_container_t::get_item (int id) const
 int undoable_items_container_t::add_item (undoable *item)
 {
   assign_id (item);
-  DEBUG_ASSERT (m_map.insert (std::make_pair (item->undo_id (), std::move (std::unique_ptr<undoable> (item)))).second == true);
+  DEBUG_ASSERT (m_map.insert (std::make_pair (item->undo_id (), std::move (unique_ptr<undoable> (item)))).second == true);
   return item->undo_id ();
 }
 

@@ -23,7 +23,7 @@ class single_undo_item
   };
 
   undoable_items_container_t *m_items_container;
-  std::vector<item_and_diff> m_diff_map;
+  vector<item_and_diff> m_diff_map;
 public:
   single_undo_item (undoable_items_container_t *items_container);
   ~single_undo_item ();

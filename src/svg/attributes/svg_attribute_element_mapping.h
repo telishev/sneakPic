@@ -9,7 +9,7 @@ enum class svg_attribute_type;
 
 class svg_attribute_element_mapping
 {
-  std::vector<std::set<svg_item_type>> m_map;
+  vector<std::set<svg_item_type>> m_map;
 public:
   static const svg_attribute_element_mapping *get ();
 

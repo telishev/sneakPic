@@ -2,8 +2,10 @@
 
 #include "gui/actions_applier.h"
 #include "gui/gui_action_id.h"
+#include "gui/connection.h"
 #include "gui/gl_widget.h"
 #include "gui/shortcuts_config.h"
+#include "gui/settings.h"
 
 #include "editor/operations/add_item_operation.h"
 
@@ -26,9 +28,6 @@
 #include "editor/operations/merge_path_operation.h"
 #include "editor/items_selection.h"
 #include "editor/operations/path_edit_operation.h"
-
-
-
 
 pen_tool::pen_tool (svg_painter *painter)
   : abstract_tool (painter)
@@ -54,6 +53,8 @@ pen_tool::pen_tool (svg_painter *painter)
   m_actions_applier->register_action (gui_action_id::CANCEL_EDITING, this, &pen_tool::cancel_editing);
   m_actions_applier->register_action (gui_action_id::CANCEL_CURVE, this, &pen_tool::cancel_curve);
   m_prev_point_was_line = false;
+
+  CONNECT (m_painter->settings (), &settings_t::settings_changed, this, &pen_tool::update_on_settings_changed);
 }
 
 pen_tool::~pen_tool ()
@@ -61,9 +62,20 @@ pen_tool::~pen_tool ()
 
 }
 
+void pen_tool::update_on_settings_changed ()
+{
+  update_auxiliary_pen_preview ();
+}
+
 bool pen_tool::update_auxiliary_pen_preview (const QPoint &pos)
 {
   QPoint dest_pos;
+  if (!m_painter->settings ()->value (option_id::NEXT_CURVE_PREVIEW).toBool ())
+    {
+      m_auxiliary_preview_renderer->set_path (nullptr);
+      return true;
+    }
+
   if (pos.isNull ())
     dest_pos = m_painter->glwidget ()->cursor_pos ();
   else

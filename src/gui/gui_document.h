@@ -36,7 +36,7 @@ class gui_document : public QObject
   svg_painter  *m_painter;
   tools_container *m_tools_container;
   actions_applier *m_actions_applier;
-  std::unique_ptr<copy_paste_handler> m_copy_paste_handler;
+  unique_ptr<copy_paste_handler> m_copy_paste_handler;
 
 public:
   gui_document (settings_t *settings, gui_actions *actions);

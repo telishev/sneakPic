@@ -29,7 +29,7 @@ element_handles *pen_handles::create_handles_for_item (abstract_svg_item *item)
     return nullptr;
 
   svg_item_path *path_item = static_cast<svg_item_path *> (item);
-  std::vector<abstract_handle *> handles;
+  vector<abstract_handle *> handles;
   auto path_data = path_item->get_computed_attribute<svg_attribute_path_data> ();
   svg_path_geom *path = const_cast<svg_path_geom *> (path_data->path ());
   const auto &subpath = path->subpath ();
@@ -65,7 +65,7 @@ void pen_handles::update_handles_impl ()
   if (!m_new_path)
     return;
 
-  std::vector<abstract_handle *> handles;
+  vector<abstract_handle *> handles;
   handles.push_back (new base_anchor_handle (m_new_path->begin (), nullptr));
   set_handle_for_item ("#new_path", new element_handles_vector (handles));
 }

@@ -62,14 +62,14 @@ style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_bui
   m_layout->addWidget (m_style_type_widget);
 
   {
-    QVBoxLayout *layout = create_common_vbox_layout ();
+    QVBoxLayout *layout = create_common_vbox_widget ();
     layout->addWidget (new QLabel ("Color:"));
     layout->addWidget (m_fill_color_selector_widget_handler->widget ());
     layout->addStretch ();
     m_style_type_widget->addTab (layout->parentWidget (), QIcon (), "Fill");
   }
 
-  m_stroke_style_layout = create_common_vbox_layout (nullptr);
+  m_stroke_style_layout = create_common_vbox_widget (nullptr);
   m_stroke_style_layout->addWidget (new QLabel ("Color:"));
   m_stroke_style_layout->addWidget (m_stroke_color_selector_widget_handler->widget ());
 
@@ -201,7 +201,7 @@ void style_widget_handler::set_tools_containter (const tools_container *tools_co
 void style_widget_handler::init_linejoin_controller ()
 {
   {
-    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    QHBoxLayout *layout = create_intermediate_hbox_layout (m_stroke_style_layout);
     layout->addWidget (new QLabel ("Join:"));
     layout->addWidget (m_stroke_linejoin_combobox = new QComboBox (layout->parentWidget ()));
     layout->addStretch ();
@@ -215,7 +215,7 @@ void style_widget_handler::init_linejoin_controller ()
 void style_widget_handler::init_miterlimit_controller ()
 {
   {
-    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    QHBoxLayout *layout = create_intermediate_hbox_layout (m_stroke_style_layout);
     layout->addWidget (new QLabel ("Miter limit:"));
     layout->addWidget (m_stroke_miterlimit_spinbox = create_double_spinbox (layout->parentWidget (), 100.0, 2));
     m_controller_connections.push_back (CONNECT (m_stroke_miterlimit_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_miterlimit));
@@ -226,7 +226,7 @@ void style_widget_handler::init_miterlimit_controller ()
 void style_widget_handler::init_stroke_width_controller ()
 {
   {
-    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    QHBoxLayout *layout = create_intermediate_hbox_layout (m_stroke_style_layout);
     layout->addWidget (new QLabel ("Width:"));
     layout->addWidget (m_stroke_width_spinbox = create_double_spinbox (layout->parentWidget (), 1000.0));
     m_controller_connections.push_back (CONNECT (m_stroke_width_spinbox, (void (QDoubleSpinBox::*) (double)) &QDoubleSpinBox::valueChanged, m_style_controller, &style_controller::update_stroke_width));
@@ -237,7 +237,7 @@ void style_widget_handler::init_stroke_width_controller ()
 void style_widget_handler::init_linecap_controller ()
 {
   {
-    QHBoxLayout *layout = create_inner_hbox_layout (m_stroke_style_layout);
+    QHBoxLayout *layout = create_intermediate_hbox_layout (m_stroke_style_layout);
     layout->addWidget (new QLabel ("Cap:"));
     layout->addWidget (m_stroke_linecap_combobox = new QComboBox (layout->parentWidget ()));
     layout->addStretch ();
@@ -252,7 +252,7 @@ void style_widget_handler::init_target_style_controller ()
 {
   m_target_style = new QButtonGroup (m_widget);
   m_target_style_mapper = new QSignalMapper (m_target_style);
-  QHBoxLayout *m_target_style_layout = create_inner_hbox_layout (m_widget);
+  QHBoxLayout *m_target_style_layout = create_intermediate_hbox_layout (m_widget);
   for (int i = 0; i < (int) selected_style::COUNT; i++)
   {
     QRadioButton *button = new QRadioButton (enum_to_string ((selected_style) i), m_widget);

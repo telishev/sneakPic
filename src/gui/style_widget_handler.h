@@ -49,9 +49,9 @@ class style_widget_handler : public QObject
   selected_style m_cur_target_style;
   QButtonGroup *m_target_style;
   QSignalMapper *m_target_style_mapper;
-  std::unique_ptr <connection> m_target_items_changed_connection;
+  unique_ptr <connection> m_target_items_changed_connection;
   const tools_container *m_tools_container;
-  std::vector<std::unique_ptr<connection>> m_controller_connections;
+  vector<unique_ptr<connection>> m_controller_connections;
 
   style_controller *m_style_controller;
 

@@ -26,8 +26,8 @@ const int rendered_items_cache::m_block_pixel_size = 256;
 rendered_items_cache::rendered_items_cache ()
 {
   m_mutex = new QMutex;
-  m_cache = new std::map<render_cache_id, cache_bitmap_t>;
-  m_next_zoom_cache = new std::map<render_cache_id, cache_bitmap_t>;
+  m_cache = new map<render_cache_id, cache_bitmap_t>;
+  m_next_zoom_cache = new map<render_cache_id, cache_bitmap_t>;
   m_pending_changes = false;
   m_zoom_y = m_zoom_x = 1.0;
 }

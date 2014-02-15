@@ -54,7 +54,7 @@ void overlay_items_container::clear_items ()
 
 renderable_item *overlay_items_container::create_overlay_for_item (const std::string &object, overlay_item_type overlay_type) const
 {
-  std::vector<abstract_renderer_item *> result;
+  vector<abstract_renderer_item *> result;
   abstract_svg_item *svg_item = svg_container ()->get_item (object);
   if (!svg_item)
     return nullptr;

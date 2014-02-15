@@ -23,7 +23,7 @@ class gui_actions : public QObject
   const shortcuts_config *m_cfg;
 
   actions_info *m_info;
-  std::vector<std::unique_ptr<QAction>> m_actions;
+  vector<unique_ptr<QAction>> m_actions;
   std::function<bool (gui_action_id)> m_callback;
   QSignalMapper *m_actions_mapper;
   QWidget *m_parent;

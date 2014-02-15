@@ -14,18 +14,20 @@ class svg_item_path;
 
 class pen_tool : public abstract_tool
 {
-  typedef std::pair<svg_item_path *, svg_path_geom_iterator> snap_point_t;
-  std::unique_ptr<path_preview_renderer> m_preview_renderer;
-  std::unique_ptr<path_preview_renderer> m_auxiliary_preview_renderer;
-  std::unique_ptr<path_control_point_renderer> m_left_cp_renderer;
-  std::unique_ptr<path_control_point_renderer> m_right_cp_renderer;
-  std::unique_ptr<unique_svg_path> m_current_path;
-  std::unique_ptr<unique_svg_path> m_auxiliary_path;
-  std::unique_ptr<path_builder> m_path_builder;
-  std::unique_ptr<pen_handles> m_pen_handles;
+  Q_OBJECT
 
-  std::unique_ptr<snap_point_t> m_path_snap_start;
-  std::unique_ptr<snap_point_t> m_path_snap_end;
+  typedef std::pair<svg_item_path *, svg_path_geom_iterator> snap_point_t;
+  unique_ptr<path_preview_renderer> m_preview_renderer;
+  unique_ptr<path_preview_renderer> m_auxiliary_preview_renderer;
+  unique_ptr<path_control_point_renderer> m_left_cp_renderer;
+  unique_ptr<path_control_point_renderer> m_right_cp_renderer;
+  unique_ptr<unique_svg_path> m_current_path;
+  unique_ptr<unique_svg_path> m_auxiliary_path;
+  unique_ptr<path_builder> m_path_builder;
+  unique_ptr<pen_handles> m_pen_handles;
+
+  unique_ptr<snap_point_t> m_path_snap_start;
+  unique_ptr<snap_point_t> m_path_snap_end;
   bool m_prev_point_was_line;
 
 public:
@@ -53,6 +55,9 @@ private:
   void add_new_point (QPoint pos, bool is_line);
   svg_item_path *add_new_path ();
   svg_item_path *merge_with_path (svg_item_path *path_dst, svg_path_geom_iterator dst_it, svg_item_path *path_src, svg_path_geom_iterator src_it);
+
+private slots:
+  void update_on_settings_changed ();
 };
 
 #endif // PEN_TOOL_H

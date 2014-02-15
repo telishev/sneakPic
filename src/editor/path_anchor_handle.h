@@ -28,7 +28,7 @@ class path_anchor_handle : public base_anchor_handle
   QPointF m_drag_start;
   QPointF m_drag_cur;
 
-  std::unique_ptr<path_edit_operation> m_edit_operation;
+  unique_ptr<path_edit_operation> m_edit_operation;
 
 public:
   path_anchor_handle (path_handles_editor *editor, svg_item_path *item, svg_path_geom_iterator path_it);

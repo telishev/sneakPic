@@ -27,7 +27,7 @@ public:
 
 class actions_info
 {
-  std::vector<action_description> m_info;
+  vector<action_description> m_info;
 public:
   actions_info ();
   ~actions_info ();

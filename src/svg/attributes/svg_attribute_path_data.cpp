@@ -64,8 +64,8 @@ bool svg_attribute_path_data::read (const char *data, bool /*from_css*/)
   typedef bool (svg_attribute_path_data::*func_type) (const char *&, path_builder &, bool);
   func_type commands[255] = {};
   m_path->clear ();
-  std::vector<bool> is_line_segment;
-  std::vector<node_type_t> node_type;
+  vector<bool> is_line_segment;
+  vector<node_type_t> node_type;
   svg_path path (m_path, &is_line_segment, &node_type, QTransform ());
   path_builder builder (path);
 

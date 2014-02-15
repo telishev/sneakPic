@@ -26,7 +26,7 @@ bool svg_writer::write_to_file (const QString &filename, const abstract_svg_item
 
   QXmlStreamWriter writer (&file);
   writer.setAutoFormatting(true);
-  std::map<QString, QString> namespaces = get_used_namespaces (root);
+  map<QString, QString> namespaces = get_used_namespaces (root);
   for (auto namespace_pair : namespaces)
     writer.writeNamespace (namespace_pair.first, namespace_pair.second);
 
@@ -37,7 +37,7 @@ bool svg_writer::write_to_file (const QString &filename, const abstract_svg_item
   return true;
 }
 
-void svg_writer::get_used_namespaces (const abstract_svg_item *root, std::map<QString, QString> &map) const
+void svg_writer::get_used_namespaces (const abstract_svg_item *root, map<QString, QString> &map) const
 {
   if (!root)
     return;
@@ -45,7 +45,7 @@ void svg_writer::get_used_namespaces (const abstract_svg_item *root, std::map<QS
   if (*root->namespace_uri ())
     map.insert (std::make_pair (root->namespace_uri (), root->namespace_name ()));
 
-  std::vector<const abstract_attribute *> attributes_list = root->attributes_list ();
+  vector<const abstract_attribute *> attributes_list = root->attributes_list ();
 
   for (const abstract_attribute *attribute : attributes_list)
     {
@@ -78,7 +78,7 @@ void svg_writer::write_item (const abstract_svg_item *root, QXmlStreamWriter &wr
 
   writer.writeStartElement (root->namespace_uri (), root->type_name ());
 
-  std::vector<const abstract_attribute *> attributes_list = root->attributes_list ();
+  vector<const abstract_attribute *> attributes_list = root->attributes_list ();
   for (const abstract_attribute *attribute : attributes_list)
     {
       QString value;

@@ -26,6 +26,7 @@ private:
   void add_action (QMenu *menu, gui_action_id id);
   void create_edit_menu (QMenu *menu);
   void create_view_menu( QMenu *menu);
+  void create_options_menu (QMenu *menu);
 };
 
 #endif // MENU_BUILDER_H

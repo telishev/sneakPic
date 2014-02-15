@@ -14,10 +14,10 @@ class svg_path;
 
 class path_edit_operation
 {
-  std::unique_ptr<attribute_pointer<svg_attribute_path_data>> m_path_data;
-  std::unique_ptr<attribute_pointer<svg_attribute_linetypes>> m_linetypes;
-  std::unique_ptr<attribute_pointer<svg_attribute_nodetypes>> m_nodetypes;
-  std::unique_ptr<svg_path> m_svg_path;
+  unique_ptr<attribute_pointer<svg_attribute_path_data>> m_path_data;
+  unique_ptr<attribute_pointer<svg_attribute_linetypes>> m_linetypes;
+  unique_ptr<attribute_pointer<svg_attribute_nodetypes>> m_nodetypes;
+  unique_ptr<svg_path> m_svg_path;
 
 public:
   path_edit_operation (svg_item_path *path);

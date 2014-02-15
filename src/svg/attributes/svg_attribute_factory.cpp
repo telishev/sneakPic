@@ -91,7 +91,7 @@ abstract_attribute *svg_attribute_factory::create_attribute (abstract_svg_item *
 
   for (auto it = it_pair.first; it != it_pair.second; ++it)
     {
-      std::unique_ptr<abstract_attribute> attribute (it->second ());
+      unique_ptr<abstract_attribute> attribute (it->second ());
       if (*namespaceURI && strcmp (attribute->namespace_uri (), namespaceURI))
         continue;
 
@@ -120,7 +120,7 @@ abstract_attribute * svg_attribute_factory::create_attribute (const char *localN
 
   for (auto it = it_pair.first; it != it_pair.second; ++it)
     {
-      std::unique_ptr<abstract_attribute> attribute (it->second ());
+      unique_ptr<abstract_attribute> attribute (it->second ());
       if (!mapping->can_be_specified (type, attribute->type ()))
         continue;
 

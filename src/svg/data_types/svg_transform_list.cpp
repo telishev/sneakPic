@@ -16,7 +16,7 @@ bool svg_transform_list::write (QString &data) const
 bool svg_transform_list::read (const char *data)
 {
   trim_whitespace_left (data);
-  std::vector<double> transform_data;
+  vector<double> transform_data;
   m_transform = QTransform ();
   while (*data)
     {
@@ -31,7 +31,7 @@ bool svg_transform_list::read (const char *data)
   return true;
 }
 
-bool svg_transform_list::get_transfrom_data (const char *data, std::vector<double> &dest) const
+bool svg_transform_list::get_transfrom_data (const char *data, vector<double> &dest) const
 {
   trim_separators_left (data);
   while (*data)
@@ -44,7 +44,7 @@ bool svg_transform_list::get_transfrom_data (const char *data, std::vector<doubl
   return true;
 }
 
-bool svg_transform_list::apply_transform (const std::string &name, std::vector<double> &data)
+bool svg_transform_list::apply_transform (const std::string &name, vector<double> &data)
 {
   const double degree_to_rad = 0.0174532925;
   QTransform new_transform;

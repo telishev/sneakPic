@@ -47,7 +47,7 @@ size_t single_subpath::total_segments () const
 
 void single_subpath::reverse ()
 {
-  m_elements = std::vector<single_path_point> (m_elements.rbegin (), m_elements.rend ());
+  m_elements = vector<single_path_point> (m_elements.rbegin (), m_elements.rend ());
   for (auto &elem : m_elements)
     std::swap (elem.c1, elem.c2);
 }

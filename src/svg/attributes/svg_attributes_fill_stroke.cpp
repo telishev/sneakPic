@@ -117,6 +117,6 @@ renderer_paint_server *svg_paint_server::create_paint_server (const svg_items_co
 
 bool svg_paint_server::need_to_render (const svg_items_container *container) const
 {
-  std::unique_ptr<renderer_paint_server> server (create_paint_server (container));
+  unique_ptr<renderer_paint_server> server (create_paint_server (container));
   return server->need_to_render ();
 }

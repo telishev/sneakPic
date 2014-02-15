@@ -8,7 +8,7 @@ class svg_path_geom_iterator;
 
 class svg_path_geom
 {
-  std::vector<single_subpath> m_subpath;
+  vector<single_subpath> m_subpath;
 public:
   svg_path_geom ();
   ~svg_path_geom ();
@@ -29,8 +29,8 @@ public:
 
   void apply_transform (const QTransform &transform);
 
-  const std::vector<single_subpath> &subpath () const { return m_subpath; }
-  std::vector<single_subpath> &subpath () { return m_subpath; }
+  const vector<single_subpath> &subpath () const { return m_subpath; }
+  vector<single_subpath> &subpath () { return m_subpath; }
   void erase (svg_path_geom_iterator iterator);
 
   friend class svg_path_geom_iterator;

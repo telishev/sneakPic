@@ -21,9 +21,9 @@ class tools_container : public QObject
   Q_OBJECT
 
   gui_action_id m_cur_tool;
-  typedef std::map<gui_action_id, std::function<abstract_tool * (svg_painter *)>> info_map_t;
+  typedef map<gui_action_id, std::function<abstract_tool * (svg_painter *)>> info_map_t;
   info_map_t m_tools_info;
-  std::map<gui_action_id, std::unique_ptr<abstract_tool>> m_tools;
+  map<gui_action_id, unique_ptr<abstract_tool>> m_tools;
 
   gui_actions *m_actions;
 public:
@@ -34,7 +34,7 @@ public:
 
   abstract_tool *current_tool () const;
   gui_action_id current_tool_id () const;
-  std::vector<gui_action_id> tool_actions () const;
+  vector<gui_action_id> tool_actions () const;
   bool action_triggered (gui_action_id id);
 
 signals:

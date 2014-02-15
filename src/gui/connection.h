@@ -50,5 +50,5 @@ public:
 };
 
 #define TEMPORARY_DISCONNECT(CONNECTION) auto_connection CONCATENATE (connection, __LINE__) (CONNECTION->temporary_disconnect ());
-#define CONNECT(...) EXPAND (std::move(std::unique_ptr<connection> (new connection ([=] () { return QObject::connect (__VA_ARGS__); }))))
+#define CONNECT(...) EXPAND (std::move(unique_ptr<connection> (new connection ([=] () { return QObject::connect (__VA_ARGS__); }))))
 #endif // CONNECTION_H

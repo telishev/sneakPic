@@ -2116,10 +2116,10 @@ GTEST_API_ String GetCapturedStderr();
 #if GTEST_HAS_DEATH_TEST
 
 // A copy of all command line arguments.  Set by InitGoogleTest().
-extern ::std::vector<String> g_argvs;
+extern ::vector<String> g_argvs;
 
 // GTEST_HAS_DEATH_TEST implies we have ::std::string.
-const ::std::vector<String>& GetArgvs();
+const ::vector<String>& GetArgvs();
 
 #endif  // GTEST_HAS_DEATH_TEST
 
@@ -9263,7 +9263,7 @@ linked_ptr<T> make_linked_ptr(T* ptr) {
 //   // Prints the fields of a tuple tersely to a string vector, one
 //   // element for each field. Tuple support must be enabled in
 //   // gtest-port.h.
-//   std::vector<string> UniversalTersePrintTupleFieldsToStrings(
+//   vector<string> UniversalTersePrintTupleFieldsToStrings(
 //       const Tuple& value);
 //
 // Known limitation:
@@ -9883,7 +9883,7 @@ void UniversalPrint(const T& value, ::std::ostream* os) {
 }
 
 #if GTEST_HAS_TR1_TUPLE
-typedef ::std::vector<string> Strings;
+typedef ::vector<string> Strings;
 
 // This helper template allows PrintTo() for tuples and
 // UniversalTersePrintTupleFieldsToStrings() to be defined by
@@ -10214,7 +10214,7 @@ class ValuesInIteratorRangeGenerator : public ParamGeneratorInterface<T> {
   }
 
  private:
-  typedef typename ::std::vector<T> ContainerType;
+  typedef typename ::vector<T> ContainerType;
 
   class Iterator : public ParamIteratorInterface<T> {
    public:
@@ -10468,10 +10468,10 @@ class ParameterizedTestCaseInfo : public ParameterizedTestCaseInfoBase {
     const string test_base_name;
     const scoped_ptr<TestMetaFactoryBase<ParamType> > test_meta_factory;
   };
-  typedef ::std::vector<linked_ptr<TestInfo> > TestInfoContainer;
+  typedef ::vector<linked_ptr<TestInfo> > TestInfoContainer;
   // Keeps pairs of <Instantiation name, Sequence generator creation function>
   // received from INSTANTIATE_TEST_CASE_P macros.
-  typedef ::std::vector<std::pair<string, GeneratorCreationFunc*> >
+  typedef ::vector<std::pair<string, GeneratorCreationFunc*> >
       InstantiationContainer;
 
   const string test_case_name_;
@@ -10538,7 +10538,7 @@ class ParameterizedTestCaseRegistry {
   }
 
  private:
-  typedef ::std::vector<ParameterizedTestCaseInfoBase*> TestCaseInfoContainer;
+  typedef ::vector<ParameterizedTestCaseInfoBase*> TestCaseInfoContainer;
 
   TestCaseInfoContainer test_case_infos_;
 
@@ -15458,8 +15458,8 @@ internal::ParamGenerator<T> Range(T start, T end) {
 // This instantiates tests from test case StlStringTest
 // each with STL strings with values "a" and "b":
 //
-// ::std::vector< ::std::string> GetParameterStrings() {
-//   ::std::vector< ::std::string> v;
+// ::vector< ::std::string> GetParameterStrings() {
+//   ::vector< ::std::string> v;
 //   v.push_back("a");
 //   v.push_back("b");
 //   return v;
@@ -16791,7 +16791,7 @@ class GTEST_API_ TestPartResultArray {
   int size() const;
 
  private:
-  std::vector<TestPartResult> array_;
+  vector<TestPartResult> array_;
 
   GTEST_DISALLOW_COPY_AND_ASSIGN_(TestPartResultArray);
 };
@@ -17580,12 +17580,12 @@ class GTEST_API_ TestResult {
   friend class internal::WindowsDeathTest;
 
   // Gets the vector of TestPartResults.
-  const std::vector<TestPartResult>& test_part_results() const {
+  const vector<TestPartResult>& test_part_results() const {
     return test_part_results_;
   }
 
   // Gets the vector of TestProperties.
-  const std::vector<TestProperty>& test_properties() const {
+  const vector<TestProperty>& test_properties() const {
     return test_properties_;
   }
 
@@ -17624,9 +17624,9 @@ class GTEST_API_ TestResult {
   internal::Mutex test_properites_mutex_;
 
   // The vector of TestPartResults
-  std::vector<TestPartResult> test_part_results_;
+  vector<TestPartResult> test_part_results_;
   // The vector of TestProperties
-  std::vector<TestProperty> test_properties_;
+  vector<TestProperty> test_properties_;
   // Running count of death tests.
   int death_test_count_;
   // The elapsed time, in milliseconds.
@@ -17830,10 +17830,10 @@ class GTEST_API_ TestCase {
   friend class internal::UnitTestImpl;
 
   // Gets the (mutable) vector of TestInfos in this TestCase.
-  std::vector<TestInfo*>& test_info_list() { return test_info_list_; }
+  vector<TestInfo*>& test_info_list() { return test_info_list_; }
 
   // Gets the (immutable) vector of TestInfos in this TestCase.
-  const std::vector<TestInfo*>& test_info_list() const {
+  const vector<TestInfo*>& test_info_list() const {
     return test_info_list_;
   }
 
@@ -17900,11 +17900,11 @@ class GTEST_API_ TestCase {
   const internal::scoped_ptr<const ::std::string> type_param_;
   // The vector of TestInfos in their original order.  It owns the
   // elements in the vector.
-  std::vector<TestInfo*> test_info_list_;
+  vector<TestInfo*> test_info_list_;
   // Provides a level of indirection for the test list to allow easy
   // shuffling and restoring the test order.  The i-th element in this
   // vector is the index of the i-th test in the shuffled test list.
-  std::vector<int> test_indices_;
+  vector<int> test_indices_;
   // Pointer to the function that sets up the test case.
   Test::SetUpTestCaseFunc set_up_tc_;
   // Pointer to the function that tears down the test case.

@@ -9,7 +9,7 @@ class simple_selector;
 
 class group_selector : public abstract_css_selector
 {
-  std::vector<abstract_css_selector *> m_components;
+  vector<abstract_css_selector *> m_components;
 
 public:
   group_selector ();

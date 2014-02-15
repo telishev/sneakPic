@@ -8,6 +8,10 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QWidget>
+#include <QDialogButtonBox>
+#include <QDialog>
+
+#include "gui/connection.h"
 
 QWidget *create_container_widget (QWidget *parent)
 {
@@ -20,7 +24,15 @@ void finish_with_spacer (QGridLayout *layout)
   layout->addItem (new QSpacerItem (0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding), layout->rowCount (), 0);
 }
 
-QGridLayout *create_common_grid_layout (QWidget *parent)
+QDialogButtonBox *create_standard_button_box (QDialog *dialog)
+{
+  auto box = new QDialogButtonBox (QDialogButtonBox::Ok | QDialogButtonBox::Cancel, dialog);
+  CONNECT (box, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
+  CONNECT (box, &QDialogButtonBox::rejected, dialog, &QDialog::reject);
+  return box;
+}
+
+QGridLayout *create_common_grid_widget (QWidget *parent)
 {
   QWidget *widget = create_container_widget (parent);
   QGridLayout *layout = new QGridLayout (widget);
@@ -30,7 +42,7 @@ QGridLayout *create_common_grid_layout (QWidget *parent)
   return layout;
 }
 
-QHBoxLayout *create_common_hbox_layout (QWidget *parent)
+QHBoxLayout *create_common_hbox_widget (QWidget *parent)
 {
   QWidget *widget = create_container_widget (parent);
   QHBoxLayout *layout = new QHBoxLayout (widget);
@@ -39,7 +51,7 @@ QHBoxLayout *create_common_hbox_layout (QWidget *parent)
   return layout;
 }
 
-QVBoxLayout *create_common_vbox_layout (QWidget *parent)
+QVBoxLayout *create_common_vbox_widget (QWidget *parent)
 {
   QWidget *widget = create_container_widget (parent);
   QVBoxLayout *layout = new QVBoxLayout (widget);
@@ -48,7 +60,23 @@ QVBoxLayout *create_common_vbox_layout (QWidget *parent)
   return layout;
 }
 
-QGridLayout *create_inner_grid_layout (QWidget *parent)
+QHBoxLayout *create_common_hbox_layout (QWidget *widget)
+{
+  QHBoxLayout *layout = new QHBoxLayout (widget);
+  layout->setContentsMargins (6, 6, 6, 6);
+  layout->setSpacing (5);
+  return layout;
+}
+
+QVBoxLayout *create_common_vbox_layout (QWidget *widget)
+{
+  QVBoxLayout *layout = new QVBoxLayout (widget);
+  layout->setContentsMargins (6, 6, 6, 6);
+  layout->setSpacing (5);
+  return layout;
+}
+
+QGridLayout *create_intermediate_grid_layout (QWidget *parent)
 {
   QWidget *widget = create_container_widget (parent);
   if (parent) // if parent is nullptr then layout will be placed somewhere afterwards
@@ -60,7 +88,7 @@ QGridLayout *create_inner_grid_layout (QWidget *parent)
   return layout;
 }
 
-QHBoxLayout *create_inner_hbox_layout (QWidget *parent)
+QHBoxLayout *create_intermediate_hbox_layout (QWidget *parent)
 {
   QWidget *widget = create_container_widget (parent);
   if (parent) // if parent is nullptr then layout will be placed somewhere afterwards
@@ -71,12 +99,12 @@ QHBoxLayout *create_inner_hbox_layout (QWidget *parent)
   return layout;
 }
 
-QHBoxLayout *create_inner_hbox_layout (QLayout *parent_layout)
+QHBoxLayout *create_intermediate_hbox_layout (QLayout *parent_layout)
 {
-  return create_inner_hbox_layout (parent_layout->parentWidget ());
+  return create_intermediate_hbox_layout (parent_layout->parentWidget ());
 }
 
-QVBoxLayout *create_inner_vbox_layout (QWidget *parent)
+QVBoxLayout *create_intermediate_vbox_layout (QWidget *parent)
 {
   QWidget *widget = create_container_widget (parent);
   if (parent) // if parent is nullptr then layout will be placed somewhere afterwards
@@ -87,9 +115,9 @@ QVBoxLayout *create_inner_vbox_layout (QWidget *parent)
   return layout;
 }
 
-QVBoxLayout *create_inner_vbox_layout (QLayout *parent_layout)
+QVBoxLayout *create_intermediate_vbox_layout (QLayout *parent_layout)
 {
-  return create_inner_vbox_layout (parent_layout->parentWidget ());
+  return create_intermediate_vbox_layout (parent_layout->parentWidget ());
 }
 
 QDoubleSpinBox *create_double_spinbox (QWidget *parent, double maximum, int precision, double single_step, double minimum)

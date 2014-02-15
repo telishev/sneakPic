@@ -3,7 +3,7 @@
 
 
 
-element_handles_vector::element_handles_vector (const std::vector<abstract_handle *> &handles) : m_handles (handles)
+element_handles_vector::element_handles_vector (const vector<abstract_handle *> &handles) : m_handles (handles)
 {
 
 }

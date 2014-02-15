@@ -8,7 +8,7 @@ class abstract_svg_item;
 
 class svg_items_container
 {
-  typedef std::map<std::string, abstract_svg_item *> map_type;
+  typedef map<std::string, abstract_svg_item *> map_type;
 
   map_type m_map;
   int max_id;

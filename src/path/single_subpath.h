@@ -12,7 +12,7 @@ class subpath_iterator;
 class single_subpath
 {
   bool m_is_closed;
-  std::vector<single_path_point> m_elements;
+  vector<single_path_point> m_elements;
 
 public:
   single_subpath ();
@@ -32,8 +32,8 @@ public:
 
   void apply_transform (const QTransform &transform);
 
-  const std::vector<single_path_point> &elements () const { return m_elements; }
-  std::vector<single_path_point> &elements () { return m_elements; }
+  const vector<single_path_point> &elements () const { return m_elements; }
+  vector<single_path_point> &elements () { return m_elements; }
 
   void reverse ();
   void erase( size_t point_num );

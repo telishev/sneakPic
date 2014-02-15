@@ -29,8 +29,8 @@ int main (int argc, char **argv)
   return RUN_ALL_TESTS ();
 #endif
   QApplication app (argc, argv);
-  std::unique_ptr<main_window> mainWin;
-  std::unique_ptr<cl_arguments> args (new cl_arguments);
+  unique_ptr<main_window> mainWin;
+  unique_ptr<cl_arguments> args (new cl_arguments);
 
   if (app.arguments ().size () == 1) // If QT eaten all arguments, then it means that program needs to run GUI
     {

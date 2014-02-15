@@ -33,6 +33,7 @@ actions_info::actions_info ()
   add_action (A::COPY, "Copy", QKeySequence::Copy);
   add_action (A::PASTE, "Paste", QKeySequence::Paste);
   add_action (A::CUT, "Cut", QKeySequence::Cut);
+  add_action (A::OPTIONS, "Options...", QKeySequence ());
   add_action (A::QUIT, "Exit", QKeySequence ("Alt+F4"));
 
   /// Tools

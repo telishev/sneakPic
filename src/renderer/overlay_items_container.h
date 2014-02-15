@@ -17,7 +17,7 @@ enum class overlay_item_type;
 class overlay_items_container : public renderable_item
 {
   svg_items_container *m_container;
-  std::map<std::string, renderable_item *> m_obj_map; ///< map from object name to corresponding overlay item
+  map<std::string, renderable_item *> m_obj_map; ///< map from object name to corresponding overlay item
 public:
   overlay_items_container (svg_items_container *container);
   virtual ~overlay_items_container ();

@@ -16,7 +16,7 @@ abstract_css_selector *css_selector_reader::create_selector (const char *data)
 {
   CHECK_RET (skip_comments_and_whitespaces (data), nullptr);
 
-  std::unique_ptr<group_selector> group (new group_selector);
+  unique_ptr<group_selector> group (new group_selector);
 
   while (*data)
     {
@@ -50,11 +50,11 @@ static char get_combinator (const char *&str)
 abstract_css_selector *css_selector_reader::create_single_selector (const char *str)
 {
   trim_whitespace_left (str);
-  std::unique_ptr <simple_selector> selector (new simple_selector);
+  unique_ptr <simple_selector> selector (new simple_selector);
   if (!selector->create_from_string (str))
     return nullptr;
 
-  std::unique_ptr <abstract_css_selector> result (selector.release ());
+  unique_ptr <abstract_css_selector> result (selector.release ());
 
   while (*str)
     {
@@ -62,7 +62,7 @@ abstract_css_selector *css_selector_reader::create_single_selector (const char *
       if (*str == '\0')
         return selector.release ();
 
-      std::unique_ptr <simple_selector> new_selector (new simple_selector);
+      unique_ptr <simple_selector> new_selector (new simple_selector);
       if (!new_selector->create_from_string (str))
         return nullptr;
 

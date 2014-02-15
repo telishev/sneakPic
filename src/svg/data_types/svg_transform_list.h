@@ -16,8 +16,8 @@ public:
   void set_transform (const QTransform &transform) { m_transform = transform; }
 
 private:
-  bool get_transfrom_data (const char *data, std::vector<double> &dest) const;
-  bool apply_transform (const std::string &name, std::vector<double> &data);
+  bool get_transfrom_data (const char *data, vector<double> &dest) const;
+  bool apply_transform (const std::string &name, vector<double> &data);
 };
 
 #endif // SVG_TRANSFORM_LIST_H

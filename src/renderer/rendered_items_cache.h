@@ -16,16 +16,16 @@ class rendered_items_cache
 {
   static const int m_block_pixel_size;
 
-  std::map<render_cache_id, cache_bitmap_t> *m_cache;
-  std::map<render_cache_id, cache_bitmap_t> *m_next_zoom_cache;
-  std::map<int, std::string> m_selection_map;
+  map<render_cache_id, cache_bitmap_t> *m_cache;
+  map<render_cache_id, cache_bitmap_t> *m_next_zoom_cache;
+  map<int, std::string> m_selection_map;
 
   double m_zoom_x, m_zoom_y;
 
   QMutex *m_mutex;
   bool m_pending_changes;
 
-  std::map<int, SkBitmap> m_current_screen_map;
+  map<int, SkBitmap> m_current_screen_map;
 
 public:
   rendered_items_cache ();

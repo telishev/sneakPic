@@ -20,7 +20,7 @@ class abstract_renderer_item : public renderable_item
 protected:
   std::string m_name;
   renderer_items_container *m_container;
-  std::vector<std::string> m_children;
+  vector<std::string> m_children;
   std::string m_parent;
   QTransform m_transform;
   int m_unique_id;

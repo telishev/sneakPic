@@ -10,7 +10,7 @@
 
 class transformed_renderable_items : public renderable_item
 {
-  std::vector<std::unique_ptr<renderable_item>> m_base_items;
+  vector<unique_ptr<renderable_item>> m_base_items;
   QTransform m_transform;
 public:
   transformed_renderable_items ();

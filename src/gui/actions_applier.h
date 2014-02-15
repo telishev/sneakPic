@@ -26,11 +26,11 @@ class actions_applier
       : m_start (start), m_drag (drag), m_end (end) {}
   };
 
-  typedef std::function<bool ()> action_type; 
-  std::vector<action_type> m_actions;
+  typedef std::function<bool ()> action_type;
+  vector<action_type> m_actions;
 
-  std::vector<mouse_shortcut_func_t> m_shortcuts;
-  std::vector<drag_shortcut_func_t> m_drag_shortcuts;
+  vector<mouse_shortcut_func_t> m_shortcuts;
+  vector<drag_shortcut_func_t> m_drag_shortcuts;
 
 public:
   actions_applier ();

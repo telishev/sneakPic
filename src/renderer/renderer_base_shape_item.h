@@ -16,7 +16,7 @@ protected:
   SkPaint *m_fill;
   renderer_paint_server *m_stroke_server;
   renderer_paint_server *m_fill_server;
-  std::vector <abstract_renderer_item *> marker_renderer_items;
+  vector <abstract_renderer_item *> marker_renderer_items;
 
 public:
   renderer_base_shape_item (const std::string &name);

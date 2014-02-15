@@ -55,7 +55,7 @@
     <NMakeOutput>qbs-msvc-release\bin\sneakPic.exe</NMakeOutput>
     <OutDir>$(TEMP)</OutDir>
     <IntDir>$(TEMP)</IntDir>
-    <NMakeForcedIncludes>src\precompiled\precompiled_header.h</NMakeForcedIncludes>
+    <NMakeForcedIncludes>precompiled\precompiled_header.h</NMakeForcedIncludes>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>

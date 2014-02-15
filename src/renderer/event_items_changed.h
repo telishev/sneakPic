@@ -10,9 +10,9 @@ class abstract_renderer_item;
 
 class event_items_changed : public abstract_renderer_event
 {
-  std::vector<abstract_renderer_item *> m_changed_items;
-  std::vector<abstract_renderer_item *> m_layout_changed_items;
-  std::vector<std::string> m_removed_items;
+  vector<abstract_renderer_item *> m_changed_items;
+  vector<abstract_renderer_item *> m_layout_changed_items;
+  vector<std::string> m_removed_items;
 public:
   event_items_changed ();
   ~event_items_changed ();

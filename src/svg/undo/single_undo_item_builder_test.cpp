@@ -12,7 +12,7 @@ TEST (single_undo_item_builder, undo_item_change)
   EXPECT_EQ (0, container.add_item (edited_item));
   builder.register_item (edited_item);
   edited_item->m_data = 2;
-  std::unique_ptr <single_undo_item> undo (builder.create_undo ());
+  unique_ptr <single_undo_item> undo (builder.create_undo ());
   EXPECT_NE (nullptr, undo);
   undo->undo ();
   EXPECT_EQ (1, edited_item->m_data);
@@ -28,7 +28,7 @@ TEST (single_undo_item_builder, undo_item_add)
   EXPECT_EQ (0, container.add_item (edited_item));
   builder.register_new_item (edited_item);
 
-  std::unique_ptr <single_undo_item> undo (builder.create_undo ());
+  unique_ptr <single_undo_item> undo (builder.create_undo ());
   EXPECT_NE (nullptr, undo);
 
   undo->undo ();
@@ -48,7 +48,7 @@ TEST (single_undo_item_builder, undo_item_remove)
   EXPECT_EQ (0, container.add_item (edited_item));
   builder.register_item (edited_item);
   container.remove_item (0);
-  std::unique_ptr <single_undo_item> undo (builder.create_undo ());
+  unique_ptr <single_undo_item> undo (builder.create_undo ());
   EXPECT_NE (nullptr, undo);
 
   undo->undo ();

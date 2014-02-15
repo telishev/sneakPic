@@ -24,6 +24,7 @@ class actions_applier;
 
 enum class gui_action_id;
 
+class options_dialog;
 
 class main_window : public QMainWindow
 {
@@ -32,10 +33,10 @@ class main_window : public QMainWindow
   Ui_main_window *ui;
   QSettings *m_qsettings;
   QMenu m_recent_menu;
-  std::unique_ptr <QSignalMapper> m_recent_files_signal_mapper;
+  unique_ptr <QSignalMapper> m_recent_files_signal_mapper;
   QLabel *m_zoom_label;
 
-  settings_t *m_settings;
+  unique_ptr <settings_t> m_settings;
   gui_document *m_document;
   gui_actions *m_actions;
   actions_applier *m_actions_applier;
@@ -47,6 +48,7 @@ class main_window : public QMainWindow
 
   std::deque <QString> m_recent_files;
   style_controller *m_style_controller;
+  unique_ptr <options_dialog> m_options_dialog;
   int m_last_saved_position;
 
 public:
@@ -56,7 +58,7 @@ public:
 
 private slots:
   void zoom_description_changed (const QString &description);
-  void open_file (const QString filename);
+  void do_open_file (const QString filename);
   bool create_new_document ();
   void update_window_title ();
   void undo_invalidation_check ();
@@ -71,15 +73,15 @@ private:
   QString get_last_file_open_dir () const;
   void create_painter ();
   bool action_triggered (gui_action_id id);
-  bool open_file_clicked ();
-  bool save_as_clicked ();
-  bool save_clicked ();
+  bool open_file ();
+  bool save_as ();
+  bool save ();
   void update_on_document_create ();
   void update_undo_position();
   int cur_undo_pos();
   void save_document (QString &filename);
   bool closing_document_check ();
-
+  bool options ();
 };
 
 #endif // MAIN_WINDOW_H

@@ -23,16 +23,16 @@ class svg_item_state : public abstract_state_t
 {
 public:
   svg_document *m_document;
-  std::map<std::string, int> m_attributes;
+  map<std::string, int> m_attributes;
 
   std::string m_original_id;
   std::string m_own_id;
 
-  std::vector<int> m_children;
+  vector<int> m_children;
   int m_parent;
 
-  std::vector<int> m_observers;
-  std::vector<int> m_created_observers;
+  vector<int> m_observers;
+  vector<int> m_created_observers;
 
   svg_item_type m_type;
 
@@ -320,7 +320,7 @@ int abstract_svg_item::child_index () const
   if (!my_parent)
     return -1;
 
-  const std::vector<int> *parent_children = my_parent->m_children;
+  const vector<int> *parent_children = my_parent->m_children;
   DEBUG_ASSERT (parent_children);
   auto it = std::find (parent_children->begin (), parent_children->end (), undo_id ());
   DEBUG_ASSERT (it != parent_children->end ());
@@ -357,7 +357,7 @@ void abstract_svg_item::insert_child (int position, abstract_svg_item *new_child
 {
   register_item_change ();
   if (!m_children)
-    m_children = new std::vector<int>;
+    m_children = new vector<int>;
 
   int id = new_child->undo_id ();
   if (id < 0 || !m_document->get_undo_handler ()->get_item (id))
@@ -478,7 +478,7 @@ void abstract_svg_item::load_from_state (const abstract_state_t *abstract_state)
   else
     {
       if (!m_children)
-        m_children = new std::vector<int>;
+        m_children = new vector<int>;
 
       *m_children = state->m_children;
     }
@@ -488,7 +488,7 @@ void abstract_svg_item::load_from_state (const abstract_state_t *abstract_state)
   else
     {
       if (!m_observers)
-        m_observers = new std::vector<int>;
+        m_observers = new vector<int>;
       *m_observers = state->m_observers;
     }
 
@@ -497,7 +497,7 @@ void abstract_svg_item::load_from_state (const abstract_state_t *abstract_state)
   else
     {
       if (!m_created_observers)
-        m_created_observers = new std::vector<int>;
+        m_created_observers = new vector<int>;
       *m_created_observers = state->m_created_observers;
     }
 
@@ -509,7 +509,7 @@ void abstract_svg_item::load_from_state (const abstract_state_t *abstract_state)
 void abstract_svg_item::observe_item (abstract_svg_item *item_to_observe, svg_item_observer *observer)
 {
   if (!m_created_observers)
-    m_created_observers = new std::vector<int>;
+    m_created_observers = new vector<int>;
 
   item_to_observe->add_observer (observer);
   m_created_observers->push_back (observer->undo_id ());
@@ -518,7 +518,7 @@ void abstract_svg_item::observe_item (abstract_svg_item *item_to_observe, svg_it
 void abstract_svg_item::add_observer (svg_item_observer *observer)
 {
   if (!m_observers)
-    m_observers = new std::vector<int>;
+    m_observers = new vector<int>;
 
   int id = m_document->get_undo_handler ()->add_item (observer);
   m_observers->push_back (id);
@@ -568,9 +568,9 @@ void abstract_svg_item::send_to_listeners (std::function< void (svg_item_observe
     }
 }
 
-std::vector<const abstract_attribute *> abstract_svg_item::attributes_list () const
+vector<const abstract_attribute *> abstract_svg_item::attributes_list () const
 {
-  std::vector<const abstract_attribute *> result;
+  vector<const abstract_attribute *> result;
   for (auto & attribute : m_attributes)
     result.push_back (get_attribute_by_id (attribute.second));
 

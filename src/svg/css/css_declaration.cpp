@@ -49,7 +49,7 @@ bool css_declaration::create_attribute (const std::string &name, const std::stri
   std::string real_value = from_escaped_string (value);
 
   /// TODO: do something with namespaces
-  std::unique_ptr <abstract_attribute> attribute (svg_attribute_factory::get ()->create_attribute (real_name.c_str (), svg_item_type::STYLE));
+  unique_ptr <abstract_attribute> attribute (svg_attribute_factory::get ()->create_attribute (real_name.c_str (), svg_item_type::STYLE));
   if (!attribute)
     return false;
 

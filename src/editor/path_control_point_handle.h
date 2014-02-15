@@ -26,7 +26,7 @@ class path_control_point_handle : public abstract_handle
   QPointF m_drag_start;
   QPointF m_drag_cur;
   bool m_is_highlighted;
-  std::unique_ptr<path_edit_operation> m_edit_operation;
+  unique_ptr<path_edit_operation> m_edit_operation;
 
 public:
   path_control_point_handle (path_handles_editor *editor, svg_item_path *item, svg_path_geom_iterator path_it, bool is_left_handle);

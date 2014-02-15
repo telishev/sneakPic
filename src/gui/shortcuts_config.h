@@ -38,9 +38,9 @@ enum class mouse_drag_shortcut_enum
 
 class shortcuts_config
 {
-  std::vector<mouse_shortcut> m_mouse_shortcuts;
-  std::vector<mouse_shortcut> m_drag_shortcuts;
-  std::vector<QKeySequence> m_action_shortcuts;
+  vector<mouse_shortcut> m_mouse_shortcuts;
+  vector<mouse_shortcut> m_drag_shortcuts;
+  vector<QKeySequence> m_action_shortcuts;
 
 public:
   shortcuts_config ();

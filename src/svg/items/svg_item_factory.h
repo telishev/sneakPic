@@ -16,7 +16,7 @@ class svg_item_factory
 {
   svg_document *m_document;
   std::unordered_map<std::string, std::function<abstract_svg_item * ()>> m_string_map;
-  std::map<svg_item_type, std::function<abstract_svg_item * ()>> m_type_map;
+  map<svg_item_type, std::function<abstract_svg_item * ()>> m_type_map;
 public:
   svg_item_factory (svg_document *document);
   ~svg_item_factory ();

@@ -90,10 +90,10 @@ bool mouse_shortcuts_handler::process_mouse_drag_end (const mouse_event_t &m_eve
   return false;
 }
 
-std::vector<mouse_drag_shortcut_enum>
+vector<mouse_drag_shortcut_enum>
 mouse_shortcuts_handler::get_applicable_shortcuts (const mouse_event_t &m_event, bool ignore_modifiers) const
 {
-  std::vector<mouse_drag_shortcut_enum> result;
+  vector<mouse_drag_shortcut_enum> result;
   for (int i = 0; i < (int)mouse_drag_shortcut_enum::COUNT; i++)
     {
       mouse_shortcut shortcut = m_cfg->drag_shortcut_mouse ((mouse_drag_shortcut_enum)i);

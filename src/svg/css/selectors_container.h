@@ -12,7 +12,7 @@ class abstract_attribute;
 
 class selectors_container
 {
-  std::vector<std::pair <abstract_css_selector *, css_declaration *>> m_rule_set;
+  vector<std::pair <abstract_css_selector *, css_declaration *>> m_rule_set;
 
 public:
   selectors_container ();

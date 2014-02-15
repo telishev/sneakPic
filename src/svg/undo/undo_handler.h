@@ -13,7 +13,7 @@ class undo_handler
 {
   undoable_items_container_t *m_items_container;
   single_undo_item_builder *m_builder;
-  std::vector<std::unique_ptr<single_undo_item>> m_undo_items;
+  vector<unique_ptr<single_undo_item>> m_undo_items;
   int m_cur_undo_position;
   bool m_signals_enabled;
 public:

@@ -37,16 +37,16 @@ enum class svg_attribute_type;
 class abstract_svg_item : public undoable
 {
   svg_document *m_document;
-  std::map<std::string, int> m_attributes;
+  map<std::string, int> m_attributes;
 
   std::string m_original_id;
   std::string m_own_id;
 
-  std::vector<int> *m_children;
+  vector<int> *m_children;
   int m_parent;
 
-  std::vector<int> *m_observers; ///< observers that should be informed on some changes
-  std::vector<int> *m_created_observers; ///< observers created by me
+  vector<int> *m_observers; ///< observers that should be informed on some changes
+  vector<int> *m_created_observers; ///< observers created by me
 
 public:
   abstract_svg_item (svg_document *document);
@@ -116,7 +116,7 @@ public:
   void observe_item (abstract_svg_item *item_to_observe, svg_item_observer *observer);
   void erase_created_observer (svg_item_observer *observer);
 
-  std::vector<const abstract_attribute *> attributes_list () const;
+  vector<const abstract_attribute *> attributes_list () const;
 
   void create_unique_name ();
 

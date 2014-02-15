@@ -44,7 +44,7 @@ void path_anchors_selection::clear ()
 
 void path_anchors_selection::update ()
 {
-  std::vector<std::string> removed_items;
+  vector<std::string> removed_items;
   for (const auto &anchors_pair : m_selected_anchors)
     if (!m_selection->contains (anchors_pair.first))
       removed_items.push_back (anchors_pair.first);

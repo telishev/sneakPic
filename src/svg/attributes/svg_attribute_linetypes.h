@@ -9,7 +9,7 @@ class svg_attribute_linetypes : public abstract_attribute
 {
   SVG_ATTRIBUTE
 
-  std::vector<bool> m_is_line_segment;
+  vector<bool> m_is_line_segment;
 public:
   svg_attribute_linetypes ();
   virtual ~svg_attribute_linetypes ();
@@ -22,6 +22,6 @@ public:
 
   void create_from_path (const svg_path_geom *path, bool dont_create_if_exists = false);
 
-  std::vector<bool> *get_is_line_segment () { return &m_is_line_segment; }
+  vector<bool> *get_is_line_segment () { return &m_is_line_segment; }
 };
 #endif // SVG_ATTRIBUTE_LINETYPES_H

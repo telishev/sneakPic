@@ -17,7 +17,7 @@ public:
   svg_attribute_style ();
   virtual ~svg_attribute_style ();
 
-  const std::map<std::string, abstract_attribute *> &attributes () const;
+  const map<std::string, abstract_attribute *> &attributes () const;
   abstract_attribute *get_attribute (const std::string &str) const;
 
   virtual bool read (const char *data, bool from_css = false) override;

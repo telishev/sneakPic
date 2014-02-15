@@ -9,7 +9,7 @@
 
 class overlay_item_group : public renderable_item
 {
-  std::vector<std::unique_ptr<renderable_item>> m_children;
+  vector<unique_ptr<renderable_item>> m_children;
 public:
   overlay_item_group ();
   ~overlay_item_group ();

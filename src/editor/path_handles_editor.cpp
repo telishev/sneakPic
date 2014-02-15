@@ -30,8 +30,8 @@
 
 class path_elements_handles : public element_handles
 {
-  std::vector<abstract_handle *> m_handles;
-  std::vector<path_anchor_handle *> m_anchor_handles;
+  vector<abstract_handle *> m_handles;
+  vector<path_anchor_handle *> m_anchor_handles;
 
   const svg_path_geom *m_path;
   svg_item_path *m_path_item;
@@ -73,11 +73,11 @@ public:
       }
   }
 
-  const std::vector<path_anchor_handle *> &anchor_handles () { return m_anchor_handles; }
+  const vector<path_anchor_handle *> &anchor_handles () { return m_anchor_handles; }
 
 
 protected:
-  virtual std::vector<abstract_handle *> handles () override
+  virtual vector<abstract_handle *> handles () override
   {
     return m_handles;
   }

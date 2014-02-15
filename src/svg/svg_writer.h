@@ -18,7 +18,7 @@ public:
   std::map<QString, QString> get_used_namespaces (const abstract_svg_item *root) const;
 
 private:
-  void get_used_namespaces (const abstract_svg_item *root, std::map<QString, QString> &map) const;
+  void get_used_namespaces (const abstract_svg_item *root, map<QString, QString> &map) const;
 };
 
 #endif // SVG_WRITER_H

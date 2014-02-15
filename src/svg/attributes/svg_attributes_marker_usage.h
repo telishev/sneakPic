@@ -17,7 +17,7 @@ class svg_base_attribute_marker_usage : public abstract_attribute
 public:
   svg_base_attribute_marker_usage () { m_element = nullptr; }
 
-  std::vector<abstract_renderer_item *> configure_markers_on_path_drawing (QPainterPath path, QTransform transform, double stroke_width) const;
+  vector<abstract_renderer_item *> configure_markers_on_path_drawing (QPainterPath path, QTransform transform, double stroke_width) const;
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool from_css = false) const override;
   bool is_specified () const { return (m_element != nullptr); }

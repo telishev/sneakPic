@@ -27,7 +27,7 @@ void undo_handler::create_undo ()
   if ((int)m_undo_items.size () > m_cur_undo_position)
     m_undo_items.erase (m_undo_items.begin () + m_cur_undo_position, m_undo_items.end ());
   single_undo_item *item = m_builder->create_undo ();
-  m_undo_items.push_back (std::unique_ptr<single_undo_item> (item));
+  m_undo_items.push_back (unique_ptr<single_undo_item> (item));
   m_cur_undo_position++;
 }
 

@@ -85,9 +85,9 @@ void tools_container::add_tool (gui_action_id id, abstract_tool *tool)
   m_tools[id].reset (tool);
 }
 
-std::vector<gui_action_id> tools_container::tool_actions () const
+vector<gui_action_id> tools_container::tool_actions () const
 {
-  std::vector<gui_action_id> result;
+  vector<gui_action_id> result;
   for (auto tool_pair : m_tools_info)
     result.push_back (tool_pair.first);
 

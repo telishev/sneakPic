@@ -10,16 +10,16 @@ class svg_path_geom_iterator;
 class svg_path
 {
   svg_path_geom *m_geom;
-  std::vector<bool> *m_is_line_segment;
-  std::vector<node_type_t> *m_node_type;
+  vector<bool> *m_is_line_segment;
+  vector<node_type_t> *m_node_type;
   QTransform m_transform;
 public:
-  svg_path (svg_path_geom *geom, std::vector<bool> *is_line_segment, std::vector<node_type_t> *node_type, QTransform transform);
+  svg_path (svg_path_geom *geom, vector<bool> *is_line_segment, vector<node_type_t> *node_type, QTransform transform);
   ~svg_path ();
 
   svg_path_geom *get_geom () { return m_geom; }
-  std::vector<bool> *get_is_line_segment () { return m_is_line_segment; }
-  std::vector<node_type_t> *get_node_type () { return m_node_type; }
+  vector<bool> *get_is_line_segment () { return m_is_line_segment; }
+  vector<node_type_t> *get_node_type () { return m_node_type; }
   QTransform transform () const { return m_transform; }
 
   void move_anchor (QPointF dst, svg_path_geom_iterator it);
@@ -32,10 +32,10 @@ public:
 
 class unique_svg_path
 {
-  std::unique_ptr<svg_path_geom> m_geom;
-  std::vector<bool> m_is_line_segment;
-  std::vector<node_type_t> m_node_type;
-  std::unique_ptr<svg_path> m_path;
+  unique_ptr<svg_path_geom> m_geom;
+  vector<bool> m_is_line_segment;
+  vector<node_type_t> m_node_type;
+  unique_ptr<svg_path> m_path;
 public:
   unique_svg_path ();
   ~unique_svg_path ();

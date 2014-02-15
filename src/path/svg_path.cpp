@@ -3,7 +3,7 @@
 #include "svg_path_geom.h"
 #include "svg/attributes/svg_attribute_nodetypes.h"
 
-svg_path::svg_path (svg_path_geom *geom, std::vector<bool> *is_line_segment, std::vector<node_type_t> *node_type, QTransform transform)
+svg_path::svg_path (svg_path_geom *geom, vector<bool> *is_line_segment, vector<node_type_t> *node_type, QTransform transform)
 {
   m_geom = geom;
   m_is_line_segment = is_line_segment;

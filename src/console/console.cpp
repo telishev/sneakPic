@@ -26,10 +26,10 @@
 void console_renderer::render_to_image (svg_document *doc, QString file_name, int width, int height)
 {
   QRect rect = QRect (0, 0, width, height);
-  std::unique_ptr<renderer_items_container> container (doc->create_rendered_items (nullptr));
+  unique_ptr<renderer_items_container> container (doc->create_rendered_items (nullptr));
 
   svg_renderer renderer (nullptr, nullptr);
-  std::unique_ptr<SkBitmap> bitmap (renderer.draw_to_bitmap (rect, QTransform (), container->root ()));
+  unique_ptr<SkBitmap> bitmap (renderer.draw_to_bitmap (rect, QTransform (), container->root ()));
   qt2skia::qimage (*bitmap).save (file_name);
 }
 

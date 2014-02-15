@@ -1349,7 +1349,7 @@ class ReturnAction {
     typedef typename Function<F>::ArgumentTuple ArgumentTuple;
 
     // The implicit cast is necessary when Result has more than one
-    // single-argument constructor (e.g. Result is std::vector<int>) and R
+    // single-argument constructor (e.g. Result is vector<int>) and R
     // has a type conversion operator template.  In that case, value_(value)
     // won't compile as the compiler doesn't known which constructor of
     // Result to call.  ImplicitCast_ forces the compiler to convert R to
@@ -6831,7 +6831,7 @@ class EachMatcher {
 // Implements Key(inner_matcher) for the given argument pair type.
 // Key(inner_matcher) matches an std::pair whose 'first' field matches
 // inner_matcher.  For example, Contains(Key(Ge(5))) can be used to match an
-// std::map that contains at least one element whose key is >= 5.
+// map that contains at least one element whose key is >= 5.
 template <typename PairType>
 class KeyMatcherImpl : public MatcherInterface<PairType> {
  public:
@@ -7074,7 +7074,7 @@ class ElementsAreMatcherImpl : public MatcherInterface<Container> {
 
     typename StlContainer::const_iterator it = stl_container.begin();
     // explanations[i] is the explanation of the element at index i.
-    std::vector<internal::string> explanations(count());
+    vector<internal::string> explanations(count());
     for (size_t i = 0; i != count();  ++it, ++i) {
       StringMatchResultListener s;
       if (matchers_[i].MatchAndExplain(*it, &s)) {
@@ -7111,7 +7111,7 @@ class ElementsAreMatcherImpl : public MatcherInterface<Container> {
   }
 
   size_t count() const { return matchers_.size(); }
-  std::vector<Matcher<const Element&> > matchers_;
+  vector<Matcher<const Element&> > matchers_;
 
   GTEST_DISALLOW_ASSIGN_(ElementsAreMatcherImpl);
 };
@@ -7569,7 +7569,7 @@ Pointwise(const TupleMatcher& tuple_matcher, const Container& rhs) {
 //   EXPECT_THAT(page_ids, Contains(Gt(2)));
 //   EXPECT_THAT(page_ids, Not(Contains(4)));
 //
-//   ::std::map<int, size_t> page_lengths;
+//   ::map<int, size_t> page_lengths;
 //   page_lengths[1] = 100;
 //   EXPECT_THAT(page_lengths,
 //               Contains(::std::pair<const int, size_t>(1, 100)));
@@ -7599,7 +7599,7 @@ inline internal::ContainsMatcher<M> Contains(M matcher) {
 //   page_ids.insert(1);
 //   EXPECT_THAT(page_ids, Not(Each(Lt(2))));
 //
-//   ::std::map<int, size_t> page_lengths;
+//   ::map<int, size_t> page_lengths;
 //   page_lengths[1] = 100;
 //   page_lengths[2] = 200;
 //   page_lengths[3] = 300;
@@ -7615,7 +7615,7 @@ inline internal::EachMatcher<M> Each(M matcher) {
 
 // Key(inner_matcher) matches an std::pair whose 'first' field matches
 // inner_matcher.  For example, Contains(Key(Ge(5))) can be used to match an
-// std::map that contains at least one element whose key is >= 5.
+// map that contains at least one element whose key is >= 5.
 template <typename M>
 inline internal::KeyMatcher<M> Key(M inner_matcher) {
   return internal::KeyMatcher<M>(inner_matcher);
@@ -7624,7 +7624,7 @@ inline internal::KeyMatcher<M> Key(M inner_matcher) {
 // Pair(first_matcher, second_matcher) matches a std::pair whose 'first' field
 // matches first_matcher and whose 'second' field matches second_matcher.  For
 // example, EXPECT_THAT(map_type, ElementsAre(Pair(Ge(5), "foo"))) can be used
-// to match a std::map<int, string> that contains exactly one element whose key
+// to match a map<int, string> that contains exactly one element whose key
 // is >= 5 and whose value equals "foo".
 template <typename FirstMatcher, typename SecondMatcher>
 inline internal::PairMatcher<FirstMatcher, SecondMatcher>
@@ -7815,9 +7815,9 @@ class UntypedFunctionMockerBase {
       const void* untyped_args);
 
  protected:
-  typedef std::vector<const void*> UntypedOnCallSpecs;
+  typedef vector<const void*> UntypedOnCallSpecs;
 
-  typedef std::vector<internal::linked_ptr<ExpectationBase> >
+  typedef vector<internal::linked_ptr<ExpectationBase> >
   UntypedExpectations;
 
   // Returns an Expectation object that references and co-owns exp,
@@ -8322,7 +8322,7 @@ class ExpectationBase {
     kRetiresOnSaturation
   };
 
-  typedef std::vector<const void*> UntypedActions;
+  typedef vector<const void*> UntypedActions;
 
   // Returns an Expectation object that references and co-owns this
   // expectation.

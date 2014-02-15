@@ -12,7 +12,7 @@ class undoable_items_container_t;
 class single_undo_item_builder
 {
   undoable_items_container_t *m_items_container;
-  std::unordered_map<int, std::unique_ptr<abstract_state_t>> m_changed_items;
+  std::unordered_map<int, unique_ptr<abstract_state_t>> m_changed_items;
 public:
   single_undo_item_builder (undoable_items_container_t *items_container);
   ~single_undo_item_builder ();

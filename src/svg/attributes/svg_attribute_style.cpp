@@ -42,7 +42,7 @@ abstract_attribute *svg_attribute_style::get_attribute (const std::string &str) 
     return nullptr;
 }
 
-const std::map<std::string, abstract_attribute *> & svg_attribute_style::attributes () const
+const map<std::string, abstract_attribute *> & svg_attribute_style::attributes () const
 {
   return declaration->attributes ();
 }

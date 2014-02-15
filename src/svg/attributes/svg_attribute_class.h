@@ -9,7 +9,7 @@
 class svg_attribute_class : public abstract_attribute
 {
   SVG_ATTRIBUTE
-  std::vector<std::string> m_class_names;
+  vector<std::string> m_class_names;
 public:
   svg_attribute_class ();
   virtual ~svg_attribute_class ();

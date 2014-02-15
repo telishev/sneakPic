@@ -46,7 +46,7 @@ void merge_path_operation::merge_inside (svg_path *path, svg_path_geom_iterator 
   /// else merge two subpaths
 
   // if dest is subpath begin, prepend src
-  std::vector<single_path_point> &dest_subpath = dest.subpath ().elements (), &src_subpath = src.subpath ().elements ();
+  vector<single_path_point> &dest_subpath = dest.subpath ().elements (), &src_subpath = src.subpath ().elements ();
   if (src_subpath.size () > 0)
     {
       svg_path_geom *geom = path->get_geom ();

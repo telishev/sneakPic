@@ -27,7 +27,7 @@ single_undo_item *single_undo_item_builder::create_undo ()
       abstract_state_t *old_state = pair.second.get ();
 
       undoable *item = m_items_container->get_item (id);
-      std::unique_ptr<abstract_state_t> new_state (item ? item->create_state () : nullptr);
+      unique_ptr<abstract_state_t> new_state (item ? item->create_state () : nullptr);
       if (!old_state && !new_state)
         continue;
 

@@ -33,7 +33,7 @@ enum class data_format
 class svg_data_type_iri
 {
   QString m_element_id;
-  mutable std::unique_ptr<QImage> m_image_data;
+  mutable unique_ptr<QImage> m_image_data;
   mutable data_type m_data_type;
   iri_type m_iri_type;
   QByteArray raw_data;

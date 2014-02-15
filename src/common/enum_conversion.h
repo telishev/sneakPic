@@ -24,6 +24,18 @@ inline int enum_values_count (int)
   return -1;
 }
 
+template <typename T>
+int enum_values_count_template (int x = T ())
+{
+  return enum_values_count (T ());
+}
+
+template <typename T>
+int enum_values_count_template (...)
+{
+  return -1;
+}
+
 template <typename E>
 class enum_helper
 {
@@ -32,7 +44,7 @@ class enum_helper
 public:
   enum_helper ()
   {
-    count = enum_values_count (E ());
+    count = enum_values_count_template<E> (E ());
     int i = 0;
     while ((count < 0) || (i < count))
       {
@@ -46,6 +58,11 @@ public:
           }
         i++;
       }
+  }
+
+  int get_count ()
+  {
+    return count;
   }
 
   E get_enum_value (const char *string)
@@ -67,6 +84,12 @@ template <typename E>
 static E string_to_enum (const char *string)
 {
   return enum_helper<E>::self.get_enum_value (string);
+}
+
+template <typename E>
+static int enum_count ()
+{
+  return enum_helper<E>::self.get_count ();
 }
 
 template <typename E>

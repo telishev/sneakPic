@@ -29,7 +29,7 @@ private:
   abstract_handle *m_cur_handle;
   abstract_handle *m_highlighted_handle;
 
-  typedef std::map<std::string, std::unique_ptr<element_handles>> map_t;
+  typedef map<std::string, unique_ptr<element_handles>> map_t;
   map_t m_handles;
 
 public:

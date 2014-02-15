@@ -19,7 +19,7 @@ class path_anchors_selection : public QObject
   items_selection *m_selection;
   svg_document *m_document;
 
-  std::map<std::string, std::set<int>> m_selected_anchors;
+  map<std::string, std::set<int>> m_selected_anchors;
   bool m_changes_started;
 
 public:
@@ -37,7 +37,7 @@ public:
   void begin_changes () { m_changes_started = true; }
   void end_changes () { m_changes_started = false; }
 
-  const std::map<std::string, std::set<int>> &selected_anchors () const { return m_selected_anchors; }
+  const map<std::string, std::set<int>> &selected_anchors () const { return m_selected_anchors; }
 
 private slots:
   void attribute_changed (const std::string &sender, const abstract_attribute *computed_attribute);

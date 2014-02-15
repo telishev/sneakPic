@@ -23,6 +23,7 @@
 #include "gui/tools_widget_builder.h"
 #include "gui/menu_builder.h"
 #include "gui/connection.h"
+#include "gui/options_dialog.h"
 
 #include "common/common_utils.h"
 #include "common/memory_deallocation.h"
@@ -42,15 +43,17 @@ main_window::main_window ()
   ui->setupUi (this);
   m_document = nullptr;
   m_qsettings = new QSettings ("SneakPic");
-  m_settings = new settings_t;
+  m_settings.reset (new settings_t (m_qsettings));
+  m_settings->load ();
   m_actions = new gui_actions (m_settings->shortcuts_cfg (), [&] (gui_action_id id) { return action_triggered (id); }, this);
   m_dock_widget_builder = new dock_widget_builder (this);
   m_tools_builder = new tools_widget_builder (m_actions, m_dock_widget_builder);
-  m_style_controller = new style_controller (m_settings);
+  m_style_controller = new style_controller (m_settings.get ());
   m_style_widget_handler = new style_widget_handler (m_dock_widget_builder, m_style_controller);
   m_last_saved_position = 0;
   m_recent_files_signal_mapper.reset (new QSignalMapper ());
-  CONNECT (m_recent_files_signal_mapper.get (), (void (QSignalMapper::*) (const QString&)) &QSignalMapper::mapped, this, &main_window::open_file);
+  m_options_dialog.reset (new options_dialog (m_settings.get ()));
+  CONNECT (m_recent_files_signal_mapper.get (), (void (QSignalMapper::*) (const QString&)) &QSignalMapper::mapped, this, &main_window::do_open_file);
 
   m_menu_builder = new menu_builder (menuBar (), m_actions, createPopupMenu ());
 
@@ -68,9 +71,10 @@ main_window::main_window ()
 
   m_actions_applier = new actions_applier;
   m_actions_applier->register_action (gui_action_id::NEW, this, &main_window::create_new_document);
-  m_actions_applier->register_action (gui_action_id::OPEN, this, &main_window::open_file_clicked);
-  m_actions_applier->register_action (gui_action_id::SAVE, this, &main_window::save_clicked);
-  m_actions_applier->register_action (gui_action_id::SAVE_AS, this, &main_window::save_as_clicked);
+  m_actions_applier->register_action (gui_action_id::OPEN, this, &main_window::open_file);
+  m_actions_applier->register_action (gui_action_id::SAVE, this, &main_window::save);
+  m_actions_applier->register_action (gui_action_id::SAVE_AS, this, &main_window::save_as);
+  m_actions_applier->register_action (gui_action_id::OPTIONS, this, &main_window::options);
   m_actions_applier->register_action (gui_action_id::QUIT, (QWidget *)this, &QWidget::close);
 
 
@@ -81,11 +85,11 @@ main_window::~main_window ()
 {
   m_qsettings->setValue ("main_window_geometry", this->saveGeometry ());
   m_qsettings->setValue ("main_window_state", this->saveState ());
+  m_settings->save ();
   save_recent_menu ();
   FREE (m_actions);
   FREE (ui);
   FREE (m_qsettings);
-  FREE (m_settings);
   FREE (m_dock_widget_builder);
   FREE (m_tools_builder);
   FREE (m_menu_builder);
@@ -132,17 +136,24 @@ void main_window::update_recent_menu ()
 }
 
 
-bool main_window::open_file_clicked ()
+bool main_window::options ()
+{
+  m_options_dialog->init ();
+  m_options_dialog->show ();
+  return true;
+}
+
+bool main_window::open_file ()
 {
   QString filename = QFileDialog::getOpenFileName (this, "Open File", get_last_file_open_dir (), "Scalable Vector Graphics (*.svg)");
   if (filename.isEmpty ())
     return true;
 
-  open_file (filename);
+  do_open_file (filename);
   return true;
 }
 
-bool main_window::save_as_clicked ()
+bool main_window::save_as ()
 {
   if (!m_document)
     return true;
@@ -206,7 +217,7 @@ void main_window::update_window_title ()
     setWindowTitle (title);
 }
 
-void main_window::open_file (const QString filename)
+void main_window::do_open_file (const QString filename)
 {
   if (!closing_document_check ())
     return;
@@ -214,7 +225,7 @@ void main_window::open_file (const QString filename)
   FREE (m_document);
   DO_ON_EXIT (update_window_title ());
 
-  m_document = new gui_document (m_settings, m_actions);
+  m_document = new gui_document (m_settings.get (), m_actions);
   setWindowTitle ("Loading...");
   if (!m_document->open_file (filename))
     {
@@ -273,7 +284,7 @@ bool main_window::create_new_document ()
 
   FREE (m_document);
   DO_ON_EXIT (update_window_title ());
-  m_document = new gui_document (m_settings, m_actions);
+  m_document = new gui_document (m_settings.get (), m_actions);
   if (!m_document->create_new_document ())
     return false;
 
@@ -310,7 +321,7 @@ bool main_window::closing_document_check ()
 
     if (result == QMessageBox::Yes)
     {
-      if (!save_clicked ())
+      if (!save ())
       {
         return false;
       }
@@ -330,10 +341,10 @@ void main_window::closeEvent (QCloseEvent *event)
     event->ignore ();
 }
 
-bool main_window::save_clicked ()
+bool main_window::save ()
 {
   if (m_document->is_new_document ())
-    return save_as_clicked ();
+    return save_as ();
   else
     save_document (m_document->get_filename ());
   return true;

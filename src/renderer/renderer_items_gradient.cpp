@@ -19,8 +19,8 @@ void renderer_linear_gradient::fill_paint (SkPaint &paint) const
   SkPoint points[2] = { SkPoint::Make (SkFloatToScalar (m_x1), SkFloatToScalar (m_y1)),
                         SkPoint::Make (SkFloatToScalar (m_x2), SkFloatToScalar (m_y2)) };
 
-  std::unique_ptr<SkColor []> colors (new SkColor [m_stops.size ()]);
-  std::unique_ptr<SkScalar[]> pos (new SkScalar [m_stops.size ()]);
+  unique_ptr<SkColor []> colors (new SkColor [m_stops.size ()]);
+  unique_ptr<SkScalar[]> pos (new SkScalar [m_stops.size ()]);
   for (size_t i = 0; i < m_stops.size (); i++)
     {
       colors[i] = qt2skia::color (m_stops[i].second);
@@ -69,8 +69,8 @@ void renderer_radial_gradient::fill_paint (SkPaint &paint) const
 {
   SkPoint center = SkPoint::Make (SkFloatToScalar (m_cx), SkFloatToScalar (m_cy));
 
-  std::unique_ptr<SkColor []> colors (new SkColor [m_stops.size ()]);
-  std::unique_ptr<SkScalar[]> pos (new SkScalar [m_stops.size ()]);
+  unique_ptr<SkColor []> colors (new SkColor [m_stops.size ()]);
+  unique_ptr<SkScalar[]> pos (new SkScalar [m_stops.size ()]);
   for (size_t i = 0; i < m_stops.size (); i++)
     {
       colors[i] = qt2skia::color (m_stops[i].second);

@@ -13,7 +13,7 @@ class color_spinbox : public color_selector
   QHBoxLayout *m_layout;
   QSpinBox *m_spin_box;
 
-  std::unique_ptr<connection> m_value_changed_connection;
+  unique_ptr<connection> m_value_changed_connection;
 
 public:
   color_spinbox (QWidget *parent, color_single_selector_type type, QColor *color);

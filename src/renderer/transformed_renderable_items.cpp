@@ -30,7 +30,7 @@ void transformed_renderable_items::set_base_item_transform (const QTransform &tr
 
 void transformed_renderable_items::add_base_item (renderable_item *base_item)
 {
-  m_base_items.push_back (std::unique_ptr<renderable_item> (base_item));
+  m_base_items.push_back (unique_ptr<renderable_item> (base_item));
 }
 
 void transformed_renderable_items::clear_base_items ()

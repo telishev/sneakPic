@@ -17,6 +17,7 @@ enum class gui_action_id
   COPY,
   PASTE,
   CUT,
+  OPTIONS,
 
 
   //// Tools

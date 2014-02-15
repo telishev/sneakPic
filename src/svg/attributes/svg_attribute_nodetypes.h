@@ -18,7 +18,7 @@ class svg_attribute_nodetypes : public abstract_attribute
 {
   SVG_ATTRIBUTE
 
-  std::vector<node_type_t> m_node_type;
+  vector<node_type_t> m_node_type;
 public:
   svg_attribute_nodetypes ();
   virtual ~svg_attribute_nodetypes ();
@@ -32,7 +32,7 @@ public:
 
   void create_from_path (const svg_path_geom *path, bool dont_create_if_exists = false);
 
-  std::vector<node_type_t> *get_node_type ()  { return &m_node_type; }
+  vector<node_type_t> *get_node_type ()  { return &m_node_type; }
 
 private:
   char node_type_to_char (node_type_t type) const;

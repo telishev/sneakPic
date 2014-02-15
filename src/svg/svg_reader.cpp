@@ -107,7 +107,7 @@ abstract_svg_item *svg_reader::process_new_item (QXmlStreamReader &reader, abstr
 
 void svg_reader::add_style (abstract_svg_item *child_item, svg_attribute_style *style)
 {
-  const std::map<std::string, abstract_attribute *> &attributes = style->attributes ();
+  const map<std::string, abstract_attribute *> &attributes = style->attributes ();
   for (auto attr_pair : attributes)
     {
       abstract_attribute *attr = attr_pair.second;
