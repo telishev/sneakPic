@@ -57,6 +57,7 @@ public:
         for (auto it = m_path->begin (); it != m_path->end (); ++it)
           {
             path_anchor_handle *handle = new path_anchor_handle (m_editor, m_path_item, it);
+            handle->set_is_selected (is_selected (it));
             m_anchor_handles.push_back (handle);
             m_handles.push_back (handle);
           }

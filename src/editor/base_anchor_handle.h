@@ -13,6 +13,7 @@ class base_anchor_handle : public abstract_handle
 protected:
   svg_path_geom_iterator m_path_it;
   bool m_is_highlighted;
+  bool m_is_selected;
   node_type_t m_node_type;
   svg_item_path *m_item;
 public:
@@ -22,6 +23,7 @@ public:
   void set_path_iterator (svg_path_geom_iterator path_it);
   virtual QPointF get_handle_center () const;
   void set_node_type (node_type_t node_type) { m_node_type = node_type; }
+  void set_is_selected (bool is_selected) { m_is_selected = is_selected; }
 
   svg_path_geom_iterator path_iterator () const { return m_path_it; }
   svg_item_path *item () const { return m_item; }

@@ -17,6 +17,7 @@ anchor_handle_renderer::anchor_handle_renderer (QPointF pos, node_type_t node_ty
   m_pos = pos;
   m_is_highlighted = is_highlighted;
   m_is_visible = true;
+  m_is_selected = false;
 }
 
 anchor_handle_renderer::anchor_handle_renderer ()
@@ -108,6 +109,8 @@ QColor anchor_handle_renderer::current_color () const
 {
   if (m_is_highlighted)
     return QColor ("lightcoral");
+  else if (m_is_selected)
+    return QColor ("blue");
   else
     return QColor ("gray");
 }
@@ -115,4 +118,9 @@ QColor anchor_handle_renderer::current_color () const
 void anchor_handle_renderer::set_visible (bool visible)
 {
   m_is_visible = visible;
+}
+
+void anchor_handle_renderer::set_is_selected (bool is_selected)
+{
+  m_is_selected = is_selected;
 }

@@ -17,6 +17,7 @@ class anchor_handle_renderer : public renderable_item
   node_type_t m_node_type;
   bool m_is_highlighted;
   bool m_is_visible;
+  bool m_is_selected;
 public:
   anchor_handle_renderer ();
   anchor_handle_renderer (QPointF pos, node_type_t node_type, bool is_highlighted);
@@ -26,6 +27,7 @@ public:
   void set_node_type (node_type_t node_type);
   void set_highlighted (bool is_highlighted);
   void set_visible (bool visible);
+  void set_is_selected (bool is_selected);
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
 
   static int get_anchor_size_px () { return anchor_size_px; }

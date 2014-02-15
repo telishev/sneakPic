@@ -11,6 +11,7 @@ base_anchor_handle::base_anchor_handle (svg_path_geom_iterator path_it, svg_item
 {
   m_path_it = path_it;
   m_is_highlighted = false;
+  m_is_selected = false;
   m_node_type = node_type_t::SMOOTH;
   m_item = item;
 }
@@ -65,7 +66,9 @@ void base_anchor_handle::draw (SkCanvas &canvas, const renderer_state &state, co
   if (!m_path_it.is_valid ())
     return;
 
-  anchor_handle_renderer (get_handle_center (), node_type (), m_is_highlighted).draw (canvas, state, config);
+  anchor_handle_renderer renderer (get_handle_center (), node_type (), m_is_highlighted);
+  renderer.set_is_selected (m_is_selected);
+  renderer.draw (canvas, state, config);
 }
 
 node_type_t base_anchor_handle::node_type () const
