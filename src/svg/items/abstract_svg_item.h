@@ -102,6 +102,8 @@ public:
   /// checks for correctness
   bool process_after_read ();
 
+  void update_name ();
+
   bool is_cloned () const;
   /// creates cloned item, for "use" item
   abstract_svg_item *create_clone ();

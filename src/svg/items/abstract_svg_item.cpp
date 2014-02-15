@@ -163,11 +163,7 @@ bool abstract_svg_item::process_after_read ()
     return false;
 
   /// for items that don't have a name, generate it
-  if (!has_name ())
-    {
-      create_unique_name ();
-      add_to_container ();
-    }
+  update_name();
 
   for (int i = 0; i < children_count (); i++)
     CHECK (child (i)->process_after_read ());
@@ -594,6 +590,15 @@ void abstract_svg_item::prepare_to_remove ()
     {
       for (int id : *m_created_observers)
         handler->remove_item (id);
+    }
+}
+
+void abstract_svg_item::update_name ()
+{
+  if (!has_name ())
+    {
+      create_unique_name ();
+      add_to_container ();
     }
 }
 

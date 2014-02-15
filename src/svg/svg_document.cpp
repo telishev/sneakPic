@@ -172,7 +172,7 @@ void svg_document::update_renderer ()
 void svg_document::process_new_item (abstract_svg_item *item)
 {
   get_undo_handler ()->add_item (item);
-  item->process_after_read ();
+  item->update_name ();
 }
 
 bool svg_document::create_new_document ()
