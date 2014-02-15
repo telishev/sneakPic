@@ -219,6 +219,7 @@ void main_window::open_file (const QString filename)
   if (!m_document->open_file (filename))
     {
       QMessageBox::warning (this, "Warning", "Cannot open document");
+      create_new_document ();
       return;
     }
 
