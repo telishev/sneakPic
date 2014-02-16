@@ -44,8 +44,11 @@ public slots:
   void selection_or_items_changed ();
   void update_stroke_width (double value);
   void update_stroke_miterlimit (double value);
+
+private slots:
+  void update_from_color_picker (const QColor &color);
+
 signals:
   void target_items_changed ();
 };
-
 #endif // STYLE_CONTROLLER_H

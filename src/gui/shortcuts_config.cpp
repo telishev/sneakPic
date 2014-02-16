@@ -30,14 +30,14 @@ void shortcuts_config::fill_mouse_default ()
   typedef mouse_event_type e;
   typedef mouse_button b;
   typedef keyboard_modifier k;
-  set_mouse_shortcut (m::SELECT_ITEM                 , e::CLICK  , b::BUTTON_LEFT, k::NO_MODIFIERS);
-  set_mouse_shortcut (m::ADD_ITEM_TO_SELECTION       , e::CLICK  , b::BUTTON_LEFT, k::SHIFT       );
-  set_mouse_shortcut (m::FIND_CURRENT_OBJECT         , e::MOVE   , b::ANY_BUTTON , k::ALL         );
-  set_mouse_shortcut (m::HIGHLIGHT_HANDLE            , e::MOVE   , b::ANY_BUTTON , k::ALL         );
-  set_mouse_shortcut (m::SELECT_HANDLE               , e::CLICK  , b::BUTTON_LEFT, k::ALL         );
-  set_mouse_shortcut (m::PEN_ADD_SEGMENT_SIMPLE      , e::CLICK  , b::BUTTON_LEFT, k::ALL         );
-  set_mouse_shortcut (m::CHANGE_HANDLE_TYPE          , e::CLICK  , b::BUTTON_LEFT, k::CTRL        );
-  set_mouse_shortcut (m::UPDATE_AUXILIARY_PEN_PREVIEW, e::MOVE   , b::ANY_BUTTON , k::ALL        );
+  set_mouse_shortcut (m::SELECT_ITEM                 , e::CLICK  , b::BUTTON_LEFT , k::NO_MODIFIERS);
+  set_mouse_shortcut (m::ADD_ITEM_TO_SELECTION       , e::CLICK  , b::BUTTON_LEFT , k::SHIFT       );
+  set_mouse_shortcut (m::FIND_CURRENT_OBJECT         , e::MOVE   , b::ANY_BUTTON  , k::ALL         );
+  set_mouse_shortcut (m::HIGHLIGHT_HANDLE            , e::MOVE   , b::ANY_BUTTON  , k::ALL         );
+  set_mouse_shortcut (m::SELECT_HANDLE               , e::CLICK  , b::BUTTON_LEFT , k::ALL         );
+  set_mouse_shortcut (m::PEN_ADD_SEGMENT_SIMPLE      , e::CLICK  , b::BUTTON_LEFT , k::ALL         );
+  set_mouse_shortcut (m::CHANGE_HANDLE_TYPE          , e::CLICK  , b::BUTTON_LEFT , k::CTRL        );
+  set_mouse_shortcut (m::UPDATE_AUXILIARY_PEN_PREVIEW, e::MOVE   , b::ANY_BUTTON  , k::ALL         );
 }
 
 void shortcuts_config::fill_drag_default ()
@@ -53,6 +53,7 @@ void shortcuts_config::fill_drag_default ()
   set_mouse_drag_shortcut (m::CREATE_RECTANGLE     , b::BUTTON_LEFT  , k::ALL                      );
   set_mouse_drag_shortcut (m::DRAG_HANDLE          , b::BUTTON_LEFT  , k::ALL                      );
   set_mouse_drag_shortcut (m::PEN_ADD_SEGMENT_DRAG , b::BUTTON_LEFT  , k::ALL                      );
+  set_mouse_drag_shortcut (m::COLOR_PICKER         , b::BUTTON_RIGHT , k::ALL                      );
 }
 
 void shortcuts_config::fill_action_default ()

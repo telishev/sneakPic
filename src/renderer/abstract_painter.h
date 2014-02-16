@@ -1,5 +1,5 @@
 /// \file renderer/abstract_painter.h
-/// \brief class used to draw something on glwidget
+/// \brief class used to draw something on canvas_widget
 
 #ifndef ABSTRACT_PAINTER_H
 #define ABSTRACT_PAINTER_H
@@ -8,7 +8,7 @@
 
 #include <QObject>
 
-class gl_widget;
+class canvas_widget_t;
 class QWheelEvent;
 class QEvent;
 class QKeyEvent;
@@ -29,11 +29,11 @@ class abstract_painter : public QObject
 {
   Q_OBJECT
 
-  gl_widget          *m_glwidget;
+  canvas_widget_t         *m_canvas_widget;
   int m_config_needed[(int)configure_type::COUNT];
 
 public:
-  abstract_painter (gl_widget *glwidget);
+  abstract_painter (canvas_widget_t *canvas_widget);
   virtual ~abstract_painter ();
 
   /// mouse events
@@ -50,7 +50,7 @@ public:
 
   virtual void resizeEvent (QResizeEvent *qevent) = 0;
 
-  gl_widget *glwidget () const { return m_glwidget; }
+  canvas_widget_t *canvas_widget () const { return m_canvas_widget; }
 
   void update ();
 

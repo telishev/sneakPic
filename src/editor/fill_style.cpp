@@ -87,3 +87,9 @@ void fill_style::apply_color_to_selection ()
   // In this case we're updating color without calling apply changes.
   set_selection_color ();
 }
+
+void fill_style::set_color (QColor color)
+{
+  if (m_color)
+    *m_color = color;
+}

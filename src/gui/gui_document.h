@@ -14,7 +14,7 @@ class events_queue;
 class svg_document;
 class svg_painter;
 class tools_container;
-class gl_widget;
+class canvas_widget_t;
 class gui_actions;
 class actions_applier;
 class copy_paste_handler;
@@ -42,7 +42,7 @@ public:
   gui_document (settings_t *settings, gui_actions *actions);
   ~gui_document ();
 
-  svg_painter *create_painter (gl_widget *widget);
+  svg_painter *create_painter (canvas_widget_t *widget);
   svg_painter *painter () const { return m_painter; }
 
   bool open_file (const QString &filename);

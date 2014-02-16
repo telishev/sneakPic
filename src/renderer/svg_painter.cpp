@@ -11,45 +11,47 @@
 #include <QWheelEvent>
 
 #include "common/common_utils.h"
+#include "common/debug_utils.h"
 #include "common/math_defs.h"
 #include "common/memory_deallocation.h"
-#include "common/debug_utils.h"
 
 #include "editor/items_selection.h"
 #include "editor/tools/abstract_tool.h"
 
-#include "gui/gl_widget.h"
-#include "gui/mouse_shortcuts_handler.h"
-#include "gui/shortcuts_config.h"
-#include "gui/settings.h"
-#include "gui/connection.h"
 #include "gui/actions_applier.h"
+#include "gui/connection.h"
+#include "gui/canvas_widget_t.h"
 #include "gui/gui_action_id.h"
+#include "gui/mouse_shortcuts_handler.h"
+#include "gui/settings.h"
+#include "gui/shortcuts_config.h"
 
 #include "renderer/abstract_renderer_item.h"
-#include "renderer/renderer_state.h"
+#include "renderer/current_item_outline_renderer.h"
+#include "renderer/event_transform_changed.h"
+#include "renderer/events_queue.h"
+#include "renderer/items_selection_renderer.h"
+#include "renderer/overlay_renderer.h"
+#include "renderer/qt2skia.h"
 #include "renderer/render_cache_id.h"
 #include "renderer/rendered_items_cache.h"
-#include "renderer/svg_renderer.h"
-#include "renderer/qt2skia.h"
-#include "renderer/events_queue.h"
-#include "renderer/event_transform_changed.h"
-#include "renderer/overlay_renderer.h"
-#include "renderer/current_item_outline_renderer.h"
-#include "renderer/rubberband_selection.h"
+#include "renderer/renderer_items_container.h"
+#include "renderer/renderer_overlay_path.h"
 #include "renderer/renderer_page.h"
+#include "renderer/renderer_state.h"
+#include "renderer/rubberband_selection.h"
+#include "renderer/svg_renderer.h"
 
-#include "svg/svg_document.h"
 #include "svg/items/abstract_svg_item.h"
-#include "svg/items/svg_items_container.h"
-#include "svg/svg_utils.h"
-#include "items_selection_renderer.h"
 #include "svg/items/items_comparison.h"
+#include "svg/items/svg_items_container.h"
+#include "svg/svg_document.h"
+#include "svg/svg_utils.h"
 
 using namespace std::placeholders;
 
-svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings)
-  : abstract_painter (glwidget)
+svg_painter::svg_painter (canvas_widget_t *canvas_widget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings)
+  : abstract_painter (canvas_widget)
 {
   m_renderer_page = nullptr;
   m_current_tool = nullptr;
@@ -69,6 +71,11 @@ svg_painter::svg_painter (gl_widget *glwidget, rendered_items_cache *cache, even
 
   create_mouse_shortcuts ();
   m_actions_applier->register_action (gui_action_id::DELETE_ITEMS, this, &svg_painter::remove_items_in_selection);
+  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::COLOR_PICKER, this, &svg_painter::pick_color_start, &svg_painter::pick_color_drag, &svg_painter::pick_color_end);
+  m_color_picker_area_preview.reset (new renderer_overlay_path ());
+  m_color_picker_area_preview->set_color (Qt::white);
+  m_color_picker_area_preview->set_xfer_mode (SkXfermode::Mode::kDifference_Mode);
+  m_overlay->add_item (m_color_picker_area_preview.get (), overlay_layer_type::TEMP);
 }
 
 svg_painter::~svg_painter ()
@@ -83,6 +90,80 @@ svg_painter::~svg_painter ()
   FREE (m_actions_applier);
 }
 
+bool svg_painter::pick_color_start (const QPoint &pos)
+{
+  m_color_picker_pos = pos;
+  m_color_picker_area_preview->set_visible (true);
+  pick_color_drag (pos);
+  update ();
+  return true;
+}
+
+bool svg_painter::pick_color_drag (const QPoint &pos)
+{
+  QPointF new_pos (get_local_pos (pos));
+  QPainterPath path;
+  QPointF local_color_picker_pos = get_local_pos (m_color_picker_pos);
+  float distance = QLineF (local_color_picker_pos, new_pos).length ();
+  path.addEllipse (local_color_picker_pos, distance, distance);
+  m_color_picker_area_preview->set_painter_path (path);
+  update ();
+  return true;
+}
+
+bool svg_painter::pick_color_end (const QPoint &pos)
+{
+  QPointF final_pos = pos;
+
+  m_color_picker_area_preview->set_visible (false);
+  QPainterPath path;
+  float distance = QLineF (m_color_picker_pos, final_pos).length ();
+  path.addEllipse (m_color_picker_pos, distance, distance);
+  m_color_picker_area_preview->set_painter_path (path);
+
+  svg_renderer renderer (nullptr, nullptr);
+  unique_ptr<renderer_items_container> container (m_document->create_rendered_items (nullptr));
+  QPointF local_cp_pos = get_local_pos (m_color_picker_pos);
+  QPointF local_final_pos = get_local_pos (final_pos);
+  QRectF rect (path.boundingRect ());
+  QTransform transform;
+  QPointF pnt = get_local_pos (rect.topLeft ());
+  transform *= m_cur_transform;
+  transform.translate (-pnt.x (), -pnt.y ());
+  path.translate (-rect.left (), -rect.top ());
+  rect = path.boundingRect ();
+  unique_ptr<SkBitmap> bitmap (renderer.draw_to_bitmap (rect.toRect (), transform, container->root (), Qt::white));
+  QImage image = qt2skia::qimage (*bitmap.get ());
+  QImage imageCut (image.width (), image.height (), QImage::Format_ARGB32);
+  {
+    QPainter painter (&imageCut);
+    painter.setClipPath (path);
+    painter.drawImage (0, 0, image);
+  }
+
+  int r = 0, g = 0, b = 0, c = 0;
+  for (int j = 0; j < imageCut.height (); j++)
+    {
+      QRgb *rgb = reinterpret_cast<QRgb *> (imageCut.scanLine (j));
+      for (int i = 0; i < imageCut.width (); i++)
+        {
+          if (qAlpha (rgb[i]) > 0)
+            {
+              r += qRed (rgb[i]);
+              g += qGreen (rgb[i]);
+              b += qBlue (rgb[i]);
+              c++;
+            }
+        }
+    }
+  if (c == 0)
+    return true;
+
+  emit color_picked (QColor (r / c, g / c, b / c));
+  update ();
+  return true;
+}
+
 void svg_painter::update_status_bar_widgets ()
 {
   emit zoom_description_changed (QString ("%1 %2 ").arg ( QLocale ().toString (m_cur_transform.m11 () * 100, 'f', 2)).arg (QLocale ().percent ()));
@@ -92,7 +173,7 @@ void svg_painter::reset_transform ()
 {
   double doc_width, doc_height;
   svg_utils::get_doc_dimensions (m_document, doc_width, doc_height);
-  double scale = qMin (glwidget ()->width () / doc_width, glwidget ()->height () / doc_height);
+  double scale = qMin (canvas_widget ()->width () / doc_width, canvas_widget ()->height () / doc_height);
   m_cur_transform = QTransform::fromScale (scale, scale);
   send_changes (true);
   update_status_bar_widgets ();
@@ -120,10 +201,10 @@ unsigned int svg_painter::mouse_event (const mouse_event_t &m_event)
 void svg_painter::draw ()
 {
   QPainter painter;
-  painter.begin (glwidget ());
-  painter.fillRect (glwidget ()->rect(), Qt::white);
+  painter.begin (canvas_widget ());
+  painter.fillRect (canvas_widget ()->rect(), Qt::white);
 
-  QRect rect = glwidget ()->rect ();
+  QRect rect = canvas_widget ()->rect ();
   m_overlay->draw (painter, rect, m_cur_transform);
 
   if (m_current_tool)
@@ -172,7 +253,7 @@ void svg_painter::wheelEvent (QWheelEvent *qevent)
       send_changes (true);
       update_status_bar_widgets ();
 
-      glwidget ()->update ();
+      canvas_widget ()->update ();
       qevent->accept ();
     }
 }
@@ -185,19 +266,19 @@ void svg_painter::leaveEvent (QEvent *qevent)
 void svg_painter::resizeEvent (QResizeEvent * /*qevent*/)
 {
   send_changes (false);
-  glwidget ()->update ();
+  canvas_widget ()->update ();
 }
 
 void svg_painter::update_drawing (QTransform transform)
 {
   svg_renderer renderer (m_cache, nullptr);
-  renderer.update_drawing (transform, QRectF (glwidget ()->rect ()), (int)render_cache_type::ROOT_ITEM);
+  renderer.update_drawing (transform, QRectF (canvas_widget ()->rect ()), (int)render_cache_type::ROOT_ITEM);
 }
 
 void svg_painter::send_changes (bool interrrupt_rendering)
 {
 
-  auto object_pair = render_cache_id::get_id_for_pixel_rect (m_cur_transform, glwidget ()->rect (), (int)render_cache_type::ROOT_ITEM);
+  auto object_pair = render_cache_id::get_id_for_pixel_rect (m_cur_transform, canvas_widget ()->rect (), (int)render_cache_type::ROOT_ITEM);
   m_queue->add_event_and_wait (new event_transform_changed (object_pair.first, object_pair.second, m_cur_transform, interrrupt_rendering));
   set_configure_needed (configure_type::REDRAW_BASE);
 }
@@ -233,7 +314,7 @@ bool svg_painter::do_select_item (const QPoint &pos, bool clear_selection)
   if (item)
     m_selection->add_item (item);
 
-  glwidget ()->update ();
+  canvas_widget ()->update ();
   return true;
 }
 
@@ -268,7 +349,7 @@ bool svg_painter::pan_picture (const QPoint &pos)
 
   m_cur_transform = QTransform (m_last_transform).translate (diff.x (), diff.y ());
   send_changes (false);
-  glwidget ()->update ();
+  canvas_widget ()->update ();
   return true;
 }
 
@@ -279,7 +360,7 @@ bool svg_painter::find_current_object (const QPoint &pos)
   if (item_string != m_item_outline->current_item ())
     {
       m_item_outline->set_current_item (item_string);
-      glwidget ()->update ();
+      canvas_widget ()->update ();
     }
 
   return false;
@@ -297,7 +378,7 @@ void svg_painter::create_overlay_containers ()
 void svg_painter::items_changed ()
 {
   set_configure_needed (configure_type::ITEMS_CHANGED);
-  glwidget ()->update ();
+  canvas_widget ()->update ();
 }
 
 void svg_painter::set_current_tool (abstract_tool *tool)
@@ -310,7 +391,7 @@ void svg_painter::set_current_tool (abstract_tool *tool)
     m_current_tool->activate ();
 
   items_changed ();
-  glwidget ()->update ();
+  canvas_widget ()->update ();
 }
 
 QPointF svg_painter::get_local_pos (const QPointF &mouse_pos) const
@@ -320,7 +401,7 @@ QPointF svg_painter::get_local_pos (const QPointF &mouse_pos) const
 
 void svg_painter::redraw ()
 {
-  glwidget ()->update ();
+  canvas_widget ()->update ();
 }
 
 svg_items_container *svg_painter::item_container () const

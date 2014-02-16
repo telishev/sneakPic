@@ -125,12 +125,12 @@ void svg_renderer::update_cache_item_async (const renderable_item *item, const r
   return update_cache_item (item, cache_id, transform, cfg, 1, 1);
 }
 
-SkBitmap *svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const renderable_item *item)
+SkBitmap *svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const renderable_item *item, QColor color)
 {
   SkBitmap *bitmap = new SkBitmap;
   bitmap->setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
   bitmap->allocPixels ();
-  bitmap->eraseColor (SK_ColorTRANSPARENT);
+  bitmap->eraseColor (qt2skia::color (color));
   draw_to_bitmap (rect_to_draw, transform, item, bitmap);
   return bitmap;
 }

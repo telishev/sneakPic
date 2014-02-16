@@ -16,6 +16,8 @@ class QRect;
 class SkCanvas;
 class SkBitmap;
 
+#include <QColor>
+
 class svg_renderer
 {
   rendered_items_cache *m_cache;
@@ -31,7 +33,7 @@ public:
 
   rendered_items_cache *cache () const { return m_cache; }
 
-  SkBitmap *draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const renderable_item *item);
+  SkBitmap *draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const renderable_item *item, QColor color = Qt::transparent);
   void draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const renderable_item *item, SkBitmap *bitmap);
 
   void update_drawing (const QTransform &transform, const QRectF &rect_to_update, int cache_object_type);

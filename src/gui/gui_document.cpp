@@ -7,7 +7,7 @@
 
 #include "editor/tools/tools_container.h"
 
-#include "gui/gl_widget.h"
+#include "gui/canvas_widget_t.h"
 #include "gui/gui_action_id.h"
 #include "gui/gui_actions.h"
 #include "gui/actions_applier.h"
@@ -77,7 +77,7 @@ bool gui_document::save_file (const QString &filename)
   return m_doc->write_file (filename);
 }
 
-svg_painter *gui_document::create_painter (gl_widget *widget)
+svg_painter *gui_document::create_painter (canvas_widget_t *widget)
 {
   FREE (m_painter);
   m_painter = new svg_painter (widget, m_cache, m_queue, m_doc, m_settings);

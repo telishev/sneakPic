@@ -6,22 +6,23 @@
 #include <QLabel>
 #include <QTransform>
 
-class svg_document;
 class abstract_svg_item;
-class rendered_items_cache;
-class events_queue;
-class overlay_renderer;
-class items_selection;
-class mouse_shortcuts_handler;
-class settings_t;
-class current_item_outline_renderer;
-class rubberband_selection;
 class abstract_tool;
-class svg_items_container;
-class items_selection_renderer;
 class actions_applier;
-class renderer_page;
+class current_item_outline_renderer;
+class events_queue;
+class items_selection;
+class items_selection_renderer;
 class mouse_shortcut_enum_union;
+class mouse_shortcuts_handler;
+class overlay_renderer;
+class rendered_items_cache;
+class renderer_overlay_path;
+class renderer_page;
+class rubberband_selection;
+class settings_t;
+class svg_document;
+class svg_items_container;
 
 enum class gui_action_id;
 
@@ -47,8 +48,11 @@ class svg_painter : public abstract_painter
 
   abstract_tool *m_current_tool;
 
+  QPointF m_color_picker_pos;
+  unique_ptr<renderer_overlay_path> m_color_picker_area_preview;
+
 public:
-  svg_painter (gl_widget *glwidget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings);
+  svg_painter (canvas_widget_t *canvas_widget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings);
   ~svg_painter ();
 
   void set_current_tool (abstract_tool *tool);
@@ -68,6 +72,7 @@ public:
   bool remove_items_in_selection ();
 signals:
   void zoom_description_changed (const QString &description);
+  void color_picked (const QColor &color);
 
 private slots:
   void items_changed ();
@@ -100,6 +105,9 @@ private:
   void create_overlay_containers ();
   abstract_svg_item *get_current_item_for_point (const QPoint &pos);
   bool process_mouse_event (const mouse_event_t &event, mouse_shortcut_enum_union action);
+  bool pick_color_start (const QPoint &pos);
+  bool pick_color_drag (const QPoint &pos);
+  bool pick_color_end (const QPoint &pos);
 };
 
 #endif // SVG_PAINTER_H

@@ -13,7 +13,7 @@
 #include "renderer/svg_painter.h"
 #include "attributes/svg_attribute_xlink_href.h"
 #include "attributes/svg_attributes_length_type.h"
-#include "gui/gl_widget.h"
+#include "gui/canvas_widget_t.h"
 #include "internal_clipboard_format.h"
 
 void copy_paste_handler::copy ()
@@ -73,7 +73,7 @@ copy_paste_handler::copy_paste_handler (svg_painter *painter)
 
 const QPointF &copy_paste_handler::local_cursor_pos ()
 {
-  return m_painter->get_local_pos (m_painter->glwidget ()->cursor_pos ());
+  return m_painter->get_local_pos (m_painter->canvas_widget ()->cursor_pos ());
 }
 
 

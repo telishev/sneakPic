@@ -1,5 +1,5 @@
-#ifndef GL_WIDGET_H
-#define GL_WIDGET_H
+#ifndef CANVAS_WIDGET_T_H
+#define CANVAS_WIDGET_T_H
 
 #include <QGLWidget>
 #include <QGLFunctions>
@@ -8,15 +8,15 @@
 class mouse_filter;
 class abstract_painter;
 
-class gl_widget : public QWidget, protected QGLFunctions
+class canvas_widget_t : public QWidget, protected QGLFunctions
 {
   Q_OBJECT
 
   mouse_filter *m_mouse_filter_object;
   abstract_painter *m_cur_painter;
 public:
-  gl_widget (QWidget *parent);
-  ~gl_widget ();
+  canvas_widget_t (QWidget *parent);
+  ~canvas_widget_t ();
 
   void set_painter (abstract_painter *painter) { m_cur_painter = painter; }
   mouse_filter *mouse_filter_object () const { return m_mouse_filter_object; }
@@ -33,4 +33,4 @@ protected:
   virtual bool event (QEvent *qevent) override;
 };
 
-#endif // GL_WIDGET_H
+#endif // CANVAS_WIDGET_T_H

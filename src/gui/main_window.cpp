@@ -237,7 +237,7 @@ void main_window::do_open_file (const QString filename)
   m_last_saved_position = 0;
   update_on_document_create ();
   add_file_to_recent (filename);
-  ui->glwidget->repaint ();
+  ui->canvas_widget->repaint ();
 }
 
 void main_window::zoom_description_changed (const QString &description)
@@ -247,7 +247,7 @@ void main_window::zoom_description_changed (const QString &description)
 
 void main_window::create_painter ()
 {
-  svg_painter *painter = m_document->create_painter (ui->glwidget);
+  svg_painter *painter = m_document->create_painter (ui->canvas_widget);
   CONNECT (painter, &svg_painter::zoom_description_changed, this, &main_window::zoom_description_changed);
   m_style_controller->set_painter (painter);
   painter->update_status_bar_widgets ();
@@ -290,7 +290,7 @@ bool main_window::create_new_document ()
 
   update_on_document_create ();
   update_window_title ();
-  ui->glwidget->repaint ();
+  ui->canvas_widget->repaint ();
   return true;
 }
 

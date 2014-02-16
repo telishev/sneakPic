@@ -21,6 +21,7 @@ public:
   QColor *color () { return m_color; }
   void apply_color_to_selection ();
   void update_from_selection ();
+  void set_color( QColor color );
 private:
   void set_selection_color ();
 };

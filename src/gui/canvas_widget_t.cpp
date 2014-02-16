@@ -1,4 +1,4 @@
-#include "gui/gl_widget.h"
+#include "gui/canvas_widget_t.h"
 
 #include <QPainter>
 #include <QPaintEvent>
@@ -12,7 +12,7 @@
 
 
 
-gl_widget::gl_widget (QWidget *parent)
+canvas_widget_t::canvas_widget_t (QWidget *parent)
   //: QGLWidget (QGLFormat(QGL::SampleBuffers | QGL::AlphaChannel), parent)
   : QWidget (parent)
 {
@@ -22,16 +22,16 @@ gl_widget::gl_widget (QWidget *parent)
 
   m_mouse_filter_object = new mouse_filter (this);
 
-  CONNECT (m_mouse_filter_object, &mouse_filter::mouse_event_happened, this, &gl_widget::mouse_event);
+  CONNECT (m_mouse_filter_object, &mouse_filter::mouse_event_happened, this, &canvas_widget_t::mouse_event);
 
   setMouseTracking (true);
 }
 
-gl_widget::~gl_widget ()
+canvas_widget_t::~canvas_widget_t ()
 {
 }
 
-void gl_widget::paintEvent (QPaintEvent * /*qevent*/)
+void canvas_widget_t::paintEvent (QPaintEvent * /*qevent*/)
 {
   if (!m_cur_painter)
     {
@@ -45,27 +45,27 @@ void gl_widget::paintEvent (QPaintEvent * /*qevent*/)
   m_cur_painter->draw ();
 }
 
-void gl_widget::wheelEvent (QWheelEvent *qevent)
+void canvas_widget_t::wheelEvent (QWheelEvent *qevent)
 {
   if (m_cur_painter)
     m_cur_painter->wheelEvent (qevent);
   qevent->accept ();
 }
 
-const QPoint &gl_widget::cursor_pos ()
+const QPoint &canvas_widget_t::cursor_pos ()
 {
   return mapFromGlobal (QCursor::pos ());
 };
 
 /// If mouse leaves widget area
-void gl_widget::leaveEvent (QEvent *qevent)
+void canvas_widget_t::leaveEvent (QEvent *qevent)
 {
   if (m_cur_painter)
     m_cur_painter->leaveEvent (qevent);
   qevent->accept ();
 }
 
-void gl_widget::resizeEvent (QResizeEvent *qevent)
+void canvas_widget_t::resizeEvent (QResizeEvent *qevent)
 {
   if (m_cur_painter)
     m_cur_painter->resizeEvent (qevent);
@@ -73,7 +73,7 @@ void gl_widget::resizeEvent (QResizeEvent *qevent)
   QWidget::resizeEvent (qevent);
 }
 
-bool gl_widget::event (QEvent *qevent)
+bool canvas_widget_t::event (QEvent *qevent)
 {
   if (m_mouse_filter_object->process_event (qevent))
     {
@@ -84,7 +84,7 @@ bool gl_widget::event (QEvent *qevent)
   return QWidget::event (qevent);
 }
 
-void gl_widget::mouse_event (const mouse_event_t &m_event)
+void canvas_widget_t::mouse_event (const mouse_event_t &m_event)
 {
   if (!m_cur_painter)
     return;

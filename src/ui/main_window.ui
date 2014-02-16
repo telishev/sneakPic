@@ -28,7 +28,7 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="gl_widget" name="glwidget" native="true"/>
+     <widget class="canvas_widget_t" name="canvas_widget" native="true"/>
     </item>
    </layout>
   </widget>
@@ -38,7 +38,7 @@
   <customwidget>
    <class>gl_widget</class>
    <extends>QWidget</extends>
-   <header>gui/gl_widget.h</header>
+   <header>gui/canvas_widget_t.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

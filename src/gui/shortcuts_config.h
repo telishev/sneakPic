@@ -32,6 +32,7 @@ enum class mouse_drag_shortcut_enum
   DRAG_OBJECTS,
   HANDLES_SELECTION,
   RUBBERBAND_SELECTION,
+  COLOR_PICKER,
 
   COUNT,
 };

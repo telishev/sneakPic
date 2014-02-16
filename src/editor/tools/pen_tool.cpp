@@ -3,7 +3,7 @@
 #include "gui/actions_applier.h"
 #include "gui/gui_action_id.h"
 #include "gui/connection.h"
-#include "gui/gl_widget.h"
+#include "gui/canvas_widget_t.h"
 #include "gui/shortcuts_config.h"
 #include "gui/settings.h"
 
@@ -77,7 +77,7 @@ bool pen_tool::update_auxiliary_pen_preview (const QPoint &pos)
     }
 
   if (pos.isNull ())
-    dest_pos = m_painter->glwidget ()->cursor_pos ();
+    dest_pos = m_painter->canvas_widget ()->cursor_pos ();
   else
     dest_pos = pos;
 

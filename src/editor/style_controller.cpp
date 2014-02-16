@@ -58,6 +58,8 @@ void style_controller::set_painter (svg_painter *painter)
 {
   m_containers[(int) selected_style::SELECTED_STYLE]->init (painter->selection ());
   CONNECT (painter->selection (), &items_selection::selection_changed, this, &style_controller::selection_or_items_changed);
+
+  CONNECT (painter, &svg_painter::color_picked, this, &style_controller::update_from_color_picker);
   m_painter = painter;
 }
 
@@ -95,6 +97,14 @@ void style_controller::selection_or_items_changed ()
 {
   active_container ()->get_fill_style ()->update_from_selection ();
   active_container ()->get_stroke_style ()->update_from_selection ();
+  emit target_items_changed ();
+}
+
+void style_controller::update_from_color_picker (const QColor &color)
+{
+  active_container ()->get_fill_style ()->set_color (color);
+  active_container ()->get_fill_style ()->apply_color_to_selection ();
+  apply_changes ();
   emit target_items_changed ();
 }
 
