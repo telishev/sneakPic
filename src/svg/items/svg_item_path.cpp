@@ -23,9 +23,6 @@ bool svg_item_path::process_item_after_read ()
   auto *path_data = get_computed_attribute<svg_attribute_path_data> ();
   auto nodetypes = get_attribute_for_change<svg_attribute_nodetypes> ();
   auto linetypes = get_attribute_for_change<svg_attribute_linetypes> ();
-  if (path_data->path ()->total_points () == 0)
-    return false;
-
 
   nodetypes->create_from_path (path_data->path (), true);
   linetypes->create_from_path (path_data->path (), true);
