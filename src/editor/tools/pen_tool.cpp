@@ -89,7 +89,7 @@ bool pen_tool::update_auxiliary_pen_preview (const QPoint &pos)
       m_auxiliary_preview_renderer->set_path (m_auxiliary_path->path ()->get_geom ());
       path_builder builder (*m_auxiliary_path->path ());
       builder.move_to (cur_path->last_point ().anchor_point (), false);
-      if (cur_path->total_points () > 1)
+      if (cur_path->total_points () > 0)
         builder.set_prev_curve_c (cur_path->last_point ().control_point (true));
       builder.curve_to_short (local_pos, local_pos, false);
        m_painter->update ();
@@ -105,6 +105,7 @@ bool pen_tool::add_segment_simple (const QPoint &pos)
   if (m_path_snap_end)
     finish_path_add ();
 
+  update_auxiliary_pen_preview ();
   update ();
   return true;
 }
@@ -276,6 +277,8 @@ bool pen_tool::cancel_curve ()
     finish_editing ();
     return true;
   }
+  else if (m_current_path->path ()->get_geom ()->total_points () > 0)
+    m_path_builder.reset (new path_builder (*m_current_path->path ()));
 
   update_cp_renderers ();
   update_auxiliary_pen_preview ();
@@ -302,18 +305,15 @@ void pen_tool::update_cp_renderers ()
       m_left_cp_renderer->set_visible (true);
       m_left_cp_renderer->set_anchor (last_point.anchor_point ());
       m_left_cp_renderer->set_control_point (last_point.control_point (true));
-    }
-  else
-    m_left_cp_renderer->set_visible (false);
-
-  if (last_point.has_control_point (false))
-    {
       m_right_cp_renderer->set_visible (true);
       m_right_cp_renderer->set_anchor (last_point.anchor_point ());
       m_right_cp_renderer->set_control_point (last_point.control_point (false));
     }
   else
-    m_right_cp_renderer->set_visible (false);
+    {
+      m_left_cp_renderer->set_visible (false);
+      m_right_cp_renderer->set_visible (false);
+    }
 }
 
 void pen_tool::finish_editing ()
