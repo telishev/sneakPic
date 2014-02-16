@@ -39,7 +39,7 @@ subpath_iterator single_subpath::last_point () const
 
 size_t single_subpath::total_segments () const
 {
-  if (total_points () < 2)
+  if (total_points () == 0)
     return 0;
 
   return m_is_closed ? total_points () : total_points () - 1;
