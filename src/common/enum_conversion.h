@@ -19,13 +19,8 @@
 #include <unordered_map>
 #include <string.h>
 
-inline int enum_values_count (int)
-{
-  return -1;
-}
-
 template <typename T>
-int enum_values_count_template (int x = T ())
+int enum_values_count_template (decltype (enum_values_count (T ())))
 {
   return enum_values_count (T ());
 }
@@ -44,7 +39,7 @@ class enum_helper
 public:
   enum_helper ()
   {
-    count = enum_values_count_template<E> (E ());
+    count = enum_values_count_template<E> (0);
     int i = 0;
     while ((count < 0) || (i < count))
       {
