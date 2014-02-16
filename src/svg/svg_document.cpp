@@ -109,12 +109,12 @@ void svg_document::create_renderer_item (renderer_items_container *renderer_item
     create_renderer_item (renderer_items, svg_item->child (i));
 }
 
-void svg_document::apply_changes ()
+void svg_document::apply_changes (QString name)
 {
   if (!m_queue)
     return;
 
-  get_undo_handler ()->create_undo ();
+  get_undo_handler ()->create_undo (name);
   emit changes_done ();
   update_renderer ();
 }
@@ -205,3 +205,4 @@ bool svg_document::finalize_doc_creation (svg_reader &reader)
   set_signals_enabled (true);
   return true;
 }
+

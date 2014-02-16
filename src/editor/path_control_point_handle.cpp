@@ -106,7 +106,7 @@ void path_control_point_handle::apply_drag ()
   move_point ();
   m_editor->begin_changes ();
   m_edit_operation.reset ();
-  m_editor->end_changes ();
+  m_editor->end_changes ("Drag Handle");
 }
 
 void path_control_point_handle::move_point ()

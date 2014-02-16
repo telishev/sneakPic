@@ -74,7 +74,7 @@ void path_anchor_handle::apply_drag ()
   move_point ();
   m_editor->begin_changes ();
   m_edit_operation.reset ();
-  m_editor->end_changes ();
+  m_editor->end_changes ("Move Node");
 }
 
 void path_anchor_handle::move_point ()

@@ -11,22 +11,22 @@ TEST (undo_handler, test_change)
   handler.clear ();
   handler.register_item (change_item);
   change_item->m_data = 2;
-  handler.create_undo ();
+  handler.create_undo ("Test");
   
   handler.register_item (change_item);
   change_item->m_data = 3;
-  handler.create_undo ();
+  handler.create_undo ("Test");
 
   handler.register_item (change_item);
   change_item->m_data = 4;
-  handler.create_undo ();
+  handler.create_undo ("Test");
 
   handler.undo (2);
   EXPECT_EQ (2, change_item->m_data);
 
   handler.register_item (change_item);
   change_item->m_data = 5;
-  handler.create_undo ();
+  handler.create_undo ("Test");
 
   handler.undo (1);
   EXPECT_EQ (2, change_item->m_data);
@@ -57,15 +57,15 @@ TEST (undo_handler, test_add_remove)
   undoable_stub *new_item1 = new undoable_stub (1);
   handler.add_item (new_item1);
   EXPECT_EQ (0, new_item1->undo_id ());
-  handler.create_undo (); // 1
+  handler.create_undo ("Test"); // 1
   
   handler.remove_item (new_item1);
-  handler.create_undo (); // 2
+  handler.create_undo ("Test"); // 2
 
   undoable_stub *new_item2 = new undoable_stub (2);
   handler.add_item (new_item2);
   EXPECT_EQ (1, new_item2->undo_id ());
-  handler.create_undo (); // 3
+  handler.create_undo ("Test"); // 3
 
   handler.undo (1); // 2
   EXPECT_EQ (nullptr, handler.get_item (1));
@@ -77,7 +77,7 @@ TEST (undo_handler, test_add_remove)
 
   undoable_stub *new_item3 = new undoable_stub (3);
   handler.add_item (new_item3);
-  handler.create_undo (); // 2
+  handler.create_undo ("Test"); // 2
 
   handler.undo (1); // 1
   EXPECT_EQ (nullptr, handler.get_item (1));

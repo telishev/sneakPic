@@ -88,7 +88,7 @@ void style_controller::update_stroke_color_momentarily ()
 void style_controller::apply_changes ()
 {
   if (m_painter)
-    m_painter->document ()->apply_changes ();
+    m_painter->document ()->apply_changes ("Change Style");
 }
 
 void style_controller::selection_or_items_changed ()

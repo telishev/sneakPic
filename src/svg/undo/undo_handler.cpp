@@ -22,11 +22,12 @@ undo_handler::~undo_handler ()
   FREE (m_items_container);
 }
 
-void undo_handler::create_undo ()
+void undo_handler::create_undo (QString name)
 {
   if ((int)m_undo_items.size () > m_cur_undo_position)
     m_undo_items.erase (m_undo_items.begin () + m_cur_undo_position, m_undo_items.end ());
   single_undo_item *item = m_builder->create_undo ();
+  item->set_name (name);
   m_undo_items.push_back (unique_ptr<single_undo_item> (item));
   m_cur_undo_position++;
 }
@@ -108,4 +109,30 @@ void undo_handler::register_new_item (undoable *item)
     return;
 
   m_builder->register_new_item (item);
+}
+
+bool undo_handler::has_undo () const
+{
+  return m_cur_undo_position != 0;
+}
+
+bool undo_handler::has_redo () const
+{
+  return m_cur_undo_position < (int)m_undo_items.size ();
+}
+
+QString undo_handler::undo_name () const
+{
+  if (!has_undo ())
+    return QString ();
+
+  return m_undo_items[m_cur_undo_position - 1]->name ();
+}
+
+QString undo_handler::redo_name () const
+{
+  if (!has_redo ())
+    return QString ();
+
+  return m_undo_items[m_cur_undo_position]->name ();
 }

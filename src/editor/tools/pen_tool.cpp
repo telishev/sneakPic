@@ -174,7 +174,7 @@ bool pen_tool::finish_path_add ()
     }
 
   finish_editing ();
-  m_painter->document ()->apply_changes ();
+  m_painter->document ()->apply_changes ("Draw Path");
   return true;
 }
 

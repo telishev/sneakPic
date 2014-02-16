@@ -54,7 +54,7 @@ public:
 
   void set_queue (events_queue *queue);
 
-  void apply_changes ();
+  void apply_changes (QString name);
   bool signals_enabled () const;
   void set_signals_enabled (bool enable);
 

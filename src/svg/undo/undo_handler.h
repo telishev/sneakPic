@@ -20,7 +20,7 @@ public:
   undo_handler ();
   ~undo_handler ();
 
-  void create_undo ();
+  void create_undo (QString name);
 
   void undo (int positions);
   void redo (int positions);
@@ -37,6 +37,13 @@ public:
 
   void set_signals_enabled (bool enabled) { m_signals_enabled = enabled; }
   int cur_undo_position () { return m_cur_undo_position; }
+
+  bool has_undo () const;
+  bool has_redo () const;
+
+  QString undo_name () const;
+  QString redo_name () const;
+
 
 private:
   void register_new_item (undoable *item);

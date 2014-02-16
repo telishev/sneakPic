@@ -24,6 +24,7 @@
 
 #include "svg/svg_document.h"
 #include "editor/items_selection.h"
+#include "svg/undo/undo_handler.h"
 
 
 gui_document::gui_document (settings_t *settings, gui_actions *actions)
@@ -44,6 +45,7 @@ gui_document::gui_document (settings_t *settings, gui_actions *actions)
 
   CONNECT (update_timer, &QTimer::timeout, this, &gui_document::update_timeout);
   CONNECT (m_tools_container, &tools_container::tool_changed, this, &gui_document::tool_changed);
+  CONNECT (m_actions, &gui_actions::actions_update_needed, this, &gui_document::update_actions);
 
   m_actions_applier->register_action (gui_action_id::UNDO, this, &gui_document::undo);
   m_actions_applier->register_action (gui_action_id::REDO, this, &gui_document::redo);
@@ -165,10 +167,33 @@ bool gui_document::create_new_document_impl (std::function <bool (svg_document *
 
   renderer_items_container *renderer_items = m_doc->create_rendered_items (m_cache);
   m_queue->add_event (new event_container_changed (renderer_items));
+  CONNECT (m_doc, &svg_document::items_changed, this, &gui_document::items_changed);
+  items_changed ();
   return true;
 }
 
 bool gui_document::is_new_document ()
 {
   return m_doc->is_new_document ();
+}
+
+void gui_document::update_actions ()
+{
+  undo_handler *handler = m_doc->get_undo_handler ();
+  m_actions->action (gui_action_id::UNDO)->setEnabled (handler->has_undo ());
+  if (handler->has_undo ())
+    m_actions->action (gui_action_id::UNDO)->setText ("Undo: " + handler->undo_name ());
+  else
+    m_actions->action (gui_action_id::UNDO)->setText ("Undo");
+
+  m_actions->action (gui_action_id::REDO)->setEnabled (handler->has_redo ());
+  if (handler->has_undo ())
+    m_actions->action (gui_action_id::REDO)->setText ("Redo: " + handler->redo_name ());
+  else
+    m_actions->action (gui_action_id::REDO)->setText ("Redo");
+}
+
+void gui_document::items_changed ()
+{
+  m_actions->actions_update_needed ();
 }

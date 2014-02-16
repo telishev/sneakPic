@@ -60,6 +60,8 @@ public:
 private slots:
   void update_timeout ();
   void tool_changed ();
+  void update_actions ();
+  void items_changed ();
 
 private:
   bool undo ();

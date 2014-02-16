@@ -186,9 +186,9 @@ void path_handles_editor::begin_changes ()
   m_handles_selection->begin_changes ();
 }
 
-void path_handles_editor::end_changes ()
+void path_handles_editor::end_changes (QString name)
 {
-  m_painter->document ()->apply_changes ();
+  m_painter->document ()->apply_changes (name);
   m_handles_selection->end_changes ();
 }
 
@@ -260,7 +260,7 @@ bool path_handles_editor::delete_selected_handles ()
   }
   
   m_handles_selection->clear ();
-  m_painter->document ()->apply_changes ();
+  m_painter->document ()->apply_changes ("Delete Handles");
   return true;
 }
 
@@ -278,7 +278,7 @@ bool path_handles_editor::change_handle (const QPoint &pos)
       node_type = node_type_t::SMOOTH;
     anchor_type_change_operation (op.get_svg_path ()).apply (control_point->path_iterator (), node_type);
   }
-  end_changes ();
+  end_changes ("Change Node Type");
   return true;
 }
 

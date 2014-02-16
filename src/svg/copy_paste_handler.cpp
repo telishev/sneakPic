@@ -63,7 +63,7 @@ void copy_paste_handler::paste_image (const QImage &image, const QPointF &pos)
   image_item->get_attribute_for_change <svg_attribute_xlink_href> ()->iri ()->create_from_image (image);
 
   add_item_operation (m_painter).apply (image_item);
-  m_painter->document ()->apply_changes ();
+  m_painter->document ()->apply_changes ("Paste");
 }
 
 copy_paste_handler::copy_paste_handler (svg_painter *painter)

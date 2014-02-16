@@ -84,5 +84,5 @@ void items_move_handler::apply_transform ()
       transform_operation.apply_transform (cur_transform, item);
     }
 
-  m_document->apply_changes ();
+  m_document->apply_changes ("Move");
 }

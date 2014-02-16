@@ -136,7 +136,7 @@ void internal_clipboard_format::apply_to_doc (svg_painter *painter, QPointF cur_
       transform_item_operation (m_document).apply_transform (transform, item);
     }
   
-  m_document->apply_changes ();
+  m_document->apply_changes ("Paste");
 }
 
 bool internal_clipboard_format::check_version (QXmlStreamReader &xml_reader)

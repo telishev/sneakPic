@@ -397,7 +397,7 @@ bool svg_painter::remove_items_in_selection ()
       item->parent ()->remove_child (item);
     }
   m_selection->clear ();
-  document ()->apply_changes ();
+  document ()->apply_changes ("Remove");
   return true;
 }
 

@@ -18,7 +18,7 @@ public:
   virtual ~path_handles_editor ();
 
   void begin_changes ();
-  void end_changes ();
+  void end_changes (QString name);
   void update ();
 
   path_anchors_selection *handles_selection () const { return m_handles_selection; }

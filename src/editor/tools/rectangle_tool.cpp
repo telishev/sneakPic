@@ -106,6 +106,6 @@ void rectangle_tool::insert_item (const QPointF &pos )
   rect_item->get_attribute_for_change<svg_attribute_height> ()->set_value (rect.height ());
 
   add_item_operation (m_painter).apply (rect_item);
-  m_painter->document ()->apply_changes ();
+  m_painter->document ()->apply_changes ("Create Rectangle");
 }
 

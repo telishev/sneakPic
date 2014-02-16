@@ -24,6 +24,7 @@ class single_undo_item
 
   undoable_items_container_t *m_items_container;
   vector<item_and_diff> m_diff_map;
+  QString m_name;
 public:
   single_undo_item (undoable_items_container_t *items_container);
   ~single_undo_item ();
@@ -32,6 +33,9 @@ public:
   void redo ();
 
   void add_item_diff (int id, abstract_state_diff_t *diff);
+
+  QString name () const { return m_name; }
+  void set_name (QString name) { m_name = name; }
 
 private:
   void apply (diff_direction_t direction);
