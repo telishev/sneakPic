@@ -34,6 +34,9 @@ void svg_path_geom::apply_transform (const QTransform &transform)
 
 svg_path_geom_iterator svg_path_geom::begin () const
 {
+  if (m_subpath.empty ())
+    return end ();
+
   return svg_path_geom_iterator (const_cast<svg_path_geom &>(*this), 0, 0);
 }
 
