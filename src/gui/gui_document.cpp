@@ -181,16 +181,10 @@ void gui_document::update_actions ()
 {
   undo_handler *handler = m_doc->get_undo_handler ();
   m_actions->action (gui_action_id::UNDO)->setEnabled (handler->has_undo ());
-  if (handler->has_undo ())
-    m_actions->action (gui_action_id::UNDO)->setText ("Undo: " + handler->undo_name ());
-  else
-    m_actions->action (gui_action_id::UNDO)->setText ("Undo");
+  m_actions->action (gui_action_id::UNDO)->setText ("Undo " + handler->undo_name ());
 
   m_actions->action (gui_action_id::REDO)->setEnabled (handler->has_redo ());
-  if (handler->has_undo ())
-    m_actions->action (gui_action_id::REDO)->setText ("Redo: " + handler->redo_name ());
-  else
-    m_actions->action (gui_action_id::REDO)->setText ("Redo");
+  m_actions->action (gui_action_id::REDO)->setText ("Redo " + handler->redo_name ());
 }
 
 void gui_document::items_changed ()
