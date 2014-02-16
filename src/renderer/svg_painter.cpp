@@ -136,6 +136,7 @@ bool svg_painter::pick_color_end (const QPoint &pos)
   QImage image = qt2skia::qimage (*bitmap.get ());
   QImage imageCut (image.width (), image.height (), QImage::Format_ARGB32);
   {
+    imageCut.fill (0);
     QPainter painter (&imageCut);
     painter.setClipPath (path);
     painter.drawImage (0, 0, image);
