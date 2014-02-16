@@ -229,8 +229,8 @@ void main_window::do_open_file (const QString filename)
   setWindowTitle ("Loading...");
   if (!m_document->open_file (filename))
     {
-      QMessageBox::warning (this, "Warning", "Cannot open document");
       create_new_document ();
+      QMessageBox::warning (this, "Warning", "Cannot open document");
       return;
     }
 
