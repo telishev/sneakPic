@@ -27,4 +27,4 @@ Makefile
 *.ncb
 *.idb
 *.obj
-*.pro.user
+*.pro.user*
