@@ -51,7 +51,9 @@
 #ifndef GTEST_INCLUDE_GTEST_GTEST_H_
 #define GTEST_INCLUDE_GTEST_GTEST_H_
 
+#ifndef _MSC_VER
 #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
+#endif //_MSC_VER
 
 #include <limits>
 #include <vector>

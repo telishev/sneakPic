@@ -36,7 +36,9 @@
 #ifndef GMOCK_INCLUDE_GMOCK_GMOCK_H_
 #define GMOCK_INCLUDE_GMOCK_GMOCK_H_
 
+#ifndef _MSC_VER
 #pragma GCC system_header
+#endif //_MSC_VER
 
 // This file implements the following syntax:
 //
