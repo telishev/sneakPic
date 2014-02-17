@@ -65,7 +65,7 @@ void color_selector::set_param_by_type (QColor *color, int value, color_single_s
   if (!color)
     return;
 
-  int h, s, v, l, r, g, b, a, c, m, y, k;
+  int h = 0, s, v, l, r, g, b, a, c, m, y, k;
   switch (type)
     {
     case color_single_selector_type::HSV_SATURATION:
@@ -164,7 +164,7 @@ void color_selector::set_param_by_type (QColor *color, int value, color_single_s
 
 int color_selector::get_param_value_by_type (color_single_selector_type type)
 {
-  int h, s, v, l, r, g, b, a, c, m, y, k;
+  int h = 0, s, v, l, r, g, b, a, c, m, y, k;
   QColor *color = m_color ? m_color : &placeholder_color;
 
   switch (type)

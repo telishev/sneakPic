@@ -16,6 +16,7 @@ settings_t::settings_t (QSettings *qsettings)
   m_stroke_linejoin = Qt::PenJoinStyle::SvgMiterJoin;
   m_stroke_width = 1.0;
   m_stroke_miterlimit = 4.0;
+  m_stroke_linecap = Qt::FlatCap;
   m_qsettings = qsettings;
   m_storage.resize (enum_count <option_id> ());
 }
