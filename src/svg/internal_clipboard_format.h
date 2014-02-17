@@ -19,14 +19,14 @@ public:
   void fill_by_selection (items_selection *selection);
   void apply_to_doc (svg_painter *painter, QPointF cur_pos);
 
-  QByteArray pack ();
-  void unpack (QByteArray &data);
+  QByteArray pack () const;
+  void unpack (const QByteArray &data);
 
   QString mime_type () const;
 
 private:
-  void write_version (QXmlStreamWriter &xml_writer);
-  void write_items (QXmlStreamWriter &xml_writer);
+  void write_version (QXmlStreamWriter &xml_writer) const;
+  void write_items (QXmlStreamWriter &xml_writer) const;
   int version () const;
   bool check_version (QXmlStreamReader &xml_reader);
   bool read_items (QXmlStreamReader &xml_reader);

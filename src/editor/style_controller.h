@@ -21,7 +21,7 @@ class style_controller : public QObject
   Q_OBJECT
 
   selected_style m_current_style;
-  style_container *m_containers[selected_style::COUNT];
+  style_container *m_containers[(int) selected_style::COUNT];
   svg_painter *m_painter;
 public:
   style_controller (settings_t *settings_arg);

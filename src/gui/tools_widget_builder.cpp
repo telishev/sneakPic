@@ -99,13 +99,13 @@ void tools_widget_builder::add_color_indicators ()
   m_layout->addWidget (layout->parentWidget ());
 }
 
-void tools_widget_builder::update_stroke_color (QColor &color)
+void tools_widget_builder::update_stroke_color (const QColor &color)
 {
   *m_stroke_color = color;
   m_stroke_color_indicator->color_changed_externally ();
 }
 
-void tools_widget_builder::update_fill_color (QColor &color)
+void tools_widget_builder::update_fill_color (const QColor& color)
 {
   *m_fill_color = color;
   m_fill_color_indicator->color_changed_externally ();

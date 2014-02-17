@@ -52,7 +52,7 @@ void canvas_widget_t::wheelEvent (QWheelEvent *qevent)
   qevent->accept ();
 }
 
-const QPoint &canvas_widget_t::cursor_pos ()
+QPoint canvas_widget_t::cursor_pos ()
 {
   return mapFromGlobal (QCursor::pos ());
 };

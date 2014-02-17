@@ -26,7 +26,7 @@ void finish_with_spacer (QGridLayout *layout)
 
 QDialogButtonBox *create_standard_button_box (QDialog *dialog)
 {
-  auto box = new QDialogButtonBox (QDialogButtonBox::Ok | QDialogButtonBox::Cancel, dialog);
+  auto box = new QDialogButtonBox (QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
   CONNECT (box, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
   CONNECT (box, &QDialogButtonBox::rejected, dialog, &QDialog::reject);
   return box;

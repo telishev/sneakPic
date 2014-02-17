@@ -166,7 +166,7 @@ bool main_window::save_as ()
   return true;
 }
 
-void main_window::save_document (QString &filename)
+void main_window::save_document (const QString &filename)
 {
   if (!m_document->save_file (filename))
     return;

@@ -35,7 +35,7 @@ void internal_clipboard_format::fill_by_selection (items_selection *selection)
   std::sort (m_items.begin (), m_items.end (), items_comparison_z_order ());
 }
 
-QByteArray internal_clipboard_format::pack ()
+QByteArray internal_clipboard_format::pack () const
 {
   svg_writer writer;
   QBuffer buf;
@@ -61,9 +61,10 @@ QByteArray internal_clipboard_format::pack ()
   return buf.data ();
 }
 
-void internal_clipboard_format::unpack (QByteArray &data)
+void internal_clipboard_format::unpack (const QByteArray &data)
 {
-  QBuffer buf (&data);
+  QBuffer buf;
+  buf.setData (data);
   buf.open (QIODevice::ReadOnly);
   QXmlStreamReader xml_reader (&buf);
   while (!xml_reader.atEnd ())
@@ -93,7 +94,7 @@ QString internal_clipboard_format::mime_type () const
   return "application/sneakpic";
 }
 
-void internal_clipboard_format::write_version (QXmlStreamWriter &xml_writer)
+void internal_clipboard_format::write_version (QXmlStreamWriter &xml_writer) const
 {
   xml_writer.writeStartElement (svg_namespaces::sneakpic_uri (), "version");
   {
@@ -102,7 +103,7 @@ void internal_clipboard_format::write_version (QXmlStreamWriter &xml_writer)
   xml_writer.writeEndElement ();
 }
 
-void internal_clipboard_format::write_items (QXmlStreamWriter &xml_writer)
+void internal_clipboard_format::write_items (QXmlStreamWriter &xml_writer) const
 {
   svg_writer writer;
   xml_writer.writeStartElement (svg_namespaces::sneakpic_uri (), "items");
@@ -135,7 +136,7 @@ void internal_clipboard_format::apply_to_doc (svg_painter *painter, QPointF cur_
       add_op.apply (item);
       transform_item_operation (m_document).apply_transform (transform, item);
     }
-  
+
   m_document->apply_changes ("Paste");
 }
 
@@ -173,6 +174,6 @@ QRectF internal_clipboard_format::calculate_bbox () const
       graphics_item->update_bbox ();
       bbox = bbox.united (graphics_item->bbox ());
     }
-  
+
   return bbox;
 }

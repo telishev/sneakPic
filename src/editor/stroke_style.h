@@ -8,8 +8,8 @@ class settings_t;
 
 namespace Qt
 {
-  enum PenJoinStyle : int;
-  enum PenCapStyle : int;
+  enum PenJoinStyle;
+  enum PenCapStyle;
 };
 
 class stroke_style

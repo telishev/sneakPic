@@ -79,7 +79,7 @@ private:
   void update_on_document_create ();
   void update_undo_position();
   int cur_undo_pos();
-  void save_document (QString &filename);
+  void save_document (const QString& filename);
   bool closing_document_check ();
   bool options ();
 };

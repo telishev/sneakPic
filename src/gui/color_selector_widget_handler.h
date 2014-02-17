@@ -42,7 +42,7 @@ private slots:
   void add_typical_scroller_widget (QGridLayout *grid_layout, color_single_selector_type type);
 
 signals:
-  void color_changed_momentarily (QColor&);
+  void color_changed_momentarily (const QColor&);
   void color_changing_finished ();
 };
 #endif // COLOR_SELECTOR_WIDGET_HANDLER_H

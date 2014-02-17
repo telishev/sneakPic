@@ -16,7 +16,7 @@ public:
 
 private:
   void paste_image (const QImage &image, const QPointF &pos);
-  const QPointF & local_cursor_pos();
+  QPointF local_cursor_pos();
 };
 
 #endif // COPY_PASTE_HANDLER_H

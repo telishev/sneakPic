@@ -84,8 +84,8 @@ private:
   void update_style_controllers ();
 
 signals:
-  void fill_color_changed (QColor&);
-  void stroke_color_changed (QColor&);
+  void fill_color_changed (const QColor&);
+  void stroke_color_changed (const QColor&);
 };
 
 #endif // STYLE_WIDGET_HANDLER_H

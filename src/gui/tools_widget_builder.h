@@ -46,8 +46,8 @@ private:
   void add_color_indicators();
 
 public slots:
-  void update_stroke_color (QColor &color);
-  void update_fill_color (QColor &color);
+  void update_stroke_color (const QColor &color);
+  void update_fill_color (const QColor &color);
 };
 
 #endif // TOOLS_WIDGET_BUILDER_H
