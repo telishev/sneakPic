@@ -34,7 +34,7 @@ private:
 
 public:
   handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier);
-  ~handles_editor ();
+  virtual ~handles_editor ();
 
   void update_handles ();
 

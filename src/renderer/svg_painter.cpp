@@ -123,8 +123,6 @@ bool svg_painter::pick_color_end (const QPoint &pos)
 
   svg_renderer renderer (nullptr, nullptr);
   unique_ptr<renderer_items_container> container (m_document->create_rendered_items (nullptr));
-  QPointF local_cp_pos = get_local_pos (m_color_picker_pos);
-  QPointF local_final_pos = get_local_pos (final_pos);
   QRectF rect (path.boundingRect ());
   QTransform transform;
   QPointF pnt = get_local_pos (rect.topLeft ());

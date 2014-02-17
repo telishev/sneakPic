@@ -27,13 +27,13 @@ bool svg_attribute_class::read (const char *data, bool /*from_css*/)
   return m_class_names.size () != 0;
 }
 
-bool svg_attribute_class::write (QString &data, bool /*from_css*/) const 
+bool svg_attribute_class::write (QString &data, bool /*from_css*/) const
 {
   if (m_class_names.size () == 0)
     return false;
 
   std::string cur_data = m_class_names[0];
-  for (int i = 1; i < m_class_names.size (); i++)
+  for (size_t i = 1; i < m_class_names.size (); i++)
     {
       cur_data += " ";
       cur_data += m_class_names[1];

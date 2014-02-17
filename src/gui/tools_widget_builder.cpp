@@ -20,8 +20,6 @@
 #include "gui/utils/flowlayout.h"
 #include "gui/utils/qt_utils.h"
 
-static int NUMBER_OF_COLUMNS = 3;
-
 // TODO: probably rewrite all color controllers on directly signal/slot signal specifying QColor
 
 tools_widget_builder::tools_widget_builder (gui_actions *actions, dock_widget_builder *dock_widget_builder_arg)

@@ -6,7 +6,6 @@
 static int SLIDER_WIDTH = 2;
 static int COLOR_LINEAR_SELECTOR_DEFAULT_LENGTH = 175;
 static int COLOR_LINEAR_SELECTOR_DEFAULT_WIDTH = 22;
-static int BORDER_WIDTH = 1;
 
 void color_linear_selector::paintEvent (QPaintEvent * /*event*/)
 {

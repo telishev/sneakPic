@@ -36,6 +36,8 @@
 #ifndef GMOCK_INCLUDE_GMOCK_GMOCK_H_
 #define GMOCK_INCLUDE_GMOCK_GMOCK_H_
 
+#pragma GCC system_header
+
 // This file implements the following syntax:
 //
 //   ON_CALL(mock_object.Method(...))

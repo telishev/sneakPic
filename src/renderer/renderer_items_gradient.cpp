@@ -10,11 +10,11 @@
 
 void renderer_base_gradient_item::set_opacity (double opacity)
 {
-  for (int i = 0; i < m_stops.size (); i++)
+  for (size_t i = 0; i < m_stops.size (); i++)
     m_stops[i].second.setAlphaF (opacity * m_stops[i].second.alphaF ());
 }
 
-void renderer_linear_gradient::fill_paint (SkPaint &paint) const 
+void renderer_linear_gradient::fill_paint (SkPaint &paint) const
 {
   SkPoint points[2] = { SkPoint::Make (SkFloatToScalar (m_x1), SkFloatToScalar (m_y1)),
                         SkPoint::Make (SkFloatToScalar (m_x2), SkFloatToScalar (m_y2)) };
@@ -42,8 +42,8 @@ void renderer_linear_gradient::fill_paint (SkPaint &paint) const
       paint.setColor (0);
       return;
     }
-  /// and to render with solid color in case of 1 stop 
-  else if (m_stops.size () == 1) 
+  /// and to render with solid color in case of 1 stop
+  else if (m_stops.size () == 1)
     {
       paint.setColor (colors[0]);
       return;
@@ -60,12 +60,12 @@ void renderer_linear_gradient::fill_paint (SkPaint &paint) const
   paint.setShader (shader)->unref ();
 }
 
-renderer_paint_server *renderer_linear_gradient::clone () const 
+renderer_paint_server *renderer_linear_gradient::clone () const
 {
   return new renderer_linear_gradient (*this);
 }
 
-void renderer_radial_gradient::fill_paint (SkPaint &paint) const 
+void renderer_radial_gradient::fill_paint (SkPaint &paint) const
 {
   SkPoint center = SkPoint::Make (SkFloatToScalar (m_cx), SkFloatToScalar (m_cy));
 
@@ -92,8 +92,8 @@ void renderer_radial_gradient::fill_paint (SkPaint &paint) const
       paint.setColor (0);
       return;
     }
-  /// and to render with solid color in case of 1 stop 
-  else if (m_stops.size () == 1) 
+  /// and to render with solid color in case of 1 stop
+  else if (m_stops.size () == 1)
     {
       paint.setColor (colors[0]);
       return;
@@ -110,7 +110,7 @@ void renderer_radial_gradient::fill_paint (SkPaint &paint) const
   paint.setShader (shader)->unref ();
 }
 
-renderer_paint_server *renderer_radial_gradient::clone () const 
+renderer_paint_server *renderer_radial_gradient::clone () const
 {
   return new renderer_radial_gradient (*this);
 }

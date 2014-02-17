@@ -18,7 +18,7 @@ RESOURCES += $$PROJ_DIR/resource/sneakPic.qrc
 CONFIG += warn_on build_all debug_and_release
 CONFIG += warn_on build_all debug_and_release precompile_header
 
-PRECOMPILED_HEADER = src/precompiled/precompiled_header.h 
+PRECOMPILED_HEADER = src/precompiled/precompiled_header.h
 
 INCLUDEPATH += src
 INCLUDEPATH += src/ui
@@ -41,8 +41,7 @@ win32:*msvc*{
 }
 
 *g++* {
-  QMAKE_CXXFLAGS_DEBUG += -std=c++11
-  QMAKE_CXXFLAGS_RELEASE += -std=c++11
+  QMAKE_CXXFLAGS += -std=c++11 -Wall -Wextra -Wcast-align -Wunused -Wformat=2 -Wcast-qual -Woverloaded-virtual -Wnon-virtual-dtor
 }
 
 Release {

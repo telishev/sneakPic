@@ -3,6 +3,8 @@
 
 #include "skia/skia_disable_warnings.h"
 
+#pragma GCC system_header
+
 #include <SkCanvas.h>
 #include <SkDashPathEffect.h>
 #include <SkSurface.h>

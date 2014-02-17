@@ -36,7 +36,7 @@ namespace qt2skia
   SkIRect Irect (const QRect &rect);
   int fill_rule (int rule);
   SkIRect Irect (const QRectF &rect);
-  
+
 };
 
 #endif // QT2SKIA_H

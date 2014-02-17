@@ -32,8 +32,6 @@
 Q_DECLARE_METATYPE (Qt::PenJoinStyle);
 Q_DECLARE_METATYPE (Qt::PenCapStyle);
 
-static int TARGET_STYLE_ROLE = Qt::UserRole;
-
 style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_builder_arg, style_controller *style_controller_arg)
 {
   m_dock_widget_builder = dock_widget_builder_arg;
