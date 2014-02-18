@@ -481,26 +481,26 @@ bool svg_painter::lower_object ()
     return true;
 
   for (auto &&item_it : *m_selection)
-  {
-    svg_graphics_item *item = item_it->to_graphics_item ();
-    if (!item || !item->parent ())
-      continue;
+    {
+      svg_graphics_item *item = item_it->to_graphics_item ();
+      if (!item || !item->parent ())
+        continue;
 
-    int index = item->child_index ();
-    QRectF bbox = item->bbox ();
-    abstract_svg_item *parent = item->parent ();
-    int i;
-    for (i = index - 1; i >= 0; i--)
-      {
-        svg_graphics_item *graphics_item = parent->child (i)->to_graphics_item ();
-        if (graphics_item->bbox ().intersects (bbox))
-          break;
-      }
-    if (i >= parent->children_count ())
-      continue;
-    parent->move_child (i, item);
-    break;
-  }
+      int index = item->child_index ();
+      QRectF bbox = item->bbox ();
+      abstract_svg_item *parent = item->parent ();
+      int i;
+      for (i = index - 1; i >= 0; i--)
+        {
+          svg_graphics_item *graphics_item = parent->child (i)->to_graphics_item ();
+          if (graphics_item->bbox ().intersects (bbox))
+            break;
+        }
+      if (i < 0)
+        continue;
+      parent->move_child (i, item);
+      break;
+    }
   document ()->apply_changes ("Lower");
   return true;
 }
@@ -511,26 +511,26 @@ bool svg_painter::raise_object ()
     return true;
 
   for (auto &&item_it : *m_selection)
-  {
-    svg_graphics_item *item = item_it->to_graphics_item ();
-    if (!item || !item->parent ())
-      continue;
-
-    int index = item->child_index ();
-    QRectF bbox = item->bbox ();
-    abstract_svg_item *parent = item->parent ();
-    int i;
-    for (i = index + 1; i < parent->children_count (); i++)
     {
-      svg_graphics_item *graphics_item = parent->child (i)->to_graphics_item ();
-      if (graphics_item->bbox ().intersects (bbox))
-        break;
+      svg_graphics_item *item = item_it->to_graphics_item ();
+      if (!item || !item->parent ())
+        continue;
+
+      int index = item->child_index ();
+      QRectF bbox = item->bbox ();
+      abstract_svg_item *parent = item->parent ();
+      int i;
+      for (i = index + 1; i < parent->children_count (); i++)
+        {
+          svg_graphics_item *graphics_item = parent->child (i)->to_graphics_item ();
+          if (graphics_item->bbox ().intersects (bbox))
+            break;
+        }
+      if (i >= parent->children_count ())
+        continue;
+      parent->move_child (i + 1, item);
+      break;
     }
-    if (i >= parent->children_count ())
-      continue;
-    parent->move_child (i + 1, item);
-    break;
-  }
   document ()->apply_changes ("Raise");
   return true;
 }
