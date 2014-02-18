@@ -200,10 +200,10 @@ void color_linear_selector::draw_controller (QPainter &painter)
   switch (m_orientation)
     {
     case Qt::Horizontal:
-      controller_rect = QRect (slider_pos, BORDER_WIDTH, SLIDER_WIDTH, this->height () - 2 * BORDER_WIDTH);
+      controller_rect = QRect (slider_pos, BORDER_WIDTH, SLIDER_WIDTH, this->height () - 2 * BORDER_WIDTH - 1);
       break;
     case Qt::Vertical:
-      controller_rect = QRect (BORDER_WIDTH, slider_pos, this->width () - 2 * BORDER_WIDTH, SLIDER_WIDTH);
+      controller_rect = QRect (BORDER_WIDTH, slider_pos, this->width () - 2 * BORDER_WIDTH - 1, SLIDER_WIDTH);
       break;
     }
 
