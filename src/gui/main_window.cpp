@@ -61,7 +61,6 @@ main_window::main_window ()
   CONNECT (m_style_widget_handler, &style_widget_handler::fill_color_changed, m_tools_builder, &tools_widget_builder::update_fill_color);
 
   update_window_title ();
-  m_actions->action (gui_action_id::OPEN_RECENT)->setMenu (&m_recent_menu);
   load_recent_menu ();
   update_recent_menu ();
   m_zoom_label = new QLabel;
@@ -121,6 +120,8 @@ void main_window::save_recent_menu ()
 
 void main_window::update_recent_menu ()
 {
+  m_actions->action (gui_action_id::OPEN_RECENT)->setVisible (m_recent_files.size () > 0);
+  m_actions->action (gui_action_id::OPEN_RECENT)->setMenu (m_recent_files.size () > 0 ? &m_recent_menu : nullptr);
   m_recent_menu.clear ();
   int size = (int) m_recent_files.size ();
 
