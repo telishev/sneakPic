@@ -14,7 +14,7 @@ color_rectangular_selector::color_rectangular_selector (QWidget *parent, color_s
   m_controlled_types [0] = type_x;
   m_controlled_types [1] = type_y;
   m_flags = flags_arg;
-  m_gradient_cached = 0;
+  m_gradient_cached = nullptr;
 }
 
 color_rectangular_selector::~color_rectangular_selector ()

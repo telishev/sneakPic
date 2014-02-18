@@ -90,7 +90,7 @@ static int enum_count ()
 template <typename E>
 static E process_string_fixed_length_to_enum (const char *&string, int length)
 {
-  char *string_in_question = 0;
+  char *string_in_question = nullptr;
   string_in_question = new char[length + 1];
   strncpy (string_in_question, string, length);
   string_in_question[length] = '\0';

@@ -63,7 +63,7 @@ subpath_iterator::subpath_iterator (single_subpath &subpath, size_t point_num)
 
 subpath_iterator::subpath_iterator ()
 {
-  m_subpath = 0;
+  m_subpath = nullptr;
   m_point_num = 0;
 }
 

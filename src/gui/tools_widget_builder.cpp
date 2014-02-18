@@ -25,7 +25,7 @@
 tools_widget_builder::tools_widget_builder (gui_actions *actions, dock_widget_builder *dock_widget_builder_arg)
 {
   m_actions = actions;
-  m_tool_bar = 0;
+  m_tool_bar = nullptr;
   m_dock_widget_builder = dock_widget_builder_arg;
   m_stroke_color = new QColor ();
   m_fill_color = new QColor ();

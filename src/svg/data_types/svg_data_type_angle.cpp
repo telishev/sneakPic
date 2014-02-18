@@ -26,7 +26,7 @@ const char *enum_to_string (svg_angle_units id)
 
 svg_data_type_angle::svg_data_type_angle ()
 {
-  m_value = 0;
+  m_value = 0.0;
   m_units = svg_angle_units::NO_UNITS;
 }
 

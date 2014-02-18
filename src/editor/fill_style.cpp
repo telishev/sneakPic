@@ -12,8 +12,8 @@
 fill_style::fill_style ()
 {
   m_internal_color = new QColor ();
-  m_color = 0;
-  m_selection = 0;
+  m_color = nullptr;
+  m_selection = nullptr;
 }
 
 void fill_style::init (settings_t *settings_arg)
@@ -30,15 +30,15 @@ void fill_style::update_from_selection ()
 
   if (m_selection->count () == 0 || m_selection->count () > 1)
     {
-      m_color = 0;
+      m_color = nullptr;
       return;
     }
 
   auto fill = (*(m_selection->begin ()))->get_computed_attribute <svg_attribute_fill> ();
   auto fill_opacity = (*(m_selection->begin ()))->get_computed_attribute <svg_attribute_fill_opacity> ();
-  if (fill == 0)
+  if (fill == nullptr)
     {
-      m_color = 0;
+      m_color = nullptr;
       return;
     }
   paint_server_type fill_type = fill->server_type ();
@@ -46,14 +46,14 @@ void fill_style::update_from_selection ()
     {
     case paint_server_type::COLOR:
       *m_internal_color = fill->color ();
-      if (fill_opacity != 0)
+      if (fill_opacity != nullptr)
         m_internal_color->setAlphaF (fill_opacity->value ());
       m_color = m_internal_color;
       break;
     case paint_server_type::NONE:
     case paint_server_type::IRI:
     case paint_server_type::CURRENT_COLOR:
-      m_color = 0;
+      m_color = nullptr;
       break;
     }
 }

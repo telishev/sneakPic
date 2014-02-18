@@ -62,7 +62,7 @@ bool svg_data_type_length::read_and_shift (const char *&data, bool is_css)
       if (*data == '~')
         data++;
       else
-        return true;  
+        return true;
     }
 
   m_units = process_string_before_delimiter_to_enum <svg_length_units> (data, ',');
@@ -98,7 +98,7 @@ void svg_data_type_length::set_value (double val, svg_length_units units)
 
 static double get_required_viewport_size (abstract_svg_item *current_item, units_orientation orientation)
 {
-  if (current_item->parent () != 0)
+  if (current_item->parent () != nullptr)
     current_item = current_item->parent ();
 
   for (; current_item; current_item = current_item->parent ())
@@ -110,9 +110,9 @@ static double get_required_viewport_size (abstract_svg_item *current_item, units
           const svg_attribute_width *width_attr = current_item->get_computed_attribute <svg_attribute_width> ();
           const svg_attribute_height *height_attr = current_item->get_computed_attribute <svg_attribute_height> ();
 
-          if (current_item->parent () != 0 || width_attr->units_type () != svg_length_units::PERCENT)
+          if (current_item->parent () != nullptr || width_attr->units_type () != svg_length_units::PERCENT)
             width = current_item->get_computed_attribute <svg_attribute_width> ()->value ();
-          if (current_item->parent () != 0 || height_attr->units_type () != svg_length_units::PERCENT)
+          if (current_item->parent () != nullptr || height_attr->units_type () != svg_length_units::PERCENT)
             height = current_item->get_computed_attribute <svg_attribute_width> ()->value ();
 
           // Probably later viewbox checking and getting actual width, height should be moved to svg (viewport) item

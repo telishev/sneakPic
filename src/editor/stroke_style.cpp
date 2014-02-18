@@ -21,10 +21,10 @@
 stroke_style::stroke_style ()
 {
   m_internal_color = new QColor ();
-  m_color = 0;
-  m_selection = 0;
-  m_width = 0;
-  m_settings = 0;
+  m_color = nullptr;
+  m_selection = nullptr;
+  m_settings = nullptr;
+  m_width = 0.0;
   m_linejoin = Qt::PenJoinStyle::SvgMiterJoin;
 }
 
@@ -47,7 +47,7 @@ void stroke_style::update_from_selection ()
 
   if (!is_single_item_selected ())
     {
-      m_color = 0;
+      m_color = nullptr;
       return;
     }
 
@@ -58,9 +58,9 @@ void stroke_style::update_from_selection ()
   m_linecap = selected_item->get_computed_attribute <svg_attribute_stroke_linecap> ()->value ();
   auto stroke = selected_item->get_computed_attribute <svg_attribute_stroke> ();
   auto stroke_opacity = (* (m_selection->begin ()))->get_computed_attribute <svg_attribute_stroke_opacity> ();
-  if (stroke == 0)
+  if (stroke == nullptr)
   {
-    m_color = 0;
+    m_color = nullptr;
     return;
   }
 paint_server_type stroke_type = stroke->server_type ();
@@ -68,14 +68,14 @@ switch (stroke_type)
   {
   case paint_server_type::COLOR:
     *m_internal_color = stroke->color ();
-      if (stroke_opacity != 0)
+      if (stroke_opacity != nullptr)
         m_internal_color->setAlphaF (stroke_opacity->value ());
       m_color = m_internal_color;
       break;
     case paint_server_type::NONE:
     case paint_server_type::IRI:
     case paint_server_type::CURRENT_COLOR:
-      m_color = 0;
+      m_color = nullptr;
       break;
     }
 }

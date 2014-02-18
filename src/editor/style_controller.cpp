@@ -17,7 +17,7 @@ style_controller::style_controller (settings_t *settings_arg)
 
   m_current_style = selected_style::EDITOR_STYLE;
   m_containers[(int) selected_style::EDITOR_STYLE]->init (settings_arg);
-  m_painter = 0;
+  m_painter = nullptr;
 }
 
 void style_controller::update_stroke_width (double value)
