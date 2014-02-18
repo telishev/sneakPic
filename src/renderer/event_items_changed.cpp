@@ -43,6 +43,8 @@ void event_items_changed::process (renderer_thread *renderer)
   for (abstract_renderer_item *item : m_layout_changed_items)
     {
       change_item (renderer, item, false);
+      item->update_bbox ();
+      renderer->invalidate_rect (item->bounding_box ());
     }
 
   for (const std::string &name : m_removed_items)
