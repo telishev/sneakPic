@@ -32,6 +32,8 @@ enum class gui_action_id
   DELETE_ITEMS,
   FINISH_PATH,
   CANCEL_EDITING,
+  LOWER_OBJECT,
+  RAISE_OBJECT,
 
   /// Count
   COUNT,

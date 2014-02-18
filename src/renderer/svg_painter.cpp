@@ -7,6 +7,7 @@
 #include <QEvent>
 #include <QLocale>
 #include <QMessageBox>
+#include <QRectF>
 #include <QStatusBar>
 #include <QWheelEvent>
 
@@ -47,6 +48,7 @@
 #include "svg/items/svg_items_container.h"
 #include "svg/svg_document.h"
 #include "svg/svg_utils.h"
+#include "svg/items/svg_graphics_item.h"
 
 using namespace std::placeholders;
 
@@ -73,6 +75,8 @@ svg_painter::svg_painter (canvas_widget_t *canvas_widget, rendered_items_cache *
   m_actions_applier->register_action (gui_action_id::DELETE_ITEMS, this, &svg_painter::remove_items_in_selection);
   m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::COLOR_PICKER_DRAG, this, &svg_painter::pick_color_start, &svg_painter::pick_color_drag, &svg_painter::pick_color_end);
   m_actions_applier->add_shortcut (mouse_shortcut_t::COLOR_PICKER_CLICK, this, &svg_painter::pick_color_click);
+  m_actions_applier->register_action (gui_action_id::RAISE_OBJECT, this, &svg_painter::raise_object);
+  m_actions_applier->register_action (gui_action_id::LOWER_OBJECT, this, &svg_painter::lower_object);
   m_color_picker_area_preview.reset (new renderer_overlay_path ());
   m_color_picker_area_preview->set_color (Qt::white);
   m_color_picker_area_preview->set_xfer_mode (SkXfermode::Mode::kDifference_Mode);
@@ -469,6 +473,66 @@ bool svg_painter::action_triggered (gui_action_id id)
       return true;
 
   return m_actions_applier->apply_action (id);
+}
+
+bool svg_painter::lower_object ()
+{
+  if (m_selection->count () == 0)
+    return true;
+
+  for (auto &&item_it : *m_selection)
+  {
+    svg_graphics_item *item = item_it->to_graphics_item ();
+    if (!item || !item->parent ())
+      continue;
+
+    int index = item->child_index ();
+    QRectF bbox = item->bbox ();
+    abstract_svg_item *parent = item->parent ();
+    int i;
+    for (i = index - 1; i >= 0; i--)
+      {
+        svg_graphics_item *graphics_item = parent->child (i)->to_graphics_item ();
+        if (graphics_item->bbox ().intersects (bbox))
+          break;
+      }
+    if (i >= parent->children_count ())
+      continue;
+    parent->move_child (i, item);
+    break;
+  }
+  document ()->apply_changes ("Lower");
+  return true;
+}
+
+bool svg_painter::raise_object ()
+{
+  if (m_selection->count () == 0)
+    return true;
+
+  for (auto &&item_it : *m_selection)
+  {
+    svg_graphics_item *item = item_it->to_graphics_item ();
+    if (!item || !item->parent ())
+      continue;
+
+    int index = item->child_index ();
+    QRectF bbox = item->bbox ();
+    abstract_svg_item *parent = item->parent ();
+    int i;
+    for (i = index + 1; i < parent->children_count (); i++)
+    {
+      svg_graphics_item *graphics_item = parent->child (i)->to_graphics_item ();
+      if (graphics_item->bbox ().intersects (bbox))
+        break;
+    }
+    if (i >= parent->children_count ())
+      continue;
+    parent->move_child (i + 1, item);
+    break;
+  }
+  document ()->apply_changes ("Raise");
+  return true;
 }
 
 bool svg_painter::remove_items_in_selection ()

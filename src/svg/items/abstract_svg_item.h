@@ -119,6 +119,7 @@ public:
   void erase_created_observer (svg_item_observer *observer);
 
   vector<const abstract_attribute *> attributes_list () const;
+  abstract_svg_item *sibling (int index) const;
 
   void create_unique_name ();
 
@@ -149,8 +150,7 @@ private:
   abstract_svg_item *get_item_by_id (int id) const;
   void send_to_listeners (std::function< void (svg_item_observer *)> func);
 
-  void prepare_to_remove  ();
-
+  void prepare_to_remove ();
   friend class cloned_item_observer;
   friend class abstract_attribute_pointer;
 };

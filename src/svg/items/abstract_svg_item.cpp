@@ -323,6 +323,12 @@ int abstract_svg_item::child_index () const
   return it - parent_children->begin ();
 }
 
+abstract_svg_item *abstract_svg_item::sibling (int index) const
+{
+  abstract_svg_item *cur_parent = parent ();
+  return cur_parent ? cur_parent->child (index) : nullptr;
+}
+
 int abstract_svg_item::children_count () const
 {
   return m_children ? (int)m_children->size () : 0;

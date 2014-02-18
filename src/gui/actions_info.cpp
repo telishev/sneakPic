@@ -48,7 +48,8 @@ actions_info::actions_info ()
   add_action (A::DELETE_ITEMS, "Delete", QKeySequence (Qt::Key_Delete));
   add_action (A::FINISH_PATH, "Finish Path", QKeySequence (Qt::Key_Return));
   add_action (A::CANCEL_EDITING, "Cancel Editing", QKeySequence (Qt::Key_Escape));
-
+  add_action (A::LOWER_OBJECT, "Lower Object", QKeySequence (Qt::Key_PageDown));
+  add_action (A::RAISE_OBJECT, "Raise Object", QKeySequence (Qt::Key_PageUp));
 }
 
 actions_info::~actions_info ()
