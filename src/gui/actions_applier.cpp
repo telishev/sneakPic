@@ -11,8 +11,8 @@
 actions_applier::actions_applier ()
 {
   m_actions.resize ((int)gui_action_id::COUNT);
-  m_shortcuts.resize ((int) mouse_shortcut_enum::COUNT);
-  m_drag_shortcuts.resize ((int) mouse_drag_shortcut_enum::COUNT);
+  m_shortcuts.resize ((int) mouse_shortcut_t::COUNT);
+  m_drag_shortcuts.resize ((int) mouse_drag_shortcut_t::COUNT);
 }
 
 actions_applier::~actions_applier ()
@@ -34,13 +34,13 @@ bool actions_applier::apply_action (gui_action_id id)
   return m_actions[(int)id] ();
 }
 
-void actions_applier::add_shortcut_func (mouse_shortcut_enum shortcut, const mouse_shortcut_func_t &func)
+void actions_applier::add_shortcut_func (mouse_shortcut_t shortcut, const mouse_shortcut_func_t &func)
 {
   DEBUG_ASSERT (!m_shortcuts[(int)shortcut]);
   m_shortcuts[(int)shortcut] = func;
 }
 
-void actions_applier::add_drag_shortcut_func (mouse_drag_shortcut_enum shortcut, const mouse_shortcut_func_t &start, const mouse_shortcut_func_t &drag, const mouse_shortcut_func_t &end)
+void actions_applier::add_drag_shortcut_func (mouse_drag_shortcut_t shortcut, const mouse_shortcut_func_t &start, const mouse_shortcut_func_t &drag, const mouse_shortcut_func_t &end)
 {
   m_drag_shortcuts[(int)shortcut] = drag_shortcut_func_t (start, drag, end);
 }

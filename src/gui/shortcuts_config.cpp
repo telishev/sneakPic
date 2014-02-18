@@ -7,8 +7,8 @@
 
 shortcuts_config::shortcuts_config ()
 {
-  m_mouse_shortcuts.resize ((int)mouse_shortcut_enum::COUNT);
-  m_drag_shortcuts.resize ((int)mouse_drag_shortcut_enum::COUNT);
+  m_mouse_shortcuts.resize ((int)mouse_shortcut_t::COUNT);
+  m_drag_shortcuts.resize ((int)mouse_drag_shortcut_t::COUNT);
   m_action_shortcuts.resize ((int)gui_action_id::COUNT);
 }
 
@@ -26,7 +26,7 @@ void shortcuts_config::fill_by_default ()
 
 void shortcuts_config::fill_mouse_default ()
 {
-  typedef mouse_shortcut_enum m;
+  typedef mouse_shortcut_t m;
   typedef mouse_event_type e;
   typedef mouse_button b;
   typedef keyboard_modifier k;
@@ -38,11 +38,12 @@ void shortcuts_config::fill_mouse_default ()
   set_mouse_shortcut (m::PEN_ADD_SEGMENT_SIMPLE      , e::CLICK  , b::BUTTON_LEFT , k::ALL         );
   set_mouse_shortcut (m::CHANGE_HANDLE_TYPE          , e::CLICK  , b::BUTTON_LEFT , k::CTRL        );
   set_mouse_shortcut (m::UPDATE_AUXILIARY_PEN_PREVIEW, e::MOVE   , b::ANY_BUTTON  , k::ALL         );
+  set_mouse_shortcut (m::COLOR_PICKER_CLICK          , e::CLICK  , b::BUTTON_RIGHT, k::ALL         );
 }
 
 void shortcuts_config::fill_drag_default ()
 {
-  typedef mouse_drag_shortcut_enum m;
+  typedef mouse_drag_shortcut_t m;
   typedef mouse_button b;
   typedef keyboard_modifier k;
 
@@ -53,7 +54,7 @@ void shortcuts_config::fill_drag_default ()
   set_mouse_drag_shortcut (m::CREATE_RECTANGLE     , b::BUTTON_LEFT  , k::ALL                      );
   set_mouse_drag_shortcut (m::DRAG_HANDLE          , b::BUTTON_LEFT  , k::ALL                      );
   set_mouse_drag_shortcut (m::PEN_ADD_SEGMENT_DRAG , b::BUTTON_LEFT  , k::ALL                      );
-  set_mouse_drag_shortcut (m::COLOR_PICKER         , b::BUTTON_RIGHT , k::ALL                      );
+  set_mouse_drag_shortcut (m::COLOR_PICKER_DRAG    , b::BUTTON_RIGHT , k::ALL                      );
 }
 
 void shortcuts_config::fill_action_default ()
@@ -63,12 +64,12 @@ void shortcuts_config::fill_action_default ()
     m_action_shortcuts[i] = info.default_shortcut ((gui_action_id)i);
 }
 
-void shortcuts_config::set_mouse_shortcut (mouse_shortcut_enum index, mouse_event_type type, mouse_button button, keyboard_modifiers modifiers)
+void shortcuts_config::set_mouse_shortcut (mouse_shortcut_t index, mouse_event_type type, mouse_button button, keyboard_modifiers modifiers)
 {
   m_mouse_shortcuts[(int)index] = mouse_shortcut (type, button, modifiers);
 }
 
-void shortcuts_config::set_mouse_drag_shortcut (mouse_drag_shortcut_enum index,  mouse_button button, keyboard_modifiers modifiers)
+void shortcuts_config::set_mouse_drag_shortcut (mouse_drag_shortcut_t index,  mouse_button button, keyboard_modifiers modifiers)
 {
   m_drag_shortcuts[(int)index] = mouse_shortcut (mouse_event_type::DRAG_START, button, modifiers);
 }

@@ -10,7 +10,7 @@
 #include "svg/items/svg_items_container.h"
 
 items_rubberband_selector::items_rubberband_selector (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
-  : rubberband_selection (overlay, painter, applier, mouse_drag_shortcut_enum::RUBBERBAND_SELECTION)
+  : rubberband_selection (overlay, painter, applier, mouse_drag_shortcut_t::RUBBERBAND_SELECTION)
 {
   set_end_func (std::bind (&items_rubberband_selector::end_selection_func, this, std::placeholders::_1));
 }

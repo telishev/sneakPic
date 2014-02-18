@@ -11,8 +11,8 @@ class mouse_shortcut_enum_union;
 class mouse_event_t;
 
 enum class gui_action_id;
-enum class mouse_shortcut_enum;
-enum class mouse_drag_shortcut_enum;
+enum class mouse_shortcut_t;
+enum class mouse_drag_shortcut_t;
 
 typedef std::function<bool (const mouse_event_t &)> mouse_shortcut_func_t;
 
@@ -47,13 +47,13 @@ public:
   bool apply_action (gui_action_id id);
 
   template<typename T, typename FUNC_PARAM>
-  void add_shortcut (mouse_shortcut_enum shortcut, T *caller, bool (T::*func) (FUNC_PARAM))
+  void add_shortcut (mouse_shortcut_t shortcut, T *caller, bool (T::*func) (FUNC_PARAM))
   {
     add_shortcut_func (shortcut, [=] (const mouse_event_t &m_event) { return (caller->*func) ((FUNC_PARAM)m_event); });
   }
 
   template<typename T, typename FUNC_PARAM1, typename FUNC_PARAM2, typename FUNC_PARAM3>
-  void add_drag_shortcut (mouse_drag_shortcut_enum shortcut, T *caller, bool (T::*start) (FUNC_PARAM1),
+  void add_drag_shortcut (mouse_drag_shortcut_t shortcut, T *caller, bool (T::*start) (FUNC_PARAM1),
     bool (T::*drag) (FUNC_PARAM2), bool (T::*end) (FUNC_PARAM3))
   {
     add_drag_shortcut_func (shortcut, [=] (const mouse_event_t &m_event) { return (caller->*start) ((FUNC_PARAM1)m_event); },
@@ -61,8 +61,8 @@ public:
                                       [=] (const mouse_event_t &m_event) { return (caller->*end) ((FUNC_PARAM3)m_event); });
   }
 
-  void add_shortcut_func (mouse_shortcut_enum shortcut, const mouse_shortcut_func_t &func);
-  void add_drag_shortcut_func (mouse_drag_shortcut_enum shortcut, const mouse_shortcut_func_t &start, const mouse_shortcut_func_t &drag, const mouse_shortcut_func_t &end);
+  void add_shortcut_func (mouse_shortcut_t shortcut, const mouse_shortcut_func_t &func);
+  void add_drag_shortcut_func (mouse_drag_shortcut_t shortcut, const mouse_shortcut_func_t &start, const mouse_shortcut_func_t &drag, const mouse_shortcut_func_t &end);
 
   bool apply_action (const mouse_event_t &m_event, mouse_shortcut_enum_union action);
 };

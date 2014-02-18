@@ -108,6 +108,7 @@ private:
   bool pick_color_start (const QPoint &pos);
   bool pick_color_drag (const QPoint &pos);
   bool pick_color_end (const QPoint &pos);
+  bool pick_color_click (const QPoint &pos);
 };
 
 #endif // SVG_PAINTER_H

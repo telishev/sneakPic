@@ -28,7 +28,7 @@ rectangle_tool::rectangle_tool( svg_painter *painter )
   : abstract_tool (painter)
 {
   m_items_container = m_painter->item_container ();
-  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::CREATE_RECTANGLE, this,
+  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::CREATE_RECTANGLE, this,
     &rectangle_tool::start_rectangle_positioning, &rectangle_tool::continue_rectangle_positioning, &rectangle_tool::end_rectangle_positioning);
 
   m_renderer_item = new renderer_base_shape_item ("");

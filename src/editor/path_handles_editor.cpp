@@ -131,7 +131,7 @@ path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter
   : handles_editor (overlay, painter, applier)
 {
   m_handles_selection = new path_anchors_selection (painter->selection (), painter->document ());
-  m_rubberband = new rubberband_selection (overlay, painter, applier, mouse_drag_shortcut_enum::HANDLES_SELECTION);
+  m_rubberband = new rubberband_selection (overlay, painter, applier, mouse_drag_shortcut_t::HANDLES_SELECTION);
 
   m_rubberband->set_start_func ([=] (const mouse_event_t &)
     {
@@ -147,8 +147,8 @@ path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter
       return true;
     });
 
-  m_applier->add_shortcut (mouse_shortcut_enum::SELECT_HANDLE, this, &path_handles_editor::select_handle);
-  m_applier->add_shortcut (mouse_shortcut_enum::CHANGE_HANDLE_TYPE, this, &path_handles_editor::change_handle);
+  m_applier->add_shortcut (mouse_shortcut_t::SELECT_HANDLE, this, &path_handles_editor::select_handle);
+  m_applier->add_shortcut (mouse_shortcut_t::CHANGE_HANDLE_TYPE, this, &path_handles_editor::change_handle);
   m_applier->register_action (gui_action_id::DELETE_HANDLES, this, &path_handles_editor::delete_selected_handles);
 }
 
@@ -258,7 +258,7 @@ bool path_handles_editor::delete_selected_handles ()
           }
       }
   }
-  
+
   m_handles_selection->clear ();
   m_painter->document ()->apply_changes ("Delete Handles");
   return true;

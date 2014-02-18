@@ -43,10 +43,10 @@ pen_tool::pen_tool (svg_painter *painter)
   m_overlay->add_item (m_left_cp_renderer.get (), overlay_layer_type::TEMP);
   m_overlay->add_item (m_right_cp_renderer.get (), overlay_layer_type::TEMP);
 
-  m_actions_applier->add_shortcut (mouse_shortcut_enum::PEN_ADD_SEGMENT_SIMPLE, this, &pen_tool::add_segment_simple);
-  m_actions_applier->add_shortcut (mouse_shortcut_enum::UPDATE_AUXILIARY_PEN_PREVIEW, this, &pen_tool::update_auxiliary_pen_preview);
+  m_actions_applier->add_shortcut (mouse_shortcut_t::PEN_ADD_SEGMENT_SIMPLE, this, &pen_tool::add_segment_simple);
+  m_actions_applier->add_shortcut (mouse_shortcut_t::UPDATE_AUXILIARY_PEN_PREVIEW, this, &pen_tool::update_auxiliary_pen_preview);
 
-  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::PEN_ADD_SEGMENT_DRAG, this,
+  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::PEN_ADD_SEGMENT_DRAG, this,
     &pen_tool::add_segment_start, &pen_tool::add_segment_move, &pen_tool::add_segment_end);
 
   m_actions_applier->register_action (gui_action_id::FINISH_PATH, this, &pen_tool::finish_path_add);

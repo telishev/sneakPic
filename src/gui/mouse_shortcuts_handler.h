@@ -7,18 +7,18 @@
 class shortcuts_config;
 class mouse_event_t;
 
-enum class mouse_shortcut_enum;
-enum class mouse_drag_shortcut_enum;
+enum class mouse_shortcut_t;
+enum class mouse_drag_shortcut_t;
 
 class mouse_shortcut_enum_union
 {
 public:
-  mouse_shortcut_enum m_shortcut;
-  mouse_drag_shortcut_enum m_drag_shortcut;
+  mouse_shortcut_t m_shortcut;
+  mouse_drag_shortcut_t m_drag_shortcut;
   bool m_is_mouse_shortcut;
 
-  mouse_shortcut_enum_union (mouse_shortcut_enum shortcut) : m_shortcut (shortcut), m_is_mouse_shortcut (true) {}
-  mouse_shortcut_enum_union (mouse_drag_shortcut_enum shortcut) : m_drag_shortcut (shortcut), m_is_mouse_shortcut (false) {}
+  mouse_shortcut_enum_union (mouse_shortcut_t shortcut) : m_shortcut (shortcut), m_is_mouse_shortcut (true) {}
+  mouse_shortcut_enum_union (mouse_drag_shortcut_t shortcut) : m_drag_shortcut (shortcut), m_is_mouse_shortcut (false) {}
 };
 
 typedef std::function<bool (const mouse_event_t &, mouse_shortcut_enum_union action)> mouse_callback_func_t;
@@ -26,7 +26,7 @@ typedef std::function<bool (const mouse_event_t &, mouse_shortcut_enum_union act
 class mouse_shortcuts_handler
 {
   const shortcuts_config *m_cfg;
-  vector<mouse_drag_shortcut_enum> m_drag_stack;
+  vector<mouse_drag_shortcut_t> m_drag_stack;
   mouse_callback_func_t m_mouse_callback;
 
 public:
@@ -42,7 +42,7 @@ private:
   bool process_mouse_drag (const mouse_event_t &m_event);
   bool process_mouse_drag_end (const mouse_event_t &m_event);
 
-  vector<mouse_drag_shortcut_enum> get_applicable_shortcuts (const mouse_event_t &m_event, bool ignore_modifiers) const;
+  vector<mouse_drag_shortcut_t> get_applicable_shortcuts (const mouse_event_t &m_event, bool ignore_modifiers) const;
 };
 
 #endif // MOUSE_SHORTCUTS_HANDLER_H

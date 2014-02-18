@@ -24,7 +24,7 @@ selector_tool::selector_tool (svg_painter *painter)
   m_rubberband = new items_rubberband_selector (m_overlay, m_painter, m_actions_applier);
   m_move_handler = new items_move_handler (m_painter->item_container (), m_overlay, m_painter->selection (), m_painter->document ());
 
-  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::DRAG_OBJECTS, this,
+  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::DRAG_OBJECTS, this,
     &selector_tool::start_moving_object, &selector_tool::move_object, &selector_tool::end_moving_object);
 
 }

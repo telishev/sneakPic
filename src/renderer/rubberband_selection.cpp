@@ -46,7 +46,7 @@ public:
   }
 };
 
-rubberband_selection::rubberband_selection (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier, mouse_drag_shortcut_enum drag_shortcut)
+rubberband_selection::rubberband_selection (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier, mouse_drag_shortcut_t drag_shortcut)
 {
   m_start_x = 0.0;
   m_start_y = 0.0;

@@ -71,7 +71,8 @@ svg_painter::svg_painter (canvas_widget_t *canvas_widget, rendered_items_cache *
 
   create_mouse_shortcuts ();
   m_actions_applier->register_action (gui_action_id::DELETE_ITEMS, this, &svg_painter::remove_items_in_selection);
-  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::COLOR_PICKER, this, &svg_painter::pick_color_start, &svg_painter::pick_color_drag, &svg_painter::pick_color_end);
+  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::COLOR_PICKER_DRAG, this, &svg_painter::pick_color_start, &svg_painter::pick_color_drag, &svg_painter::pick_color_end);
+  m_actions_applier->add_shortcut (mouse_shortcut_t::COLOR_PICKER_CLICK, this, &svg_painter::pick_color_click);
   m_color_picker_area_preview.reset (new renderer_overlay_path ());
   m_color_picker_area_preview->set_color (Qt::white);
   m_color_picker_area_preview->set_xfer_mode (SkXfermode::Mode::kDifference_Mode);
@@ -95,7 +96,13 @@ bool svg_painter::pick_color_start (const QPoint &pos)
   m_color_picker_pos = pos;
   m_color_picker_area_preview->set_visible (true);
   pick_color_drag (pos);
-  update ();
+  return true;
+}
+
+bool svg_painter::pick_color_click (const QPoint &pos)
+{
+  pick_color_start (pos);
+  pick_color_end (pos);
   return true;
 }
 
@@ -117,7 +124,7 @@ bool svg_painter::pick_color_end (const QPoint &pos)
 
   m_color_picker_area_preview->set_visible (false);
   QPainterPath path;
-  float distance = QLineF (m_color_picker_pos, final_pos).length ();
+  float distance = qMax (QLineF (m_color_picker_pos, final_pos).length (), 1.0);
   path.addEllipse (m_color_picker_pos, distance, distance);
   m_color_picker_area_preview->set_painter_path (path);
 
@@ -324,11 +331,11 @@ bool svg_painter::select_item (const QPoint &pos)
 
 void svg_painter::create_mouse_shortcuts ()
 {
-  m_actions_applier->add_shortcut (mouse_shortcut_enum::SELECT_ITEM, this, &svg_painter::select_item);
-  m_actions_applier->add_shortcut (mouse_shortcut_enum::ADD_ITEM_TO_SELECTION, this, &svg_painter::add_item_to_selection);
-  m_actions_applier->add_shortcut (mouse_shortcut_enum::FIND_CURRENT_OBJECT, this, &svg_painter::find_current_object);
+  m_actions_applier->add_shortcut (mouse_shortcut_t::SELECT_ITEM, this, &svg_painter::select_item);
+  m_actions_applier->add_shortcut (mouse_shortcut_t::ADD_ITEM_TO_SELECTION, this, &svg_painter::add_item_to_selection);
+  m_actions_applier->add_shortcut (mouse_shortcut_t::FIND_CURRENT_OBJECT, this, &svg_painter::find_current_object);
 
-  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_enum::PAN, this,
+  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::PAN, this,
     &svg_painter::start_pan, &svg_painter::pan_picture, &svg_painter::end_pan);
 }
 
