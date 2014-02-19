@@ -136,9 +136,10 @@ bool svg_painter::pick_color_end (const QPoint &pos)
   unique_ptr<renderer_items_container> container (m_document->create_rendered_items (nullptr));
   QRectF rect (path.boundingRect ());
   QTransform transform;
-  QPointF pnt = get_local_pos (rect.topLeft ());
+  QPointF leftTopRectPnt = get_local_pos (rect.topLeft ());
+  QPointF LeftTopScreenPnt = get_local_pos (QPointF (0, 0));
+  transform.translate (LeftTopScreenPnt.x () - leftTopRectPnt.x (),LeftTopScreenPnt.y () -leftTopRectPnt.y ());
   transform *= m_cur_transform;
-  transform.translate (-pnt.x (), -pnt.y ());
   path.translate (-rect.left (), -rect.top ());
   rect = path.boundingRect ();
   unique_ptr<SkBitmap> bitmap (renderer.draw_to_bitmap (rect.toRect (), transform, container->root (), Qt::white));
