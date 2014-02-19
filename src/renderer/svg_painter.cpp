@@ -475,62 +475,125 @@ bool svg_painter::action_triggered (gui_action_id id)
   return m_actions_applier->apply_action (id);
 }
 
-bool svg_painter::lower_object ()
+enum class z_direction {
+  UP,
+  DOWN,
+};
+
+void svg_painter::move_selected_items_by_z (z_direction direction)
 {
   if (m_selection->count () == 0)
-    return true;
+    return;
 
-  for (auto &&item_it : *m_selection)
+  // copy selection
+  vector<svg_graphics_item *> selection_graphic_items;
+  for (auto item : *m_selection)
     {
-      svg_graphics_item *item = item_it->to_graphics_item ();
-      if (!item || !item->parent ())
-        continue;
-
-      int index = item->child_index ();
-      QRectF bbox = item->bbox ();
-      abstract_svg_item *parent = item->parent ();
-      int i;
-      for (i = index - 1; i >= 0; i--)
-        {
-          svg_graphics_item *graphics_item = parent->child (i)->to_graphics_item ();
-          if (graphics_item->bbox ().intersects (bbox))
-            break;
-        }
-      if (i < 0)
-        continue;
-      parent->move_child (i, item);
-      break;
+      auto graphics_item = item->to_graphics_item ();
+      selection_graphic_items.push_back (graphics_item);
     }
+
+  if (selection_graphic_items.size () == 0)
+    return;
+
+  abstract_svg_item *parent_item = selection_graphic_items[0]->parent ();
+
+  if (!parent_item)
+    return;
+
+  for (auto && item : selection_graphic_items)
+    {
+      if (item->parent () != parent_item)
+        return; // if parents are different - do nothing
+    }
+
+  // otherwise - sort by depth according to direction
+  sort (selection_graphic_items.begin (), selection_graphic_items.end (), [&] (abstract_svg_item * itemA, abstract_svg_item * itemB)
+  {
+    bool less = (itemA->child_index () < itemB->child_index ());
+    return (direction == z_direction::DOWN) ? !less : less;
+  });
+  // for example for down direction we are checking top-most item first:
+
+  int limit_index = 0;
+
+  // for each element finding element that lies between them and previous in the list which is appropriate for moving (intersects bounding box of our item)
+  for (auto it = selection_graphic_items.begin (); it != selection_graphic_items.end (); ++it)
+    {
+      if (it + 1 == selection_graphic_items.end ())
+        {
+          switch (direction)
+            {
+            case z_direction::UP:
+              limit_index = (int) parent_item->children_count ();
+              break;
+            case z_direction::DOWN:
+              limit_index = -1;
+              break;
+            }
+        }
+      else
+        limit_index = (* (it + 1))->child_index ();
+
+      auto has_intersection = [&] (int index) {
+                                                 svg_graphics_item *graphics_item = parent_item->child (index)->to_graphics_item ();
+                                                 return graphics_item ? graphics_item->bbox ().intersects ((*it)->bbox ()) : false;
+                                              };
+      int found_index = -1;
+      switch (direction)
+        {
+        case z_direction::UP:
+          {
+            for (int i = (*it)->child_index () + 1; i < limit_index; i++)
+            {
+              if (has_intersection (i))
+              {
+                found_index = i;
+                break;
+              }
+            }
+          }
+          break;
+        case z_direction::DOWN:
+          {
+            for (int i = (*it)->child_index () - 1; i > limit_index; i--)
+            {
+
+              if (has_intersection (i))
+              {
+                found_index = i;
+                break;
+              }
+            }
+          }
+          break;
+        }
+      if (found_index != -1)
+        {
+          switch (direction)
+            {
+            case z_direction::UP:
+              parent_item->move_child (found_index + 1, *it);
+              break;
+            case z_direction::DOWN:
+              parent_item->move_child (found_index, *it);
+              break;
+            }
+
+        }
+    }
+}
+
+bool svg_painter::lower_object ()
+{
+  move_selected_items_by_z (z_direction::DOWN);
   document ()->apply_changes ("Lower");
   return true;
 }
 
 bool svg_painter::raise_object ()
 {
-  if (m_selection->count () == 0)
-    return true;
-
-  for (auto &&item_it : *m_selection)
-    {
-      svg_graphics_item *item = item_it->to_graphics_item ();
-      if (!item || !item->parent ())
-        continue;
-
-      int index = item->child_index ();
-      QRectF bbox = item->bbox ();
-      abstract_svg_item *parent = item->parent ();
-      int i;
-      for (i = index + 1; i < parent->children_count (); i++)
-        {
-          svg_graphics_item *graphics_item = parent->child (i)->to_graphics_item ();
-          if (graphics_item->bbox ().intersects (bbox))
-            break;
-        }
-      if (i >= parent->children_count ())
-        continue;
-      parent->move_child (i + 1, item);
-      break;
-    }
+  move_selected_items_by_z (z_direction::UP);
   document ()->apply_changes ("Raise");
   return true;
 }

@@ -25,6 +25,7 @@ class svg_document;
 class svg_items_container;
 
 enum class gui_action_id;
+enum class z_direction;
 
 class svg_painter : public abstract_painter
 {
@@ -111,6 +112,7 @@ private:
   bool pick_color_click (const QPoint &pos);
   bool raise_object ();
   bool lower_object ();
+  void move_selected_items_by_z (z_direction direction);
 };
 
 #endif // SVG_PAINTER_H
