@@ -15,7 +15,7 @@ class renderer_item_image : public renderer_graphics_item
   QImage m_image_data;
 
 public:
-  renderer_item_image (const std::string &name);
+  renderer_item_image (const string &name);
   ~renderer_item_image ();
 
   virtual void draw_graphics_item (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;

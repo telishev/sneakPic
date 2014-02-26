@@ -5,7 +5,7 @@
 #include "svg/items/abstract_svg_item.h"
 
 
-bool adjancent_selector::is_matched (const abstract_svg_item *item) const 
+bool adjancent_selector::is_matched (const abstract_svg_item *item) const
 {
   if (!m_rhs->is_matched (item))
     return false;

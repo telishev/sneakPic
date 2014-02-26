@@ -132,7 +132,7 @@ void rendered_items_cache::clear ()
   m_cache->clear ();
 }
 
-void rendered_items_cache::add_selection_mapping (int id, const std::string &name)
+void rendered_items_cache::add_selection_mapping (int id, const string &name)
 {
   QMutexLocker lock (m_mutex);
   DEBUG_ASSERT (m_selection_map.find (id) == m_selection_map.end ());
@@ -147,13 +147,13 @@ void rendered_items_cache::remove_selection_mapping (int id)
   m_selection_map.erase (it);
 }
 
-std::string rendered_items_cache::get_selection_name (int id) const
+string rendered_items_cache::get_selection_name (int id) const
 {
   auto it = m_selection_map.find (id);
   if (it != m_selection_map.end ())
     return it->second;
 
-  return std::string ();
+  return string ();
 }
 
 QColor rendered_items_cache::get_selection_color (int id)

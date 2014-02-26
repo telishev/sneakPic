@@ -21,7 +21,7 @@ public:
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool from_css = false) const override;
   bool is_specified () const { return (m_element != nullptr); }
-  std::string fragment_name () const;
+  string fragment_name () const;
 
   virtual bool is_point_applicable (int number, const QPainterPath &path) const = 0;
 };

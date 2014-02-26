@@ -18,7 +18,7 @@ class rendered_items_cache
 
   map<render_cache_id, cache_bitmap_t> *m_cache;
   map<render_cache_id, cache_bitmap_t> *m_next_zoom_cache;
-  map<int, std::string> m_selection_map;
+  map<int, string> m_selection_map;
 
   double m_zoom_x, m_zoom_y;
 
@@ -49,14 +49,14 @@ public:
   bool has_pending_changes ();
   bool same_zoom (const QTransform &transform);
 
-  void add_selection_mapping (int id, const std::string &name);
+  void add_selection_mapping (int id, const string &name);
   void remove_selection_mapping (int id);
 
   void set_current_screen (const SkBitmap &bitmap, int cache_object_id);
   SkBitmap get_current_screen (int cache_object_id) const; 
 
   /// call this functions only after calling lock
-  std::string get_selection_name (int id) const;
+  string get_selection_name (int id) const;
   SkBitmap bitmap (const render_cache_id &id) const;
   bool is_valid (const render_cache_id &id) const;
   double zoom_x () const { return m_zoom_x; }

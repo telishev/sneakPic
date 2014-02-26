@@ -32,7 +32,7 @@ bool css_declaration::parse (const char *str)
 
   while (*str)
     {
-      std::string prop_name, prop_value;
+      string prop_name, prop_value;
       CHECK (extract_chunk (':', str, prop_name));
       CHECK (extract_chunk (';', str, prop_value));
 
@@ -43,10 +43,10 @@ bool css_declaration::parse (const char *str)
   return true;
 }
 
-bool css_declaration::create_attribute (const std::string &name, const std::string &value)
+bool css_declaration::create_attribute (const string &name, const string &value)
 {
-  std::string real_name = from_escaped_string (name);
-  std::string real_value = from_escaped_string (value);
+  string real_name = from_escaped_string (name);
+  string real_value = from_escaped_string (value);
 
   /// TODO: do something with namespaces
   unique_ptr <abstract_attribute> attribute (svg_attribute_factory::get ()->create_attribute (real_name.c_str (), svg_item_type::STYLE));
@@ -68,9 +68,9 @@ bool css_declaration::create_attribute (const std::string &name, const std::stri
   return true;
 }
 
-std::string css_declaration::to_string () const
+string css_declaration::to_string () const
 {
-  std::string result;
+  string result;
   bool first = true;
   for (auto &attribute_pair : m_attributes)
     {
@@ -87,7 +87,7 @@ std::string css_declaration::to_string () const
   return result;
 }
 
-abstract_attribute *css_declaration::get_attribute (const std::string &str) const
+abstract_attribute *css_declaration::get_attribute (const string &str) const
 {
   auto it = m_attributes.find (str);
   if (it == m_attributes.end ())

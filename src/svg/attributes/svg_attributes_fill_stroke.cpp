@@ -102,7 +102,7 @@ renderer_paint_server *svg_paint_server::create_paint_server (const svg_items_co
     case paint_server_type::IRI:
       {
         /// TODO: support other paint servers
-        std::string fragment_name = m_iri.get_fragment_name ();
+        string fragment_name = m_iri.get_fragment_name ();
 
         const svg_base_items_gradient *base_gradient = dynamic_cast<const svg_base_items_gradient *> (container->get_item (fragment_name));
         if (!base_gradient)

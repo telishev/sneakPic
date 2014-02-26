@@ -22,7 +22,7 @@ protected:
   double m_opacity;
 
 public:
-  renderer_graphics_item (const std::string &name);
+  renderer_graphics_item (const string &name);
   virtual ~renderer_graphics_item ();
 
   void set_clip_path (const QPainterPath &path) { m_clip_path = path; m_has_clip_path = true; }

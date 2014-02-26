@@ -8,9 +8,9 @@
 
 class unknown_item : public abstract_svg_item
 {
-  std::string m_name;
-  std::string m_namespace_uri;
-  std::string m_namespace_name;
+  string m_name;
+  string m_namespace_uri;
+  string m_namespace_name;
 public:
   unknown_item (svg_document *document, const QString &name, const QString &namespace_uri, const QString &prefix)
     : abstract_svg_item (document)

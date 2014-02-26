@@ -12,7 +12,7 @@
 
 #include "skia/skia_includes.h"
 
-renderer_item_group::renderer_item_group (const std::string &name)
+renderer_item_group::renderer_item_group (const string &name)
   : abstract_renderer_item (name)
 {
   m_opacity = 1.0;
@@ -55,7 +55,7 @@ void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, c
 
   renderer_state new_state (state.rect (), state.transform () * pixmap_transform);
 
-  for (const std::string &child_name : m_children)
+  for (const string &child_name : m_children)
     {
       abstract_renderer_item *child_item = container ()->item (child_name);
       if (child_item)
@@ -89,7 +89,7 @@ QRectF renderer_item_group::bounding_box_impl () const
 void renderer_item_group::update_bbox_impl ()
 {
   QRectF new_box;
-  for (const std::string &child_name : m_children)
+  for (const string &child_name : m_children)
     {
       abstract_renderer_item *renderer_item = container ()->item (child_name);
       if (!renderer_item)

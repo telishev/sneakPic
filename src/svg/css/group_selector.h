@@ -16,7 +16,7 @@ public:
   virtual ~group_selector ();
 
   virtual bool is_matched (const abstract_svg_item *item) const override;
-  virtual std::string to_string () const override;
+  virtual string to_string () const override;
   virtual bool can_be_first () const override { return false; }
 
   void add_selector (abstract_css_selector *selector) { m_components.push_back (selector); }

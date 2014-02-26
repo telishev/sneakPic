@@ -4,7 +4,7 @@
 
 #include "svg/items/abstract_svg_item.h"
 
-id_selector::id_selector (const std::string &id_name)
+id_selector::id_selector (const string &id_name)
 {
   m_id_name = id_name;
 }

@@ -19,7 +19,7 @@ public:
   virtual bool read (const char *data, bool from_css = false) override;
   virtual bool write (QString &data, bool to_css = false) const override;
 
-  std::string get_fragment_name () const;
+  string get_fragment_name () const;
   QImage *get_image_data (const QString &svg_name) const;
   iri_type get_data_type () const;
 

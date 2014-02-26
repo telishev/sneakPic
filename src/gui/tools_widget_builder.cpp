@@ -69,7 +69,7 @@ void tools_widget_builder::add_action (gui_action_id id)
 
 void tools_widget_builder::init_toolbar_and_layout()
 {
-  m_layout = create_common_vbox_widget ();
+  m_layout = qt_utils::create_common_vbox_widget ();
   m_tool_bar = new QWidget (0);
   FlowLayout *layout = new FlowLayout ();
   layout->setSpacing (0);
@@ -82,7 +82,7 @@ void tools_widget_builder::init_toolbar_and_layout()
 
 void tools_widget_builder::add_color_indicators ()
 {
-  QHBoxLayout *layout = create_intermediate_hbox_layout (m_layout->parentWidget ());
+  QHBoxLayout *layout = qt_utils::create_intermediate_hbox_layout (m_layout->parentWidget ());
   layout->setSpacing (3);
   m_fill_color_indicator = new color_indicator (m_layout->parentWidget (), 0);
   m_fill_color_indicator->set_color (m_fill_color);

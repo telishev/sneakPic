@@ -19,7 +19,7 @@ void event_items_changed::add_renderer_item (abstract_renderer_item *item)
   m_changed_items.push_back (item);
 }
 
-void event_items_changed::add_removed_item (const std::string &item)
+void event_items_changed::add_removed_item (const string &item)
 {
   m_removed_items.push_back (item);
 }
@@ -47,7 +47,7 @@ void event_items_changed::process (renderer_thread *renderer)
       renderer->invalidate_rect (item->bounding_box ());
     }
 
-  for (const std::string &name : m_removed_items)
+  for (const string &name : m_removed_items)
     {
       abstract_renderer_item *item_removed = container->item (name);
       if (!item_removed)

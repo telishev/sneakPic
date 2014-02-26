@@ -20,7 +20,7 @@ selectors_container::~selectors_container ()
     }
 }
 
-const abstract_attribute *selectors_container::get_attribute (const std::string &str, const abstract_svg_item *item_to_match) const
+const abstract_attribute *selectors_container::get_attribute (const string &str, const abstract_svg_item *item_to_match) const
 {
   for (auto rule : m_rule_set)
     {
@@ -44,7 +44,7 @@ void selectors_container::add_rule_set (abstract_css_selector *selector, css_dec
   m_rule_set.push_back (std::make_pair (selector, declaration));
 }
 
-void selectors_container::get_attributes_for_item (const abstract_svg_item *item_to_match, std::unordered_map<std::string, abstract_attribute *> &result)
+void selectors_container::get_attributes_for_item (const abstract_svg_item *item_to_match, std::unordered_map<string, abstract_attribute *> &result)
 {
   for (auto rule : m_rule_set)
     {

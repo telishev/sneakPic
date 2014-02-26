@@ -173,14 +173,14 @@ int is_alnum (const unsigned char c)
 
 /// returns next identifier (string consisting of numbers and letters)
 /// moves str to the end of the identifier
-std::string get_next_identifier (const char *&str)
+string get_next_identifier (const char *&str)
 {
   const char *begin = str;
   trim_whitespace_left (str);
   while (is_alnum (*str))
     str++;
 
-  return std::string (begin, str);
+  return string (begin, str);
 }
 
 
@@ -264,9 +264,9 @@ bool goto_next_char (const char *&str, char to_find)
 }
 
 /// returns string where escape characters are replaced
-std::string from_escaped_string (const std::string &str)
+string from_escaped_string (const string &str)
 {
-  std::string result;
+  string result;
   result.reserve (str.length () + 1);
   
   for (const char *str_char = str.c_str (); *str_char; str_char++)
@@ -290,9 +290,9 @@ static inline bool need_to_escape (char c)
 }
 
 /// returns string with special symbols escaped
-std::string to_escaped_string (const std::string &str)
+string to_escaped_string (const string &str)
 {
-  std::string result;
+  string result;
   result.reserve (str.length () * 2);
   
   for (const char *str_char = str.c_str (); *str_char; str_char++)
@@ -306,13 +306,13 @@ std::string to_escaped_string (const std::string &str)
   return result;
 }
 
-bool extract_chunk (char chunk_end, const char *&data, std::string &result)
+bool extract_chunk (char chunk_end, const char *&data, string &result)
 {
   const char *data_start = data;
   CHECK (goto_next_char (data, chunk_end));
 
   const char *data_end = trim_whitespace_right (data_start, data);
-  result = std::string (data_start, data_end);
+  result = string (data_start, data_end);
 
   if (*data)
     {

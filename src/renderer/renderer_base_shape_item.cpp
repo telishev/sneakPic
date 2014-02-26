@@ -15,7 +15,7 @@
 
 #include "skia/skia_includes.h"
 
-renderer_base_shape_item::renderer_base_shape_item (const std::string &name)
+renderer_base_shape_item::renderer_base_shape_item (const string &name)
   : renderer_graphics_item (name)
 {
   m_stroke = new SkPaint;

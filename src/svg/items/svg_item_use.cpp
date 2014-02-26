@@ -17,10 +17,10 @@ class use_item_watcher : public simple_item_observer<use_item_watcher>
 {
   QTransform m_transform_before;
 public:
-  use_item_watcher (svg_items_container *container, const std::string &parent)
+  use_item_watcher (svg_items_container *container, const string &parent)
     : simple_item_observer (container, parent) {}
 
-  virtual void attribute_change_start (const std::string &/*sender*/, const abstract_attribute *attribute) override
+  virtual void attribute_change_start (const string &/*sender*/, const abstract_attribute *attribute) override
   {
     if (!attribute || attribute->type () != svg_attribute_type::TRANSFORM)
       return;
@@ -29,7 +29,7 @@ public:
     m_transform_before = atribute_transform->computed_transform ();
   }
 
-  virtual void attribute_change_end (const std::string &/*sender*/, const abstract_attribute *attribute) override
+  virtual void attribute_change_end (const string &/*sender*/, const abstract_attribute *attribute) override
   {
     if (!attribute || attribute->type () != svg_attribute_type::TRANSFORM)
       return;
@@ -39,7 +39,7 @@ public:
     m_transform_before = atribute_transform->computed_transform ();
   }
 
-  virtual void item_removed (const std::string &/*sender*/) override
+  virtual void item_removed (const string &/*sender*/) override
   {
     base_item ()->unlink ();
   }

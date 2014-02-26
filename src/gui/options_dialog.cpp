@@ -17,9 +17,9 @@ public:
   options_dialog_ui (QDialog *dialog)
   {
     m_dialog = dialog;
-    auto layout = create_common_vbox_layout (dialog);
+    auto layout = qt_utils::create_common_vbox_layout (dialog);
     layout->addWidget (m_show_next_curve_preview_checkbox = new QCheckBox (settings_t::user_string (option_id::NEXT_CURVE_PREVIEW)));
-    layout->addWidget (create_standard_button_box (dialog));
+    layout->addWidget (qt_utils::create_standard_button_box (dialog));
   }
 
   QCheckBox *show_next_curve_preview_checkbox () { return m_show_next_curve_preview_checkbox; }

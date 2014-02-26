@@ -15,10 +15,13 @@
 
 #include "editor/style_controller.h"
 
+#include "gui/actions_applier.h"
 #include "gui/settings.h"
 #include "gui/gui_document.h"
 #include "gui/gui_actions.h"
 #include "gui/gui_action_id.h"
+#include "svg/layers_handler.h"
+#include "gui/layers_widget_handler.h"
 #include "gui/style_widget_handler.h"
 #include "gui/tools_widget_builder.h"
 #include "gui/menu_builder.h"
@@ -33,7 +36,6 @@
 
 #include "dock_widget_builder.h"
 #include "renderer/svg_painter.h"
-#include "actions_applier.h"
 
 #define RECENT_FILES_NUMBER 10
 
@@ -50,6 +52,7 @@ main_window::main_window ()
   m_tools_builder = new tools_widget_builder (m_actions, m_dock_widget_builder);
   m_style_controller = new style_controller (m_settings.get ());
   m_style_widget_handler = new style_widget_handler (m_dock_widget_builder, m_style_controller);
+  m_layers_widget_handler.reset (new layers_widget_handler (m_dock_widget_builder));
   m_last_saved_position = 0;
   m_recent_files_signal_mapper.reset (new QSignalMapper ());
   m_options_dialog.reset (new options_dialog (m_settings.get ()));
@@ -231,7 +234,7 @@ void main_window::do_open_file (const QString filename)
   if (!m_document->open_file (filename))
     {
       create_new_document ();
-      QMessageBox::warning (this, "Warning", "Cannot open document");
+      QMessageBox::critical (this, "Error", "Document Opening Error");
       return;
     }
 
@@ -267,6 +270,7 @@ void main_window::update_on_document_create ()
 {
   create_painter ();
   m_style_widget_handler->set_tools_containter (m_document->get_tools_container ());
+  m_layers_widget_handler->set_layers_handler (m_document->doc ()->get_layers_handler ());
   CONNECT (m_document->doc (), &svg_document::undo_redo_done, this, &main_window::update_window_title);
   CONNECT (m_document->doc (), &svg_document::changes_done, this, &main_window::undo_invalidation_check);
 }

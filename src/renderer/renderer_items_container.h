@@ -9,25 +9,25 @@ class rendered_items_cache;
 
 class renderer_items_container
 {
-  std::unordered_map<std::string, abstract_renderer_item *> m_items;
-  std::string m_root;
+  std::unordered_map<string, abstract_renderer_item *> m_items;
+  string m_root;
   int m_last_id;
   rendered_items_cache *m_cache;
 public:
   renderer_items_container ();
   ~renderer_items_container ();
 
-  abstract_renderer_item *item (const std::string &name);
-  const abstract_renderer_item *item (const std::string &name) const;
+  abstract_renderer_item *item (const string &name);
+  const abstract_renderer_item *item (const string &name) const;
 
-  void set_root (const std::string &root);
+  void set_root (const string &root);
   const abstract_renderer_item *root () const;
   abstract_renderer_item *root ();
 
   void add_item (abstract_renderer_item *item);
-  void remove_item (const std::string &name);
+  void remove_item (const string &name);
 
-  void add_child (const std::string &parent, const std::string &child);
+  void add_child (const string &parent, const string &child);
 
   void change_item (abstract_renderer_item *item);
 

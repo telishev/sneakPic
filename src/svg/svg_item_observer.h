@@ -13,12 +13,12 @@ public:
   svg_item_observer ();
   virtual ~svg_item_observer ();
 
-  virtual void child_added (const std::string &parent, const std::string &child_name, int insert_pos);
-  virtual void child_removed (const std::string &parent, const std::string &child_name, int pos);
-  virtual void child_moved (const std::string &parent, const std::string &child_name, int old_pos, int new_pos);
-  virtual void attribute_change_start (const std::string &parent, const abstract_attribute *computed_attribute);
-  virtual void attribute_change_end (const std::string &parent, const abstract_attribute *computed_attribute);
-  virtual void item_removed (const std::string &item);
+  virtual void child_added (const string &parent, const string &child_name, int insert_pos);
+  virtual void child_removed (const string &parent, const string &child_name, int pos);
+  virtual void child_moved (const string &parent, const string &child_name, int old_pos, int new_pos);
+  virtual void attribute_change_start (const string &parent, const abstract_attribute *computed_attribute);
+  virtual void attribute_change_end (const string &parent, const abstract_attribute *computed_attribute);
+  virtual void item_removed (const string &item);
 };
 
 

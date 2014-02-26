@@ -10,7 +10,7 @@ public:
   ~universal_selector () {}
 
   virtual bool is_matched (const abstract_svg_item * /*item*/) const override { return true; }
-  virtual std::string to_string () const override { return "*"; }
+  virtual string to_string () const override { return "*"; }
   virtual bool can_be_first () const override{ return true; }
 };
 

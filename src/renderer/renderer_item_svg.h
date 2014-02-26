@@ -6,7 +6,7 @@
 class renderer_item_svg : public renderer_item_group
 {
 public:
-  renderer_item_svg (const std::string &name);
+  renderer_item_svg (const string &name);
   ~renderer_item_svg ();
 
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;

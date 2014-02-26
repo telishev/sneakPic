@@ -297,7 +297,7 @@ void svg_painter::send_changes (bool interrrupt_rendering)
 abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
 {
   int radius = 3;
-  std::set<abstract_svg_item *> items;
+  set<abstract_svg_item *> items;
   /// find all items near current mouse pos
   for (int offset_x = -radius; offset_x <= radius; offset_x++)
     for (int offset_y = -radius; offset_y <= radius; offset_y++)
@@ -367,7 +367,7 @@ bool svg_painter::pan_picture (const QPoint &pos)
 bool svg_painter::find_current_object (const QPoint &pos)
 {
   abstract_svg_item *current_item = get_current_item (pos);
-  std::string item_string = current_item ? current_item->name () : std::string ();
+  string item_string = current_item ? current_item->name () : string ();
   if (item_string != m_item_outline->current_item ())
     {
       m_item_outline->set_current_item (item_string);
@@ -460,7 +460,7 @@ abstract_svg_item *svg_painter::get_current_item_for_point (const QPoint &pos)
   QColor color (img.pixel (point_to_pick));
   int item_id = rendered_items_cache::get_id_by_color (color);
 
-  std::string selected_item_name = m_cache->get_selection_name (item_id);
+  string selected_item_name = m_cache->get_selection_name (item_id);
   if (selected_item_name.empty ())
     return nullptr;
 

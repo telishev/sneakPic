@@ -24,9 +24,9 @@ bool group_selector::is_matched (const abstract_svg_item *item) const
   return false;
 }
 
-std::string group_selector::to_string () const 
+string group_selector::to_string () const 
 {
-  std::string result;
+  string result;
   bool first = true;
   for (abstract_css_selector *selector : m_components)
     {

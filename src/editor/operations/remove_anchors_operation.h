@@ -11,11 +11,11 @@ public:
   remove_anchors_operation (svg_path *path);
   ~remove_anchors_operation ();
 
-  void apply (std::set<svg_path_geom_iterator> anchors_to_delete);
+  void apply (set<svg_path_geom_iterator> anchors_to_delete);
 private:
-  void remove_from_node_types (const std::set<svg_path_geom_iterator> &anchors_to_delete);
-  void remove_from_line_types (const std::set<svg_path_geom_iterator> &anchors_to_delete);
-  void remove_from_geom (const std::set<svg_path_geom_iterator> &anchors_to_delete);
+  void remove_from_node_types (const set<svg_path_geom_iterator> &anchors_to_delete);
+  void remove_from_line_types (const set<svg_path_geom_iterator> &anchors_to_delete);
+  void remove_from_geom (const set<svg_path_geom_iterator> &anchors_to_delete);
 
 };
 

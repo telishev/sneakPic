@@ -55,7 +55,7 @@ public:
   bool action_triggered (gui_action_id id);
 
   const tools_container *get_tools_container () { return m_tools_container; }
-  const svg_document* doc () const { return m_doc; }
+  svg_document* doc () const { return m_doc; }
 
 private slots:
   void update_timeout ();

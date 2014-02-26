@@ -21,13 +21,13 @@ void items_selection::add_item (const abstract_svg_item *item)
   return add_item (item->name ());
 }
 
-void items_selection::add_item (const std::string &item_name)
+void items_selection::add_item (const string &item_name)
 {
   m_selection.insert (item_name);
   emit selection_changed ();
 }
 
-void items_selection::remove_item (const std::string &item_name)
+void items_selection::remove_item (const string &item_name)
 {
   m_selection.erase (item_name);
   emit selection_changed ();
@@ -66,7 +66,7 @@ void items_selection::add_items_for_rect (const QRectF &rect, const abstract_svg
     add_items_for_rect (rect, root->child (i));
 }
 
-bool items_selection::contains (const std::string &name) const
+bool items_selection::contains (const string &name) const
 {
   return m_selection.find (name) != m_selection.end ();
 }

@@ -16,9 +16,9 @@ class QString;
 
 class svg_attribute_factory
 {
-  std::unordered_multimap<std::string, std::function<abstract_attribute * ()>> m_string_map;
+  std::unordered_multimap<string, std::function<abstract_attribute * ()>> m_string_map;
   map<svg_attribute_type, std::function<abstract_attribute * ()>> m_type_map;
-  map<svg_attribute_type, std::string> m_type_to_string_map;
+  map<svg_attribute_type, string> m_type_to_string_map;
 public:
   static svg_attribute_factory *get ();
 
@@ -26,7 +26,7 @@ public:
   abstract_attribute *create_attribute (const char *localName, svg_item_type type) const;
   abstract_attribute *create_attribute (int item_id, svg_attribute_type type);
 
-  std::string attribute_name (svg_attribute_type type) const;
+  string attribute_name (svg_attribute_type type) const;
 
 private:
   svg_attribute_factory ();

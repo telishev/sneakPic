@@ -5,12 +5,12 @@
 
 class class_selector : public abstract_css_selector
 {
-  std::string m_class_name;
+  string m_class_name;
 public:
-  class_selector (const std::string &class_name);
+  class_selector (const string &class_name);
 
   virtual bool is_matched (const abstract_svg_item *item) const override;
-  virtual std::string to_string () const override { return std::string (".") + m_class_name; }
+  virtual string to_string () const override { return string (".") + m_class_name; }
   virtual bool can_be_first () const override { return false; }
 };
 

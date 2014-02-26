@@ -14,7 +14,7 @@ public:
   virtual bool is_matched (const abstract_svg_item *item) const = 0;
 
   /// converts selector to string
-  virtual std::string to_string () const = 0;
+  virtual string to_string () const = 0;
 
   /// whether it can be first selector in simple selector
   virtual bool can_be_first () const = 0;

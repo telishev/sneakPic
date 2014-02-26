@@ -11,7 +11,7 @@
 #include "skia/skia_includes.h"
 
 
-renderer_item_image::renderer_item_image (const std::string &name)
+renderer_item_image::renderer_item_image (const string &name)
   : renderer_graphics_item (name)
 {
 }

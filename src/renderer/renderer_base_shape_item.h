@@ -19,7 +19,7 @@ protected:
   vector <abstract_renderer_item *> marker_renderer_items;
 
 public:
-  renderer_base_shape_item (const std::string &name);
+  renderer_base_shape_item (const string &name);
   ~renderer_base_shape_item ();
 
   void set_stroke_linecap (Qt::PenCapStyle linecap);

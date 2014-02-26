@@ -21,7 +21,7 @@ bool svg_transform_list::read (const char *data)
   while (*data)
     {
       transform_data.clear ();
-      std::string transform, transform_data_string;
+      string transform, transform_data_string;
       CHECK (extract_chunk ('(', data, transform));
       CHECK (extract_chunk (')', data, transform_data_string));
       CHECK (get_transfrom_data (transform_data_string.c_str (), transform_data));
@@ -44,7 +44,7 @@ bool svg_transform_list::get_transfrom_data (const char *data, vector<double> &d
   return true;
 }
 
-bool svg_transform_list::apply_transform (const std::string &name, vector<double> &data)
+bool svg_transform_list::apply_transform (const string &name, vector<double> &data)
 {
   const double degree_to_rad = 0.0174532925;
   QTransform new_transform;

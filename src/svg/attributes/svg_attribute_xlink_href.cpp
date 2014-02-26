@@ -35,7 +35,7 @@ QImage *svg_attribute_xlink_href::get_image_data (const QString &svg_name) const
   return m_iri.get_image_data (svg_name);
 }
 
-std::string svg_attribute_xlink_href::get_fragment_name () const
+string svg_attribute_xlink_href::get_fragment_name () const
 {
   return m_iri.get_fragment_name ();
 }

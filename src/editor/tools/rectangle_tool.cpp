@@ -9,7 +9,6 @@
 
 #include "renderer/overlay_renderer.h"
 #include "renderer/renderer_paint_server.h"
-#include "renderer/renderer_base_shape_item.h"
 #include "renderer/svg_painter.h"
 
 #include "svg/attributes/svg_attributes_length_type.h"
@@ -23,6 +22,7 @@
 #include "svg/items/svg_item_rect.h"
 #include "svg/svg_document.h"
 #include "editor/operations/add_item_operation.h"
+#include "renderer/renderer_overlay_path.h"
 
 rectangle_tool::rectangle_tool( svg_painter *painter )
   : abstract_tool (painter)
@@ -31,8 +31,7 @@ rectangle_tool::rectangle_tool( svg_painter *painter )
   m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::CREATE_RECTANGLE, this,
     &rectangle_tool::start_rectangle_positioning, &rectangle_tool::continue_rectangle_positioning, &rectangle_tool::end_rectangle_positioning);
 
-  m_renderer_item = new renderer_base_shape_item ("");
-  m_renderer_item->set_ignore_bbox (true);
+  m_renderer_item = new renderer_overlay_path ();
   m_overlay->add_item (m_renderer_item, overlay_layer_type::TEMP);
 }
 
@@ -57,21 +56,8 @@ void rectangle_tool::update_preview (QPointF &current_pos)
 {
   QPainterPath path;
   path.addRect (get_rect (current_pos));
-  m_renderer_item->set_visibility (true);
   m_renderer_item->set_painter_path (path);
-
-  renderer_painter_server_color fill_server (*(m_painter->settings ()->fill_color ()));
-  fill_server.set_opacity (m_painter->settings ()->fill_color ()->alphaF ());
-  m_renderer_item->set_fill_server (&fill_server);
-
-  renderer_painter_server_color stroke_server (*(m_painter->settings ()->stroke_color ()));
-  stroke_server.set_opacity (m_painter->settings ()->stroke_color ()->alphaF ());
-  m_renderer_item->set_stroke_server (&stroke_server);
-
-  m_renderer_item->set_stroke_width (m_painter->settings ()->stroke_width ());
-  m_renderer_item->set_stroke_linejoin (m_painter->settings ()->stroke_linejoin ());
-  m_renderer_item->set_stroke_miterlimit (m_painter->settings ()->stroke_miterlimit ());
-  m_renderer_item->set_stroke_linecap (m_painter->settings ()->stroke_linecap ());
+  m_renderer_item->set_visible (true);
 }
 
 bool rectangle_tool::continue_rectangle_positioning (const QPoint &pos)
@@ -92,7 +78,7 @@ bool rectangle_tool::end_rectangle_positioning (const QPoint &pos)
 
 void rectangle_tool::hide_preview ()
 {
-  m_renderer_item->set_visibility (false);
+  m_renderer_item->set_visible (false);
 }
 
 void rectangle_tool::insert_item (const QPointF &pos )

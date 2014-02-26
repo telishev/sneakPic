@@ -19,28 +19,28 @@ class path_anchors_selection : public QObject
   items_selection *m_selection;
   svg_document *m_document;
 
-  map<std::string, std::set<int>> m_selected_anchors;
+  map<string, set<int>> m_selected_anchors;
   bool m_changes_started;
 
 public:
   path_anchors_selection (items_selection *selection, svg_document *document);
   ~path_anchors_selection ();
 
-  void add_anchor (const std::string &item, int id);
-  void remove_anchor (const std::string &item, int id);
+  void add_anchor (const string &item, int id);
+  void remove_anchor (const string &item, int id);
   void clear ();
 
   void update ();
 
-  bool is_selected (const std::string &item, int id) const;
+  bool is_selected (const string &item, int id) const;
 
   void begin_changes () { m_changes_started = true; }
   void end_changes () { m_changes_started = false; }
 
-  const map<std::string, std::set<int>> &selected_anchors () const { return m_selected_anchors; }
+  const map<string, set<int>> &selected_anchors () const { return m_selected_anchors; }
 
 private slots:
-  void attribute_changed (const std::string &sender, const abstract_attribute *computed_attribute);
+  void attribute_changed (const string &sender, const abstract_attribute *computed_attribute);
 };
 
 #endif // PATH_HANDLES_SELECTION_H

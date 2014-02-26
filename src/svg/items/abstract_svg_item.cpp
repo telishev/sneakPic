@@ -23,10 +23,10 @@ class svg_item_state : public abstract_state_t
 {
 public:
   svg_document *m_document;
-  map<std::string, int> m_attributes;
+  map<string, int> m_attributes;
 
-  std::string m_original_id;
-  std::string m_own_id;
+  string m_original_id;
+  string m_own_id;
 
   vector<int> m_children;
   int m_parent;
@@ -58,33 +58,33 @@ public:
 class cloned_item_observer : public simple_item_observer<cloned_item_observer>
 {
 public:
-  cloned_item_observer (svg_items_container *container, const std::string &parent)
+  cloned_item_observer (svg_items_container *container, const string &parent)
     : simple_item_observer (container, parent) {}
 
-  virtual void child_added (const std::string &/*parent*/, const std::string &child_name, int insert_pos) override
+  virtual void child_added (const string &/*parent*/, const string &child_name, int insert_pos) override
   {
     abstract_svg_item *child = container ()->get_item (child_name);
     parent ()->insert_child (insert_pos, child->create_clone ());
   }
 
-  virtual void child_removed (const std::string &/*parent*/, const std::string &/*child_name*/, int pos) override
+  virtual void child_removed (const string &/*parent*/, const string &/*child_name*/, int pos) override
   {
     parent ()->remove_child (parent ()->child (pos));
   }
 
-  virtual void child_moved (const std::string &/*parent*/, const std::string &/*child_name*/, int old_pos, int new_pos) override
+  virtual void child_moved (const string &/*parent*/, const string &/*child_name*/, int old_pos, int new_pos) override
   {
     parent ()->move_child (new_pos, parent ()->child (old_pos));
   }
 
-  virtual void attribute_change_start (const std::string &/*parent*/, const abstract_attribute *computed_attribute) override
+  virtual void attribute_change_start (const string &/*parent*/, const abstract_attribute *computed_attribute) override
   {
     const abstract_attribute *attribute = parent ()->get_computed_attribute (computed_attribute->type_name (), computed_attribute->inherit_type (), computed_attribute->type ());
     parent ()->register_item_change (); /// surely not the best way to force item update on undo
     parent ()->signal_attribute_change_start (attribute);
   }
 
-  virtual void attribute_change_end (const std::string &/*parent*/, const abstract_attribute *computed_attribute) override
+  virtual void attribute_change_end (const string &/*parent*/, const abstract_attribute *computed_attribute) override
   {
     const abstract_attribute *attribute = parent ()->get_computed_attribute (computed_attribute->type_name (), computed_attribute->inherit_type (), computed_attribute->type ());
     parent ()->signal_attribute_change_end (attribute);
@@ -124,7 +124,7 @@ void abstract_svg_item::add_attribute (abstract_attribute *attribute)
   m_attributes.insert (std::make_pair (attribute->type_name (), id));
 }
 
-void abstract_svg_item::remove_attribute (abstract_attribute *attribute)
+void abstract_svg_item::remove_attribute (const abstract_attribute *attribute)
 {
   if (is_cloned ())
     {
@@ -152,7 +152,7 @@ bool abstract_svg_item::has_name () const
   return !m_own_id.empty ();
 }
 
-std::string abstract_svg_item::name () const
+string abstract_svg_item::name () const
 {
   return m_own_id;
 }
@@ -409,12 +409,12 @@ abstract_attribute *abstract_svg_item::get_attribute_for_change (const char *dat
   return attribute;
 }
 
-void abstract_svg_item::signal_child_inserted (const std::string &child, int position)
+void abstract_svg_item::signal_child_inserted (const string &child, int position)
 {
   send_to_listeners ([&] (svg_item_observer * observer) { observer->child_added (name (), child, position); });
 }
 
-void abstract_svg_item::signal_child_removed (const std::string &child_name, int pos)
+void abstract_svg_item::signal_child_removed (const string &child_name, int pos)
 {
   send_to_listeners ([&] (svg_item_observer * observer) { observer->child_removed (name (), child_name, pos); });
 }
@@ -424,7 +424,7 @@ void abstract_svg_item::signal_item_removed ()
   send_to_listeners ([&] (svg_item_observer * observer) { observer->item_removed (name ()); });
 }
 
-void abstract_svg_item::signal_child_moved (const std::string &child_name, int old_pos, int new_pos)
+void abstract_svg_item::signal_child_moved (const string &child_name, int old_pos, int new_pos)
 {
   send_to_listeners ([&] (svg_item_observer * observer) { observer->child_moved (name (), child_name, old_pos, new_pos); });
 }
@@ -545,7 +545,7 @@ abstract_attribute *abstract_svg_item::get_attribute_by_id (int id) const
   return static_cast<abstract_attribute *> (m_document->get_undo_handler ()->get_item (id));
 }
 
-bool abstract_svg_item::has_attribute (const std::string &type_name) const
+bool abstract_svg_item::has_attribute (const string &type_name) const
 {
   return m_attributes.find (type_name) != m_attributes.end ();
 }

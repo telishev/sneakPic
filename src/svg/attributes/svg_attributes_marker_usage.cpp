@@ -36,9 +36,9 @@ bool svg_base_attribute_marker_usage::write (QString &data, bool /*from_css*/ /*
   return true;
 }
 
-std::string svg_base_attribute_marker_usage::fragment_name () const
+string svg_base_attribute_marker_usage::fragment_name () const
 {
-  return m_element ? m_element->get_fragment_name () : std::string ();
+  return m_element ? m_element->get_fragment_name () : string ();
 }
 
 bool svg_attribute_marker_start::is_point_applicable (int number, const QPainterPath &/*path*/) const 

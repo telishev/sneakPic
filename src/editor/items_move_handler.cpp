@@ -36,7 +36,7 @@ items_move_handler::~items_move_handler ()
 void items_move_handler::start_move (QPointF start_pos)
 {
   m_cur_pos = m_start_pos = start_pos;
-  for (const std::string &name : m_selection->selection ())
+  for (const string &name : m_selection->selection ())
     {
       add_item (name);
     }
@@ -54,7 +54,7 @@ void items_move_handler::end_move ()
   apply_transform ();
 }
 
-void items_move_handler::add_item (const std::string &name)
+void items_move_handler::add_item (const string &name)
 {
   abstract_svg_item *item = m_container->get_editable_item (name);
   svg_graphics_item *graphics_item = item ? item->to_graphics_item () : nullptr;
@@ -75,7 +75,7 @@ void items_move_handler::apply_transform ()
 {
   transform_item_operation transform_operation (m_document);
   QTransform cur_transform = current_transform ();
-  for (const std::string &name : m_selection->selection ())
+  for (const string &name : m_selection->selection ())
     {
       abstract_svg_item *item = m_container->get_editable_item (name);
       if (!item)

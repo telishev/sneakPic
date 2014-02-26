@@ -12,11 +12,11 @@ public:
   combinator_selector (abstract_css_selector *lhs, abstract_css_selector *rhs);
   virtual ~combinator_selector ();
 
-  virtual std::string to_string () const override;
+  virtual string to_string () const override;
   virtual bool can_be_first () const override { return false; }
 
 protected:
-  virtual std::string combinator_str () const = 0;
+  virtual string combinator_str () const = 0;
 };
 
 #endif // COMBINATOR_SELECTOR_H

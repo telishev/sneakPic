@@ -16,10 +16,10 @@ class attribute_state : public abstract_state_t
 {
   items_edit_handler_t *m_edit_handler;
   int m_item;
-  std::string m_saved_data;
+  string m_saved_data;
   svg_attribute_type m_type;
 public:
-  attribute_state (items_edit_handler_t *edit_handler, int item, svg_attribute_type type, const std::string &saved_data)
+  attribute_state (items_edit_handler_t *edit_handler, int item, svg_attribute_type type, const string &saved_data)
     : m_edit_handler (edit_handler), m_item (item), m_saved_data (saved_data), m_type (type) {}
 
   virtual undoable *create_new_item () override

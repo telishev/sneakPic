@@ -79,7 +79,7 @@ abstract_svg_item *svg_reader::process_new_item (QXmlStreamReader &reader, abstr
       if (attribute->inherit_type () != svg_inherit_type::NONE && attributes[i].value () == "inherit")
         attribute->set_is_inherited (true);
 
-      if (!attribute->read (attributes[i].value ().toLatin1 ().constData ()))
+      if (!attribute->read (attributes[i].value ().toUtf8 ().constData ()))
         {
           FREE (attribute);
           continue;
@@ -100,14 +100,14 @@ abstract_svg_item *svg_reader::process_new_item (QXmlStreamReader &reader, abstr
       FREE (style);
     }
 
-  
+
   child_item->register_item_name ();
   return child_item;
 }
 
 void svg_reader::add_style (abstract_svg_item *child_item, svg_attribute_style *style)
 {
-  const map<std::string, abstract_attribute *> &attributes = style->attributes ();
+  const map<string, abstract_attribute *> &attributes = style->attributes ();
   for (auto attr_pair : attributes)
     {
       abstract_attribute *attr = attr_pair.second;
@@ -123,7 +123,7 @@ void svg_reader::process_selectors (abstract_svg_item *root)
   if (!root)
     return;
   const svg_attribute_element_mapping *mapping = svg_attribute_element_mapping::get ();
-  std::unordered_map<std::string, abstract_attribute *> attributes;
+  std::unordered_map<string, abstract_attribute *> attributes;
   m_selectors->get_attributes_for_item (root, attributes);
   for (auto attribute_pair : attributes)
     {

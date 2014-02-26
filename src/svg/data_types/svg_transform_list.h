@@ -17,7 +17,7 @@ public:
 
 private:
   bool get_transfrom_data (const char *data, vector<double> &dest) const;
-  bool apply_transform (const std::string &name, vector<double> &data);
+  bool apply_transform (const string &name, vector<double> &data);
 };
 
 #endif // SVG_TRANSFORM_LIST_H

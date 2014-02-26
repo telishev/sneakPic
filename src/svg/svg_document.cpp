@@ -14,6 +14,7 @@
 #include "svg/items/svg_graphics_item.h"
 #include "svg/items/svg_character_data.h"
 
+#include "svg/layers_handler.h"
 #include "svg/copy_paste_handler.h"
 
 #include "svg/css/selectors_container.h"
@@ -156,6 +157,11 @@ void svg_document::redraw ()
   emit items_changed ();
 }
 
+void svg_document::emit_items_changed ()
+{
+  emit items_changed ();
+}
+
 void svg_document::set_queue (events_queue *queue)
 {
   m_queue = queue;
@@ -200,6 +206,7 @@ bool svg_document::finalize_doc_creation (svg_reader &reader)
     return false;
 
   m_item_container->set_root (m_root->name ());
+  m_layers_handler.reset (new layers_handler (this));
   get_undo_handler ()->clear ();
   graphics_item->update_bbox ();
   set_signals_enabled (true);

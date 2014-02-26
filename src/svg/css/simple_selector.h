@@ -14,7 +14,7 @@ public:
   virtual ~simple_selector ();
 
   virtual bool is_matched (const abstract_svg_item *item) const override;
-  virtual std::string to_string () const override;
+  virtual string to_string () const override;
   virtual bool can_be_first () const override{ return false; }
 
   /// parses string into components and sets string to simple selector's end

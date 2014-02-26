@@ -35,7 +35,7 @@ public:
   virtual ~path_anchor_handle ();
 
   int point_id () const { return (int)m_path_it.point_index (); }
-  std::string item_name () const;
+  string item_name () const;
 
   virtual QPointF get_handle_center () const override;
 

@@ -49,7 +49,7 @@ public:
   iri_type get_type () const; // Type should be checked before calling further getters
   data_type get_data_type () const;
 
-  std::string get_fragment_name () const;
+  string get_fragment_name () const;
   QImage *get_image_data (const QString &svg_name) const;
   void create_from_image (const QImage &image);
 

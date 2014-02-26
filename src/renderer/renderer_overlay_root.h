@@ -7,7 +7,7 @@
 
 class renderer_overlay_root : public renderable_item
 {
-  std::set<renderable_item *> m_items;
+  set<renderable_item *> m_items;
 
 public:
   renderer_overlay_root ();

@@ -30,9 +30,9 @@ bool simple_selector::is_matched (const abstract_svg_item *item) const
   return true;
 }
 
-std::string simple_selector::to_string () const 
+string simple_selector::to_string () const 
 {
-  std::string result;
+  string result;
   for (abstract_css_selector *selector : m_components)
     result += selector->to_string ();
 
@@ -41,7 +41,7 @@ std::string simple_selector::to_string () const
 
 bool simple_selector::create_from_string (const char *&str)
 {
- std::string first_id = get_next_identifier (str);
+ string first_id = get_next_identifier (str);
  if (first_id.empty ())
    {
      if (*str == '*')
@@ -59,7 +59,7 @@ bool simple_selector::create_from_string (const char *&str)
         return true;
 
       str++;
-      std::string cur_str = get_next_identifier (str);
+      string cur_str = get_next_identifier (str);
       if (cur_str.empty ())
         return false;
 

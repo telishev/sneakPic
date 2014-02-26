@@ -32,7 +32,7 @@ bool svg_attribute_class::write (QString &data, bool /*from_css*/) const
   if (m_class_names.size () == 0)
     return false;
 
-  std::string cur_data = m_class_names[0];
+  string cur_data = m_class_names[0];
   for (size_t i = 1; i < m_class_names.size (); i++)
     {
       cur_data += " ";
@@ -43,7 +43,7 @@ bool svg_attribute_class::write (QString &data, bool /*from_css*/) const
   return true;
 }
 
-bool svg_attribute_class::is_class (const std::string &class_name) const
+bool svg_attribute_class::is_class (const string &class_name) const
 {
   return std::find (m_class_names.begin (), m_class_names.end (), class_name) != m_class_names.end ();
 }

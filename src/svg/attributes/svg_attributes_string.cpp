@@ -8,11 +8,11 @@
 
 bool svg_base_attribute_string::read (const char *data, bool /*from_css*/ /*= false*/)
 {
-  m_value = QString (data);
+  m_value = QString::fromUtf8 (data);
   return true;
 }
 
-bool svg_base_attribute_string::write (QString &data, bool /*from_css*/ /*= false*/) const 
+bool svg_base_attribute_string::write (QString &data, bool /*from_css*/ /*= false*/) const
 {
   data = m_value;
   return true;

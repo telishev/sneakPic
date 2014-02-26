@@ -242,7 +242,7 @@ bool path_handles_editor::delete_selected_handles ()
           path_edit_operation edit_op (item);
           svg_path *svg_path = edit_op.get_svg_path ();
           remove_anchors_operation op (svg_path);
-          std::set<svg_path_geom_iterator> anchors_for_item;
+          set<svg_path_geom_iterator> anchors_for_item;
           for (int point_index : it.second)
             anchors_for_item.insert (svg_path->get_geom ()->point (point_index));
 

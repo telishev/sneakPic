@@ -34,7 +34,7 @@ int enum_values_count_template (...)
 template <typename E>
 class enum_helper
 {
-  std::unordered_map<std::string, E> enum_map;
+  std::unordered_map<string, E> enum_map;
   int count;
 public:
   enum_helper ()
@@ -45,7 +45,7 @@ public:
       {
         const char *enum_value = enum_to_string ((E)i);
         if (*enum_value)
-          enum_map.insert (std::make_pair (std::string (enum_value), (E)i));
+          enum_map.insert (std::make_pair (string (enum_value), (E)i));
         else if (count < 0)
           {
             count = i;
@@ -60,9 +60,9 @@ public:
     return count;
   }
 
-  E get_enum_value (const char *string)
+  E get_enum_value (const char *str)
   {
-    typename std::unordered_map<std::string, E>::const_iterator it = enum_map.find (std::string (string));
+    typename std::unordered_map<string, E>::const_iterator it = enum_map.find (string (str));
     if (it != enum_map.end ())
       return (*it).second;
     else
@@ -121,7 +121,7 @@ static E process_string_before_delimiter_to_enum (const char *&string, const cha
 }
 
 template <typename E>
-static E string_to_enum (const std::string &str)
+static E string_to_enum (const string &str)
 {
   return string_to_enum<E> (str.c_str ());
 }

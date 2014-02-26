@@ -9,7 +9,7 @@
 #include "skia/skia_includes.h"
 
 
-renderer_item_svg::renderer_item_svg (const std::string &name)
+renderer_item_svg::renderer_item_svg (const string &name)
   : renderer_item_group (name)
 {
 }

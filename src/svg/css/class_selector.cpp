@@ -6,7 +6,7 @@
 
 #include "svg/attributes/svg_attribute_class.h"
 
-class_selector::class_selector (const std::string &class_name)
+class_selector::class_selector (const string &class_name)
 {
   m_class_name = class_name;
 }

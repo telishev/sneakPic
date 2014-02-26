@@ -15,7 +15,7 @@ items_selection_renderer::~items_selection_renderer ()
 
 }
 
-renderable_item *items_selection_renderer::create_overlay_item (const std::string &object) const 
+renderable_item *items_selection_renderer::create_overlay_item (const string &object) const 
 {
   return create_overlay_for_item (object, overlay_item_type::SELECTION);
 }

@@ -12,7 +12,7 @@ public:
   virtual bool is_matched (const abstract_svg_item *item) const override;
 
 protected:
-  virtual std::string combinator_str () const override { return ">"; }
+  virtual string combinator_str () const override { return ">"; }
 };
 
 #endif // CHILD_SELECTOR_H

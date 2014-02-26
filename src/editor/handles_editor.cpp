@@ -52,7 +52,7 @@ void handles_editor::update_handles ()
   highlight_handle (QCursor::pos ());
 }
 
-element_handles *handles_editor::handles_for_item (const std::string &item) const
+element_handles *handles_editor::handles_for_item (const string &item) const
 {
   auto it = m_handles.find (item);
   if (it == m_handles.end ())
@@ -70,7 +70,7 @@ void handles_editor::add_item (abstract_svg_item *item)
   m_handles[item->name ()].reset (handle);
 }
 
-void handles_editor::remove_item (const std::string &item)
+void handles_editor::remove_item (const string &item)
 {
   m_handles.erase (item);
 }

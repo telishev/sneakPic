@@ -15,7 +15,7 @@
 
 color_selector_widget_handler::color_selector_widget_handler (QColor *color)
 {
-  m_color_selector_layout = create_intermediate_vbox_layout ();
+  m_color_selector_layout = qt_utils::create_intermediate_vbox_layout ();
   m_color_selector_layout->parentWidget ()->setSizePolicy (QSizePolicy::Preferred, QSizePolicy::Maximum);
   m_tab_widget = new QTabWidget (m_color_selector_layout->parentWidget ());
   m_color_selector_layout->addWidget (m_tab_widget);
@@ -111,30 +111,30 @@ void color_selector_widget_handler::add_color_selectors ()
 
 void color_selector_widget_handler::create_rgb_tab ()
 {
-  QGridLayout *rgb_layout = create_common_grid_widget (m_tab_widget);
+  QGridLayout *rgb_layout = qt_utils::create_common_grid_widget (m_tab_widget);
   add_typical_scroller_widget (rgb_layout, color_single_selector_type::RGB_RED);
   add_typical_scroller_widget (rgb_layout, color_single_selector_type::RGB_GREEN);
   add_typical_scroller_widget (rgb_layout, color_single_selector_type::RGB_BLUE);
   add_typical_scroller_widget (rgb_layout, color_single_selector_type::RGB_ALPHA);
-  finish_with_spacer (rgb_layout);
+  qt_utils::finish_with_spacer (rgb_layout);
   m_tab_widget->addTab (rgb_layout->parentWidget (), QIcon (), "RGB");
 }
 
 void color_selector_widget_handler::create_hsl_tab ()
 {
-  QGridLayout *hsl_layout = create_common_grid_widget (m_tab_widget);
+  QGridLayout *hsl_layout = qt_utils::create_common_grid_widget (m_tab_widget);
   add_typical_scroller_widget (hsl_layout, color_single_selector_type::HSL_HUE);
   add_typical_scroller_widget (hsl_layout, color_single_selector_type::HSL_SATURATION);
   add_typical_scroller_widget (hsl_layout, color_single_selector_type::HSL_LIGHTNESS);
   add_typical_scroller_widget (hsl_layout, color_single_selector_type::HSL_ALPHA);
-  finish_with_spacer (hsl_layout);
+  qt_utils::finish_with_spacer (hsl_layout);
   m_tab_widget->addTab (hsl_layout->parentWidget (), QIcon (), "HSL");
 }
 
 void color_selector_widget_handler::create_hsv_tab ()
 {
-  QVBoxLayout *hsv_tab_layout = create_common_vbox_widget (m_tab_widget);
-  QHBoxLayout *hsv_layout = create_intermediate_hbox_layout (hsv_tab_layout->parentWidget ());
+  QVBoxLayout *hsv_tab_layout = qt_utils::create_common_vbox_widget (m_tab_widget);
+  QHBoxLayout *hsv_layout = qt_utils::create_intermediate_hbox_layout (hsv_tab_layout->parentWidget ());
   color_rectangular_selector *color_rect_widget = new color_rectangular_selector (hsv_layout->parentWidget (), color_single_selector_type::HSV_SATURATION, color_single_selector_type::HSV_VALUE, m_color);
   m_color_widgets << color_rect_widget;
   hsv_layout->addWidget (color_rect_widget);
@@ -144,7 +144,7 @@ void color_selector_widget_handler::create_hsv_tab ()
   hsv_layout->addWidget (hue_widget);
 
   hsv_layout->addStretch ();
-  QGridLayout *alpha_layout = create_common_grid_widget (hsv_tab_layout->parentWidget ());
+  QGridLayout *alpha_layout = qt_utils::create_common_grid_widget (hsv_tab_layout->parentWidget ());
   add_typical_scroller_widget (alpha_layout, color_single_selector_type::HSV_ALPHA);
   hsv_tab_layout->addWidget (alpha_layout->parentWidget ());
   hsv_tab_layout->addStretch ();
@@ -153,7 +153,7 @@ void color_selector_widget_handler::create_hsv_tab ()
 
 void color_selector_widget_handler::create_cmyk_widget ()
 {
-  QGridLayout *cmyk_layout = create_common_grid_widget (m_tab_widget);
+  QGridLayout *cmyk_layout = qt_utils::create_common_grid_widget (m_tab_widget);
   cmyk_layout->setVerticalSpacing (5);
   cmyk_layout->setHorizontalSpacing (10);
   add_typical_scroller_widget (cmyk_layout, color_single_selector_type::CMYK_CYAN);
@@ -161,7 +161,7 @@ void color_selector_widget_handler::create_cmyk_widget ()
   add_typical_scroller_widget (cmyk_layout, color_single_selector_type::CMYK_YELLOW);
   add_typical_scroller_widget (cmyk_layout, color_single_selector_type::CMYK_BLACK);
   add_typical_scroller_widget (cmyk_layout, color_single_selector_type::CMYK_ALPHA);
-  finish_with_spacer (cmyk_layout);
+  qt_utils::finish_with_spacer (cmyk_layout);
   m_tab_widget->addTab (cmyk_layout->parentWidget (), QIcon (), "CMYK");
 }
 

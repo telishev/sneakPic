@@ -29,7 +29,7 @@ private:
   abstract_handle *m_cur_handle;
   abstract_handle *m_highlighted_handle;
 
-  typedef map<std::string, unique_ptr<element_handles>> map_t;
+  typedef map<string, unique_ptr<element_handles>> map_t;
   map_t m_handles;
 
 public:
@@ -40,7 +40,7 @@ public:
 
   map_t::const_iterator begin () const { return m_handles.begin (); }
   map_t::const_iterator end () const { return m_handles.end (); }
-  element_handles *handles_for_item (const std::string &item) const;
+  element_handles *handles_for_item (const string &item) const;
 
   void set_handle_for_item (const char *name, element_handles *handles);
 
@@ -52,7 +52,7 @@ protected:
 
 private:
   void add_item (abstract_svg_item *item);
-  void remove_item (const std::string &item);
+  void remove_item (const string &item);
   void clear_items ();
 
   bool start_drag (QPointF pos);

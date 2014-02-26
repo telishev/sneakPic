@@ -29,7 +29,7 @@ public:
   void start_move (QPointF start_pos);
   void move (QPointF cur_pos);
   void end_move ();
-  void add_item (const std::string & name);
+  void add_item (const string & name);
 
 private:
   QTransform current_transform () const;

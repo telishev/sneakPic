@@ -56,14 +56,14 @@
   svg_inherit_type CLASS::static_inherit_type () { return svg_inherit_type::INHERIT_TYPE; }        \
   const abstract_attribute *CLASS::default_value ()                                                \
  { static const CLASS def_value; return &def_value; }                                              \
-                                                                                                  
+
   DECLARE_SVG_ATTRIBUTES
 #undef DECLARE_ATTRIBUTE
 
 template<typename T>
 void svg_attribute_factory::support_attribute ()
 {
-  std::string type_name = T::static_type_name ();
+  string type_name = T::static_type_name ();
   svg_attribute_type type = T::static_type ();
   m_string_map.insert (std::make_pair (type_name, [&] () { return new T (); } ));
   m_type_map.insert (std::make_pair (type, [&] () { return new T (); } ));
@@ -85,7 +85,7 @@ svg_attribute_factory::~svg_attribute_factory ()
 
 abstract_attribute *svg_attribute_factory::create_attribute (abstract_svg_item *item, const char *localName, const char *namespaceURI) const
 {
-  std::string item_id = localName;
+  string item_id = localName;
   auto it_pair = m_string_map.equal_range (item_id);
   const svg_attribute_element_mapping *mapping = svg_attribute_element_mapping::get ();
 
@@ -114,7 +114,7 @@ abstract_attribute *svg_attribute_factory::create_attribute (int item_id, svg_at
 
 abstract_attribute * svg_attribute_factory::create_attribute (const char *localName, svg_item_type type) const
 {
-  std::string item_id = localName;
+  string item_id = localName;
   auto it_pair = m_string_map.equal_range (item_id);
   const svg_attribute_element_mapping *mapping = svg_attribute_element_mapping::get ();
 
@@ -136,7 +136,7 @@ svg_attribute_factory *svg_attribute_factory::get ()
   return &instance;
 }
 
-std::string svg_attribute_factory::attribute_name (svg_attribute_type type) const
+string svg_attribute_factory::attribute_name (svg_attribute_type type) const
 {
   return m_type_to_string_map.at (type);
 }

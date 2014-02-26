@@ -12,6 +12,7 @@ class undo_handler;
 class items_edit_handler_t;
 class document_change_sender;
 class svg_reader;
+class layers_handler;
 
 #include <QString>
 #include <QObject>
@@ -30,6 +31,7 @@ class svg_document : public QObject
   abstract_svg_item *m_root;
   QString m_filename;
   bool m_signals_enabled;
+  unique_ptr<layers_handler> m_layers_handler;
 
 public:
   svg_document ();
@@ -44,13 +46,14 @@ public:
 
   bool read_file (const QString &filename_arg);
   bool write_file (const QString &filename);
+  void emit_items_changed ();
 
   QString get_filename ();
 
   renderer_items_container *create_rendered_items (rendered_items_cache *cache);
   void create_renderer_item (renderer_items_container *renderer_items, abstract_svg_item *svg_item);
 
-  std::string create_overlay_name ();
+  string create_overlay_name ();
 
   void set_queue (events_queue *queue);
 
@@ -72,6 +75,8 @@ public:
   void redraw ();
   bool create_new_document ();
   bool is_new_document ();
+
+  layers_handler *get_layers_handler () {return m_layers_handler.get (); };
 
 signals:
   void items_changed ();

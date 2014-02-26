@@ -20,7 +20,7 @@ abstract_css_selector *css_selector_reader::create_selector (const char *data)
 
   while (*data)
     {
-      std::string single_selector_string;
+      string single_selector_string;
       CHECK_RET (extract_chunk (',', data, single_selector_string), nullptr);
       abstract_css_selector *selector = create_single_selector (single_selector_string.c_str ());
       if (!selector)

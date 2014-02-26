@@ -24,7 +24,7 @@ renderer_items_container::~renderer_items_container ()
     }
 }
 
-abstract_renderer_item *renderer_items_container::item (const std::string &name)
+abstract_renderer_item *renderer_items_container::item (const string &name)
 {
   auto it = m_items.find (name);
   if (it == m_items.end ())
@@ -33,7 +33,7 @@ abstract_renderer_item *renderer_items_container::item (const std::string &name)
   return it->second;
 }
 
-const abstract_renderer_item * renderer_items_container::item (const std::string &name) const
+const abstract_renderer_item * renderer_items_container::item (const string &name) const
 {
   auto it = m_items.find (name);
   if (it == m_items.end ())
@@ -42,7 +42,7 @@ const abstract_renderer_item * renderer_items_container::item (const std::string
   return it->second;
 }
 
-void renderer_items_container::set_root (const std::string &root)
+void renderer_items_container::set_root (const string &root)
 {
   m_root = root;
 }
@@ -69,7 +69,7 @@ void renderer_items_container::add_item (abstract_renderer_item *item)
   m_items.insert (std::make_pair (item->name (), item));
 }
 
-void renderer_items_container::remove_item (const std::string &name)
+void renderer_items_container::remove_item (const string &name)
 {
   auto it = m_items.find (name);
   if (it == m_items.end ())
@@ -82,7 +82,7 @@ void renderer_items_container::remove_item (const std::string &name)
   m_items.erase (it);
 }
 
-void renderer_items_container::add_child (const std::string &parent, const std::string &child)
+void renderer_items_container::add_child (const string &parent, const string &child)
 {
   auto parent_it = m_items.find (parent);
   auto child_it = m_items.find (child);

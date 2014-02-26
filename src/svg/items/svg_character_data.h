@@ -8,7 +8,7 @@
 
 class svg_character_data : public abstract_svg_item
 {
-  std::string m_data;
+  string m_data;
 public:
   svg_character_data (svg_document *document, const char *data)
     : abstract_svg_item (document)

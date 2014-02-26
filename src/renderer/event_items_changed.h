@@ -12,14 +12,14 @@ class event_items_changed : public abstract_renderer_event
 {
   vector<abstract_renderer_item *> m_changed_items;
   vector<abstract_renderer_item *> m_layout_changed_items;
-  vector<std::string> m_removed_items;
+  vector<string> m_removed_items;
 public:
   event_items_changed ();
   ~event_items_changed ();
 
   void add_renderer_item (abstract_renderer_item *item);
   void add_layout_changed_item (abstract_renderer_item *item);
-  void add_removed_item (const std::string &item);
+  void add_removed_item (const string &item);
 
   virtual void process (renderer_thread *renderer) override;
   virtual bool interrupt_rendering () const override { return true; }

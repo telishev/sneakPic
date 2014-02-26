@@ -37,10 +37,10 @@ enum class svg_attribute_type;
 class abstract_svg_item : public undoable
 {
   svg_document *m_document;
-  map<std::string, int> m_attributes;
+  map<string, int> m_attributes;
 
-  std::string m_original_id;
-  std::string m_own_id;
+  string m_original_id;
+  string m_own_id;
 
   vector<int> *m_children;
   int m_parent;
@@ -71,10 +71,10 @@ public:
   svg_document *document () const { return m_document; }
 
   void add_attribute (abstract_attribute *attribute);
-  void remove_attribute (abstract_attribute *attribute);
+  void remove_attribute (const abstract_attribute *attribute);
 
   bool has_name () const;
-  std::string name () const;
+  string name () const;
 
   /// returns attribute for the current item
   template <typename T>
@@ -97,7 +97,7 @@ public:
     return static_cast<const T *>(attribute);
   }
 
-  bool has_attribute (const std::string &type_name) const;
+  bool has_attribute (const string &type_name) const;
 
   /// checks for correctness
   bool process_after_read ();
@@ -138,10 +138,10 @@ private:
   abstract_attribute *get_attribute_for_change (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type, const abstract_attribute *default_val);
   abstract_attribute *get_attribute (const char *data, bool get_clone_attributes) const;
 
-  void signal_child_inserted (const std::string &child, int position);
-  void signal_child_removed (const std::string &child_name, int pos);
+  void signal_child_inserted (const string &child, int position);
+  void signal_child_removed (const string &child_name, int pos);
   void signal_item_removed ();
-  void signal_child_moved (const std::string &child_name, int old_pos, int new_pos);
+  void signal_child_moved (const string &child_name, int old_pos, int new_pos);
   void signal_attribute_change_start (const abstract_attribute *attribute);
   void signal_attribute_change_end (const abstract_attribute *attribute);
   void register_item_change ();

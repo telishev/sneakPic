@@ -132,7 +132,7 @@ bool svg_data_type_iri::write (QString &data) const
   return false;
 }
 
-std::string svg_data_type_iri::get_fragment_name () const
+string svg_data_type_iri::get_fragment_name () const
 {
   return m_element_id.toStdString ();
 }

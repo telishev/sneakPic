@@ -1,0 +1,35 @@
+#ifndef LAYERS_TREE_MODEL_H
+#define LAYERS_TREE_MODEL_H
+
+#include <QAbstractItemModel>
+#include <QIcon>
+
+class layers_handler;
+
+class layers_tree_model : public QAbstractItemModel
+{
+  Q_OBJECT
+
+  layers_handler *m_layers_handler;
+  QIcon eye_closed_icon, eye_open_icon;
+public:
+  layers_tree_model ();
+  virtual int rowCount (const QModelIndex &parent = QModelIndex()) const override;
+  virtual int columnCount (const QModelIndex &/*parent = QModelIndex()*/) const override;;
+  virtual QVariant data (const QModelIndex &index, int role = Qt::DisplayRole) const override;
+  virtual QModelIndex parent (const QModelIndex &/*index*/) const override { return QModelIndex (); }
+  virtual QModelIndex index (int row, int column, const QModelIndex &parent = QModelIndex()) const override;
+  layers_handler *handler () { return m_layers_handler; }
+
+public slots:
+  void update_model ();
+  QModelIndex index_for_layer( int layer_num ) const;
+  void set_layers_handler( layers_handler * handler );
+
+  virtual bool setData( const QModelIndex &index, const QVariant &value, int role = Qt::EditRole );
+
+  virtual Qt::ItemFlags flags( const QModelIndex &index ) const;
+
+};
+
+#endif // LAYERS_TREE_MODEL_H

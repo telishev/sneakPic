@@ -5,12 +5,12 @@
 
 #include <QPointF>
 
-class renderer_base_shape_item;
+class renderer_overlay_path;
 class svg_items_container;
 
 class rectangle_tool : public abstract_tool
 {
-  renderer_base_shape_item *m_renderer_item;
+  renderer_overlay_path *m_renderer_item;
   svg_items_container      *m_items_container;
   QPointF m_initial_pos;
 

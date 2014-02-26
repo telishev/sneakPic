@@ -82,7 +82,7 @@ void path_anchor_handle::move_point ()
   m_edit_operation->get_svg_path ()->move_anchor (m_drag_cur, m_path_it);
 }
 
-std::string path_anchor_handle::item_name () const
+string path_anchor_handle::item_name () const
 {
   return m_item->name ();
 }

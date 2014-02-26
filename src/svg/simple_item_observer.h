@@ -15,9 +15,9 @@ template<typename T>
 class simple_observer_state_t : public abstract_state_t
 {
   svg_items_container *m_container;
-  std::string m_parent;
+  string m_parent;
 public:
-  simple_observer_state_t (svg_items_container *container, const std::string &parent)
+  simple_observer_state_t (svg_items_container *container, const string &parent)
     : m_container (container), m_parent (parent) {}
 
   virtual undoable *create_new_item () override
@@ -41,9 +41,9 @@ template<typename T>
 class simple_item_observer : public svg_item_observer
 {
   svg_items_container *m_container;
-  std::string m_parent;
+  string m_parent;
 public:
-  simple_item_observer (svg_items_container *container, const std::string &parent)
+  simple_item_observer (svg_items_container *container, const string &parent)
     : m_container (container), m_parent (parent) {}
   ~simple_item_observer () {}
 
@@ -60,7 +60,7 @@ public:
     return m_container->get_item (m_parent);
   }
 
-  virtual void item_removed (const std::string &/*item*/) override
+  virtual void item_removed (const string &/*item*/) override
   {
     parent ()->erase_created_observer (this);
   }

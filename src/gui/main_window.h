@@ -16,6 +16,8 @@ class dock_widget_builder;
 class settings_t;
 class gui_document;
 class gui_actions;
+class layers_handler;
+class layers_widget_handler;
 class menu_builder;
 class style_controller;
 class style_widget_handler;
@@ -45,6 +47,8 @@ class main_window : public QMainWindow
   tools_widget_builder *m_tools_builder;
   dock_widget_builder *m_dock_widget_builder;
   style_widget_handler *m_style_widget_handler;
+  unique_ptr <layers_widget_handler> m_layers_widget_handler;
+  unique_ptr <layers_handler> m_layers_handler;
 
   std::deque <QString> m_recent_files;
   style_controller *m_style_controller;

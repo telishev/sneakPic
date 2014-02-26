@@ -41,7 +41,7 @@ bool svg_item_style::read_item (const char *data, selectors_container *container
   CHECK (skip_comments_and_whitespaces (data));
   while (*data)
     {
-      std::string selectors_string, declaration_string;
+      string selectors_string, declaration_string;
       CHECK (extract_chunk ('{', data, selectors_string));
       CHECK (extract_chunk ('}', data, declaration_string));
 

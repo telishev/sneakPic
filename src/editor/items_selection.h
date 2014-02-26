@@ -16,7 +16,7 @@ class items_selection : public QObject
 {
   Q_OBJECT
 
-  typedef std::set<std::string> set_type;
+  typedef set<string> set_type;
   set_type m_selection;
   svg_items_container *m_container;
 public:
@@ -44,13 +44,13 @@ public:
   int count () const;
   const set_type &selection () const { return m_selection; }
 
-  bool contains (const std::string &name) const;
+  bool contains (const string &name) const;
 
   void add_item (const abstract_svg_item *item);
-  void add_item (const std::string &item_name);
+  void add_item (const string &item_name);
 
   void remove_item (const abstract_svg_item *item);
-  void remove_item (const std::string &item_name);
+  void remove_item (const string &item_name);
 
   void clear ();
 

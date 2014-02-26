@@ -70,8 +70,10 @@ DECLARE_ATTRIBUTE(MARKER_START         , "marker-start"       , SVG        , svg
 DECLARE_ATTRIBUTE(MARKER_MID           , "marker-mid"         , SVG        , svg_attribute_marker_mid           , STYLE        )   \
 DECLARE_ATTRIBUTE(MARKER_END           , "marker-end"         , SVG        , svg_attribute_marker_end           , STYLE        )   \
 DECLARE_ATTRIBUTE(MARKER               , "marker"             , SVG        , svg_attribute_marker               , STYLE        )   \
-DECLARE_ATTRIBUTE(NODETYPES            , "nodetypes"          , SNEAKPIC   , svg_attribute_nodetypes            , STYLE        )   \
-DECLARE_ATTRIBUTE(LINETYPES            , "linetypes"          , SNEAKPIC   , svg_attribute_linetypes            , STYLE        )   \
+DECLARE_ATTRIBUTE(NODETYPES            , "nodetypes"          , SNEAKPIC   , svg_attribute_nodetypes            , NONE         )   \
+DECLARE_ATTRIBUTE(LINETYPES            , "linetypes"          , SNEAKPIC   , svg_attribute_linetypes            , NONE         )   \
+DECLARE_ATTRIBUTE(LAYER_NAME           , "layer-name"         , SNEAKPIC   , svg_attribute_layer_name           , NONE         )   \
+DECLARE_ATTRIBUTE(ACTIVE_LAYER         , "active-layer"       , SNEAKPIC   , svg_attribute_active_layer         , NONE         )   \
 
 enum class svg_attribute_type
 {
@@ -140,6 +142,8 @@ enum class svg_attribute_type
   MARKER,
   NODETYPES,
   LINETYPES,
+  LAYER_NAME,
+  ACTIVE_LAYER,
 
   COUNT,
 };

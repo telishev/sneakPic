@@ -17,7 +17,7 @@ public:
   virtual void update_items () override;
 
 protected:
-  virtual renderable_item *create_overlay_item (const std::string &object) const override;
+  virtual renderable_item *create_overlay_item (const string &object) const override;
 };
 
 #endif // ITEMS_SELECTION_RENDERER_H

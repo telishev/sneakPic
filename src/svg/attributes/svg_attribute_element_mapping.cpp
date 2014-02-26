@@ -94,7 +94,8 @@ svg_attribute_element_mapping::svg_attribute_element_mapping ()
   MAP_ATTRIBUTE  (s::MARKER               , t::PATH, t::LINE, t::POLYLINE, t::POLYGON);
   MAP_ATTRIBUTE  (s::NODETYPES            , t::PATH);
   MAP_ATTRIBUTE  (s::LINETYPES            , t::PATH);
-  
+  MAP_ATTRIBUTE  (s::LAYER_NAME           , t::G);
+  MAP_ATTRIBUTE  (s::ACTIVE_LAYER         , t::SVG);
 
   check ();
 }

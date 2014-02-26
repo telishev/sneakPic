@@ -34,7 +34,7 @@ bool svg_attribute_style::write (QString &data, bool /*to_css*/) const
   return true;
 }
 
-abstract_attribute *svg_attribute_style::get_attribute (const std::string &str) const
+abstract_attribute *svg_attribute_style::get_attribute (const string &str) const
 {
   if (declaration)
     return declaration->get_attribute (str);
@@ -42,7 +42,7 @@ abstract_attribute *svg_attribute_style::get_attribute (const std::string &str) 
     return nullptr;
 }
 
-const map<std::string, abstract_attribute *> & svg_attribute_style::attributes () const
+const map<string, abstract_attribute *> & svg_attribute_style::attributes () const
 {
   return declaration->attributes ();
 }

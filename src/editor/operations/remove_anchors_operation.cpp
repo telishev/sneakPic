@@ -33,16 +33,16 @@ remove_anchors_operation::~remove_anchors_operation ()
 
 }
 
-void remove_anchors_operation::apply (std::set<svg_path_geom_iterator> anchors_to_delete)
+void remove_anchors_operation::apply (set<svg_path_geom_iterator> anchors_to_delete)
 {
   remove_from_line_types (anchors_to_delete);
   remove_from_node_types (anchors_to_delete);
   remove_from_geom (anchors_to_delete);
 }
 
-void remove_anchors_operation::remove_from_node_types (const std::set<svg_path_geom_iterator> &anchors_to_delete)
+void remove_anchors_operation::remove_from_node_types (const set<svg_path_geom_iterator> &anchors_to_delete)
 {
-  std::set<size_t> points_to_remove;
+  set<size_t> points_to_remove;
   auto &node_type = *m_path->get_node_type ();
   for (auto &&it : anchors_to_delete)
     {
@@ -56,9 +56,9 @@ void remove_anchors_operation::remove_from_node_types (const std::set<svg_path_g
     [&] (size_t index) { return points_to_remove.count (index) == 1; }), node_type.end ());
 }
 
-void remove_anchors_operation::remove_from_line_types (const std::set<svg_path_geom_iterator> &anchors_to_delete)
+void remove_anchors_operation::remove_from_line_types (const set<svg_path_geom_iterator> &anchors_to_delete)
 {
-  std::set<size_t> segment_to_remove;
+  set<size_t> segment_to_remove;
   auto &line_segments = *m_path->get_is_line_segment ();
 
   for (auto it = anchors_to_delete.begin (); it != anchors_to_delete.end (); ++it)
@@ -77,7 +77,7 @@ void remove_anchors_operation::remove_from_line_types (const std::set<svg_path_g
     [&] (size_t index) { return segment_to_remove.count (index) == 1; }), line_segments.end ());
 }
 
-void remove_anchors_operation::remove_from_geom (const std::set<svg_path_geom_iterator> &anchors_to_delete)
+void remove_anchors_operation::remove_from_geom (const set<svg_path_geom_iterator> &anchors_to_delete)
 {
   svg_path_geom &geom = *m_path->get_geom ();
   auto &subpath_vec = geom.subpath ();

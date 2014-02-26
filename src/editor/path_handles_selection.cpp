@@ -27,12 +27,12 @@ path_anchors_selection::~path_anchors_selection ()
 
 }
 
-void path_anchors_selection::add_anchor (const std::string &item, int id)
+void path_anchors_selection::add_anchor (const string &item, int id)
 {
   m_selected_anchors[item].insert (id);
 }
 
-void path_anchors_selection::remove_anchor (const std::string &item, int id)
+void path_anchors_selection::remove_anchor (const string &item, int id)
 {
   m_selected_anchors[item].erase (id);
 }
@@ -44,7 +44,7 @@ void path_anchors_selection::clear ()
 
 void path_anchors_selection::update ()
 {
-  vector<std::string> removed_items;
+  vector<string> removed_items;
   for (const auto &anchors_pair : m_selected_anchors)
     if (!m_selection->contains (anchors_pair.first))
       removed_items.push_back (anchors_pair.first);
@@ -53,7 +53,7 @@ void path_anchors_selection::update ()
     m_selected_anchors.erase (item);
 }
 
-void path_anchors_selection::attribute_changed (const std::string &sender, const abstract_attribute *computed_attribute)
+void path_anchors_selection::attribute_changed (const string &sender, const abstract_attribute *computed_attribute)
 {
   if (m_changes_started)
     return;
@@ -64,7 +64,7 @@ void path_anchors_selection::attribute_changed (const std::string &sender, const
   m_selected_anchors.erase (sender);
 }
 
-bool path_anchors_selection::is_selected (const std::string &item, int id) const
+bool path_anchors_selection::is_selected (const string &item, int id) const
 {
   auto it = m_selected_anchors.find (item);
   if (it == m_selected_anchors.end ())

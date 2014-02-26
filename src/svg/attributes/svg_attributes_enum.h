@@ -29,11 +29,12 @@ public:
   }
 
   T value () const { return m_value; }
+  void set_value (T new_value) { m_value = new_value; }
 };
 
 enum class gradient_units
 {
-  USER_SPACE, 
+  USER_SPACE,
   OBJECT_BOUNDING_BOX,
 
   INVALID,
@@ -173,7 +174,7 @@ public:
 
 enum class marker_units
 {
-  STROKE_WIDTH, 
+  STROKE_WIDTH,
   USER_SPACE,
 
   INVALID,

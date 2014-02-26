@@ -35,7 +35,7 @@ int is_alnum (const unsigned char c);
 
 /// returns next identifier (string consisting of numbers and letters)
 /// moves str to the end of the identifier
-std::string get_next_identifier (const char *&str);
+string get_next_identifier (const char *&str);
 
 
 ///  finds end of comment
@@ -49,12 +49,12 @@ bool skip_comments_and_whitespaces (const char *&str);
 bool goto_next_char (const char *&str, char to_find);
 
 /// returns string where escape characters are replaced
-std::string from_escaped_string (const std::string &str);
+string from_escaped_string (const string &str);
 
 /// returns string with special symbols escaped
-std::string to_escaped_string (const std::string &str);
+string to_escaped_string (const string &str);
 
-bool extract_chunk (char chunk_end, const char *&data, std::string &result);
+bool extract_chunk (char chunk_end, const char *&data, string &result);
 
 /**
   \brief convert string to double value, e.g 1.32E+3, -32D-4

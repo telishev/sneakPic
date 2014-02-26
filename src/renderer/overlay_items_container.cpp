@@ -22,12 +22,12 @@ svg_items_container *overlay_items_container::svg_container () const
   return m_container;
 }
 
-void overlay_items_container::add_svg_item (const std::string &object)
+void overlay_items_container::add_svg_item (const string &object)
 {
   return svg_item_changed (object);
 }
 
-void overlay_items_container::svg_item_changed (const std::string &object)
+void overlay_items_container::svg_item_changed (const string &object)
 {
   remove_svg_item (object);
 
@@ -38,7 +38,7 @@ void overlay_items_container::svg_item_changed (const std::string &object)
   m_obj_map[object] = item;
 }
 
-void overlay_items_container::remove_svg_item (const std::string &object)
+void overlay_items_container::remove_svg_item (const string &object)
 {
   auto it = m_obj_map.find (object);
   if (it != m_obj_map.end ())
@@ -52,7 +52,7 @@ void overlay_items_container::clear_items ()
   m_obj_map.clear ();
 }
 
-renderable_item *overlay_items_container::create_overlay_for_item (const std::string &object, overlay_item_type overlay_type) const
+renderable_item *overlay_items_container::create_overlay_for_item (const string &object, overlay_item_type overlay_type) const
 {
   vector<abstract_renderer_item *> result;
   abstract_svg_item *svg_item = svg_container ()->get_item (object);

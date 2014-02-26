@@ -2,7 +2,7 @@
 
 #include "svg/items/abstract_svg_item.h"
 
-type_selector::type_selector (const std::string &type)
+type_selector::type_selector (const string &type)
 {
   m_type = type;
 }

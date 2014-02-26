@@ -17,7 +17,7 @@ combinator_selector::~combinator_selector ()
   FREE (m_rhs);
 }
 
-std::string combinator_selector::to_string () const
+string combinator_selector::to_string () const
 {
   return m_lhs->to_string () + combinator_str () + m_rhs->to_string ();
 }

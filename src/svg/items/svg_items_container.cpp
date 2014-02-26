@@ -17,7 +17,7 @@ svg_items_container::~svg_items_container ()
 
 void svg_items_container::add_item (abstract_svg_item *item)
 {
-  std::string id = item->name ();
+  string id = item->name ();
   extract_number (id.c_str ());
   DEBUG_ASSERT (!id.empty ());
   DEBUG_ASSERT (!contains (id));
@@ -27,13 +27,13 @@ void svg_items_container::add_item (abstract_svg_item *item)
 
 void svg_items_container::remove_item (const abstract_svg_item *item)
 {
-  std::string id = item->name ();
+  string id = item->name ();
   DEBUG_ASSERT (!id.empty ());
   DEBUG_ASSERT (contains (id));
   m_map.erase (id);
 }
 
-abstract_svg_item *svg_items_container::get_item (const std::string &id) const
+abstract_svg_item *svg_items_container::get_item (const string &id) const
 {
   auto it = m_map.find (id);
   if (it == m_map.end ())
@@ -42,7 +42,7 @@ abstract_svg_item *svg_items_container::get_item (const std::string &id) const
   return it->second;
 }
 
-abstract_svg_item *svg_items_container::get_editable_item (const std::string &id) const
+abstract_svg_item *svg_items_container::get_editable_item (const string &id) const
 {
   abstract_svg_item *item = get_item (id);
   if (!item)
@@ -54,15 +54,15 @@ abstract_svg_item *svg_items_container::get_editable_item (const std::string &id
   return item;
 }
 
-bool svg_items_container::contains (const std::string &id) const
+bool svg_items_container::contains (const string &id) const
 {
   return m_map.find (id) != m_map.end ();
 }
 
-std::string svg_items_container::create_unique_name (const char *item_id)
+string svg_items_container::create_unique_name (const char *item_id)
 {
   max_id++;
-  return std::string (item_id) + std::to_string (max_id);
+  return string (item_id) + std::to_string (max_id);
 }
 
 void svg_items_container::extract_number (const char *data)
@@ -77,7 +77,7 @@ void svg_items_container::extract_number (const char *data)
   max_id = std::max (max_id, number);
 }
 
-void svg_items_container::set_root (const std::string &root_id)
+void svg_items_container::set_root (const string &root_id)
 {
   m_root = root_id;
 }

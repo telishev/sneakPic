@@ -8,7 +8,7 @@
 
 #include "skia/skia_includes.h"
 
-renderer_graphics_item::renderer_graphics_item (const std::string &name)
+renderer_graphics_item::renderer_graphics_item (const string &name)
   : abstract_renderer_item (name)
 {
   m_has_clip_path = false;

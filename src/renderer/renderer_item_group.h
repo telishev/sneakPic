@@ -18,7 +18,7 @@ class renderer_item_group : public abstract_renderer_item
   bool m_has_clip_path;
 
 public:
-  renderer_item_group (const std::string &name);
+  renderer_item_group (const string &name);
   ~renderer_item_group ();
 
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
