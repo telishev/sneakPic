@@ -128,7 +128,7 @@ QString layers_handler::get_layer_name (int index) const
 
 abstract_svg_item *layers_handler::get_layer_item (int index) const
 {
-  return index >= 0 ? m_document->item_container ()->get_item (m_layers_container[index]) : m_document->root ();
+  return (index >= 0 && index < m_layers_container.size ()) ? m_document->item_container ()->get_item (m_layers_container[index]) : m_document->root ();
 }
 
 abstract_svg_item *layers_handler::get_active_layer_item () const
