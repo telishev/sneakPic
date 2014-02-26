@@ -85,11 +85,11 @@ void layers_handler::add_new_layer ()
   m_document->root ()->push_back (layer_item);
   auto active_layer_item = get_active_layer_item ();
   if (active_layer_item != m_document->root ())
-    m_document->root ()->move_child (active_layer_item->child_index (), layer_item);
+    m_document->root ()->move_child (active_layer_item->child_index () + 1, layer_item);
   else
-    m_document->root ()->move_child (active_layer_item->children_count (), layer_item);
+    m_document->root ()->move_child (0, layer_item);
 
-  m_layers_container.insert (m_layers_container.begin () + (m_active_layer_index > 0 ? m_active_layer_index : m_layers_container.size ()), layer_item->name ());
+  m_layers_container.insert (m_layers_container.begin () + (m_active_layer_index >= 0 ? m_active_layer_index : m_layers_container.size ()), layer_item->name ());
   if (m_active_layer_index == -1)
     m_active_layer_index = (int) m_layers_container.size () - 1;
 
