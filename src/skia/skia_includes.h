@@ -8,7 +8,7 @@
 #include <SkCanvas.h>
 #include <SkDashPathEffect.h>
 #include <SkSurface.h>
-#include <SkDevice.h>
+#include <SkBitmapDevice.h>
 #include <SkPoint.h>
 #include <SkGradientShader.h>
 #include <SkEmptyShader.h>

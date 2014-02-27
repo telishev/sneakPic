@@ -51,7 +51,7 @@ void renderer_base_shape_item::set_stroke_linecap (Qt::PenCapStyle linecap)
     default:
       return;
     }
-  
+
 }
 
 void renderer_base_shape_item::set_stroke_linejoin (Qt::PenJoinStyle linejoin)
@@ -81,7 +81,7 @@ void renderer_base_shape_item::set_dash_array (QList<double> dash_array, double 
     {
       dash_offsets[i] = SkFloatToScalar (dash_array[i]);
     }
-  SkDashPathEffect *effect = new SkDashPathEffect (dash_offsets, dash_array.size (), SkFloatToScalar (offset));
+  SkDashPathEffect *effect = SkDashPathEffect::Create (dash_offsets, dash_array.size(), SkFloatToScalar(offset));
   m_stroke->setPathEffect (effect)->unref ();
   FREE_ARRAY (dash_offsets);
 }
@@ -111,7 +111,7 @@ bool renderer_base_shape_item::configure_painter (SkPaint &paint, bool stroke, b
 
   if (config_for_selection)
     return configure_painter_for_selection (paint);
-  else  
+  else
     return true;
 }
 

@@ -46,7 +46,7 @@ void svg_renderer::update_cache_item (const renderable_item *item, const render_
   SkBitmap bitmap;
   bitmap.setConfig (SkBitmap::kARGB_8888_Config, block_size * total_x, block_size * total_y);
   bitmap.allocPixels ();
-  SkDevice device (bitmap);
+  SkBitmapDevice device (bitmap);
   SkCanvas canvas (&device);
   canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
@@ -137,7 +137,7 @@ SkBitmap *svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransf
 
 void svg_renderer::draw_to_bitmap (const QRect &rect_to_draw, const QTransform &transform, const renderable_item *item, SkBitmap *bitmap)
 {
-  SkDevice device (*bitmap);
+  SkBitmapDevice device (*bitmap);
   SkCanvas canvas (&device);
 
   svg_renderer renderer (nullptr, nullptr);
@@ -161,7 +161,7 @@ void svg_renderer::update_drawing (const QTransform &transform, const QRectF &re
   SkBitmap bitmap;
   bitmap.setConfig (SkBitmap::kARGB_8888_Config, rect_to_draw.width (), rect_to_draw.height ());
   bitmap.allocPixels ();
-  SkDevice device (bitmap);
+  SkBitmapDevice device (bitmap);
   SkCanvas canvas (&device);
 
   if (!are_equal (cache_zoom_x, cur_zoom_x) || !are_equal (cache_zoom_y, cur_zoom_y))

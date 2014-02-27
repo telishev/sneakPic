@@ -9,7 +9,7 @@ Application {
 
     Depends {
         name: "Qt"
-        submodules: ["core", "widgets", "svg", "xml", "opengl", "gui"]
+        submodules: ["core", "widgets", "xml", "opengl", "gui"]
     }
   Depends { name: 'cpp'
   }
@@ -21,9 +21,6 @@ Application {
     'VERSION="0.01"',
     'PACKAGE="sneakPic"'
     ];
-
-    if (qbs.toolchain.contains ('msvc'))
-      defines.push ('_VARIADIC_MAX=10');
 
     if (qbs.buildVariant === 'debug')
       defines.push ("SK_DEBUG");
@@ -45,13 +42,13 @@ Application {
       {
         if (qbs.toolchain.contains ('msvc'))
         {
-          flags = ["/wd4996", "/we4062", "/W3", "/WX" ,"/Zc:wchar_t-", "/Gm-", "/w34100", "/w34189", "/Fd" + product.buildDirectory + "sneakPic.pdb"];
+          flags = ["/wd4996", "/we4062", "/W3", "/WX" ,"/Zc:wchar_t-", "/Gm-", "/w34100", "/w34189", "/Fd" + product.buildDirectory + "sneakPic.pdb", "/FS"];
         }
       }
     else
       {
         if (qbs.toolchain.contains ('msvc'))
-          flags = ["/MP", "-wd4996", "/W3", "/Ob2", "/Oi", "/Ot", "/Oy", "/GS-", "/GF", "/Gy", "/WX", "/Zc:wchar_t-", "/w34100", "/w34189"]
+          flags = ["-wd4996", "/W3", "/Ob2", "/Oi", "/Ot", "/Oy", "/GS-", "/GF", "/Gy", "/WX", "/Zc:wchar_t-", "/w34100", "/w34189", "/FS"]
       }
       if (qbs.toolchain.contains ("gcc"))
         flags.push ('-std=c++11');
@@ -62,8 +59,14 @@ Application {
   cpp.linkerFlags:
    {
     var flags = [];
-    if (qbs.toolchain.contains ("msvc") && qbs.buildVariant === "debug")
-      flags.push ('/INCREMENTAL');
+    if (qbs.toolchain.contains ("msvc"))
+    {
+      if (qbs.buildVariant === "debug")
+        flags.push ('/INCREMENTAL');
+      else
+        flags.push ('/LTCG');
+    }
+
     return flags;
    }
 
@@ -100,7 +103,7 @@ Application {
       if (qbs.toolchain.contains ('msvc'))
       {
         libs = ['usp10.lib', 'skia_core.lib', 'skia_images.lib', 'skia_opts.lib', 'skia_effects.lib', 'skia_pdf.lib', 'skia_opts_ssse3.lib',
-              'zlib.lib', 'skia_skgpu.lib', 'skia_utils.lib', 'skia_ports.lib', 'skia_animator.lib', 'skia_sfnt.lib', 'opengl32.lib', 'gdi32.lib', 'user32.lib' ,'Ole32.lib', 'kernel32.lib'];
+              'skia_skgpu.lib', 'skia_utils.lib', 'skia_ports.lib', 'skia_animator.lib', 'skia_sfnt.lib', 'opengl32.lib', 'gdi32.lib', 'user32.lib' ,'Ole32.lib', 'oleaut32.lib', 'kernel32.lib'];
       } else if (qbs.toolchain.contains ("gcc"))
       {
         libs = ['-Wl', '--start-group', '-lskia_images', '-lskia_opts_ssse3', '-lskia_animator', '-lskia_skgpu', '-lskia_xml', '-lskia_core',

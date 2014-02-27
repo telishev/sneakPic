@@ -45,7 +45,7 @@ void overlay_renderer::draw (QPainter &painter, const QRect &rect_to_draw, const
   else
     bitmap.eraseColor (SK_ColorTRANSPARENT);
 
-  SkDevice device (bitmap);
+  SkBitmapDevice device (bitmap);
   SkCanvas canvas (&device);
 
   render_layer (rect_to_draw, transform, overlay_layer_type::PAGE, bitmap);

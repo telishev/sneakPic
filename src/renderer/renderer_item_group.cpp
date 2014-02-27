@@ -45,7 +45,7 @@ void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, c
   SkBitmap bitmap;
   bitmap.setConfig (SkBitmap::kARGB_8888_Config, result_rect.width (), result_rect.height ());
   bitmap.allocPixels ();
-  SkDevice device(bitmap);
+  SkBitmapDevice device(bitmap);
   SkCanvas child_canvas (&device);
   SkPaint paint;
 
@@ -81,7 +81,7 @@ void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, c
   return;
 }
 
-QRectF renderer_item_group::bounding_box_impl () const 
+QRectF renderer_item_group::bounding_box_impl () const
 {
   return m_bbox;
 }
