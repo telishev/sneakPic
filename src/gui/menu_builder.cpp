@@ -59,5 +59,6 @@ void menu_builder::create_edit_menu (QMenu *menu)
   add_action (menu, gui_action_id::CUT);
   add_action (menu, gui_action_id::COPY);
   add_action (menu, gui_action_id::PASTE);
+  add_action (menu, gui_action_id::PASTE_IN_PLACE);
 }
 

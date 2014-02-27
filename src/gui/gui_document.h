@@ -70,7 +70,8 @@ private:
   bool paste ();
   bool copy ();
   bool cut ();
-};
+  bool paste_in_place ();
+  };
 
 
 #endif // GUI_DOCUMENT_H

@@ -12,7 +12,7 @@ public:
   copy_paste_handler (svg_painter *painter);
 
   void copy ();
-  void paste ();
+  void paste (bool in_place);
 
 private:
   void paste_image (const QImage &image, const QPointF &pos);

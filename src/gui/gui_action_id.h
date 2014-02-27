@@ -16,6 +16,7 @@ enum class gui_action_id
   REDO,
   COPY,
   PASTE,
+  PASTE_IN_PLACE,
   CUT,
   OPTIONS,
 

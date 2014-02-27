@@ -35,6 +35,7 @@ layers_widget_handler::layers_widget_handler (dock_widget_builder *dock_widget_b
     {
       layouts.top()->addWidget(m_opacity_slider = new QSlider (Qt::Horizontal));
       m_opacity_slider->setRange(0, 100);
+      m_opacity_slider->setTracking (false);
     }
     layouts.pop();
 

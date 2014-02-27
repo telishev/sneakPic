@@ -6,7 +6,7 @@
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_items_container.h"
 
-#include "attributes/svg_attributes_number.h"
+#include "svg/attributes/svg_attributes_number.h"
 #include "svg/attributes/svg_attributes_string.h"
 #include "svg/attributes/svg_attributes_enum.h"
 #include "svg/items/svg_item_group.h"
@@ -24,6 +24,7 @@ layers_handler::layers_handler (svg_document *document)
 void layers_handler::on_undo_redo_done ()
 {
   update_layer_list ();
+  emit active_layer_changed ();
 }
 
 void layers_handler::update_layer_list ()

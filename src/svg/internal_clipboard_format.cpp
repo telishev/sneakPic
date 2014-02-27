@@ -125,7 +125,7 @@ int internal_clipboard_format::version () const
 void internal_clipboard_format::apply_to_doc (svg_painter *painter, QPointF cur_pos)
 {
   QRectF bbox = calculate_bbox ();
-  QPointF offset = cur_pos - bbox.center ();
+  QPointF offset = !cur_pos.isNull () ? cur_pos - bbox.center () : QPointF (0.0f, 0.0f);
   QTransform transform = QTransform::fromTranslate (offset.x (), offset.y ());
   painter->selection ()->clear ();
   add_item_operation add_op (painter, false);

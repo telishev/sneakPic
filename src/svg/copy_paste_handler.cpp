@@ -31,7 +31,7 @@ void copy_paste_handler::copy ()
   clipboard->setMimeData (data);
 }
 
-void copy_paste_handler::paste ()
+void copy_paste_handler::paste (bool in_place)
 {
   const QClipboard *clipboard = QApplication::clipboard();
   const QMimeData *mimeData = clipboard->mimeData();
@@ -41,7 +41,7 @@ void copy_paste_handler::paste ()
   if (mimeData->hasFormat (format.mime_type ()))
     {
       format.unpack (mimeData->data (format.mime_type ()));
-      format.apply_to_doc (m_painter, pos);
+      format.apply_to_doc (m_painter, in_place ? QPointF () : pos);
     }
   else if (mimeData->hasImage())
     {

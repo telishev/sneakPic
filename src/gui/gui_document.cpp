@@ -52,6 +52,7 @@ gui_document::gui_document (settings_t *settings, gui_actions *actions)
   m_actions_applier->register_action (gui_action_id::COPY, this, &gui_document::copy);
   m_actions_applier->register_action (gui_action_id::CUT, this, &gui_document::cut);
   m_actions_applier->register_action (gui_action_id::PASTE, this, &gui_document::paste);
+  m_actions_applier->register_action (gui_action_id::PASTE_IN_PLACE, this, &gui_document::paste_in_place);
 }
 
 gui_document::~gui_document ()
@@ -113,7 +114,13 @@ bool gui_document::redo ()
 
 bool gui_document::paste ()
 {
-  m_copy_paste_handler->paste ();
+  m_copy_paste_handler->paste (false);
+  return true;
+}
+
+bool gui_document::paste_in_place ()
+{
+  m_copy_paste_handler->paste (true);
   return true;
 }
 
