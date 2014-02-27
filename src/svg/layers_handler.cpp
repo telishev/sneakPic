@@ -267,3 +267,20 @@ void layers_handler::rename_layer (int index, QString new_name)
       m_document->apply_changes ("Rename Layer");
     }
 }
+
+void layers_handler::move_layer (int from, int to)
+{
+  auto root = m_document->root ();
+  auto item_from = get_layer_item (from);
+  auto item_to = get_layer_item (to);
+  if (item_from == root || to > m_layers_container.size ())
+    return;
+
+  root->move_child (item_to->child_index () + 1, item_from);
+  slide (m_layers_container.begin () + from, m_layers_container.begin () + from + 1, m_layers_container.begin () + to);
+  m_active_layer_index = from < to ? to - 1 : to;
+  m_document->apply_changes ("Layer Moved");
+
+  update_attribute_by_active_layer_index ();
+  emit layers_changed ();
+}

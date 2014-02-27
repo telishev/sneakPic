@@ -46,6 +46,8 @@ layers_widget_handler::layers_widget_handler (dock_widget_builder *dock_widget_b
 
   change_active_layer_connection = CONNECT (m_layers_view->selectionModel (), &QItemSelectionModel::currentChanged, this, &layers_widget_handler::change_active_layer);
   m_layers_view->setEditTriggers (QAbstractItemView::DoubleClicked | QAbstractItemView::EditKeyPressed);
+  m_layers_view->setDragDropMode (QAbstractItemView::InternalMove);
+  m_layers_view->setDropIndicatorShown (true);
   m_layers_view->installEventFilter (new override_undo_filter (m_layers_view));
   m_dock_widget_builder->add_widget (m_widget, Qt::RightDockWidgetArea, visibility_state::visible, Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 }

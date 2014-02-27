@@ -11,7 +11,7 @@ class layers_handler : public QObject
 {
   Q_OBJECT
 
-  typedef vector<string> container_type;
+  typedef deque<string> container_type;
   container_type m_layers_container; // contains names of "layer" items (groups with special attribute)
   svg_document *m_document;
   int m_active_layer_index;
@@ -48,6 +48,7 @@ public:
   bool is_layer_visible( int index );
   void toggle_layer_visibility (int layer_index);
   void rename_layer(int index, QString new_name);
+  void move_layer (int from, int to);
 
 private:
   void update_layer_list ();

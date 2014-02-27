@@ -3,6 +3,9 @@
 #include "gui/connection.h"
 
 #include <QIcon>
+#include <QMimeData>
+
+#include "common/common_utils.h"
 
 QVariant layers_tree_model::data (const QModelIndex &index, int role /*= Qt::DisplayRole*/) const
 {
@@ -93,9 +96,52 @@ bool layers_tree_model::setData (const QModelIndex &index, const QVariant &value
 Qt::ItemFlags layers_tree_model::flags (const QModelIndex &index) const
 {
   auto flags = QAbstractItemModel::flags (index);
+  if (index == QModelIndex ())
+    flags |= Qt::ItemIsDropEnabled;
+
   switch (index.column ())
   {
-  case 1: flags |= Qt::ItemIsEditable;
+    case 1:
+      if (index.row () != rowCount () - 1)
+         flags |= (Qt::ItemIsEditable | Qt::ItemIsDragEnabled);
   }
   return flags;
+}
+
+Qt::DropActions layers_tree_model::supportedDropActions () const
+{
+   return Qt::MoveAction;
+}
+
+Qt::DropActions layers_tree_model::supportedDragActions () const
+{
+   return Qt::MoveAction;
+}
+
+const char *format = "internal";
+
+bool layers_tree_model::dropMimeData (const QMimeData *data, Qt::DropAction /*action*/, int row, int /*column*/, const QModelIndex &/*parent*/)
+{
+  m_layers_handler->move_layer (data->data (format).toInt (), row);
+  return true;
+}
+
+QMimeData *layers_tree_model::mimeData (const QModelIndexList &indexes) const
+{
+  // For our situation it's always 1 index, we need to pack row num
+  QMimeData *data = new QMimeData ();
+  data->setData (format, QByteArray::number (indexes[0].row () < m_layers_handler->layers_count () ? indexes[0].row () :  -1));
+  return data;
+}
+
+bool layers_tree_model::canDropMimeData (const QMimeData * /*data*/, Qt::DropAction /*action*/, int row, int /*column*/, const QModelIndex &/*parent*/) const
+{
+  return (row < rowCount () - 1);
+}
+
+QStringList layers_tree_model::mimeTypes () const
+{
+  QStringList sl;
+  sl << format;
+  return sl;
 }

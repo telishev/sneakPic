@@ -74,6 +74,7 @@ copy_paste_handler::copy_paste_handler (svg_painter *painter)
 QPointF copy_paste_handler::local_cursor_pos ()
 {
   return m_painter->get_local_pos (m_painter->canvas_widget ()->cursor_pos ());
+
 }
 
 

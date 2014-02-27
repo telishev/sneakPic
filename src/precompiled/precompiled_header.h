@@ -17,3 +17,4 @@ using std::map;
 using std::vector;
 using std::string;
 using std::set;
+using std::deque;
