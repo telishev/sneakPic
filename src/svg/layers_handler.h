@@ -49,6 +49,9 @@ public:
   void toggle_layer_visibility (int layer_index);
   void rename_layer(int index, QString new_name);
   void move_layer (int from, int to);
+  int get_active_layer_opacity ();
+  int is_layer_selected ();
+  void set_active_layer_opacity (int value);
 
 private:
   void update_layer_list ();
@@ -66,6 +69,6 @@ private slots:
 signals:
   void layers_changed (); // for non-obvious cases (like undo)
   void active_layer_changed ();
-};
+  };
 
 #endif //LAYERS_HANDLER_H

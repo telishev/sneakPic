@@ -6,6 +6,7 @@
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_items_container.h"
 
+#include "attributes/svg_attributes_number.h"
 #include "svg/attributes/svg_attributes_string.h"
 #include "svg/attributes/svg_attributes_enum.h"
 #include "svg/items/svg_item_group.h"
@@ -220,6 +221,7 @@ void layers_handler::set_active_layer (int new_index)
     item_container->get_root ()->remove_attribute (item_container->get_root ()->get_computed_attribute<svg_attribute_layer_name> ());
   }
   m_document->apply_changes ("Change Active Layer");
+  emit active_layer_changed ();
 }
 
 int layers_handler::active_layer_index ()
@@ -283,4 +285,29 @@ void layers_handler::move_layer (int from, int to)
 
   update_attribute_by_active_layer_index ();
   emit layers_changed ();
+}
+
+int layers_handler::is_layer_selected ()
+{
+  return (get_active_layer_item () != m_document->root ());
+}
+
+
+int layers_handler::get_active_layer_opacity ()
+{
+  if (!is_layer_selected ())
+    return 100;
+
+  auto item = get_active_layer_item ();
+  return (int) (item->get_computed_attribute<svg_attribute_opacity> ()->value () * 100.0);
+}
+
+void layers_handler::set_active_layer_opacity (int value)
+{
+  if (!is_layer_selected ())
+    return;
+
+  auto item = get_active_layer_item ();
+  item->get_attribute_for_change<svg_attribute_opacity> ()->set_value ((double) value / 100.0);
+  m_document->apply_changes ("Change Layer Opacity");
 }

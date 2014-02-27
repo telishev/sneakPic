@@ -7,6 +7,7 @@ class dock_widget_builder;
 class layers_handler;
 class layers_tree_model;
 
+class QSlider;
 class QToolButton;
 class QTreeWidget;
 class QTreeView;
@@ -23,19 +24,22 @@ class layers_widget_handler : public QObject
   QTreeView *m_layers_view;
   unique_ptr<layers_tree_model> m_layers_model;
   QToolButton *m_add_layer_btn, *m_remove_layer_btn;
-  unique_ptr<connection> change_active_layer_connection;
+  unique_ptr<connection> change_active_layer_connection, change_opacity_connection;
+  QSlider *m_opacity_slider;
 
 public:
   layers_widget_handler (dock_widget_builder *dock_widget_builder_arg);
   ~layers_widget_handler ();
 
   void set_layers_handler (layers_handler *handler);
+  void change_opacity ();
 
 private slots:
   void update_active_layer ();
   void change_active_layer ();
   void index_clicked (const QModelIndex &index);
-};
+  void update_opacity_slider ();
+  };
 
 #endif //LAYERS_WIDGET_HANDLER
 
