@@ -15,6 +15,7 @@ color_spinbox::color_spinbox (QWidget *parent, color_single_selector_type type) 
   m_spin_box->setMinimum (0);
   m_spin_box->setValue (get_param_value_by_type (m_type));
   m_spin_box->setSingleStep (1);
+  m_spin_box->setKeyboardTracking (false);
   m_layout->addWidget (m_spin_box);
   m_layout->setContentsMargins (0, 0, 0, 0);
   m_value_changed_connection = CONNECT (m_spin_box, (void (QSpinBox::*) (int)) &QSpinBox::valueChanged, this, &color_spinbox::spinbox_value_changed);
