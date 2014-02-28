@@ -79,6 +79,16 @@ bool path_control_point_handle::end_drag (QPointF local_pos)
   return true;
 }
 
+void path_control_point_handle::interrupt_drag ()
+{
+  m_drag_cur = m_drag_start;
+  move_point ();
+  m_edit_operation.reset ();
+  m_editor->update ();
+  return;
+}
+
+
 void path_control_point_handle::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const 
 {
   path_control_point_renderer (get_anchor_center (), get_handle_center (), m_is_highlighted).draw (canvas, state, config);

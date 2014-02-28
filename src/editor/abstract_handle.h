@@ -19,6 +19,7 @@ public:
   virtual bool start_drag (QPointF local_pos) = 0;
   virtual bool drag (QPointF local_pos) = 0;
   virtual bool end_drag (QPointF local_pos) = 0;
+  virtual void interrupt_drag () = 0;
 };
 
 #endif // ABSTRACT_HANDLE_H

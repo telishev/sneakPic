@@ -5,6 +5,7 @@
 #include "gui/settings.h"
 #include "gui/actions_applier.h"
 #include "gui/mouse_shortcuts_handler.h"
+#include "gui/gui_action_id.h"
 
 #include "renderer/svg_painter.h"
 #include "renderer/overlay_renderer.h"
@@ -58,5 +59,10 @@ void abstract_tool::configure ()
 void abstract_tool::update ()
 {
   m_painter->redraw ();
+}
+
+void abstract_tool::interrupt_action ()
+{
+  m_actions_applier->apply_action (gui_action_id::INTERRUPT);
 }
 

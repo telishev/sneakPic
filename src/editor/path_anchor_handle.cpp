@@ -16,6 +16,7 @@
 #include "common/memory_deallocation.h"
 #include "operations/path_edit_operation.h"
 #include "svg/attributes/svg_attribute_nodetypes.h"
+#include "path_handles_selection.h"
 
 
 path_anchor_handle::path_anchor_handle (path_handles_editor *editor, svg_item_path *item, svg_path_geom_iterator path_it)
@@ -41,6 +42,8 @@ bool path_anchor_handle::start_drag (QPointF local_pos)
 {
   m_edit_operation.reset (new path_edit_operation (m_item));
   m_drag_start = local_pos;
+  m_editor->handles_selection ()->clear ();
+  m_editor->handles_selection ()->add_anchor (m_item->name (), point_id ());
   return true;
 }
 
@@ -59,6 +62,14 @@ bool path_anchor_handle::end_drag (QPointF local_pos)
   m_drag_cur = m_drag_start = QPointF ();
   m_editor->update ();
   return true;
+}
+
+void path_anchor_handle::interrupt_drag ()
+{
+  m_drag_cur = m_drag_start;
+  move_point ();
+  m_edit_operation.reset ();
+  m_editor->update ();
 }
 
 QPointF path_anchor_handle::get_handle_center () const

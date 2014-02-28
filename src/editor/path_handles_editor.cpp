@@ -226,6 +226,8 @@ void path_handles_editor::select_by_rect (const QRectF &rect)
 bool path_handles_editor::delete_selected_handles ()
 {
   auto selected_anchors = m_handles_selection->selected_anchors ();
+  interrupt ();
+
   if (selected_anchors.empty ())
     return false;
 
@@ -266,6 +268,8 @@ bool path_handles_editor::delete_selected_handles ()
 
 bool path_handles_editor::change_handle (const QPoint &pos)
 {
+  interrupt ();
+
   path_anchor_handle *control_point = get_path_anchor (pos);
   if (!control_point)
     return false;

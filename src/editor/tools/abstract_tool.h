@@ -26,6 +26,7 @@ public:
   virtual ~abstract_tool ();
 
   void update ();
+  void interrupt_action ();
 
   virtual void activate ();
   virtual void deactivate ();

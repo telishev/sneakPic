@@ -24,6 +24,7 @@ protected:
   virtual bool start_drag (QPointF local_pos) override;
   virtual bool drag (QPointF local_pos) override;
   virtual bool end_drag (QPointF local_pos) override;
+  virtual void interrupt_drag () override {}
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
 
 private:

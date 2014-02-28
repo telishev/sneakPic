@@ -48,6 +48,8 @@ protected:
   virtual element_handles *create_handles_for_item (abstract_svg_item *item) = 0;
   virtual void update_handles_impl () {}
 
+  void interrupt ();
+
   abstract_handle *get_handle_by_pos (QPointF screen_pos) const;
 
 private:
@@ -58,6 +60,8 @@ private:
   bool start_drag (QPointF pos);
   bool drag_handle (QPointF pos);
   bool end_drag (QPointF pos);
+
+  bool interrupt_all ();
 
   bool highlight_handle (QPointF pos);
 

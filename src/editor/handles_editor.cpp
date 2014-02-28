@@ -15,6 +15,7 @@
 #include "gui/mouse_shortcuts_handler.h"
 #include "gui/shortcuts_config.h"
 #include "gui/actions_applier.h"
+#include "gui/gui_action_id.h"
 
 
 
@@ -33,6 +34,8 @@ handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter,
                                 &handles_editor::start_drag, &handles_editor::drag_handle, &handles_editor::end_drag);
 
   m_applier->add_shortcut (mouse_shortcut_t::HIGHLIGHT_HANDLE, this, &handles_editor::highlight_handle);
+
+  m_applier->register_action (gui_action_id::INTERRUPT, this, &handles_editor::interrupt_all);
 }
 
 handles_editor::~handles_editor ()
@@ -160,4 +163,18 @@ bool handles_editor::highlight_handle (QPointF pos)
 void handles_editor::set_handle_for_item (const char *name, element_handles *handles)
 {
   m_handles[name].reset (handles);
+}
+
+bool handles_editor::interrupt_all ()
+{
+  if (m_cur_handle)
+     m_cur_handle->interrupt_drag ();
+
+  m_cur_handle = nullptr;
+  return false;
+}
+
+void handles_editor::interrupt ()
+{
+  m_applier->apply_action (gui_action_id::INTERRUPT);
 }

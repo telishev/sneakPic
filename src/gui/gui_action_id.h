@@ -36,6 +36,8 @@ enum class gui_action_id
   LOWER_OBJECT,
   RAISE_OBJECT,
 
+  INTERRUPT,
+
   /// Count
   COUNT,
 };
