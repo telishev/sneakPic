@@ -13,7 +13,6 @@
 
 
 canvas_widget_t::canvas_widget_t (QWidget *parent)
-  //: QGLWidget (QGLFormat(QGL::SampleBuffers | QGL::AlphaChannel), parent)
   : QWidget (parent)
 {
   m_cur_painter = nullptr;

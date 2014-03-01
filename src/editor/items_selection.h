@@ -40,6 +40,8 @@ public:
   items_selection (svg_items_container *container);
   ~items_selection ();
 
+  abstract_svg_item *single_item () const ;
+
   bool empty () { return m_selection.empty (); }
   int count () const;
   const set_type &selection () const { return m_selection; }

@@ -5,44 +5,36 @@ class QColor;
 class QGridLayout;
 class QLayout;
 class QTabWidget;
-class QWidget;
 
+class color_selector;
+class gui_model;
+class gui_widget_view;
 class color_selector;
 
 enum class color_single_selector_type;
 
-#include <QObject>
+#include <QWidget>
+#include <QColor>
 
-class color_selector_widget_handler : public QObject
+class color_selector_widget_handler : public QWidget
 {
   Q_OBJECT
 
   QLayout *m_color_selector_layout;
   QTabWidget *m_tab_widget;
-  QColor *m_color;
-  QList <color_selector *> m_color_widgets;
+  unique_ptr<gui_widget_view> m_view;
+  gui_model *m_model;
 
 public:
-  color_selector_widget_handler (QColor *color);
-  QWidget *widget ();
-  void set_color (QColor *color);
-
+  color_selector_widget_handler (gui_model *model);
+  ~color_selector_widget_handler ();
 private:
   void add_color_selectors ();
   void create_cmyk_widget();
   void create_hsv_tab();
   void create_hsl_tab();
   void create_rgb_tab();
-
-public slots:
-  void update_colors_momentarily ();
-
-private slots:
-  void update_colors_finally ();
   void add_typical_scroller_widget (QGridLayout *grid_layout, color_single_selector_type type);
-
-signals:
-  void color_changed_momentarily (const QColor&);
-  void color_changing_finished ();
+  void register_color_selector (color_selector *selector);
 };
 #endif // COLOR_SELECTOR_WIDGET_HANDLER_H

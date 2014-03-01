@@ -33,6 +33,7 @@ public:
   virtual bool write (QString &data, bool to_css = false) const override;
 
   void set_to_color (QColor color);
+  void set_to_none ();
   paint_server_type server_type () const { return m_server_type; };
   QColor color () const { return m_color; };
 

@@ -11,12 +11,6 @@ settings_t::settings_t (QSettings *qsettings)
 {
   m_shortcuts = new shortcuts_config;
   m_shortcuts->fill_by_default ();
-  m_fill_color = new QColor ();
-  m_stroke_color = new QColor ();
-  m_stroke_linejoin = Qt::PenJoinStyle::SvgMiterJoin;
-  m_stroke_width = 1.0;
-  m_stroke_miterlimit = 4.0;
-  m_stroke_linecap = Qt::FlatCap;
   m_qsettings = qsettings;
   m_storage.resize (enum_count <option_id> ());
 }
@@ -24,23 +18,6 @@ settings_t::settings_t (QSettings *qsettings)
 settings_t::~settings_t ()
 {
   FREE (m_shortcuts);
-  FREE (m_fill_color);
-  FREE (m_stroke_color);
-}
-
-void settings_t::set_stroke_width (double value)
-{
-  m_stroke_width = value;
-}
-
-void settings_t::set_stroke_linejoin (Qt::PenJoinStyle value)
-{
-  m_stroke_linejoin = value;
-}
-
-void settings_t::set_stroke_miterlimit (double value)
-{
-  m_stroke_miterlimit = value;
 }
 
 const char *enum_to_string (option_id arg)

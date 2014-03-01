@@ -25,7 +25,7 @@ private:
   flags m_flags;
 
 public:
-  color_rectangular_selector (QWidget *parent, color_single_selector_type type_x, color_single_selector_type type_y, QColor *controlled_color, flags flags_arg = flag::EMPTY);
+  color_rectangular_selector (QWidget *parent, color_single_selector_type type_x, color_single_selector_type type_y, flags flags_arg = flag::EMPTY);
   ~color_rectangular_selector ();
 protected:
   virtual QSize sizeHint() const;
@@ -34,14 +34,13 @@ protected:
   virtual void mouseMoveEvent(QMouseEvent *event) override;
   virtual void mouseReleaseEvent(QMouseEvent *event) override;
   virtual void mousePressEvent(QMouseEvent *event) override;
-  virtual void color_changed_externally () override;
 
 private:
   void set_color_from_pos( QPoint pos );
   int get_x_param_maximum ();
   int get_y_param_maximum ();
-  void set_param_by_x_type (QColor *color, int value);
-  void set_param_by_y_type (QColor *color, int value);
+  QColor set_param_by_x_type (QColor color, int value);
+  QColor set_param_by_y_type (QColor color, int value);
   int get_param_by_x_type ();
   int get_param_by_y_type ();
   void update_cached_gradient ();

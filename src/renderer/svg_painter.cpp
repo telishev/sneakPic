@@ -52,9 +52,11 @@
 
 using namespace std::placeholders;
 
-svg_painter::svg_painter (canvas_widget_t *canvas_widget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings)
+svg_painter::svg_painter (canvas_widget_t *canvas_widget, rendered_items_cache *cache, events_queue *queue, svg_document *document,
+                          settings_t *settings, style_controller *controller)
   : abstract_painter (canvas_widget)
 {
+  m_style_controller = controller;
   m_renderer_page = nullptr;
   m_current_tool = nullptr;
   m_document = nullptr;
@@ -235,6 +237,7 @@ void svg_painter::configure ()
 
   if (get_configure_needed (configure_type::SELECTION_CHANGED))
     {
+      emit selection_changed_signal ();
       m_selection_renderer->update_items ();
     }
 
@@ -629,3 +632,4 @@ bool svg_painter::add_item_to_selection (const QPoint &pos)
 {
   return do_select_item (pos, false);
 }
+

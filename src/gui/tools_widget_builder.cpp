@@ -19,23 +19,21 @@
 #include "gui/gui_actions.h"
 #include "gui/utils/flowlayout.h"
 #include "gui/utils/qt_utils.h"
+#include "fill_stroke_widget.h"
 
 // TODO: probably rewrite all color controllers on directly signal/slot signal specifying QColor
 
-tools_widget_builder::tools_widget_builder (gui_actions *actions, dock_widget_builder *dock_widget_builder_arg)
+tools_widget_builder::tools_widget_builder (gui_actions *actions, dock_widget_builder *dock_widget_builder_arg, gui_model *model)
 {
   m_actions = actions;
   m_tool_bar = nullptr;
   m_dock_widget_builder = dock_widget_builder_arg;
-  m_stroke_color = new QColor ();
-  m_fill_color = new QColor ();
+  m_fill_stroke = new fill_stroke_widget (model);
   update ();
 }
 
 tools_widget_builder::~tools_widget_builder ()
 {
-  FREE (m_stroke_color);
-  FREE (m_fill_color);
 }
 
 void tools_widget_builder::update ()
@@ -83,28 +81,7 @@ void tools_widget_builder::init_toolbar_and_layout()
 void tools_widget_builder::add_color_indicators ()
 {
   QHBoxLayout *layout = qt_utils::create_intermediate_hbox_layout (m_layout->parentWidget ());
+  layout->addWidget (m_fill_stroke);
   layout->setSpacing (3);
-  m_fill_color_indicator = new color_indicator (m_layout->parentWidget (), 0);
-  m_fill_color_indicator->set_color (m_fill_color);
-  m_stroke_color_indicator = new color_indicator (m_layout->parentWidget (), 0);
-  m_stroke_color_indicator->set_color (m_stroke_color);
-
-  layout->addWidget (new QLabel ("F:"));
-  layout->addWidget (m_fill_color_indicator);
-  layout->addWidget (new QLabel (" S:"));
-  layout->addWidget (m_stroke_color_indicator);
-  layout->addStretch ();
   m_layout->addWidget (layout->parentWidget ());
-}
-
-void tools_widget_builder::update_stroke_color (const QColor &color)
-{
-  *m_stroke_color = color;
-  m_stroke_color_indicator->color_changed_externally ();
-}
-
-void tools_widget_builder::update_fill_color (const QColor& color)
-{
-  *m_fill_color = color;
-  m_fill_color_indicator->color_changed_externally ();
 }

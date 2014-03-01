@@ -16,11 +16,11 @@ class color_spinbox : public color_selector
   unique_ptr<connection> m_value_changed_connection;
 
 public:
-  color_spinbox (QWidget *parent, color_single_selector_type type, QColor *color);
+  color_spinbox (QWidget *parent, color_single_selector_type type);
   ~color_spinbox ();
 
 protected slots:
-  virtual void color_changed_externally();
+  virtual void set_color (QColor color) override;
 
 private slots:
   void spinbox_value_changed (int new_value);

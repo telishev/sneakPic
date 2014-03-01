@@ -23,6 +23,7 @@ class rubberband_selection;
 class settings_t;
 class svg_document;
 class svg_items_container;
+class style_controller;
 
 enum class gui_action_id;
 enum class z_direction;
@@ -46,6 +47,7 @@ class svg_painter : public abstract_painter
   settings_t *m_settings;
   actions_applier *m_actions_applier;
   renderer_page *m_renderer_page;
+  style_controller *m_style_controller;
 
   abstract_tool *m_current_tool;
 
@@ -53,7 +55,7 @@ class svg_painter : public abstract_painter
   unique_ptr<renderer_overlay_path> m_color_picker_area_preview;
 
 public:
-  svg_painter (canvas_widget_t *canvas_widget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings);
+  svg_painter (canvas_widget_t *canvas_widget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings, style_controller *controller);
   ~svg_painter ();
 
   void set_current_tool (abstract_tool *tool);
@@ -63,6 +65,7 @@ public:
   svg_document *document () const { return m_document; }
   svg_items_container *item_container () const;
   QTransform cur_transform () const { return m_cur_transform; }
+  style_controller *get_style_controller () const { return m_style_controller; }
 
   abstract_svg_item *get_current_item (const QPoint &pos);
   QPointF get_local_pos (const QPointF &mouse_pos) const;
@@ -74,6 +77,7 @@ public:
 signals:
   void zoom_description_changed (const QString &description);
   void color_picked (const QColor &color);
+  void selection_changed_signal ();
 
 private slots:
   void items_changed ();

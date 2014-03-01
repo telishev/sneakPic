@@ -9,11 +9,10 @@ class color_linear_selector : public color_selector
 
   Qt::Orientation m_orientation;
   color_single_selector_type m_type;
-  QColor *m_controlled_color;
   bool m_drag_started;
 
 public:
-  color_linear_selector (QWidget *parent, Qt::Orientation orientation, color_single_selector_type type, QColor *controlled_color);
+  color_linear_selector (QWidget *parent, Qt::Orientation orientation, color_single_selector_type type);
 
 protected:
   virtual QSize sizeHint() const;
@@ -30,11 +29,11 @@ private:
   int get_controlled_param_value ();
   int get_controlled_param_maximum ();
   void set_color_from_pos (QPoint pos);
-  void set_controlled_param( QColor *color, int value );
+  QColor change_param_for_control (QColor color, int value );
   void set_color_from_cursor_pos (QMouseEvent *event);
   void draw_gradient (QPainter &painter);
   void draw_controller (QPainter &painter);
-  void do_color_preprocessing(QColor &color);
+  QColor do_color_preprocessing (QColor color);
   int get_needed_number_of_points_for_gradient();
 };
 

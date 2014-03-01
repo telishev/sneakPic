@@ -120,3 +120,8 @@ bool svg_paint_server::need_to_render (const svg_items_container *container) con
   unique_ptr<renderer_paint_server> server (create_paint_server (container));
   return server->need_to_render ();
 }
+
+void svg_paint_server::set_to_none ()
+{
+  m_server_type = paint_server_type::NONE;
+}

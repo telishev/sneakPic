@@ -3,10 +3,14 @@
 
 #include <QObject>
 
+#include "item_paint_style.h"
+#include "gui\gui_model.h"
+
 class settings_t;
 class items_selection;
-class style_container;
+class item_paint_style;
 class svg_painter;
+class item_paint_server;
 
 enum class selected_style
 {
@@ -16,39 +20,38 @@ enum class selected_style
   COUNT
 };
 
-class style_controller : public QObject
+class style_controller : public gui_model
 {
   Q_OBJECT
 
   selected_style m_current_style;
-  style_container *m_containers[(int) selected_style::COUNT];
+  item_paint_style m_styles[(int) selected_style::COUNT];
   svg_painter *m_painter;
+  bool m_is_selected_fill;
+
 public:
   style_controller (settings_t *settings_arg);
-  style_container *active_container ();
-  const style_container *active_container () const;
+  const item_paint_style *active_style () const;
   void set_painter (svg_painter *painter);
-  selected_style current_style () {return m_current_style; }
-  void switch_to (selected_style current_style_arg );
-  double stroke_width () const;
-  Qt::PenJoinStyle stroke_linejoin () const;
-  Qt::PenCapStyle stroke_linecap () const;
-  void update_linejoin (Qt::PenJoinStyle value);
-  void update_linecap (Qt::PenCapStyle value);
-  double stroke_miterlimit () const;
 
-public slots:
-  void update_fill_color_momentarily ();
-  void update_stroke_color_momentarily ();
-  void apply_changes ();
-  void selection_or_items_changed ();
-  void update_stroke_width (double value);
-  void update_stroke_miterlimit (double value);
+  selected_style current_style () { return m_current_style; }
+  void set_current_style (selected_style style) { m_current_style = style; }
+  const item_paint_server *active_server () const;
+
+  bool is_selected_fill () const { return m_is_selected_fill; }
+
+  virtual QVariant data (gui_model_role_t role) const override;
+  virtual void set_model_data (const std::map<gui_model_role_t, QVariant> &data_map) override;
 
 private slots:
+  void selection_or_items_changed ();
   void update_from_color_picker (const QColor &color);
 
-signals:
-  void target_items_changed ();
+private:
+  item_paint_server *active_server ();
+  void send_items_changed ();
+  std::set<gui_model_role_t> all_items_set () const;
+
 };
+
 #endif // STYLE_CONTROLLER_H

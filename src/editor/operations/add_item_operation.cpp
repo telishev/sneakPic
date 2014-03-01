@@ -6,6 +6,7 @@
 #include "editor/items_selection.h"
 #include "svg/items/svg_graphics_item.h"
 #include "svg/layers_handler.h"
+#include "editor/style_controller.h"
 
 add_item_operation::add_item_operation (svg_painter *painter, bool clear_selection)
 {
@@ -22,7 +23,7 @@ add_item_operation::~add_item_operation ()
 void add_item_operation::apply (abstract_svg_item *item)
 {
   if (m_apply_style)
-    apply_style_operation (m_painter->settings ()).apply (item);
+    apply_style_operation (m_painter->get_style_controller ()->active_style ()).apply (item);
 
   if (item->to_graphics_item ())
     item->to_graphics_item ()->update_bbox ();

@@ -2,13 +2,12 @@
 #define CANVAS_WIDGET_T_H
 
 #include <QGLWidget>
-#include <QGLFunctions>
 #include "gui/mouse_filter.h"
 
 class mouse_filter;
 class abstract_painter;
 
-class canvas_widget_t : public QWidget, protected QGLFunctions
+class canvas_widget_t : public QWidget
 {
   Q_OBJECT
 

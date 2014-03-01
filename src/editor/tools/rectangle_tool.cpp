@@ -23,6 +23,8 @@
 #include "svg/svg_document.h"
 #include "editor/operations/add_item_operation.h"
 #include "renderer/renderer_overlay_path.h"
+#include "editor/style_controller.h"
+#include "editor/item_paint_style.h"
 
 rectangle_tool::rectangle_tool( svg_painter *painter )
   : abstract_tool (painter)

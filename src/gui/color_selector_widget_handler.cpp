@@ -5,6 +5,7 @@
 #include "gui/color_selectors/color_spinbox.h"
 #include "gui/dock_widget_builder.h"
 #include "gui/connection.h"
+#include "gui/gui_widget_view.h"
 
 #include "gui/utils/qt_utils.h"
 
@@ -12,34 +13,25 @@
 #include <QLayout>
 #include <QTabWidget>
 #include <QWidget>
+#include "gui_model.h"
 
-color_selector_widget_handler::color_selector_widget_handler (QColor *color)
+color_selector_widget_handler::color_selector_widget_handler (gui_model *model)
 {
-  m_color_selector_layout = qt_utils::create_intermediate_vbox_layout ();
-  m_color_selector_layout->parentWidget ()->setSizePolicy (QSizePolicy::Preferred, QSizePolicy::Maximum);
-  m_tab_widget = new QTabWidget (m_color_selector_layout->parentWidget ());
+  m_model = model;
+  m_view.reset (new gui_widget_view (m_model));
+  m_color_selector_layout = qt_utils::create_common_vbox_layout (this);
+  setSizePolicy (QSizePolicy::Preferred, QSizePolicy::Maximum);
+  m_tab_widget = new QTabWidget;
   m_color_selector_layout->addWidget (m_tab_widget);
-  m_color = color;
 
   add_color_selectors ();
-  m_color_selector_layout->parentWidget ()->setObjectName ("Color");
+  setObjectName ("Color");
 }
 
-void color_selector_widget_handler::update_colors_momentarily ()
-{
-  foreach (color_selector * widget, m_color_widgets)
-  {
-    widget->color_changed_externally ();
-  }
-  if (m_color)
-    emit color_changed_momentarily (*m_color);
-  else
-    emit color_changed_momentarily (QColor (127, 127, 127, 127));
-}
 
-void color_selector_widget_handler::update_colors_finally ()
+color_selector_widget_handler::~color_selector_widget_handler ()
 {
-  emit color_changing_finished ();
+
 }
 
 static inline QString get_label_string_by_type (color_single_selector_type type)
@@ -79,17 +71,35 @@ static inline QString get_label_string_by_type (color_single_selector_type type)
   return "";
 }
 
+
+class color_selector_gui_widget : public gui_widget
+{
+  color_selector *m_selector;
+public:
+  color_selector_gui_widget (color_selector *selector, bool momentary_change) : m_selector (selector)
+  {
+    if (momentary_change)
+      CONNECT (m_selector, &color_selector::color_changed_momentarily, this, &gui_widget::data_changed);
+    else
+      CONNECT (m_selector, &color_selector::color_changing_finished, this, &gui_widget::data_changed);
+  }
+
+  virtual void set_value (QVariant value) override {  m_selector->set_color (value.value<QColor> ()); }
+  virtual QVariant value () const override { return QVariant::fromValue (m_selector->color ()); }
+
+};
+
 // Adds scroller with label, scroller itself and combobox
 void color_selector_widget_handler::add_typical_scroller_widget (QGridLayout *grid_layout, color_single_selector_type type)
 {
   QString label_string = get_label_string_by_type (type);
   int row_pos = grid_layout->rowCount ();
   grid_layout->addWidget (new QLabel (label_string, grid_layout->parentWidget ()), row_pos, 0);
-  color_linear_selector *color_linear_selector_widget = new color_linear_selector (grid_layout->parentWidget (), Qt::Horizontal, type, m_color);
-  m_color_widgets << color_linear_selector_widget;
+  color_linear_selector *color_linear_selector_widget = new color_linear_selector (grid_layout->parentWidget (), Qt::Horizontal, type);
+  register_color_selector (color_linear_selector_widget);
   grid_layout->addWidget (color_linear_selector_widget, row_pos, 1);
-  color_spinbox *color_spinbox_widget = new color_spinbox (grid_layout->parentWidget (), type, m_color);
-  m_color_widgets << color_spinbox_widget;
+  color_spinbox *color_spinbox_widget = new color_spinbox (grid_layout->parentWidget (), type);
+  register_color_selector (color_spinbox_widget);
   grid_layout->addWidget (color_spinbox_widget, row_pos, 2);
 }
 
@@ -100,13 +110,6 @@ void color_selector_widget_handler::add_color_selectors ()
   create_hsl_tab();
   create_hsv_tab();
   create_cmyk_widget();
-
-  // ... and connect everything
-  for (color_selector * widget : m_color_widgets)
-    {
-      CONNECT (widget, &color_selector::color_changed_momentarily, this, &color_selector_widget_handler::update_colors_momentarily);
-      CONNECT (widget, &color_selector::color_changing_finished, this, &color_selector_widget_handler::update_colors_finally);
-    }
 }
 
 void color_selector_widget_handler::create_rgb_tab ()
@@ -135,12 +138,12 @@ void color_selector_widget_handler::create_hsv_tab ()
 {
   QVBoxLayout *hsv_tab_layout = qt_utils::create_common_vbox_widget (m_tab_widget);
   QHBoxLayout *hsv_layout = qt_utils::create_intermediate_hbox_layout (hsv_tab_layout->parentWidget ());
-  color_rectangular_selector *color_rect_widget = new color_rectangular_selector (hsv_layout->parentWidget (), color_single_selector_type::HSV_SATURATION, color_single_selector_type::HSV_VALUE, m_color);
-  m_color_widgets << color_rect_widget;
+  color_rectangular_selector *color_rect_widget = new color_rectangular_selector (hsv_layout->parentWidget (), color_single_selector_type::HSV_SATURATION, color_single_selector_type::HSV_VALUE);
+  register_color_selector (color_rect_widget);
   hsv_layout->addWidget (color_rect_widget);
-  color_linear_selector *hue_widget = new color_linear_selector (hsv_layout->parentWidget (), Qt::Vertical, color_single_selector_type::HSV_HUE, m_color);
+  color_linear_selector *hue_widget = new color_linear_selector (hsv_layout->parentWidget (), Qt::Vertical, color_single_selector_type::HSV_HUE);
   hue_widget->setSizePolicy (QSizePolicy::Fixed, QSizePolicy::Fixed);
-  m_color_widgets << hue_widget;
+  register_color_selector (hue_widget);
   hsv_layout->addWidget (hue_widget);
 
   hsv_layout->addStretch ();
@@ -165,17 +168,8 @@ void color_selector_widget_handler::create_cmyk_widget ()
   m_tab_widget->addTab (cmyk_layout->parentWidget (), QIcon (), "CMYK");
 }
 
-QWidget *color_selector_widget_handler::widget ()
+void color_selector_widget_handler::register_color_selector (color_selector *selector)
 {
-  return m_color_selector_layout->parentWidget ();
-}
-
-void color_selector_widget_handler::set_color (QColor *color)
-{
-  for (color_selector * widget : m_color_widgets)
-    {
-      widget->set_color (color);
-    }
-
-  m_color = color;
+  m_view->add_gui_widget (gui_model_role_t::CURRENT_COLOR_TEMP, new color_selector_gui_widget (selector, true));
+  m_view->add_gui_widget (gui_model_role_t::CURRENT_COLOR, new color_selector_gui_widget (selector, false));
 }

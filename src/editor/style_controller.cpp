@@ -1,129 +1,147 @@
 #include "editor/style_controller.h"
 
-#include "editor/fill_style.h"
-#include "editor/stroke_style.h"
 #include "editor/items_selection.h"
-#include "editor/style_container.h"
 
 #include "renderer/svg_painter.h"
 
 #include "svg/svg_document.h"
 #include "gui/connection.h"
 
-style_controller::style_controller (settings_t *settings_arg)
-{
-  for (int i = 0; i < (int) selected_style::COUNT; i++)
-    m_containers[i] = new style_container ();
+Q_DECLARE_METATYPE (Qt::PenJoinStyle);
+Q_DECLARE_METATYPE (Qt::PenCapStyle);
+Q_DECLARE_METATYPE (item_paint_server);
 
+style_controller::style_controller (settings_t * /*settings_arg*/)
+{
   m_current_style = selected_style::EDITOR_STYLE;
-  m_containers[(int) selected_style::EDITOR_STYLE]->init (settings_arg);
   m_painter = nullptr;
+  m_is_selected_fill = true;
 }
 
-void style_controller::update_stroke_width (double value)
+const item_paint_style *style_controller::active_style () const
 {
-  active_container ()->get_stroke_style ()->update_width (value);
-  apply_changes ();
-};
-
-void style_controller::update_stroke_miterlimit (double value)
-{
-  active_container ()->get_stroke_style ()->update_miterlimit (value);
-  apply_changes ();
-};
-
-void style_controller::update_linejoin (Qt::PenJoinStyle value)
-{
-  active_container ()->get_stroke_style ()->update_linejoin (value);
-  apply_changes ();
-};
-
-void style_controller::update_linecap (Qt::PenCapStyle value)
-{
-  active_container ()->get_stroke_style ()->update_linecap (value);
-  apply_changes ();
-};
-
-style_container *style_controller::active_container ()
-{
-  return m_containers[(int) m_current_style];
-}
-
-const style_container *style_controller::active_container () const
-{
-  return m_containers[(int) m_current_style];
+  return &m_styles[(int) m_current_style];
 }
 
 void style_controller::set_painter (svg_painter *painter)
 {
-  m_containers[(int) selected_style::SELECTED_STYLE]->init (painter->selection ());
-  CONNECT (painter->selection (), &items_selection::selection_changed, this, &style_controller::selection_or_items_changed);
-
+  CONNECT (painter, &svg_painter::selection_changed_signal, this, &style_controller::selection_or_items_changed);
   CONNECT (painter, &svg_painter::color_picked, this, &style_controller::update_from_color_picker);
   m_painter = painter;
 }
 
-void style_controller::switch_to (selected_style current_style_arg)
-{
-  m_current_style = current_style_arg;
-  selection_or_items_changed ();
-}
-
-void style_controller::update_fill_color_momentarily ()
-{
-  active_container ()->get_fill_style ()->apply_color_to_selection ();
-  if (m_painter)
-  {
-    m_painter->document ()->redraw ();
-  }
-}
-
-void style_controller::update_stroke_color_momentarily ()
-{
-  active_container ()->get_stroke_style ()->apply_color_to_selection ();
-  if (m_painter)
-  {
-    m_painter->document ()->redraw ();
-  }
-}
-
-void style_controller::apply_changes ()
-{
-  if (m_painter)
-    m_painter->document ()->apply_changes ("Change Style");
-}
-
 void style_controller::selection_or_items_changed ()
 {
-  active_container ()->get_fill_style ()->update_from_selection ();
-  active_container ()->get_stroke_style ()->update_from_selection ();
-  emit target_items_changed ();
+  item_paint_style &style = m_styles[(int) m_current_style];
+  style.fill ().create_from_selection (m_painter->selection (), true);
+  style.stroke ().create_from_selection (m_painter->selection (), false);
+  style.stroke_cfg ().create_from_selection (m_painter->selection ());
+  send_items_changed ();
 }
 
 void style_controller::update_from_color_picker (const QColor &color)
 {
-  active_container ()->get_fill_style ()->set_color (color);
-  active_container ()->get_fill_style ()->apply_color_to_selection ();
-  apply_changes ();
-  emit target_items_changed ();
+  active_server ()->set_color (color);
+  active_server ()->apply_to_selection (m_painter->selection (), true);
+  m_painter->document ()->apply_changes ("Pick Color");
+  send_items_changed ();
 }
 
-double style_controller::stroke_width () const
+const item_paint_server * style_controller::active_server () const
 {
-  return active_container ()->get_stroke_style ()->stroke_width ();
+  return m_is_selected_fill ? &active_style ()->fill () : &active_style ()->stroke ();
 }
 
-double style_controller::stroke_miterlimit () const
+item_paint_server * style_controller::active_server ()
 {
-  return active_container ()->get_stroke_style ()->stroke_miterlimit ();
+  return m_is_selected_fill ? &m_styles[(int) m_current_style].fill () : &m_styles[(int) m_current_style].stroke ();
 }
 
-Qt::PenJoinStyle style_controller::stroke_linejoin () const
+QVariant style_controller::data (gui_model_role_t role) const
 {
-  return active_container ()->get_stroke_style ()->stroke_linejoin ();
+  const item_paint_style *style = active_style ();
+  const stroke_config &stroke_cfg = style->stroke_cfg ();
+  const item_paint_server *cur_server = active_server ();
+
+  switch (role)
+    {
+    case gui_model_role_t::STROKE_WIDTH: return stroke_cfg.width ();
+    case gui_model_role_t::STROKE_MITER: return stroke_cfg.miterlimit ();
+    case gui_model_role_t::LINECAP: return stroke_cfg.linecap ();
+    case gui_model_role_t::LINEJOIN: return stroke_cfg.linejoin ();
+    case gui_model_role_t::CURRENT_COLOR: return cur_server->color ();
+    case gui_model_role_t::CURRENT_COLOR_TEMP: return cur_server->color ();
+    case gui_model_role_t::IS_SELECTED_FILL: return m_is_selected_fill;
+    case gui_model_role_t::FILL_COLOR: return QVariant::fromValue (style->fill ());
+    case gui_model_role_t::STROKE_COLOR: return QVariant::fromValue (style->stroke ());
+    }
+
+  return QVariant ();
 }
 
-Qt::PenCapStyle style_controller::stroke_linecap () const
+void style_controller::set_model_data (const std::map<gui_model_role_t, QVariant> &data_map)
 {
-  return active_container ()->get_stroke_style ()->stroke_linecap ();
+  if (data_map.empty () || !m_painter)
+    return;
+
+  item_paint_style &style = m_styles[(int) m_current_style];
+  item_paint_server *cur_server = active_server ();
+  stroke_config &stroke_cfg = style.stroke_cfg ();
+  bool need_apply = std::find_if (data_map.begin (), data_map.end (),
+                                  [] (const std::pair<gui_model_role_t, QVariant> &val)
+                                       { return    val.first != gui_model_role_t::CURRENT_COLOR_TEMP
+                                                && val.first != gui_model_role_t::IS_SELECTED_FILL; }) != data_map.end ();
+
+  bool stroke_changed = false;
+  bool color_changed = false;
+  std::set<gui_model_role_t> update_set = get_change_set (data_map);
+  std::set<gui_model_role_t> all_items = all_items_set ();
+
+  for (auto &&data_pair : data_map)
+    {
+      QVariant value = data_pair.second;
+      switch (data_pair.first)
+        {
+        case gui_model_role_t::STROKE_WIDTH: stroke_cfg.set_width (value.toDouble ()); stroke_changed = true; break;
+        case gui_model_role_t::STROKE_MITER: stroke_cfg.set_miterlimit (value.toDouble ()); stroke_changed = true; break;
+        case gui_model_role_t::LINECAP: stroke_cfg.set_linecap (value.value<Qt::PenCapStyle> ()); stroke_changed = true; break;
+        case gui_model_role_t::LINEJOIN: stroke_cfg.set_linejoin (value.value<Qt::PenJoinStyle> ()); stroke_changed = true; break;
+        case gui_model_role_t::CURRENT_COLOR: cur_server->set_color (value.value<QColor> ()); color_changed = true; break;
+        case gui_model_role_t::CURRENT_COLOR_TEMP: cur_server->set_color (value.value<QColor> ()); color_changed = true; break;
+        case gui_model_role_t::IS_SELECTED_FILL: m_is_selected_fill = value.toBool (); update_set.insert (all_items.begin (), all_items.end ()); break;
+        case gui_model_role_t::FILL_COLOR: style.fill () = value.value<item_paint_server> (); color_changed = true; break;
+        case gui_model_role_t::STROKE_COLOR: style.stroke () = value.value<item_paint_server> (); color_changed = true; break;
+        }
+    }
+
+  items_selection *selection = m_painter->selection ();
+  if (stroke_changed)
+    stroke_cfg.apply_to_selection (selection);
+
+  if (color_changed)
+    {
+      cur_server->apply_to_selection (selection, is_selected_fill ());
+      update_set.insert (gui_model_role_t::CURRENT_COLOR);
+      update_set.insert (gui_model_role_t::CURRENT_COLOR_TEMP);
+      update_set.insert (gui_model_role_t::FILL_COLOR);
+      update_set.insert (gui_model_role_t::STROKE_COLOR);
+    }
+
+  if (need_apply)
+    m_painter->document ()->apply_changes ("Change Style");
+
+  m_painter->document ()->redraw ();
+  emit data_changed (update_set);
 }
+
+void style_controller::send_items_changed ()
+{
+  emit data_changed (all_items_set ());
+}
+
+std::set<gui_model_role_t> style_controller::all_items_set () const
+{
+  using g = gui_model_role_t;
+  return {g::STROKE_WIDTH, g::STROKE_MITER, g::LINECAP, g::LINEJOIN, g::CURRENT_COLOR, g::CURRENT_COLOR_TEMP, g::FILL_COLOR, g::STROKE_COLOR};
+}
+

@@ -99,6 +99,14 @@ void items_selection::remove_unavailable_items ()
   emit selection_changed ();
 }
 
+abstract_svg_item * items_selection::single_item () const
+{
+  if (count () != 1)
+    return nullptr;
+
+  return m_container->get_item (*m_selection.begin ());
+}
+
 abstract_svg_item *items_selection::selection_iterator::operator* ()
 {
   return m_container->get_item (*m_it);

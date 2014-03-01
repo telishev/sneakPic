@@ -35,26 +35,25 @@ class color_selector : public QWidget
 {
   Q_OBJECT
 protected:
-  QColor *m_color;
-  static const int BORDER_WIDTH = 1;
-  QColor placeholder_color;
+  QColor m_color;
 public:
-  color_selector (QWidget *parent, QColor *color);
-  void set_color (QColor *color);
+  color_selector (QWidget *parent);
+  QColor color () const { return m_color; }
+
 protected:
   void draw_checkerboard (QPainter &painter);
   void draw_border (QPainter &painter);
   int get_param_value_by_type (color_single_selector_type type);
-  void set_param_by_type (QColor *color, int value, color_single_selector_type type);
+  QColor change_param_by_type (QColor color, int value, color_single_selector_type type);
   int get_needed_number_of_points_for_gradient_by_type (color_single_selector_type type);
-  void do_color_preprocessing_by_type (QColor &color, color_single_selector_type type);
-  void do_color_preprocessing_by_two_types (QColor &color, color_single_selector_type first_type, color_single_selector_type second_type);
+  QColor do_color_preprocessing_by_type (QColor color, color_single_selector_type type);
+  QColor do_color_preprocessing_by_two_types (QColor color, color_single_selector_type first_type, color_single_selector_type second_type);
   int get_param_maximum_by_type (color_single_selector_type type);
   bool is_selector_type_alpha (color_single_selector_type type);
 public slots:
-  virtual void color_changed_externally ();
+  virtual void set_color (QColor color);
 signals:
-  void color_changed_momentarily ();
-  void color_changing_finished ();
+  void color_changed_momentarily (QColor color);
+  void color_changing_finished (QColor color);
 };
 #endif // COLOR_SELECTORS_H

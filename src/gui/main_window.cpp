@@ -36,6 +36,8 @@
 
 #include "dock_widget_builder.h"
 #include "renderer/svg_painter.h"
+#include "actions_applier.h"
+#include "fill_stroke_widget.h"
 
 #define RECENT_FILES_NUMBER 10
 
@@ -49,8 +51,8 @@ main_window::main_window ()
   m_settings->load ();
   m_actions = new gui_actions (m_settings->shortcuts_cfg (), [&] (gui_action_id id) { return action_triggered (id); }, this);
   m_dock_widget_builder = new dock_widget_builder (this);
-  m_tools_builder = new tools_widget_builder (m_actions, m_dock_widget_builder);
   m_style_controller = new style_controller (m_settings.get ());
+  m_tools_builder = new tools_widget_builder (m_actions, m_dock_widget_builder, m_style_controller);
   m_style_widget_handler = new style_widget_handler (m_dock_widget_builder, m_style_controller);
   m_layers_widget_handler.reset (new layers_widget_handler (m_dock_widget_builder));
   m_last_saved_position = 0;
@@ -59,9 +61,6 @@ main_window::main_window ()
   CONNECT (m_recent_files_signal_mapper.get (), (void (QSignalMapper::*) (const QString&)) &QSignalMapper::mapped, this, &main_window::do_open_file);
 
   m_menu_builder = new menu_builder (menuBar (), m_actions, createPopupMenu ());
-
-  CONNECT (m_style_widget_handler, &style_widget_handler::stroke_color_changed, m_tools_builder, &tools_widget_builder::update_stroke_color);
-  CONNECT (m_style_widget_handler, &style_widget_handler::fill_color_changed, m_tools_builder, &tools_widget_builder::update_fill_color);
 
   update_window_title ();
   load_recent_menu ();
@@ -229,7 +228,7 @@ void main_window::do_open_file (const QString filename)
   FREE (m_document);
   DO_ON_EXIT (update_window_title ());
 
-  m_document = new gui_document (m_settings.get (), m_actions);
+  m_document = new gui_document (m_settings.get (), m_actions, m_style_controller);
   setWindowTitle ("Loading...");
   if (!m_document->open_file (filename))
     {
@@ -289,7 +288,7 @@ bool main_window::create_new_document ()
 
   FREE (m_document);
   DO_ON_EXIT (update_window_title ());
-  m_document = new gui_document (m_settings.get (), m_actions);
+  m_document = new gui_document (m_settings.get (), m_actions, m_style_controller);
   if (!m_document->create_new_document ())
     return false;
 

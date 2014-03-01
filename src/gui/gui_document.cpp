@@ -27,8 +27,9 @@
 #include "svg/undo/undo_handler.h"
 
 
-gui_document::gui_document (settings_t *settings, gui_actions *actions)
+gui_document::gui_document (settings_t *settings, gui_actions *actions, style_controller *controller)
 {
+  m_style_controller = controller;
   m_actions = actions;
   m_painter = nullptr;
   m_settings = settings;
@@ -81,7 +82,7 @@ bool gui_document::save_file (const QString &filename)
 svg_painter *gui_document::create_painter (canvas_widget_t *widget)
 {
   FREE (m_painter);
-  m_painter = new svg_painter (widget, m_cache, m_queue, m_doc, m_settings);
+  m_painter = new svg_painter (widget, m_cache, m_queue, m_doc, m_settings, m_style_controller);
   m_copy_paste_handler.reset (new copy_paste_handler (m_painter));
   m_tools_container->update_tools (m_painter);
   m_painter->set_current_tool (m_tools_container->current_tool ());

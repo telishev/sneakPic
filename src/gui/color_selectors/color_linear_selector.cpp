@@ -3,9 +3,10 @@
 #include <QMouseEvent>
 #include <QPainter>
 
-static int SLIDER_WIDTH = 2;
-static int COLOR_LINEAR_SELECTOR_DEFAULT_LENGTH = 175;
-static int COLOR_LINEAR_SELECTOR_DEFAULT_WIDTH = 22;
+static const int SLIDER_WIDTH = 2;
+static const int COLOR_LINEAR_SELECTOR_DEFAULT_LENGTH = 175;
+static const int COLOR_LINEAR_SELECTOR_DEFAULT_WIDTH = 22;
+static const int BORDER_WIDTH = 1;
 
 void color_linear_selector::paintEvent (QPaintEvent * /*event*/)
 {
@@ -18,8 +19,8 @@ void color_linear_selector::paintEvent (QPaintEvent * /*event*/)
   draw_border (painter);
 }
 
-color_linear_selector::color_linear_selector (QWidget *parent, Qt::Orientation orientation, color_single_selector_type type, QColor *controlled_color)
-  : color_selector (parent, controlled_color)
+color_linear_selector::color_linear_selector (QWidget *parent, Qt::Orientation orientation, color_single_selector_type type)
+  : color_selector (parent)
 {
   m_orientation = orientation;
   m_type = type;
@@ -86,7 +87,7 @@ int color_linear_selector::get_controlled_param_maximum ()
 
 void color_linear_selector::set_color_from_pos (QPoint pos)
 {
-  set_controlled_param (m_color, (int) ((get_controlled_param_maximum ()) * get_pos (pos) / get_controlled_length ()));
+  m_color = change_param_for_control (m_color, (int) ((get_controlled_param_maximum ()) * get_pos (pos) / get_controlled_length ()));
 }
 
 int color_linear_selector::get_controlled_param_value ()
@@ -94,9 +95,9 @@ int color_linear_selector::get_controlled_param_value ()
   return get_param_value_by_type (m_type);
 }
 
-void color_linear_selector::set_controlled_param (QColor *color, int value)
+QColor color_linear_selector::change_param_for_control (QColor color, int value)
 {
-  set_param_by_type (color, value, m_type);
+  return change_param_by_type (color, value, m_type);
 }
 
 QSize color_linear_selector::sizeHint () const
@@ -136,14 +137,14 @@ void color_linear_selector::mouseReleaseEvent (QMouseEvent *event)
     {
       set_color_from_cursor_pos (event);
       m_drag_started = false;
-      emit color_changing_finished ();
+      emit color_changing_finished (m_color);
     }
 }
 
 void color_linear_selector::set_color_from_cursor_pos (QMouseEvent *event)
 {
   set_color_from_pos (event->pos ());
-  emit color_changed_momentarily ();
+  emit color_changed_momentarily (m_color);
   this->update ();
 }
 
@@ -168,10 +169,8 @@ void color_linear_selector::draw_gradient (QPainter &painter)
   int maximum = get_controlled_param_maximum ();
   for (int i = 0; i < needed_number_of_points; i++)
     {
-      QColor color = m_color ? *m_color : placeholder_color;
-      do_color_preprocessing (color);
       double fraction  = (double) i / (needed_number_of_points - 1);
-      set_controlled_param (&color, (int) (fraction * maximum));
+      QColor color = change_param_for_control (do_color_preprocessing (m_color), (int) (fraction * maximum));
       switch (m_orientation)
         {
         case Qt::Horizontal:
@@ -213,9 +212,9 @@ void color_linear_selector::draw_controller (QPainter &painter)
   painter.setBrush (QBrush ());
 }
 
-void color_linear_selector::do_color_preprocessing (QColor &color)
+QColor color_linear_selector::do_color_preprocessing (QColor color)
 {
-  do_color_preprocessing_by_type (color, m_type);
+  return do_color_preprocessing_by_type (color, m_type);
 }
 
 

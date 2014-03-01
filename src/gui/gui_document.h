@@ -18,6 +18,7 @@ class canvas_widget_t;
 class gui_actions;
 class actions_applier;
 class copy_paste_handler;
+class style_controller;
 
 enum class gui_action_id;
 
@@ -37,9 +38,10 @@ class gui_document : public QObject
   tools_container *m_tools_container;
   actions_applier *m_actions_applier;
   unique_ptr<copy_paste_handler> m_copy_paste_handler;
+  style_controller *m_style_controller;
 
 public:
-  gui_document (settings_t *settings, gui_actions *actions);
+  gui_document (settings_t *settings, gui_actions *actions, style_controller *controller);
   ~gui_document ();
 
   svg_painter *create_painter (canvas_widget_t *widget);

@@ -5,7 +5,7 @@
 #include <QHBoxLayout>
 #include <QSpinBox>
 
-color_spinbox::color_spinbox (QWidget *parent, color_single_selector_type type, QColor *color) : color_selector (parent, color)
+color_spinbox::color_spinbox (QWidget *parent, color_single_selector_type type) : color_selector (parent)
 {
   m_layout = new QHBoxLayout ();
   m_type = type;
@@ -24,17 +24,18 @@ color_spinbox::~color_spinbox ()
 {
 }
 
-void color_spinbox::color_changed_externally ()
+void color_spinbox::set_color (QColor color)
 {
   TEMPORARY_DISCONNECT (m_value_changed_connection);
+  m_color = color;
   m_spin_box->setValue (get_param_value_by_type (m_type));
 }
 
 void color_spinbox::spinbox_value_changed (int new_value)
 {
-  set_param_by_type (m_color, new_value, m_type);
-  emit color_changing_finished ();
-  emit color_changed_momentarily ();
+  change_param_by_type (m_color, new_value, m_type);
+  emit color_changing_finished (m_color);
+  emit color_changed_momentarily (m_color);
 }
 
 
