@@ -16,7 +16,7 @@ QVariant layers_tree_model::data (const QModelIndex &index, int role /*= Qt::Dis
         {
         case Qt::DisplayRole:
         case Qt::EditRole:
-          return index.row () < m_layers_handler->layers_count ()  ? m_layers_handler->get_layer_name (index.row ()) : "(No Layer)";
+          return m_layers_handler->get_layer_name (index.row ());
         }
       return QVariant ();
     case 0:
@@ -25,7 +25,7 @@ QVariant layers_tree_model::data (const QModelIndex &index, int role /*= Qt::Dis
       case Qt::DisplayRole:
         return "";
       case Qt::DecorationRole:
-        return index.row () < m_layers_handler->layers_count ()  ? (m_layers_handler->is_layer_visible (index.row ()) ? eye_open_icon : eye_closed_icon) : QVariant ();
+        return m_layers_handler->is_layer_visible (index.row ()) ? eye_open_icon : eye_closed_icon;
       }
       return QVariant ();
     }
@@ -51,7 +51,7 @@ int layers_tree_model::rowCount (const QModelIndex &parent /*= QModelIndex()*/) 
     return 0;
 
   if (parent == QModelIndex ())
-    return (int) m_layers_handler->layers_count () + 1;
+    return (int) m_layers_handler->layers_count ();
   else
     return 0;
 }
@@ -68,7 +68,7 @@ int layers_tree_model::columnCount (const QModelIndex &/*parent = QModelIndex()*
 
 QModelIndex layers_tree_model::index_for_layer (int layer_num) const
 {
-  return layer_num != -1 ? index (layer_num, 0) : index (m_layers_handler->layers_count (), 0);
+  return index (layer_num, 0);
 }
 
 void layers_tree_model::set_layers_handler (layers_handler *handler)
@@ -102,8 +102,8 @@ Qt::ItemFlags layers_tree_model::flags (const QModelIndex &index) const
   switch (index.column ())
   {
     case 1:
-      if (index.row () != rowCount () - 1)
-         flags |= (Qt::ItemIsEditable | Qt::ItemIsDragEnabled);
+      flags |= (Qt::ItemIsEditable | Qt::ItemIsDragEnabled);
+      break;
   }
   return flags;
 }
@@ -130,13 +130,13 @@ QMimeData *layers_tree_model::mimeData (const QModelIndexList &indexes) const
 {
   // For our situation it's always 1 index, we need to pack row num
   QMimeData *data = new QMimeData ();
-  data->setData (format, QByteArray::number (indexes[0].row () < m_layers_handler->layers_count () ? indexes[0].row () :  -1));
+  data->setData (format, QByteArray::number (indexes[0].row ()));
   return data;
 }
 
-bool layers_tree_model::canDropMimeData (const QMimeData * /*data*/, Qt::DropAction /*action*/, int row, int /*column*/, const QModelIndex &/*parent*/) const
+bool layers_tree_model::canDropMimeData (const QMimeData * /*data*/, Qt::DropAction /*action*/, int /*row*/, int /*column*/, const QModelIndex &/*parent*/) const
 {
-  return (row < rowCount () - 1);
+  return true;
 }
 
 QStringList layers_tree_model::mimeTypes () const

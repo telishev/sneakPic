@@ -72,7 +72,7 @@ void layers_widget_handler::set_layers_handler (layers_handler *handler)
   m_layers_model->set_layers_handler (handler);
   CONNECT (m_handler, &layers_handler::layers_changed, this, &layers_widget_handler::update_active_layer);
   CONNECT (m_handler, &layers_handler::active_layer_changed, this, &layers_widget_handler::update_opacity_slider);
-  CONNECT (m_add_layer_btn, &QToolButton::clicked, m_handler, &layers_handler::add_new_layer);
+  CONNECT (m_add_layer_btn, &QToolButton::clicked, m_handler, &layers_handler::add_new_layer_slot);
   CONNECT (m_remove_layer_btn, &QToolButton::clicked, m_handler, &layers_handler::remove_active_layer);
   update_active_layer ();
   update_opacity_slider ();

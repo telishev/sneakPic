@@ -19,6 +19,29 @@ layers_handler::layers_handler (svg_document *document)
   m_document = document;
   CONNECT (m_document, &svg_document::undo_redo_done, this, &layers_handler::on_undo_redo_done);
   update_layer_list (); // from items
+  if (layers_count () == 0)
+    add_new_layer ("Canvas");
+
+  auto root = m_document->root ();
+  string attribute_name = svg_attribute_layer_name ().type_name ();
+  auto closest_layer = get_layer_item (0); // There should be at least "Canvas" layer
+  vector <pair <abstract_svg_item *, abstract_svg_item *> > move_child_to_layer;
+
+  for (auto && child : *root)
+    {
+      if (!child->has_attribute (attribute_name))
+        {
+          move_child_to_layer.push_back ({child, closest_layer});
+        }
+      else
+        closest_layer = child;
+    }
+
+  for (auto && action : move_child_to_layer)
+    {
+      root->make_orphan (action.first);
+      action.second->adopt_orphan (action.first);
+    }
 }
 
 void layers_handler::on_undo_redo_done ()
@@ -56,34 +79,38 @@ void layers_handler::update_layer_list ()
   emit layers_changed ();
 }
 
-void layers_handler::add_new_layer ()
+void layers_handler::add_new_layer (QString name)
 {
-  auto *layer_item = m_document->create_new_svg_item<svg_item_group> ();
+  if (name.isNull ())
+  {
+    QRegExp re ("^Layer (\\d+)$");
+    set<int> numbers;
 
-  QRegExp re ("^Layer (\\d+)$");
-  set<int> numbers;
-
-  for (auto && l : *this)
+    for (auto && l : *this)
     {
       bool ok;
       if (re.exactMatch (l->get_computed_attribute<svg_attribute_layer_name> ()->value ()))
-        {
-          int num = re.capturedTexts ()[1].toInt (&ok);
-          if (ok)
-            numbers.insert (num);
-        }
+      {
+        int num = re.capturedTexts ()[1].toInt (&ok);
+        if (ok)
+          numbers.insert (num);
+      }
     }
-  int prev_num = 0, free_num = [&]() { if (numbers.empty ()) return 1; auto f = numbers.end (); f--; return *f + 1; }();
-  for (auto && x : numbers)
+    int prev_num = 0, free_num = [&]() { if (numbers.empty ()) return 1; auto f = numbers.end (); f--; return *f + 1; }();
+    for (auto && x : numbers)
     {
       if (x - prev_num > 1)
-        {
-          free_num = prev_num + 1;
-          break;
-        }
+      {
+        free_num = prev_num + 1;
+        break;
+      }
       prev_num = x;
     }
-  layer_item->get_attribute_for_change<svg_attribute_layer_name> ()->set_value (QString ("Layer %1").arg (free_num));
+    name = QString ("Layer %1").arg (free_num);
+  }
+
+  auto *layer_item = m_document->create_new_svg_item<svg_item_group> ();
+  layer_item->get_attribute_for_change<svg_attribute_layer_name> ()->set_value (name);
   m_document->root ()->push_back (layer_item);
   auto active_layer_item = get_active_layer_item ();
   if (active_layer_item != m_document->root ())
@@ -92,26 +119,20 @@ void layers_handler::add_new_layer ()
     m_document->root ()->move_child (0, layer_item);
 
   m_layers_container.insert (m_layers_container.begin () + (m_active_layer_index >= 0 ? m_active_layer_index : m_layers_container.size ()), layer_item->name ());
-  if (m_active_layer_index == -1)
-    m_active_layer_index = (int) m_layers_container.size () - 1;
 
   update_attribute_by_active_layer_index ();
 
   emit layers_changed ();
-
-  m_document->apply_changes ("Add New Layer");
 };
 
 void layers_handler::remove_active_layer ()
 {
-  auto item = get_active_layer_item ();
-  if (item == m_document->root ())
+  if (layers_count ())
     return;
 
+  auto item = get_active_layer_item ();
   item->parent ()->remove_child (item);
   m_layers_container.erase (m_layers_container.begin () + m_active_layer_index);
-  if (m_active_layer_index >= m_layers_container.size ())
-    m_active_layer_index = -1;
   update_attribute_by_active_layer_index ();
   emit layers_changed ();
   m_document->apply_changes ("Remove Active Layer");
@@ -194,8 +215,6 @@ int layers_handler::layers_count ()
 void layers_handler::toggle_layer_visibility (int layer_index)
 {
   auto item = get_layer_item (layer_index);
-  if (item == m_document->root ())
-    return;
 
   {
     auto attr = item->get_attribute_for_change<svg_attribute_visibility> ();
@@ -211,16 +230,8 @@ void layers_handler::toggle_layer_visibility (int layer_index)
 void layers_handler::set_active_layer (int new_index)
 {
   auto item_container = m_document->item_container ();
-  if (new_index < m_layers_container.size ())
-  {
-    m_active_layer_index = new_index;
-    item_container->get_root ()->get_attribute_for_change<svg_attribute_active_layer> ()->set_value ((*(begin () + new_index))->get_computed_attribute<svg_attribute_layer_name> ()->value ());
-  }
-  else
-  {
-    m_active_layer_index = -1;
-    item_container->get_root ()->remove_attribute (item_container->get_root ()->get_computed_attribute<svg_attribute_layer_name> ());
-  }
+  m_active_layer_index = new_index;
+  item_container->get_root ()->get_attribute_for_change<svg_attribute_active_layer> ()->set_value ((*(begin () + new_index))->get_computed_attribute<svg_attribute_layer_name> ()->value ());
   m_document->apply_changes ("Change Active Layer");
   emit active_layer_changed ();
 }
@@ -240,19 +251,14 @@ void layers_handler::update_active_layer_index_by_attribute ()
     return active_layer_name == l->get_computed_attribute<svg_attribute_layer_name> ()->value ();
   })
     : end ();
-  m_active_layer_index = (active_layer != end ()) ? active_layer - begin () : -1;
+  m_active_layer_index = active_layer - begin ();
 }
 
 void layers_handler::update_attribute_by_active_layer_index ()
 {
   auto item_container = m_document->item_container ();
-  if (m_active_layer_index != -1)
-    {
-      auto attr = item_container->get_root ()->get_attribute_for_change<svg_attribute_active_layer> ();
-      attr->set_value (get_active_layer_item ()->get_computed_attribute<svg_attribute_layer_name> ()->value ());
-    }
-  else
-    item_container->get_root ()->remove_attribute (item_container->get_root ()->get_computed_attribute <svg_attribute_active_layer>());
+  auto attr = item_container->get_root ()->get_attribute_for_change<svg_attribute_active_layer> ();
+  attr->set_value (get_active_layer_item ()->get_computed_attribute<svg_attribute_layer_name> ()->value ());
 }
 
 bool layers_handler::is_layer_visible (int index)
@@ -311,4 +317,10 @@ void layers_handler::set_active_layer_opacity (int value)
   auto item = get_active_layer_item ();
   item->get_attribute_for_change<svg_attribute_opacity> ()->set_value ((double) value / 100.0);
   m_document->apply_changes ("Change Layer Opacity");
+}
+
+void layers_handler::add_new_layer_slot ()
+{
+  add_new_layer ();
+  m_document->apply_changes ("Add New Layer");
 }

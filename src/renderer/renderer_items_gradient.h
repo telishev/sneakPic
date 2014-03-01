@@ -15,7 +15,7 @@ enum class gradient_units;
 class renderer_base_gradient_item : public renderer_paint_server
 {
 protected:
-  vector<std::pair<double, QColor>> m_stops;
+  vector<pair<double, QColor>> m_stops;
   spread_method m_spread;
   gradient_units m_units;
   QTransform m_transform;

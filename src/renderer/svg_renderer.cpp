@@ -174,7 +174,7 @@ void svg_renderer::update_drawing (const QTransform &transform, const QRectF &re
 
   canvas.drawColor (SK_ColorTRANSPARENT, SkXfermode::kSrc_Mode);
 
-  std::pair<render_cache_id, render_cache_id> it_pair = render_cache_id::get_id_for_pixel_rect (real_transform, rect_to_draw, cache_object_type);
+  pair<render_cache_id, render_cache_id> it_pair = render_cache_id::get_id_for_pixel_rect (real_transform, rect_to_draw, cache_object_type);
 
   for (int x = it_pair.first.x (); x <= it_pair.second.x (); x++)
     for (int y = it_pair.first.y (); y <= it_pair.second.y (); y++)

@@ -88,7 +88,7 @@ void style_controller::set_model_data (const std::map<gui_model_role_t, QVariant
   item_paint_server *cur_server = active_server ();
   stroke_config &stroke_cfg = style.stroke_cfg ();
   bool need_apply = std::find_if (data_map.begin (), data_map.end (),
-                                  [] (const std::pair<gui_model_role_t, QVariant> &val)
+                                  [] (const pair<gui_model_role_t, QVariant> &val)
                                        { return    val.first != gui_model_role_t::CURRENT_COLOR_TEMP
                                                 && val.first != gui_model_role_t::IS_SELECTED_FILL; }) != data_map.end ();
 

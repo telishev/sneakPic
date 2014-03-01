@@ -10,11 +10,12 @@
 #include <functional>
 #include <set>
 
-#include "common/common_algorithms.h"
-
 using std::unique_ptr;
 using std::map;
 using std::vector;
 using std::string;
 using std::set;
 using std::deque;
+using std::pair;
+
+#include "common/common_algorithms.h"

@@ -16,7 +16,7 @@ class pen_tool : public abstract_tool
 {
   Q_OBJECT
 
-  typedef std::pair<svg_item_path *, svg_path_geom_iterator> snap_point_t;
+  typedef pair<svg_item_path *, svg_path_geom_iterator> snap_point_t;
   unique_ptr<path_preview_renderer> m_preview_renderer;
   unique_ptr<path_preview_renderer> m_auxiliary_preview_renderer;
   unique_ptr<path_control_point_renderer> m_left_cp_renderer;

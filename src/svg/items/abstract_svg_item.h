@@ -27,6 +27,7 @@ class svg_item_defs;
 class svg_graphics_item;
 class abstract_attribute_pointer;
 class svg_item_observer;
+class undo_handler;
 
 enum class svg_namespaces_t;
 enum class svg_item_type;
@@ -42,7 +43,7 @@ class abstract_svg_item : public undoable
   string m_original_id;
   string m_own_id;
 
-  vector<int> *m_children;
+  vector<int> m_children;
   int m_parent;
 
   vector<int> *m_observers; ///< observers that should be informed on some changes
@@ -123,6 +124,30 @@ public:
 
   void create_unique_name ();
 
+  class iterator : public std::iterator<std::forward_iterator_tag, abstract_svg_item *>
+  {
+    vector<int>::iterator m_it;
+    undo_handler *m_undo_handler;
+
+  private:
+    iterator (vector<int>::iterator it, undo_handler *undo_handler_arg) { m_it = it; m_undo_handler = undo_handler_arg; }
+    iterator () {  }
+
+  public:
+    abstract_svg_item *operator* ();
+    bool operator != (const iterator &other) const { return m_it != other.m_it; };
+    bool operator == (const iterator &other) const { return m_it == other.m_it; };
+    iterator &operator++() { ++this->m_it; return *this; };
+
+    friend class abstract_svg_item;
+  };
+
+  iterator begin ();
+  iterator end ();
+
+  void make_orphan (abstract_svg_item *child);  // WARNING: These function does not generate proper undo, so you'd better use it in the stage before undo has any sense.
+  void adopt_orphan (abstract_svg_item *child); // --- / ---
+
 protected:
   virtual bool process_item_after_read () { return true; }
 
@@ -151,6 +176,7 @@ private:
   void send_to_listeners (std::function< void (svg_item_observer *)> func);
 
   void prepare_to_remove ();
+
   friend class cloned_item_observer;
   friend class abstract_attribute_pointer;
 };

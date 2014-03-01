@@ -57,10 +57,11 @@ private:
   void update_layer_list ();
   void update_active_layer_index_by_attribute();
   void update_attribute_by_active_layer_index ();
+  void add_new_layer (QString name = QString ());
 
 public slots:
   void set_active_layer (int new_index );
-  void add_new_layer ();
+  void add_new_layer_slot ();
   void remove_active_layer ();
 
 private slots:

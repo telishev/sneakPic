@@ -18,7 +18,7 @@ Iter std_rotate (Iter first, Iter middle, Iter last)
 }
 
 template<typename Iter>
-std::pair<Iter, Iter> slide (Iter begin, Iter end, Iter target)
+pair<Iter, Iter> slide (Iter begin, Iter end, Iter target)
 {
   if (target < begin) return std::make_pair (target, std_rotate (target, begin, end));
   if (end < target) return std::make_pair (std_rotate (begin, end, target), target);

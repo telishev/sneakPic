@@ -27,7 +27,7 @@ public:
   ~render_cache_id () {}
 
   static render_cache_id get_id_by_pixel_pos (double x_pos, double y_pos, const QTransform &transform, int object_type);
-  static std::pair<render_cache_id, render_cache_id> get_id_for_pixel_rect (const QTransform &transform, const QRectF &rect, int object_type);
+  static pair<render_cache_id, render_cache_id> get_id_for_pixel_rect (const QTransform &transform, const QRectF &rect, int object_type);
   QRectF pixel_rect (const QTransform &transform) const;
 
   int x () const { return m_x; }
