@@ -53,6 +53,7 @@ void style_widget_handler::update_on_tool_changed ()
       break;
     case gui_action_id::TOOL_RECTANGLE:
     case gui_action_id::TOOL_PEN:
+    case gui_action_id::TOOL_ELLIPSE:
       m_style_controller->set_current_style (selected_style::EDITOR_STYLE);
       break;
     default:

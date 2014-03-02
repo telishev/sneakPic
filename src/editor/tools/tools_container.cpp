@@ -4,6 +4,7 @@
 
 #include "common/memory_deallocation.h"
 
+#include "editor/tools/ellipse_tool.h"
 #include "editor/tools/selector_tool.h"
 #include "editor/tools/rectangle_tool.h"
 #include "editor/tools/pen_tool.h"
@@ -105,6 +106,7 @@ void tools_container::init_tools_info ()
   add_info<selector_tool> (gui_action_id::TOOL_SELECTOR);
   add_info<path_editor_tool> (gui_action_id::TOOL_PATH_EDITOR);
   add_info<rectangle_tool> (gui_action_id::TOOL_RECTANGLE);
+  add_info<ellipse_tool> (gui_action_id::TOOL_ELLIPSE);
   add_info<pen_tool> (gui_action_id::TOOL_PEN);
 }
 

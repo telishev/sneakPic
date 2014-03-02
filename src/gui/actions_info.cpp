@@ -41,6 +41,7 @@ actions_info::actions_info ()
   add_action (A::TOOL_SELECTOR, "Select Objects", QKeySequence (), QIcon (":/cursor.png"));
   add_action (A::TOOL_PATH_EDITOR, "Edit Paths by Nodes", QKeySequence (), QIcon (":/cursor.png"));
   add_action (A::TOOL_RECTANGLE, "Create Rectangles", QKeySequence (), QIcon (":/rectangle.png"));
+  add_action (A::TOOL_ELLIPSE, "Create Ellipses", QKeySequence (), QIcon (":/ellipse.png"));
   add_action (A::TOOL_PEN, "Create Bezier Curves", QKeySequence (), QIcon (":/pen.png"));
 
   /// Other

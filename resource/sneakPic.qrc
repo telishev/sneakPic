@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>cursor.png</file>
+        <file>ellipse.png</file>
         <file>eye_closed.png</file>
         <file>eye_open.png</file>
         <file>linecap_butt.png</file>
