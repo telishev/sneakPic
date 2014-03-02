@@ -20,18 +20,6 @@ gui_model_updater::~gui_model_updater ()
   m_model->m_changes_counter--;
   if (m_model->m_changes_counter == 0)
     {
-      auto &changes = m_model->m_current_changes;
-      for (auto it = changes.begin (); it != changes.end ();)
-        {
-          if (m_model->data (it->first) == it->second)
-            it = m_model->m_current_changes.erase (it);
-          else
-            ++it;
-        }
-
-      if (changes.empty ())
-        return;
-
       m_model->set_model_data (m_model->m_current_changes);
       m_model->m_current_changes.clear ();
     }
