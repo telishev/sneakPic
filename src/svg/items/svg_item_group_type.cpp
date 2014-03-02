@@ -25,7 +25,7 @@ void svg_item_group_type::update_group_item (renderer_item_group *renderer_item)
   const svg_attribute_opacity *opacity = get_computed_attribute<svg_attribute_opacity> ();
   const svg_attribute_display *display = get_computed_attribute<svg_attribute_display> ();
   const svg_item_clip_path *clip_path = get_computed_attribute<svg_attribute_clip_path> ()->clip_path (document ()->item_container ());
- 
+
   renderer_item->set_opacity (opacity->computed_opacity ());
   renderer_item->set_display (display->value ());
   renderer_item->set_transform (full_transform ());
@@ -52,7 +52,7 @@ void svg_item_group_type::update_bbox_impl ()
   m_bbox = bbox;
 }
 
-renderable_item *svg_item_group_type::create_outline_renderer () const 
+renderable_item *svg_item_group_type::create_outline_renderer () const
 {
   overlay_item_group *group_item = new overlay_item_group;
   for (int i = 0; i < children_count (); i++)

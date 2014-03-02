@@ -52,16 +52,16 @@ void layers_handler::on_undo_redo_done ()
 
 void layers_handler::update_layer_list ()
 {
-  auto item_container = m_document->item_container ();
-  auto it = item_container->begin ();
+  auto root = m_document->root ();
+  auto it = root->begin ();
   m_layers_container.clear ();
   // for now "layer" groups are determined by existence of "layer-name" attribute
 
   string attribute_name = svg_attribute_layer_name ().type_name ();
   while (true)
     {
-      it = find_if (it, item_container->end (), [&] (abstract_svg_item * item) { return item->has_attribute (attribute_name); });
-      if (it != item_container->end ())
+      it = find_if (it, root->end (), [&] (abstract_svg_item * item) { return item->has_attribute (attribute_name); });
+      if (it != root->end ())
         m_layers_container.push_back ((*it)->name ());
       else
         break;
@@ -217,11 +217,11 @@ void layers_handler::toggle_layer_visibility (int layer_index)
   auto item = get_layer_item (layer_index);
 
   {
-    auto attr = item->get_attribute_for_change<svg_attribute_visibility> ();
-    if (attr->value () == visibility::VISIBLE)
-      attr->set_value (visibility::HIDDEN);
+    auto attr = item->get_attribute_for_change<svg_attribute_display> ();
+    if (attr->value () != display::NONE)
+      attr->set_value (display::NONE);
     else
-      attr->set_value (visibility::VISIBLE);
+      attr->set_value (display::INLINE);
   }
 
   m_document->apply_changes ("Toggle Layer Visibility");
