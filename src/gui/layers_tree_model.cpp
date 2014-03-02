@@ -7,11 +7,20 @@
 
 #include "common/common_utils.h"
 
+enum class rowRole
+{
+  VISIBILITY = 0,
+  TITLE = 1,
+  OPACITY = 2,
+
+  COUNT
+};
+
 QVariant layers_tree_model::data (const QModelIndex &index, int role /*= Qt::DisplayRole*/) const
 {
-  switch (index.column ())
+  switch ((rowRole) index.column ())
     {
-    case 1:
+    case rowRole::TITLE:
       switch (role)
         {
         case Qt::DisplayRole:
@@ -19,7 +28,16 @@ QVariant layers_tree_model::data (const QModelIndex &index, int role /*= Qt::Dis
           return m_layers_handler->get_layer_name (index.row ());
         }
       return QVariant ();
-    case 0:
+    case rowRole::OPACITY:
+      switch (role)
+        {
+        case Qt::DisplayRole:
+        case Qt::EditRole:
+          return QString::number (m_layers_handler->get_layer_opacity (index.row ())) + "%";
+        }
+      return QVariant ();
+
+    case rowRole::VISIBILITY:
       switch (role)
       {
       case Qt::DisplayRole:
@@ -28,6 +46,8 @@ QVariant layers_tree_model::data (const QModelIndex &index, int role /*= Qt::Dis
         return m_layers_handler->is_layer_visible (index.row ()) ? eye_open_icon : eye_closed_icon;
       }
       return QVariant ();
+   case rowRole::COUNT:
+      return  QVariant ();
     }
   return QVariant ();
 }
@@ -63,7 +83,7 @@ QModelIndex layers_tree_model::index (int row, int column, const QModelIndex &pa
 
 int layers_tree_model::columnCount (const QModelIndex &/*parent = QModelIndex()*/) const
 {
-  return 2;
+  return (int) rowRole::COUNT;
 }
 
 QModelIndex layers_tree_model::index_for_layer (int layer_num) const
@@ -83,11 +103,13 @@ bool layers_tree_model::setData (const QModelIndex &index, const QVariant &value
   switch (role)
     {
     case Qt::EditRole:
-      switch (index.column ())
+      switch ((rowRole) index.column ())
         {
-        case 1:
+        case rowRole::TITLE:
           m_layers_handler->rename_layer (index.row (), value.toString ());
           return true;
+        default:
+          return false; // TODO: probably add editing of opacity
         }
     }
   return false;

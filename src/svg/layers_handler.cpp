@@ -263,7 +263,7 @@ void layers_handler::update_attribute_by_active_layer_index ()
 
 bool layers_handler::is_layer_visible (int index)
 {
-  return get_layer_item (index)->get_computed_attribute<svg_attribute_visibility> ()->value () == visibility::VISIBLE;
+  return get_layer_item (index)->get_computed_attribute<svg_attribute_display> ()->value () != display::NONE;
   return true;
 }
 
@@ -294,26 +294,19 @@ void layers_handler::move_layer (int from, int to)
   emit layers_changed ();
 }
 
-int layers_handler::is_layer_selected ()
+int layers_handler::get_layer_opacity (int index)
 {
-  return (get_active_layer_item () != m_document->root ());
+  auto item = get_layer_item (index);
+  return (int) (item->get_computed_attribute<svg_attribute_opacity> ()->value () * 100.0);
 }
-
 
 int layers_handler::get_active_layer_opacity ()
 {
-  if (!is_layer_selected ())
-    return 100;
-
-  auto item = get_active_layer_item ();
-  return (int) (item->get_computed_attribute<svg_attribute_opacity> ()->value () * 100.0);
+  return get_layer_opacity (m_active_layer_index);
 }
 
 void layers_handler::set_active_layer_opacity (int value)
 {
-  if (!is_layer_selected ())
-    return;
-
   auto item = get_active_layer_item ();
   item->get_attribute_for_change<svg_attribute_opacity> ()->set_value ((double) value / 100.0);
   m_document->apply_changes ("Change Layer Opacity");
