@@ -14,11 +14,12 @@
 #include <QTabWidget>
 #include <QWidget>
 #include "gui_model.h"
+#include "editor/style_controller.h"
 
-color_selector_widget_handler::color_selector_widget_handler (gui_model *model)
+color_selector_widget_handler::color_selector_widget_handler (gui_model<style_controller_role_t> *model)
 {
   m_model = model;
-  m_view.reset (new gui_widget_view (m_model));
+  m_view.reset (new gui_widget_view<style_controller_role_t> (m_model));
   m_color_selector_layout = qt_utils::create_common_vbox_layout (this);
   setSizePolicy (QSizePolicy::Preferred, QSizePolicy::Maximum);
   m_tab_widget = new QTabWidget;
@@ -170,6 +171,6 @@ void color_selector_widget_handler::create_cmyk_widget ()
 
 void color_selector_widget_handler::register_color_selector (color_selector *selector)
 {
-  m_view->add_gui_widget (gui_model_role_t::CURRENT_COLOR_TEMP, new color_selector_gui_widget (selector, true));
-  m_view->add_gui_widget (gui_model_role_t::CURRENT_COLOR, new color_selector_gui_widget (selector, false));
+  m_view->add_gui_widget (style_controller_role_t::CURRENT_COLOR_TEMP, new color_selector_gui_widget (selector, true));
+  m_view->add_gui_widget (style_controller_role_t::CURRENT_COLOR, new color_selector_gui_widget (selector, false));
 }

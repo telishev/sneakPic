@@ -4,67 +4,89 @@
 #include <QVariant>
 #include <QObject>
 
-enum class gui_model_role_t
+template<typename T>
+class gui_model_observer
 {
-  /// stroke_config
-  STROKE_WIDTH, /// double
-  STROKE_MITER, /// double
-  LINECAP, /// Qt::PenCapStyle
-  LINEJOIN, // Qt::PenJoinStyle
+public:
+  virtual ~gui_model_observer () {}
 
-  /// color
-
-  FILL_COLOR, /// item_paint_server
-  STROKE_COLOR, /// item_paint_server
-  CURRENT_COLOR, /// QColor
-  CURRENT_COLOR_TEMP, /// QColor
-
-  IS_SELECTED_FILL, /// bool
+  virtual void data_changed_signal (const std::set<T> &changes) = 0;
 };
 
+
+template<typename ROLE>
 class gui_model;
 
+template<typename ROLE>
 class gui_model_updater
 {
-  gui_model *m_model;
+  gui_model<ROLE> *m_model;
 public:
-  gui_model_updater (gui_model *model);
-  ~gui_model_updater ();
+  gui_model_updater (gui_model<ROLE> *model)
+  {
+    m_model = model;
+    m_model->m_changes_counter++;
+  }
 
-  gui_model_updater (gui_model_updater &&rhs);
+  ~gui_model_updater ()
+  {
+    if (!m_model)
+      return;
 
-  gui_model *operator-> () { return m_model; }
+    m_model->m_changes_counter--;
+    if (m_model->m_changes_counter == 0)
+      {
+        m_model->set_model_data (m_model->m_current_changes);
+        m_model->m_current_changes.clear ();
+      }
+  }
 
-private:
-  gui_model_updater (const gui_model_updater &);
-  gui_model_updater &operator= (const gui_model_updater &);
+  gui_model<ROLE> *operator-> () { return m_model; }
 
 };
 
+template<typename ROLE>
 class gui_model : public QObject
 {
-  Q_OBJECT
-
-  std::map<gui_model_role_t, QVariant> m_current_changes;
-  int m_changes_counter;
+  std::map<ROLE, QVariant> m_current_changes;
+  std::set<gui_model_observer<ROLE> *> m_observers;
+  int m_changes_counter = 0;
 public:
-  gui_model ();
+  gui_model () {}
   virtual ~gui_model () {}
 
-  virtual QVariant data (gui_model_role_t role) const = 0;
-  void set_data (gui_model_role_t role, QVariant new_data);
-  gui_model_updater do_multi_change () { return gui_model_updater (this); }
+  virtual QVariant data (ROLE role) const = 0;
+  void set_data (ROLE role, QVariant new_data)
+  {
+    gui_model_updater<ROLE> updater (this);
+    m_current_changes[role] = new_data;
+  }
+  gui_model_updater<ROLE> do_multi_change () { return gui_model_updater<ROLE> (this); }
 
-signals:
-  void data_changed (const std::set<gui_model_role_t> &changes);
+  void add_observer (gui_model_observer<ROLE> *view) { m_observers.insert (view); }
+  void remove_observer (gui_model_observer<ROLE> *view) { m_observers.erase (view); }
 
 protected:
-  virtual void set_model_data (const std::map<gui_model_role_t, QVariant> &data_map) = 0;
+  virtual void set_model_data (const std::map<ROLE, QVariant> &data_map) = 0;
 
-  std::set<gui_model_role_t> get_change_set (const std::map<gui_model_role_t, QVariant> &data_map) const;
+  std::set<ROLE> get_change_set (const std::map<ROLE, QVariant> &data_map) const
+  {
+    std::set<ROLE> result;
+
+    for (auto && data_pair : data_map)
+      result.insert (data_pair.first);
+
+    return result;
+  }
+
+  void data_changed (const std::set<ROLE> &changes)
+  {
+    for (auto &&view : m_observers)
+      view->data_changed_signal (changes);
+  }
 
 private:
-  friend class gui_model_updater;
+  friend class gui_model_updater<ROLE>;
 };
 
 #endif // GUI_MODEL_H

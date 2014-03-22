@@ -57,7 +57,7 @@ item_paint_server * style_controller::active_server ()
   return m_is_selected_fill ? &m_styles[(int) m_current_style].fill () : &m_styles[(int) m_current_style].stroke ();
 }
 
-QVariant style_controller::data (gui_model_role_t role) const
+QVariant style_controller::data (style_controller_role_t role) const
 {
   const item_paint_style *style = active_style ();
   const stroke_config &stroke_cfg = style->stroke_cfg ();
@@ -65,21 +65,21 @@ QVariant style_controller::data (gui_model_role_t role) const
 
   switch (role)
     {
-    case gui_model_role_t::STROKE_WIDTH: return stroke_cfg.width ();
-    case gui_model_role_t::STROKE_MITER: return stroke_cfg.miterlimit ();
-    case gui_model_role_t::LINECAP: return stroke_cfg.linecap ();
-    case gui_model_role_t::LINEJOIN: return stroke_cfg.linejoin ();
-    case gui_model_role_t::CURRENT_COLOR: return cur_server->color ();
-    case gui_model_role_t::CURRENT_COLOR_TEMP: return cur_server->color ();
-    case gui_model_role_t::IS_SELECTED_FILL: return m_is_selected_fill;
-    case gui_model_role_t::FILL_COLOR: return QVariant::fromValue (style->fill ());
-    case gui_model_role_t::STROKE_COLOR: return QVariant::fromValue (style->stroke ());
+    case style_controller_role_t::STROKE_WIDTH: return stroke_cfg.width ();
+    case style_controller_role_t::STROKE_MITER: return stroke_cfg.miterlimit ();
+    case style_controller_role_t::LINECAP: return stroke_cfg.linecap ();
+    case style_controller_role_t::LINEJOIN: return stroke_cfg.linejoin ();
+    case style_controller_role_t::CURRENT_COLOR: return cur_server->color ();
+    case style_controller_role_t::CURRENT_COLOR_TEMP: return cur_server->color ();
+    case style_controller_role_t::IS_SELECTED_FILL: return m_is_selected_fill;
+    case style_controller_role_t::FILL_COLOR: return QVariant::fromValue (style->fill ());
+    case style_controller_role_t::STROKE_COLOR: return QVariant::fromValue (style->stroke ());
     }
 
   return QVariant ();
 }
 
-void style_controller::set_model_data (const std::map<gui_model_role_t, QVariant> &data_map)
+void style_controller::set_model_data (const std::map<style_controller_role_t, QVariant> &data_map)
 {
   if (data_map.empty () || !m_painter)
     return;
@@ -88,31 +88,31 @@ void style_controller::set_model_data (const std::map<gui_model_role_t, QVariant
   item_paint_server *cur_server = active_server ();
   stroke_config &stroke_cfg = style.stroke_cfg ();
   bool need_apply = std::find_if (data_map.begin (), data_map.end (),
-                                  [] (const pair<gui_model_role_t, QVariant> &val)
-                                       { return    val.first != gui_model_role_t::CURRENT_COLOR_TEMP
-                                                && val.first != gui_model_role_t::IS_SELECTED_FILL; }) != data_map.end ();
+                                  [] (const pair<style_controller_role_t, QVariant> &val)
+                                       { return    val.first != style_controller_role_t::CURRENT_COLOR_TEMP
+                                                && val.first != style_controller_role_t::IS_SELECTED_FILL; }) != data_map.end ();
 
   bool stroke_changed = false;
   bool color_changed = false;
   bool fill_color_changed = false;
   bool stroke_color_changed = false;
-  std::set<gui_model_role_t> update_set = get_change_set (data_map);
-  std::set<gui_model_role_t> all_items = all_items_set ();
+  std::set<style_controller_role_t> update_set = get_change_set (data_map);
+  std::set<style_controller_role_t> all_items = all_items_set ();
 
   for (auto &&data_pair : data_map)
     {
       QVariant value = data_pair.second;
       switch (data_pair.first)
         {
-        case gui_model_role_t::STROKE_WIDTH: stroke_cfg.set_width (value.toDouble ()); stroke_changed = true; break;
-        case gui_model_role_t::STROKE_MITER: stroke_cfg.set_miterlimit (value.toDouble ()); stroke_changed = true; break;
-        case gui_model_role_t::LINECAP: stroke_cfg.set_linecap (value.value<Qt::PenCapStyle> ()); stroke_changed = true; break;
-        case gui_model_role_t::LINEJOIN: stroke_cfg.set_linejoin (value.value<Qt::PenJoinStyle> ()); stroke_changed = true; break;
-        case gui_model_role_t::CURRENT_COLOR: cur_server->set_color (value.value<QColor> ()); color_changed = true; break;
-        case gui_model_role_t::CURRENT_COLOR_TEMP: cur_server->set_color (value.value<QColor> ()); color_changed = true; break;
-        case gui_model_role_t::IS_SELECTED_FILL: m_is_selected_fill = value.toBool (); update_set.insert (all_items.begin (), all_items.end ()); break;
-        case gui_model_role_t::FILL_COLOR: style.fill () = value.value<item_paint_server> (); color_changed = true; fill_color_changed = true; break;
-        case gui_model_role_t::STROKE_COLOR: style.stroke () = value.value<item_paint_server> (); color_changed = true; stroke_color_changed = true; break;
+        case style_controller_role_t::STROKE_WIDTH: stroke_cfg.set_width (value.toDouble ()); stroke_changed = true; break;
+        case style_controller_role_t::STROKE_MITER: stroke_cfg.set_miterlimit (value.toDouble ()); stroke_changed = true; break;
+        case style_controller_role_t::LINECAP: stroke_cfg.set_linecap (value.value<Qt::PenCapStyle> ()); stroke_changed = true; break;
+        case style_controller_role_t::LINEJOIN: stroke_cfg.set_linejoin (value.value<Qt::PenJoinStyle> ()); stroke_changed = true; break;
+        case style_controller_role_t::CURRENT_COLOR: cur_server->set_color (value.value<QColor> ()); color_changed = true; break;
+        case style_controller_role_t::CURRENT_COLOR_TEMP: cur_server->set_color (value.value<QColor> ()); color_changed = true; break;
+        case style_controller_role_t::IS_SELECTED_FILL: m_is_selected_fill = value.toBool (); update_set.insert (all_items.begin (), all_items.end ()); break;
+        case style_controller_role_t::FILL_COLOR: style.fill () = value.value<item_paint_server> (); color_changed = true; fill_color_changed = true; break;
+        case style_controller_role_t::STROKE_COLOR: style.stroke () = value.value<item_paint_server> (); color_changed = true; stroke_color_changed = true; break;
         }
     }
 
@@ -128,10 +128,10 @@ void style_controller::set_model_data (const std::map<gui_model_role_t, QVariant
       if (stroke_color_changed)
         style.stroke ().apply_to_selection (selection, false);
 
-      update_set.insert (gui_model_role_t::CURRENT_COLOR);
-      update_set.insert (gui_model_role_t::CURRENT_COLOR_TEMP);
-      update_set.insert (gui_model_role_t::FILL_COLOR);
-      update_set.insert (gui_model_role_t::STROKE_COLOR);
+      update_set.insert (style_controller_role_t::CURRENT_COLOR);
+      update_set.insert (style_controller_role_t::CURRENT_COLOR_TEMP);
+      update_set.insert (style_controller_role_t::FILL_COLOR);
+      update_set.insert (style_controller_role_t::STROKE_COLOR);
     }
 
   if (need_apply)
@@ -146,9 +146,9 @@ void style_controller::send_items_changed ()
   emit data_changed (all_items_set ());
 }
 
-std::set<gui_model_role_t> style_controller::all_items_set () const
+std::set<style_controller_role_t> style_controller::all_items_set () const
 {
-  using g = gui_model_role_t;
+  using g = style_controller_role_t;
   return {g::STROKE_WIDTH, g::STROKE_MITER, g::LINECAP, g::LINEJOIN, g::CURRENT_COLOR, g::CURRENT_COLOR_TEMP, g::FILL_COLOR, g::STROKE_COLOR};
 }
 

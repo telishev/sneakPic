@@ -1,4 +1,4 @@
-#include "gui/create_gui_widget.h"
+#include "gui/gui_widget.h"
 #include "gui/gui_widget_view.h"
 
 #include <QDoubleSpinBox>

@@ -23,7 +23,7 @@
 
 // TODO: probably rewrite all color controllers on directly signal/slot signal specifying QColor
 
-tools_widget_builder::tools_widget_builder (gui_actions *actions, dock_widget_builder *dock_widget_builder_arg, gui_model *model)
+tools_widget_builder::tools_widget_builder (gui_actions *actions, dock_widget_builder *dock_widget_builder_arg, gui_model<style_controller_role_t> *model)
 {
   m_actions = actions;
   m_tool_bar = nullptr;

@@ -12,6 +12,24 @@ class item_paint_style;
 class svg_painter;
 class item_paint_server;
 
+enum class style_controller_role_t
+{
+  /// stroke_config
+  STROKE_WIDTH, /// double
+  STROKE_MITER, /// double
+  LINECAP, /// Qt::PenCapStyle
+  LINEJOIN, // Qt::PenJoinStyle
+
+  /// color
+
+  FILL_COLOR, /// item_paint_server
+  STROKE_COLOR, /// item_paint_server
+  CURRENT_COLOR, /// QColor
+  CURRENT_COLOR_TEMP, /// QColor
+
+  IS_SELECTED_FILL, /// bool
+};
+
 enum class selected_style
 {
   EDITOR_STYLE = 0,
@@ -20,7 +38,7 @@ enum class selected_style
   COUNT
 };
 
-class style_controller : public gui_model
+class style_controller : public gui_model<style_controller_role_t>
 {
   Q_OBJECT
 
@@ -40,8 +58,8 @@ public:
 
   bool is_selected_fill () const { return m_is_selected_fill; }
 
-  virtual QVariant data (gui_model_role_t role) const override;
-  virtual void set_model_data (const std::map<gui_model_role_t, QVariant> &data_map) override;
+  virtual QVariant data (style_controller_role_t role) const override;
+  virtual void set_model_data (const std::map<style_controller_role_t, QVariant> &data_map) override;
 
 private slots:
   void selection_or_items_changed ();
@@ -50,7 +68,7 @@ private slots:
 private:
   item_paint_server *active_server ();
   void send_items_changed ();
-  std::set<gui_model_role_t> all_items_set () const;
+  std::set<style_controller_role_t> all_items_set () const;
 
 };
 
