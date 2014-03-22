@@ -36,6 +36,7 @@ enum class gui_action_id
   CANCEL_EDITING,
   LOWER_OBJECT,
   RAISE_OBJECT,
+  SWITCH_FILL_STROKE,
 
   INTERRUPT,
 

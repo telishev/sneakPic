@@ -52,6 +52,7 @@ actions_info::actions_info ()
   add_action (A::CANCEL_EDITING, "Cancel Editing", QKeySequence (Qt::Key_Escape));
   add_action (A::LOWER_OBJECT, "Lower Object", QKeySequence (Qt::Key_PageDown));
   add_action (A::RAISE_OBJECT, "Raise Object", QKeySequence (Qt::Key_PageUp));
+  add_action (A::SWITCH_FILL_STROKE, "Switch Fill and Stroke", QKeySequence ("X"), QIcon (":/switch.png"));
 }
 
 actions_info::~actions_info ()

@@ -31,6 +31,10 @@ public:
   void set_is_selected_fill (bool selected);
 protected:
   QSize sizeHint () const override;
+
+private slots:
+  void swap_fill_stroke ();
+
 private:
   QPoint stroke_pos () const;
 

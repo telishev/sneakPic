@@ -94,6 +94,8 @@ void style_controller::set_model_data (const std::map<gui_model_role_t, QVariant
 
   bool stroke_changed = false;
   bool color_changed = false;
+  bool fill_color_changed = false;
+  bool stroke_color_changed = false;
   std::set<gui_model_role_t> update_set = get_change_set (data_map);
   std::set<gui_model_role_t> all_items = all_items_set ();
 
@@ -109,8 +111,8 @@ void style_controller::set_model_data (const std::map<gui_model_role_t, QVariant
         case gui_model_role_t::CURRENT_COLOR: cur_server->set_color (value.value<QColor> ()); color_changed = true; break;
         case gui_model_role_t::CURRENT_COLOR_TEMP: cur_server->set_color (value.value<QColor> ()); color_changed = true; break;
         case gui_model_role_t::IS_SELECTED_FILL: m_is_selected_fill = value.toBool (); update_set.insert (all_items.begin (), all_items.end ()); break;
-        case gui_model_role_t::FILL_COLOR: style.fill () = value.value<item_paint_server> (); color_changed = true; break;
-        case gui_model_role_t::STROKE_COLOR: style.stroke () = value.value<item_paint_server> (); color_changed = true; break;
+        case gui_model_role_t::FILL_COLOR: style.fill () = value.value<item_paint_server> (); color_changed = true; fill_color_changed = true; break;
+        case gui_model_role_t::STROKE_COLOR: style.stroke () = value.value<item_paint_server> (); color_changed = true; stroke_color_changed = true; break;
         }
     }
 
@@ -121,6 +123,11 @@ void style_controller::set_model_data (const std::map<gui_model_role_t, QVariant
   if (color_changed)
     {
       cur_server->apply_to_selection (selection, is_selected_fill ());
+      if (fill_color_changed)
+        style.fill ().apply_to_selection (selection, true);
+      if (stroke_color_changed)
+        style.stroke ().apply_to_selection (selection, false);
+
       update_set.insert (gui_model_role_t::CURRENT_COLOR);
       update_set.insert (gui_model_role_t::CURRENT_COLOR_TEMP);
       update_set.insert (gui_model_role_t::FILL_COLOR);
