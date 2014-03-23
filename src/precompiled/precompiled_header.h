@@ -17,5 +17,6 @@ using std::string;
 using std::set;
 using std::deque;
 using std::pair;
+using std::make_unique;
 
 #include "common/common_algorithms.h"

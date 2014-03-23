@@ -6,61 +6,49 @@
 class abstract_svg_item;
 class svg_document;
 class svg_items_container;
+class layers_tree;
+struct layers_tree_node;
+class undo_handler;
 
 class layers_handler : public QObject
 {
   Q_OBJECT
 
-  typedef deque<string> container_type;
-  container_type m_layers_container; // contains names of "layer" items (groups with special attribute)
+  unique_ptr<layers_tree> m_layers_tree;
   svg_document *m_document;
-  int m_active_layer_index;
-  abstract_svg_item *get_layer_item (int index) const;
+  layers_tree_node *m_active_layer_node;
+  int m_closest_to_active_global_id;
+  undo_handler *m_undo_handler;
+  abstract_svg_item *get_layer_item (const QModelIndex &index) const;
+  abstract_svg_item *get_layer_item (const layers_tree_node *node) const;
 
 public:
-  class layers_iterator : public std::iterator<std::forward_iterator_tag, abstract_svg_item *>
-  {
-    container_type::iterator m_it;
-    svg_items_container *m_container;
-
-  private:
-    layers_iterator (svg_items_container *container, container_type::iterator it);
-
-  public:
-    abstract_svg_item *operator* ();
-    bool operator != (const layers_iterator &other) const;
-    bool operator == (const layers_iterator &other) const;
-    int operator - (const layers_iterator &other) const;
-    layers_iterator operator + (int add) const;
-    layers_iterator &operator++();
-
-    friend class layers_handler;
-  };
-
   layers_handler (svg_document *document);
   ~layers_handler ();
-  QString get_layer_name (int index) const;
-  layers_iterator begin ();
-  layers_iterator end ();
+  QString get_layer_name (const QModelIndex &index) const;
   int layers_count();
-  int active_layer_index ();
+  layers_tree_node *active_layer_node ();
   abstract_svg_item *get_active_layer_item () const;
-  bool is_layer_visible( int index );
-  void toggle_layer_visibility (int layer_index);
-  void rename_layer(int index, QString new_name);
-  void move_layer (int from, int to);
+  bool is_layer_visible(const QModelIndex &index );
+  void toggle_layer_visibility (const QModelIndex &layer_index);
+  void rename_layer(const QModelIndex &index, QString new_name);
+  void move_layer (layers_tree_node *from, layers_tree_node *to, bool before_first_one = false); // if after_last_one is true then to is parent of item where we should move
+  void move_layer_inside (layers_tree_node *from, layers_tree_node *to);
   int get_active_layer_opacity ();
   void set_active_layer_opacity (int value);
-  int get_layer_opacity (int index);
-
+  int get_layer_opacity (const QModelIndex &index);
+  int get_layer_opacity (const layers_tree_node *node);
+  layers_tree_node *tree_root ();
 private:
-  void update_layer_list ();
-  void update_active_layer_index_by_attribute();
-  void update_attribute_by_active_layer_index ();
+  void update_layer_tree ();
+  void update_active_layer_node_by_attribute();
+  void update_attribute_by_active_layer_node ();
   void add_new_layer (QString name = QString ());
+  layers_tree_node *get_node_by_index (const QModelIndex &index) const;
+  void add_layer_items_recursive (abstract_svg_item *item);
 
 public slots:
-  void set_active_layer (int new_index );
+  void set_active_layer (const QModelIndex &new_index );
   void add_new_layer_slot ();
   void remove_active_layer ();
 

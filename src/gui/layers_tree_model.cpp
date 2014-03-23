@@ -6,8 +6,13 @@
 #include <QMimeData>
 
 #include "common/common_utils.h"
+#include "svg/layers_tree.h"
 
-enum class rowRole
+#include <stack>
+
+
+
+enum class columnRole
 {
   VISIBILITY = 0,
   TITLE = 1,
@@ -18,35 +23,36 @@ enum class rowRole
 
 QVariant layers_tree_model::data (const QModelIndex &index, int role /*= Qt::DisplayRole*/) const
 {
-  switch ((rowRole) index.column ())
+  switch ((columnRole) index.column ())
     {
-    case rowRole::TITLE:
+    case columnRole::TITLE:
+      switch (role)
+        {
+        case Qt::SizeHintRole:
+          return QSize (200, 0);
+        case Qt::DisplayRole:
+        case Qt::EditRole:
+          return m_layers_handler->get_layer_name (index);
+        }
+      return QVariant ();
+    case columnRole::OPACITY:
       switch (role)
         {
         case Qt::DisplayRole:
         case Qt::EditRole:
-          return m_layers_handler->get_layer_name (index.row ());
+          return QString::number (m_layers_handler->get_layer_opacity (index)) + "%";
         }
       return QVariant ();
-    case rowRole::OPACITY:
-      switch (role)
-        {
-        case Qt::DisplayRole:
-        case Qt::EditRole:
-          return QString::number (m_layers_handler->get_layer_opacity (index.row ())) + "%";
-        }
-      return QVariant ();
-
-    case rowRole::VISIBILITY:
+    case columnRole::VISIBILITY:
       switch (role)
       {
       case Qt::DisplayRole:
         return "";
       case Qt::DecorationRole:
-        return m_layers_handler->is_layer_visible (index.row ()) ? eye_open_icon : eye_closed_icon;
+        return m_layers_handler->is_layer_visible (index) ? eye_open_icon : eye_closed_icon;
       }
       return QVariant ();
-   case rowRole::COUNT:
+   case columnRole::COUNT:
       return  QVariant ();
     }
   return QVariant ();
@@ -70,31 +76,49 @@ int layers_tree_model::rowCount (const QModelIndex &parent /*= QModelIndex()*/) 
   if (!m_layers_handler)
     return 0;
 
-  if (parent == QModelIndex ())
-    return (int) m_layers_handler->layers_count ();
-  else
-    return 0;
+  auto parent_node = static_cast <layers_tree_node *> (parent.internalPointer ());
+  return parent_node != nullptr ? (int) parent_node->children.size () : (int) m_layers_handler->tree_root ()->children.size () ;
 }
 
 QModelIndex layers_tree_model::index (int row, int column, const QModelIndex &parent /*= QModelIndex()*/) const
 {
-  return hasIndex (row, column, parent) ? createIndex (row, column) : QModelIndex();
+  if (!m_layers_handler)
+    return QModelIndex ();
+
+  auto parent_node = static_cast <layers_tree_node *> (parent.internalPointer ());
+  if (parent_node == nullptr)
+    parent_node = m_layers_handler->tree_root ();
+  return hasIndex (row, column, parent) ? createIndex (row, column, static_cast <void *> (parent_node->children[row].get ())) : QModelIndex();
 }
 
 int layers_tree_model::columnCount (const QModelIndex &/*parent = QModelIndex()*/) const
 {
-  return (int) rowRole::COUNT;
+  return (int) columnRole::COUNT;
 }
 
-QModelIndex layers_tree_model::index_for_layer (int layer_num) const
+QModelIndex layers_tree_model::index_for_node (layers_tree_node *node) const
 {
-  return index (layer_num, 0);
+  std::stack<int> indexes;
+  while (node->parent != nullptr)
+    {
+      indexes.push (node->node_number);
+      node = node->parent;
+    }
+
+  QModelIndex curIndex = index (indexes.top (), 0);
+  indexes.pop ();
+  while (!indexes.empty ())
+    {
+      curIndex = curIndex.child (indexes.top (), 0);
+      indexes.pop ();
+    }
+
+  return curIndex;
 }
 
 void layers_tree_model::set_layers_handler (layers_handler *handler)
 {
   m_layers_handler = handler;
-  CONNECT (handler, &layers_handler::layers_changed, this, &layers_tree_model::update_model);
   update_model ();
 }
 
@@ -103,10 +127,11 @@ bool layers_tree_model::setData (const QModelIndex &index, const QVariant &value
   switch (role)
     {
     case Qt::EditRole:
-      switch ((rowRole) index.column ())
+      switch ((columnRole) index.column ())
         {
-        case rowRole::TITLE:
-          m_layers_handler->rename_layer (index.row (), value.toString ());
+        case columnRole::TITLE:
+          m_layers_handler->rename_layer (index, value.toString ());
+          emit resize_needed ();
           return true;
         default:
           return false; // TODO: probably add editing of opacity
@@ -118,8 +143,9 @@ bool layers_tree_model::setData (const QModelIndex &index, const QVariant &value
 Qt::ItemFlags layers_tree_model::flags (const QModelIndex &index) const
 {
   auto flags = QAbstractItemModel::flags (index);
-  if (index == QModelIndex ())
-    flags |= Qt::ItemIsDropEnabled;
+
+  // if (index.column () == (int) columnRole::VISIBILITY)
+  flags |= Qt::ItemIsDropEnabled;
 
   switch (index.column ())
   {
@@ -142,9 +168,17 @@ Qt::DropActions layers_tree_model::supportedDragActions () const
 
 const char *format = "internal";
 
-bool layers_tree_model::dropMimeData (const QMimeData *data, Qt::DropAction /*action*/, int row, int /*column*/, const QModelIndex &/*parent*/)
+bool layers_tree_model::dropMimeData (const QMimeData *data, Qt::DropAction /*action*/, int row, int column, const QModelIndex &parent)
 {
-  m_layers_handler->move_layer (data->data (format).toInt (), row);
+  if (row >= 0 && column >= 0)
+    {
+      if (row < rowCount (parent))
+        m_layers_handler->move_layer (reinterpret_cast<layers_tree_node *> (data->data (format).toLongLong ()), static_cast<layers_tree_node *> (index (row, column, parent).internalPointer ()));
+      else
+        m_layers_handler->move_layer (reinterpret_cast<layers_tree_node *> (data->data (format).toLongLong ()), static_cast<layers_tree_node *> (parent.internalPointer ()), true);
+    }
+  else
+    m_layers_handler->move_layer_inside (reinterpret_cast<layers_tree_node *> (data->data (format).toLongLong ()), static_cast<layers_tree_node *> (parent.internalPointer ()));
   return true;
 }
 
@@ -152,7 +186,7 @@ QMimeData *layers_tree_model::mimeData (const QModelIndexList &indexes) const
 {
   // For our situation it's always 1 index, we need to pack row num
   QMimeData *data = new QMimeData ();
-  data->setData (format, QByteArray::number (indexes[0].row ()));
+  data->setData (format, QByteArray::number ((long long) indexes[0].internalPointer ()));
   return data;
 }
 
@@ -166,4 +200,13 @@ QStringList layers_tree_model::mimeTypes () const
   QStringList sl;
   sl << format;
   return sl;
+}
+
+QModelIndex layers_tree_model::parent (const QModelIndex &index) const
+{
+  auto node = static_cast<layers_tree_node *> (index.internalPointer ());
+  if (node == nullptr)
+    return createIndex (-1, -1, m_layers_handler->tree_root ());
+  else
+    return createIndex (node->node_number, 0, node->parent);
 }

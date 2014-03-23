@@ -24,7 +24,7 @@ class layers_widget_handler : public QObject
   QTreeView *m_layers_view;
   unique_ptr<layers_tree_model> m_layers_model;
   QToolButton *m_add_layer_btn, *m_remove_layer_btn;
-  unique_ptr<connection> change_active_layer_connection, change_opacity_connection;
+  unique_ptr<connection> change_active_layer_connection, change_opacity_connection, index_collapsed_connection, index_expanded_connection;
   QSlider *m_opacity_slider;
 
 public:
@@ -34,10 +34,16 @@ public:
   void set_layers_handler (layers_handler *handler);
   void change_opacity ();
 
+private:
+  void update_expanded_state (QModelIndex &index);
+
 private slots:
-  void update_active_layer ();
+  void resize_to_contents ();
+  void update_on_layers_change ();
   void change_active_layer ();
   void index_clicked (const QModelIndex &index);
+  void index_expanded (const QModelIndex &index);
+  void index_collapsed (const QModelIndex &index);
   void update_opacity_slider ();
   };
 
