@@ -117,6 +117,7 @@ void layers_handler::add_new_layer (QString name)
 
   auto *layer_item = m_document->create_new_svg_item<svg_item_group> ();
   layer_item->get_attribute_for_change<svg_attribute_layer_name> ()->set_value (name);
+  layer_item->get_attribute_for_change<svg_attribute_display> ()->set_value (display::INLINE); // Make sure that layer has visibility attribute in a moment of creation
   m_document->root ()->push_back (layer_item);
 
   auto active_layer_item = get_active_layer_item ();
@@ -266,6 +267,14 @@ void layers_handler::move_layer_inside (layers_tree_node *from, layers_tree_node
   if (to == nullptr || from == nullptr || from->parent == to)
     return;
 
+  auto cur_parent = to->parent;
+  while (cur_parent != nullptr) // if to is descendant of from then this move isn't possible
+    {
+      if (cur_parent == from)
+        return;
+      cur_parent = cur_parent->parent;
+    }
+
   auto item_from = get_layer_item (from);
   auto item_to = get_layer_item (to);
   item_from->parent ()->make_orphan (item_from);
@@ -279,8 +288,16 @@ void layers_handler::move_layer_inside (layers_tree_node *from, layers_tree_node
 
 void layers_handler::move_layer (layers_tree_node *from, layers_tree_node *to, bool before_first_one /*= false*/)
 {
-  if (to == nullptr || from == nullptr)
+  if (to == nullptr || from == nullptr || from == to)
     return;
+
+  auto cur_parent = to->parent;
+  while (cur_parent != nullptr) // if to is descendant of from then this move isn't possible
+    {
+      if (cur_parent == from)
+        return;
+      cur_parent = cur_parent->parent;
+    }
 
   auto item_from = get_layer_item (from);
   abstract_svg_item *item_to_parent = nullptr;
@@ -302,7 +319,7 @@ void layers_handler::move_layer (layers_tree_node *from, layers_tree_node *to, b
   else if (from->parent == to->parent)
     m_layers_tree->move_node (from, to);
   else
-    m_layers_tree->insert_node_after (to, m_layers_tree->take_out_node (from));
+    m_layers_tree->insert_node_before (to, m_layers_tree->take_out_node (from));
 
   m_document->apply_changes ("Layer Moved");
   update_attribute_by_active_layer_node ();
