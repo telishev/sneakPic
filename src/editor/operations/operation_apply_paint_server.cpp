@@ -1,11 +1,16 @@
 #include "operation_apply_paint_server.h"
-#include "svg\items\abstract_svg_item.h"
-#include "svg\attributes\svg_attributes_number.h"
-#include "svg\attributes\svg_attributes_fill_stroke.h"
-#include "..\item_paint_server.h"
-#include "renderer\renderer_paint_server.h"
+
+#include "svg/items/abstract_svg_item.h"
+#include "svg/attributes/svg_attributes_number.h"
+#include "svg/attributes/svg_attributes_fill_stroke.h"
+
+#include "renderer/renderer_items_gradient.h"
+#include "renderer/renderer_paint_server.h"
+
 #include "operation_set_gradient.h"
-#include "renderer\renderer_items_gradient.h"
+
+#include "editor/item_paint_server.h"
+
 
 
 

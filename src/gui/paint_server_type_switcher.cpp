@@ -6,9 +6,9 @@
 #include "gui_widget_view.h"
 #include "connection.h"
 #include "gui_model.h"
-#include "editor\style_controller.h"
-#include "renderer\renderer_paint_server.h"
-#include "color_selectors\color_button.h"
+#include "editor/style_controller.h"
+#include "renderer/renderer_paint_server.h"
+#include "color_selectors/color_button.h"
 
 Q_DECLARE_METATYPE (item_paint_server);
 Q_DECLARE_METATYPE (painter_server_model_role);

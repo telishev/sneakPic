@@ -1,10 +1,10 @@
-#include "common\common_algorithms.h"
-#include "common\debug_utils.h"
+#include "common/common_algorithms.h"
+#include "common/debug_utils.h"
 
-#include "svg\layers_tree.h"
+#include "svg/layers_tree.h"
 
-#include "items\abstract_svg_item.h"
-#include "attributes\svg_attributes_enum.h"
+#include "items/abstract_svg_item.h"
+#include "attributes/svg_attributes_enum.h"
 
 layers_tree::layers_tree (abstract_svg_item *root_item)
 {

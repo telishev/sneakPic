@@ -1,25 +1,25 @@
 #include "operation_set_gradient.h"
 
-#include "svg\attributes\svg_attributes_fill_stroke.h"
-#include "svg\attributes\svg_attribute_xlink_href.h"
+#include "svg/attributes/svg_attributes_fill_stroke.h"
+#include "svg/attributes/svg_attribute_xlink_href.h"
 
-#include "svg\items\svg_items_container.h"
-#include "svg\items\svg_base_items_gradient.h"
-#include "svg\items\svg_item_linear_gradient.h"
-#include "svg\items\svg_item_radial_gradient.h"
+#include "svg/items/svg_items_container.h"
+#include "svg/items/svg_base_items_gradient.h"
+#include "svg/items/svg_item_linear_gradient.h"
+#include "svg/items/svg_item_radial_gradient.h"
 
-#include "svg\svg_document.h"
+#include "svg/svg_document.h"
 
-#include "renderer\renderer_paint_server.h"
-#include "renderer\renderer_items_gradient.h"
-#include "svg\attributes\svg_attributes_enum.h"
-#include "svg\attributes\svg_attribute_gradient_transform.h"
-#include "svg\items\svg_item_stop.h"
-#include "svg\attributes\svg_attribute_stop_color.h"
-#include "svg\attributes\svg_attributes_number.h"
-#include "svg\attributes\svg_attribute_offset.h"
-#include "svg\attributes\svg_attributes_length_type.h"
-#include "svg\items\abstract_svg_item.h"
+#include "renderer/renderer_paint_server.h"
+#include "renderer/renderer_items_gradient.h"
+#include "svg/attributes/svg_attributes_enum.h"
+#include "svg/attributes/svg_attribute_gradient_transform.h"
+#include "svg/items/svg_item_stop.h"
+#include "svg/attributes/svg_attribute_stop_color.h"
+#include "svg/attributes/svg_attributes_number.h"
+#include "svg/attributes/svg_attribute_offset.h"
+#include "svg/attributes/svg_attributes_length_type.h"
+#include "svg/items/abstract_svg_item.h"
 
 
 

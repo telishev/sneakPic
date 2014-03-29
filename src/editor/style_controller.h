@@ -4,7 +4,7 @@
 #include <QObject>
 
 #include "item_paint_style.h"
-#include "gui\gui_model.h"
+#include "gui/gui_model.h"
 
 class settings_t;
 class items_selection;
