@@ -31,6 +31,7 @@ public:
   virtual void attribute_change_start (const string &sender, const abstract_attribute *computed_attribute) override;
   virtual void attribute_change_end (const string &sender, const abstract_attribute *computed_attribute) override;
   virtual void item_removed (const string &item) override;
+  virtual void layout_changed (const string &sender) override;
 
   virtual abstract_state_t *create_state () override;
   virtual void load_from_state (const abstract_state_t *state) override;

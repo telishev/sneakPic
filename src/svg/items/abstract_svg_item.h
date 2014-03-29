@@ -167,6 +167,7 @@ private:
   void signal_child_inserted (const string &child, int position);
   void signal_child_removed (const string &child_name, int pos);
   void signal_item_removed ();
+  void signal_layout_changed ();
   void signal_child_moved (const string &child_name, int old_pos, int new_pos);
   void signal_attribute_change_start (const abstract_attribute *attribute);
   void signal_attribute_change_end (const abstract_attribute *attribute);

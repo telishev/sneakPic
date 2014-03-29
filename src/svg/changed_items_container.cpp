@@ -59,6 +59,11 @@ void items_edit_handler_t::item_removed (const string &parent)
   /// handled in child_removed
 }
 
+void items_edit_handler_t::layout_changed (const string &sender)
+{
+  set_children_changed (sender);
+  m_layout_changed_items.insert (sender);
+}
 
 abstract_state_t *items_edit_handler_t::create_state ()
 {

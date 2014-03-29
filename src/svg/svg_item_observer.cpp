@@ -44,3 +44,8 @@ void svg_item_observer::item_removed (const string &sender)
 {
   FIX_UNUSED (sender);
 }
+
+void svg_item_observer::layout_changed (const string &sender)
+{
+  FIX_UNUSED (sender);
+}
