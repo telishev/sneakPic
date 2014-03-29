@@ -37,6 +37,7 @@ namespace geom
   double cross (QPointF begin, QPointF end);
   double angle_between (QPointF begin, QPointF end);
   QPointF vector_from_angle (double angle, double norm);
+  QTransform rect2rect (const QRectF &src, const QRectF &dst);
 };
 
 #endif // GEOM_HELPERS_H

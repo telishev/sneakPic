@@ -60,6 +60,7 @@ public:
   void push_back (abstract_svg_item *new_child);
   void insert_child (int index, abstract_svg_item *new_child);
   void remove_child (abstract_svg_item *child);
+  void remove_children ();
   void move_child (int index, abstract_svg_item *child);
 
   virtual svg_item_type type () const = 0;

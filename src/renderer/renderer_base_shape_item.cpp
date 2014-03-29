@@ -97,13 +97,13 @@ bool renderer_base_shape_item::configure_painter (SkPaint &paint, bool stroke, b
     {
       paint = *m_stroke;
       if (m_stroke_server)
-        m_stroke_server->fill_paint (paint);
+        m_stroke_server->fill_paint (paint, transform ().inverted ().mapRect (m_bbox_computed));
     }
   else
     {
       paint = *m_fill;
       if (m_fill_server)
-        m_fill_server->fill_paint (paint);
+        m_fill_server->fill_paint (paint, transform ().inverted ().mapRect (m_bbox_computed));
     }
 
   if (SkColorGetA (paint.getColor ()) == 0)

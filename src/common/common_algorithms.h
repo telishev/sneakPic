@@ -25,5 +25,13 @@ pair<Iter, Iter> slide (Iter begin, Iter end, Iter target)
   return std::make_pair (begin, end);
 }
 
+/// initializes unique_ptr by resetting it to a new T (arg...)
+/// Name was picked using absolutely democratic vote in Russia
+template<typename T, typename... Args>
+void put_in (std::unique_ptr<T> &receiver, Args&&... arg)
+{
+  receiver.reset (new T (std::forward<Args> (arg)...));
+}
+
 
 #endif // COMMON_ALGORITHMS_H

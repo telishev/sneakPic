@@ -18,8 +18,13 @@ class color_indicator_gui_widget : public gui_widget
   color_indicator *m_indicator;
 public:
   color_indicator_gui_widget (color_indicator *indicator) : m_indicator (indicator) {}
-  virtual void set_value (QVariant value) override { m_indicator->set_paint_server (value.value<item_paint_server> ());}
-  virtual QVariant value () const override { return QVariant::fromValue (m_indicator->paint_server ()); }
+  virtual void set_value (QVariant value) override { m_indicator->set_paint_server (value.value<item_paint_server> ().current_server ());}
+  virtual QVariant value () const override 
+  {
+    item_paint_server server;
+    server.set_current_server (m_indicator->paint_server ());
+    return QVariant::fromValue (server);
+  }
 };
 
 class fill_stroke_gui_widget : public gui_widget
@@ -49,8 +54,8 @@ fill_stroke_widget::fill_stroke_widget (gui_model<style_controller_role_t> *mode
   swap_fill_stroke_button->setAutoRaise (true);
 
 
-  m_view->add_gui_widget (style_controller_role_t::FILL_COLOR, new color_indicator_gui_widget (m_fill));
-  m_view->add_gui_widget (style_controller_role_t::STROKE_COLOR, new color_indicator_gui_widget (m_stroke));
+  m_view->add_gui_widget (style_controller_role_t::FILL_SERVER, new color_indicator_gui_widget (m_fill));
+  m_view->add_gui_widget (style_controller_role_t::STROKE_SERVER, new color_indicator_gui_widget (m_stroke));
   m_view->add_gui_widget (style_controller_role_t::IS_SELECTED_FILL, new fill_stroke_gui_widget (this, m_fill, m_stroke));
 
   QSize size = m_fill->sizeHint ();
@@ -92,10 +97,10 @@ void fill_stroke_widget::set_is_selected_fill (bool selected)
 void fill_stroke_widget::swap_fill_stroke ()
 {
   auto changer = m_model->do_multi_change ();
-  QVariant stroke = QVariant::fromValue (m_stroke->paint_server ());
-  QVariant fill = QVariant::fromValue (m_fill->paint_server ());
-  changer->set_data (style_controller_role_t::FILL_COLOR, stroke);
-  changer->set_data (style_controller_role_t::STROKE_COLOR, fill);
+  QVariant stroke = changer->data (style_controller_role_t::STROKE_SERVER);
+  QVariant fill = changer->data (style_controller_role_t::FILL_SERVER);
+  changer->set_data (style_controller_role_t::FILL_SERVER, stroke);
+  changer->set_data (style_controller_role_t::STROKE_SERVER, fill);
 }
 
 

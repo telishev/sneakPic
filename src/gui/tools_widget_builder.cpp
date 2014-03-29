@@ -19,9 +19,8 @@
 #include "gui/gui_actions.h"
 #include "gui/utils/flowlayout.h"
 #include "gui/utils/qt_utils.h"
-#include "fill_stroke_widget.h"
-
-// TODO: probably rewrite all color controllers on directly signal/slot signal specifying QColor
+#include "gui/fill_stroke_widget.h"
+#include "gui/paint_server_type_switcher.h"
 
 tools_widget_builder::tools_widget_builder (gui_actions *actions, dock_widget_builder *dock_widget_builder_arg, gui_model<style_controller_role_t> *model)
 {
@@ -29,6 +28,7 @@ tools_widget_builder::tools_widget_builder (gui_actions *actions, dock_widget_bu
   m_tool_bar = nullptr;
   m_dock_widget_builder = dock_widget_builder_arg;
   m_fill_stroke = new fill_stroke_widget (model);
+  put_in (m_type_switcher, model);
   update ();
 }
 
@@ -42,6 +42,7 @@ void tools_widget_builder::update ()
   init_toolbar_and_layout();
   fill_tool_bar ();
   add_color_indicators ();
+  add_type_switchers ();
   m_layout->addStretch ();
 }
 
@@ -83,5 +84,19 @@ void tools_widget_builder::add_color_indicators ()
   QHBoxLayout *layout = qt_utils::create_intermediate_hbox_layout (m_layout->parentWidget ());
   layout->addWidget (m_fill_stroke);
   layout->setSpacing (3);
+  m_layout->addWidget (layout->parentWidget ());
+}
+
+void tools_widget_builder::add_type_switchers ()
+{
+  QHBoxLayout *layout = qt_utils::create_intermediate_hbox_layout (m_layout->parentWidget ());
+  layout->setSpacing (0);
+  layout->setMargin (0);
+
+  layout->addWidget (m_type_switcher->get_color ());
+  layout->addWidget (m_type_switcher->get_none ());
+  layout->addWidget (m_type_switcher->get_linear_gradient ());
+  layout->addWidget (m_type_switcher->get_radial_gradient ());
+  layout->addStretch ();
   m_layout->addWidget (layout->parentWidget ());
 }

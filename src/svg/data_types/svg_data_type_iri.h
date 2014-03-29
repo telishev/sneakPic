@@ -52,6 +52,7 @@ public:
   string get_fragment_name () const;
   QImage *get_image_data (const QString &svg_name) const;
   void create_from_image (const QImage &image);
+  void create_from_element (QString name);
 
 private:
   void load_linked_image (const QString &svg_name) const;

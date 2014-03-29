@@ -6,6 +6,12 @@
 class renderer_base_gradient_item;
 class renderer_paint_server;
 
+enum class gradient_type_t
+{
+  LINEAR,
+  RADIAL,
+};
+
 class svg_base_items_gradient : public abstract_svg_item
 {
 
@@ -17,6 +23,8 @@ public:
   bool fill_gradient (renderer_base_gradient_item *gradient) const;
 
   bool add_stops_to_gradient (const abstract_svg_item *parent, renderer_base_gradient_item *gradient) const;
+
+  virtual gradient_type_t gradient_type () const = 0;
 
 protected:
   virtual renderer_base_gradient_item *create_gradient () const = 0;

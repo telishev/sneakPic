@@ -372,6 +372,14 @@ void abstract_svg_item::remove_child (abstract_svg_item *child)
   m_document->get_undo_handler ()->remove_item (child->undo_id ());
 }
 
+void abstract_svg_item::remove_children ()
+{
+  auto child_copy = m_children;
+  for (int child : child_copy)
+    remove_child (static_cast<abstract_svg_item *> (m_document->get_undo_handler ()->get_item (child)));
+}
+
+
 void abstract_svg_item::make_orphan (abstract_svg_item *child)
 {
   child->m_parent = 0;

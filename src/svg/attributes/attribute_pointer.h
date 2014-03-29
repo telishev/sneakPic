@@ -41,6 +41,7 @@ public:
   ~attribute_pointer () {}
 
   T *operator-> () { return static_cast<T *> (m_cur_attribute); }
+  T &operator * () { return *static_cast<T *> (m_cur_attribute); }
 
 
 };

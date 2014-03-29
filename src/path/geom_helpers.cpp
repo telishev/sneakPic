@@ -1,6 +1,7 @@
 #include "geom_helpers.h"
 
 #include <QRect>
+#include <QTransform>
 #include <math.h>
 
 QRect geom::inner_rect (QRectF rect)
@@ -65,4 +66,13 @@ double geom::cross (QPointF begin, QPointF end)
 double geom::angle_between (QPointF begin, QPointF end)
 {
   return atan2 (cross (end, begin), dot (end, begin));
+}
+
+QTransform geom::rect2rect (const QRectF &src, const QRectF &dst)
+{
+  double m11 = dst.width () / src.width ();
+  double m22 = dst.height () / src.height ();
+  double dx = dst.x () - src.x () * m11;
+  double dy = dst.y () - src.y () * m22;
+  return QTransform (m11, 0.0, 0.0, m22, dx, dy);
 }

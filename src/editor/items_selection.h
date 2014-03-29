@@ -63,6 +63,8 @@ public:
 
   void remove_unavailable_items ();
 
+  svg_items_container *container () const { return m_container; }
+
 
 signals:
   void selection_changed ();

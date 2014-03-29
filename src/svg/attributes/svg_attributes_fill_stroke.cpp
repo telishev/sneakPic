@@ -125,3 +125,9 @@ void svg_paint_server::set_to_none ()
 {
   m_server_type = paint_server_type::NONE;
 }
+
+void svg_paint_server::set_to_iri (QString name)
+{
+  m_server_type = paint_server_type::IRI;
+  m_iri.create_from_element (name);
+}

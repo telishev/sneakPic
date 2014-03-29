@@ -204,3 +204,9 @@ void svg_data_type_iri::load_linked_image (const QString &svg_name) const
   if (m_image_data)
     *m_image_data = m_image_data->convertToFormat (QImage::Format_ARGB32_Premultiplied);
 }
+
+void svg_data_type_iri::create_from_element (QString name)
+{
+  m_element_id = name;
+  m_iri_type = iri_type::document_fragment;
+}

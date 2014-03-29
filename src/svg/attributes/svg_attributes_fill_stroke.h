@@ -34,6 +34,7 @@ public:
 
   void set_to_color (QColor color);
   void set_to_none ();
+  void set_to_iri (QString name);
   paint_server_type server_type () const { return m_server_type; };
   QColor color () const { return m_color; };
 

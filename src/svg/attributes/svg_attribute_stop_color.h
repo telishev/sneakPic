@@ -31,6 +31,7 @@ public:
   }
 
   QColor stop_color () const { return m_stop_color; }
+  void set_stop_color (QColor color) { m_stop_color = color; }
 
 };
 

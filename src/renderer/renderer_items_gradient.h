@@ -8,6 +8,12 @@
 #include <QTransform>
 
 class QColor;
+class QGradient;
+
+class SkShader;
+
+typedef unsigned int SkColor;
+typedef float   SkScalar;
 
 enum class spread_method;
 enum class gradient_units;
@@ -20,6 +26,12 @@ protected:
   gradient_units m_units;
   QTransform m_transform;
 public:
+  renderer_base_gradient_item ();
+
+  const vector<pair<double, QColor>> &stops () const { return m_stops; }
+  spread_method spread () const { return m_spread; }
+  gradient_units units () const { return m_units; }
+  QTransform transform () const { return m_transform; }
 
   virtual void set_opacity (double opacity) override;
 
@@ -27,6 +39,13 @@ public:
   void set_spread (spread_method spread) { m_spread = spread; }
   void set_gradient_units (gradient_units units) { m_units = units; }
   void set_transform (const QTransform &transform) { m_transform = transform; }
+  virtual void fill_paint (SkPaint &paint, QRectF bbox) const override;
+
+  void convert_to_bbox_units (QRectF bbox);
+
+private:
+  virtual SkShader *create_shader (SkColor *colors, SkScalar *pos, int size, int mode) const = 0;
+
 };
 
 class renderer_linear_gradient : public renderer_base_gradient_item
@@ -41,8 +60,16 @@ public:
     m_y2 = y2;
   }
 
-  virtual void fill_paint (SkPaint &paint) const override;
-  virtual renderer_paint_server *clone () const override;
+  virtual renderer_linear_gradient *clone () const override;
+  virtual renderer_paint_server_type type () const override { return renderer_paint_server_type::LINEAR_GRADIENT; }
+
+  double x1 () const { return m_x1; }
+  double x2 () const { return m_x2; }
+  double y1 () const { return m_y1; }
+  double y2 () const { return m_y2; }
+
+private:
+  virtual SkShader *create_shader (SkColor *colors, SkScalar *pos, int size, int mode) const override;
 };
 
 class renderer_radial_gradient : public renderer_base_gradient_item
@@ -58,7 +85,16 @@ public:
     m_fy = fy;
   }
 
-  virtual void fill_paint (SkPaint &paint) const override;
-  virtual renderer_paint_server *clone () const override;
+  virtual renderer_radial_gradient *clone () const override;
+
+  virtual renderer_paint_server_type type () const override { return renderer_paint_server_type::RADIAL_GRADIENT; }
+
+  double cx () const { return m_cx; }
+  double cy () const { return m_cy; }
+  double fx () const { return m_fx; }
+  double fy () const { return m_fy; }
+  double r () const { return m_r; }
+private:
+  virtual SkShader *create_shader (SkColor *colors, SkScalar *pos, int size, int mode) const override ;
 };
 #endif // RENDERER_ITEMS_GRADIENT_H

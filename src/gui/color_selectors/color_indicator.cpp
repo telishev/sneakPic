@@ -3,6 +3,9 @@
 #include <QPainter>
 
 #include "gui/paint_helper.h"
+#include "renderer/renderer_paint_server.h"
+#include "renderer/paint_server_indicator_renderer.h"
+
 
 static const int COLOR_INDICATOR_DEFAULT_SIZE = 40;
 static const int STROKE_WIDTH_HALF = 10;
@@ -12,6 +15,7 @@ color_indicator::color_indicator (bool is_stroke, QWidget *parent)
 {
   m_is_stroke = is_stroke;
   setSizePolicy (QSizePolicy::Fixed, QSizePolicy::Fixed);
+  m_server.reset (new renderer_painter_server_color (Qt::black));
 }
 
 color_indicator::~color_indicator ()
@@ -29,31 +33,17 @@ void color_indicator::paintEvent (QPaintEvent * /*event*/)
   QPainter painter (this);
   paint_helper ().draw_checkerboard (painter, width (), height ());
 
-  
-  if (m_is_stroke)
-    {
-      QPen pen (m_server.color ());
-      pen.setWidth (STROKE_WIDTH_HALF * 2);
-      painter.setPen (pen);
-      painter.setBrush (Qt::NoBrush);
-    }
-  else
-    {
-      painter.setPen (Qt::black);
-      painter.setBrush (m_server.color ());
-    }
-  
-  painter.drawRect (draw_rect ());
+  draw_rect (painter);
   paint_helper ().draw_border (painter, width (), height ());
 }
 
-void color_indicator::set_paint_server (const item_paint_server &server)
+void color_indicator::set_paint_server (const renderer_paint_server *server)
 {
-  m_server = server;
+  m_server.reset (server->clone ());
   update ();
 }
 
-QRect color_indicator::draw_rect () const
+QRect color_indicator::get_draw_rect () const
 {
   QRect cur_rect = rect ();
   if (!m_is_stroke)
@@ -66,4 +56,10 @@ QRect color_indicator::draw_rect () const
 void color_indicator::mouseReleaseEvent (QMouseEvent * /*event*/)
 {
   emit clicked ();
+}
+
+void color_indicator::draw_rect (QPainter &painter)
+{
+  paint_server_indicator_renderer renderer (m_is_stroke, STROKE_WIDTH_HALF * 2);
+  painter.drawImage (get_draw_rect (), renderer.create_image (m_server.get (), {get_draw_rect ().width (), get_draw_rect ().height ()}));
 }

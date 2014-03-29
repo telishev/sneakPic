@@ -5,6 +5,7 @@
 
 #include <QTransform>
 #include <QRectF>
+#include "path/geom_helpers.h"
 
 
 svg_attribute_view_box::svg_attribute_view_box ()
@@ -36,18 +37,9 @@ bool svg_attribute_view_box::write (QString &data, bool /*to_css*/) const
   return true;
 }
 
-static QTransform rect2rect (const QRectF &src, const QRectF &dst)
-{
-  double m11 = dst.width () / src.width ();
-  double m22 = dst.height () / src.height ();
-  double dx = dst.x () - src.x () * m11;
-  double dy = dst.y () - src.y () * m22;
-  return QTransform (m11, 0.0, 0.0, m22, dx, dy);
-}
-
 QTransform svg_attribute_view_box::get_transform (const QRectF &viewport) const
 {
   /// TODO: add support for preserveAspectRatio
   QRectF src = QRectF (m_x, m_y, m_width, m_height);
-  return rect2rect (src, viewport);
+  return geom::rect2rect (src, viewport);
 }

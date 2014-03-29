@@ -16,6 +16,7 @@ public:
   virtual bool write (QString &data, bool /*to_css*/ = false) const override;
 
   double offset () const { return m_offset; }
+  void set_offset (double value) { m_offset = value; }
 
 };
 

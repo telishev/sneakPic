@@ -20,10 +20,9 @@ enum class style_controller_role_t
   LINECAP, /// Qt::PenCapStyle
   LINEJOIN, // Qt::PenJoinStyle
 
-  /// color
-
-  FILL_COLOR, /// item_paint_server
-  STROKE_COLOR, /// item_paint_server
+  /// paint server
+  FILL_SERVER, /// item_paint_server
+  STROKE_SERVER, /// item_paint_server
   CURRENT_COLOR, /// QColor
   CURRENT_COLOR_TEMP, /// QColor
 
@@ -53,7 +52,7 @@ public:
   void set_painter (svg_painter *painter);
 
   selected_style current_style () { return m_current_style; }
-  void set_current_style (selected_style style) { m_current_style = style; }
+  void set_current_style (selected_style style);
   const item_paint_server *active_server () const;
 
   bool is_selected_fill () const { return m_is_selected_fill; }

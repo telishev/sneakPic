@@ -12,6 +12,7 @@ public:
 
 protected:
   virtual renderer_base_gradient_item *create_gradient () const override;
+  virtual gradient_type_t gradient_type () const override { return gradient_type_t::LINEAR; }
 
 };
 
