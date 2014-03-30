@@ -1,9 +1,14 @@
 <RCC>
     <qresource prefix="/">
+        <file>add.png</file>
+        <file>add_folder.png</file>
+        <file>add_layer.png</file>
         <file>cursor.png</file>
         <file>ellipse.png</file>
         <file>eye_closed.png</file>
         <file>eye_open.png</file>
+        <file>folder.png</file>
+        <file>layer.png</file>
         <file>linecap_butt.png</file>
         <file>linecap_cap.png</file>
         <file>linecap_round.png</file>

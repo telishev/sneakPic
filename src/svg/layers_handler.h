@@ -9,6 +9,7 @@ class svg_items_container;
 class layers_tree;
 struct layers_tree_node;
 class undo_handler;
+enum class layer_type;
 
 class layers_handler : public QObject
 {
@@ -39,17 +40,21 @@ public:
   int get_layer_opacity (const QModelIndex &index);
   int get_layer_opacity (const layers_tree_node *node);
   layers_tree_node *tree_root ();
+  void rearrange_recursive (abstract_svg_item &parent_item); // make folders and root empty of items if they have any + create layers and move items to them if needed
+  layer_type get_layer_type (const QModelIndex &index, layer_type default_type);
+
 private:
   void update_layer_tree ();
   void update_active_layer_node_by_attribute();
   void update_attribute_by_active_layer_node ();
-  void add_new_layer (QString name = QString ());
+  void add_new_layer (layer_type layer_type_arg, QString name = QString (), abstract_svg_item *override_parent = nullptr); // override_parent to use this function also initial arranging
   layers_tree_node *get_node_by_index (const QModelIndex &index) const;
   void add_layer_items_recursive (abstract_svg_item *item);
 
 public slots:
   void set_active_layer (const QModelIndex &new_index );
   void add_new_layer_slot ();
+  void add_new_folder_slot ();
   void remove_active_layer ();
 
 private slots:

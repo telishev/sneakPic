@@ -6,6 +6,7 @@
 #include "svg/attributes/abstract_attribute.h"
 #include "svg/attributes/svg_attribute_type.h"
 #include "svg/attributes/svg_attribute_factory.h"
+#include "svg/attributes/svg_attributes_enum.h"
 
 #include "svg/items/svg_item_factory.h"
 #include "svg/items/svg_item_type.h"
@@ -211,5 +212,10 @@ bool svg_document::finalize_doc_creation (svg_reader &reader)
   graphics_item->update_bbox ();
   set_signals_enabled (true);
   return true;
+}
+
+bool svg_document::can_add_items ()
+{
+  return (m_layers_handler->get_active_layer_item ()->get_computed_attribute<svg_attribute_layer_type> ()->value () == layer_type::LAYER);
 }
 

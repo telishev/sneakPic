@@ -15,6 +15,7 @@
 #include "items/svg_graphics_item.h"
 #include "editor/operations/transform_item_operation.h"
 #include "renderer/svg_painter.h"
+#include "common/memory_deallocation.h"
 
 
 
@@ -124,6 +125,8 @@ int internal_clipboard_format::version () const
 
 void internal_clipboard_format::apply_to_doc (svg_painter *painter, QPointF cur_pos)
 {
+  if (!painter->document ()->can_add_items ())
+    return;
   QRectF bbox = calculate_bbox ();
   QPointF offset = !cur_pos.isNull () ? cur_pos - bbox.center () : QPointF (0.0f, 0.0f);
   QTransform transform = QTransform::fromTranslate (offset.x (), offset.y ());

@@ -65,8 +65,11 @@ public:
   void redo ();
 
   template<typename T>
-  T *create_new_svg_item ()
+  T *create_new_svg_item (bool ignore_check = false)
   {
+    if (!ignore_check && !can_add_items ())
+      return nullptr;
+
     T *item = new T (this);
     process_new_item (item);
     return item;
@@ -77,6 +80,7 @@ public:
   bool is_new_document ();
 
   layers_handler *get_layers_handler () {return m_layers_handler.get (); };
+  bool can_add_items ();
 
 signals:
   void items_changed ();
@@ -87,7 +91,7 @@ private:
   void update_renderer ();
   void process_new_item (abstract_svg_item *item);
   bool finalize_doc_creation (svg_reader &reader);
-};
+  };
 
 #endif // SVG_DOCUMENT_H
 

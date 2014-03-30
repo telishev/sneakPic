@@ -102,3 +102,16 @@ const char *enum_to_string (marker_units id)
 
   return "";
 }
+
+const char *enum_to_string (layer_type id)
+{
+  switch (id)
+    {
+    case layer_type::LAYER:
+      return "layer";
+    case layer_type::FOLDER:
+      return "folder";
+    default:
+      return "";
+    }
+}

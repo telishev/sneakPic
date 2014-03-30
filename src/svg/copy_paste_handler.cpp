@@ -55,6 +55,8 @@ void copy_paste_handler::paste (bool in_place)
 void copy_paste_handler::paste_image (const QImage &image, const QPointF &pos)
 {
   auto *image_item = m_painter->document ()->create_new_svg_item<svg_item_image> ();
+  if (image_item == nullptr)
+    return;
 
   image_item->get_attribute_for_change <svg_attribute_x> ()->set_value (pos.x ());
   image_item->get_attribute_for_change <svg_attribute_y> ()->set_value (pos.y ());

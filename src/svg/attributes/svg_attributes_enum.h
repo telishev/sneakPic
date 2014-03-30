@@ -19,7 +19,7 @@ public:
   virtual bool read (const char *data, bool /*from_css*/ = false) override
   {
     m_value = string_to_enum<T> (data);
-    return m_value != (T)enum_values_count (T ());
+    return m_value != (T) enum_count<T> ();
   }
 
   virtual bool write (QString &data, bool /*to_css*/ = false) const override
@@ -79,7 +79,6 @@ enum class fill_rule
 };
 
 const char *enum_to_string (fill_rule id);
-static inline int enum_values_count (fill_rule) { return (int)fill_rule::INVALID; }
 
 class svg_attribute_fill_rule : public svg_base_attribute_enum<fill_rule>
 {
@@ -108,7 +107,6 @@ enum class visibility
 };
 
 const char *enum_to_string (visibility id);
-static inline int enum_values_count (visibility) { return (int)visibility::INVALID; }
 
 class svg_attribute_visibility : public svg_base_attribute_enum<visibility>
 {
@@ -142,7 +140,6 @@ enum class display // Seriously like that many?
 };
 
 const char *enum_to_string (display id);
-static inline int enum_values_count (display) { return (int)display::INVALID; }
 
 class svg_attribute_display : public svg_base_attribute_enum<display>
 {
@@ -162,7 +159,6 @@ enum class text_anchor
 };
 
 const char *enum_to_string (text_anchor id);
-static inline int enum_values_count (text_anchor) { return (int)text_anchor::INVALID; }
 
 class svg_attribute_text_anchor : public svg_base_attribute_enum<text_anchor>
 {
@@ -181,7 +177,6 @@ enum class marker_units
 };
 
 const char *enum_to_string (marker_units id);
-static inline int enum_values_count (marker_units) { return (int)marker_units::INVALID; }
 
 class svg_attribute_marker_units : public svg_base_attribute_enum<marker_units>
 {
@@ -189,6 +184,22 @@ class svg_attribute_marker_units : public svg_base_attribute_enum<marker_units>
 public:
   svg_attribute_marker_units ()
   { m_value = marker_units::STROKE_WIDTH; }
+};
+
+enum class layer_type
+{
+  LAYER,
+  FOLDER,
+};
+
+const char *enum_to_string (layer_type id);
+
+class svg_attribute_layer_type : public svg_base_attribute_enum<layer_type>
+{
+  SVG_ATTRIBUTE
+public:
+  svg_attribute_layer_type ()
+  { m_value = layer_type::LAYER; }
 };
 
 #endif // SVG_ATTRIBUTES_ENUM_H

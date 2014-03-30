@@ -37,8 +37,13 @@ layers_widget_handler::layers_widget_handler (dock_widget_builder *dock_widget_b
     layouts.push (qt_utils::create_intermediate_hbox_layout (layouts.top ()));
     {
       layouts.top ()->addWidget (m_add_layer_btn = new QToolButton ());
-      m_add_layer_btn->setText ("+");
+      m_add_layer_btn->setIcon (QIcon (":/add_layer.png"));
+      m_add_layer_btn->setToolTip ("Add Layer");
+      layouts.top ()->addWidget (m_add_folder_btn = new QToolButton ());
+      m_add_folder_btn->setIcon (QIcon (":/add_folder.png"));
+      m_add_folder_btn->setToolTip ("Add Folder for Layers");
       layouts.top ()->addWidget (m_remove_layer_btn = new QToolButton ());
+      m_remove_layer_btn->setToolTip ("Remove Layer");
       m_remove_layer_btn->setText ("-");
       layouts.top ()->addStretch ();
     }
@@ -82,6 +87,7 @@ void layers_widget_handler::set_layers_handler (layers_handler *handler)
   CONNECT (m_handler, &layers_handler::layers_changed, this, &layers_widget_handler::update_on_layers_change);
   CONNECT (m_handler, &layers_handler::active_layer_changed, this, &layers_widget_handler::update_opacity_slider);
   CONNECT (m_add_layer_btn, &QToolButton::clicked, m_handler, &layers_handler::add_new_layer_slot);
+  CONNECT (m_add_folder_btn, &QToolButton::clicked, m_handler, &layers_handler::add_new_folder_slot);
   CONNECT (m_remove_layer_btn, &QToolButton::clicked, m_handler, &layers_handler::remove_active_layer);
   update_on_layers_change ();
   update_opacity_slider ();
@@ -99,14 +105,8 @@ layers_widget_handler::~layers_widget_handler()
 
 void layers_widget_handler::index_clicked (const QModelIndex &index)
 {
-  switch (index.column ())
-  {
-  case 0:
-    m_handler->toggle_layer_visibility (index);
-    m_layers_view->viewport ()->update ();
-    break;
-  }
-
+  m_layers_model->index_clicked (index);
+  m_layers_view->viewport ()->update ();
 }
 
 void layers_widget_handler::update_expanded_state (QModelIndex &index)

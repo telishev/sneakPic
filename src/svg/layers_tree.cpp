@@ -4,6 +4,7 @@
 #include "svg\layers_tree.h"
 
 #include "items\abstract_svg_item.h"
+#include "attributes\svg_attributes_enum.h"
 
 layers_tree::layers_tree (abstract_svg_item *root_item)
 {
@@ -14,21 +15,21 @@ layers_tree::~layers_tree ()
 {
 }
 
-bool layers_tree::add_item_with_check_internal (node *target_parent_node, int global_id)
+bool layers_tree::add_item_with_check_internal (node *target_node, int global_id, layer_type type)
 {
-  if (target_parent_node == nullptr)
+  if (target_node == nullptr)
     return false;
 
-  target_parent_node->children.emplace_back (new layers_tree_node (global_id, (int) target_parent_node->children.size (), target_parent_node));
+  target_node->children.emplace_back (new layers_tree_node (global_id, (int) target_node->children.size (), target_node, type));
   return true;
 }
 
 bool layers_tree::add_item_with_check (abstract_svg_item *item)
 {
   if (item->parent () == m_root_item)
-    return add_item_with_check_internal (&m_root, item->undo_id ());
+    return add_item_with_check_internal (&m_root, item->undo_id (), item->get_computed_attribute<svg_attribute_layer_type> ()->value ());
   else
-    return add_item_with_check_internal (find_by_id (item->parent ()->undo_id ()), item->undo_id ());
+    return add_item_with_check_internal (find_by_id (item->parent ()->undo_id ()), item->undo_id (), item->get_computed_attribute<svg_attribute_layer_type> ()->value ());
 }
 
 layers_tree::node *layers_tree::find_if (std::function <bool (const layers_tree::node *)> condition)
@@ -89,9 +90,9 @@ void layers_tree::clear ()
   m_root.children.clear (); // Everything will be cleared because of unique_ptrs
 }
 
-layers_tree_node * layers_tree::insert_node_after (layers_tree_node * target_node, int global_id)
+layers_tree_node * layers_tree::insert_node_after (layers_tree_node * target_node, int global_id, layer_type type)
 {
-  return insert_node_after (target_node, make_unique<layers_tree_node> (global_id));
+  return insert_node_after (target_node, make_unique<layers_tree_node> (global_id, type));
 }
 
 layers_tree_node * layers_tree::insert_node_after (layers_tree_node * target_node, unique_ptr<layers_tree_node> node)
@@ -114,9 +115,9 @@ layers_tree_node * layers_tree::insert_node_after (layers_tree_node * target_nod
     }
 }
 
-layers_tree_node * layers_tree::insert_node_before (layers_tree_node * target_node, int global_id)
+layers_tree_node * layers_tree::insert_node_before (layers_tree_node * target_node, int global_id, layer_type type)
 {
-  return insert_node_before (target_node, make_unique<layers_tree_node> (global_id));
+  return insert_node_before (target_node, make_unique<layers_tree_node> (global_id, type));
 }
 
 layers_tree_node * layers_tree::insert_node_before (layers_tree_node * target_node, unique_ptr<layers_tree_node> node)
@@ -139,9 +140,9 @@ layers_tree_node * layers_tree::insert_node_before (layers_tree_node * target_no
     }
 }
 
-layers_tree_node * layers_tree::insert_node_as_child (layers_tree_node *parent_node, int global_id)
+layers_tree_node * layers_tree::insert_node_as_child (layers_tree_node *parent_node, int global_id, layer_type type)
 {
-  return insert_node_as_child (parent_node, make_unique<layers_tree_node> (global_id));
+  return insert_node_as_child (parent_node, make_unique<layers_tree_node> (global_id, type));
 }
 
 layers_tree_node * layers_tree::insert_node_as_child (layers_tree_node *parent_node, unique_ptr<layers_tree_node> node)
@@ -204,4 +205,13 @@ void layers_tree::move_node (layers_tree_node *from, layers_tree_node *to)
     {
       n->node_number = counter++;
     }
+}
+
+layers_tree_node::layers_tree_node ()
+{
+  global_id = -1;
+  node_number = 0;
+  parent = nullptr;
+  expanded = true;
+  type = layer_type::LAYER;
 }

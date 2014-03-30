@@ -28,6 +28,7 @@
 #include "editor/operations/merge_path_operation.h"
 #include "editor/items_selection.h"
 #include "editor/operations/path_edit_operation.h"
+#include "common/memory_deallocation.h"
 
 pen_tool::pen_tool (svg_painter *painter)
   : abstract_tool (painter)
@@ -149,6 +150,8 @@ bool pen_tool::finish_path_add ()
     return false;
 
   svg_item_path *cur_path = add_new_path ();
+  if (cur_path == nullptr)
+    return false;
 
   if (m_path_snap_start)
     cur_path = merge_with_path (m_path_snap_start->first, m_path_snap_start->second, cur_path, cur_path->get_svg_path ()->begin ());
@@ -244,6 +247,9 @@ void pen_tool::add_new_point (QPoint pos, bool is_line)
 svg_item_path *pen_tool::add_new_path ()
 {
   auto path_item = m_painter->document ()->create_new_svg_item<svg_item_path> ();
+  if (path_item == nullptr)
+    return nullptr;
+
   add_item_operation (m_painter).apply (path_item);
   path_edit_operation (path_item).get_svg_path ()->copy_from (*m_current_path->path ());
 

@@ -78,6 +78,8 @@ void rectangle_tool::hide_preview ()
 void rectangle_tool::insert_item (const QPointF &pos )
 {
   auto *rect_item = m_painter->document ()->create_new_svg_item<svg_item_rect> ();
+  if (rect_item == nullptr)
+    return;
 
   QRectF rect = get_rect (pos);
   rect_item->get_attribute_for_change<svg_attribute_x> ()->set_value (rect.left ());

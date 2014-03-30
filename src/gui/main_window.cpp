@@ -189,7 +189,7 @@ void main_window::add_file_to_recent (QString file_path)
         }
     }
   if (m_recent_files.size () == RECENT_FILES_NUMBER)
-    m_recent_files.erase (m_recent_files.begin ());
+    m_recent_files.erase (m_recent_files.end () - 1);
 
   m_recent_files.push_front (file_path);
 

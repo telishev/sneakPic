@@ -14,7 +14,7 @@ class layers_tree_model : public QAbstractItemModel
   Q_OBJECT
 
   layers_handler *m_layers_handler;
-  QIcon eye_closed_icon, eye_open_icon;
+  QIcon eye_closed_icon, eye_open_icon, layer_icon, folder_icon;
 public:
   layers_tree_model ();
   virtual int rowCount (const QModelIndex &parent = QModelIndex()) const override;
@@ -24,6 +24,7 @@ public:
   virtual QModelIndex parent (const QModelIndex &index) const override;
   virtual QModelIndex index (int row, int column, const QModelIndex &parent = QModelIndex()) const override;
   layers_handler *handler () { return m_layers_handler; }
+  void index_clicked (const QModelIndex & index) const;
 
 public slots:
   void update_model ();

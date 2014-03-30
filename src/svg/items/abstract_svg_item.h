@@ -143,8 +143,28 @@ public:
     friend class abstract_svg_item;
   };
 
+  class const_iterator : public std::iterator<std::forward_iterator_tag, abstract_svg_item *>
+  {
+    vector<int>::const_iterator m_it;
+    undo_handler *m_undo_handler;
+
+  private:
+    const_iterator (vector<int>::const_iterator it, undo_handler *undo_handler_arg) { m_it = it; m_undo_handler = undo_handler_arg; }
+    const_iterator () {  }
+
+  public:
+    abstract_svg_item *operator* ();
+    bool operator != (const const_iterator &other) const { return m_it != other.m_it; };
+    bool operator == (const const_iterator &other) const { return m_it == other.m_it; };
+    const_iterator &operator++() { ++this->m_it; return *this; };
+
+    friend class abstract_svg_item;
+  };
+
   iterator begin ();
   iterator end ();
+  const_iterator begin () const;
+  const_iterator end () const;
 
   void make_orphan (abstract_svg_item *child);  // WARNING: These function does not generate proper undo, so you'd better use it in the stage before undo has any sense.
   void adopt_orphan (abstract_svg_item *child); // --- / ---

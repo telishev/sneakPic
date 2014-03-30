@@ -74,6 +74,7 @@ DECLARE_ATTRIBUTE(NODETYPES            , "nodetypes"          , SNEAKPIC   , svg
 DECLARE_ATTRIBUTE(LINETYPES            , "linetypes"          , SNEAKPIC   , svg_attribute_linetypes            , NONE         )   \
 DECLARE_ATTRIBUTE(LAYER_NAME           , "layer-name"         , SNEAKPIC   , svg_attribute_layer_name           , NONE         )   \
 DECLARE_ATTRIBUTE(ACTIVE_LAYER         , "active-layer"       , SNEAKPIC   , svg_attribute_active_layer         , NONE         )   \
+DECLARE_ATTRIBUTE(LAYER_TYPE           , "layer-type"         , SNEAKPIC   , svg_attribute_layer_type           , NONE         )   \
 
 enum class svg_attribute_type
 {
@@ -144,6 +145,7 @@ enum class svg_attribute_type
   LINETYPES,
   LAYER_NAME,
   ACTIVE_LAYER,
+  LAYER_TYPE,
 
   COUNT,
 };

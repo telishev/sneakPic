@@ -10,13 +10,15 @@
 
 #include <stack>
 
+#include "svg/attributes/svg_attributes_enum.h"
 
 
 enum class columnRole
 {
-  VISIBILITY = 0,
-  TITLE = 1,
-  OPACITY = 2,
+  TYPE = 0,
+  VISIBILITY,
+  TITLE,
+  OPACITY,
 
   COUNT
 };
@@ -45,14 +47,23 @@ QVariant layers_tree_model::data (const QModelIndex &index, int role /*= Qt::Dis
       return QVariant ();
     case columnRole::VISIBILITY:
       switch (role)
-      {
-      case Qt::DisplayRole:
-        return "";
-      case Qt::DecorationRole:
-        return m_layers_handler->is_layer_visible (index) ? eye_open_icon : eye_closed_icon;
-      }
+        {
+        case Qt::DisplayRole:
+          return "";
+        case Qt::DecorationRole:
+          return m_layers_handler->is_layer_visible (index) ? eye_open_icon : eye_closed_icon;
+        }
       return QVariant ();
-   case columnRole::COUNT:
+    case columnRole::TYPE:
+      switch (role)
+        {
+        case Qt::DisplayRole:
+          return "";
+        case Qt::DecorationRole:
+          return m_layers_handler->get_layer_type (index, layer_type::FOLDER) == layer_type::LAYER ? layer_icon : folder_icon;
+        }
+      return QVariant ();
+    case columnRole::COUNT:
       return  QVariant ();
     }
   return QVariant ();
@@ -63,6 +74,8 @@ layers_tree_model::layers_tree_model ()
   m_layers_handler = 0;
   eye_closed_icon = QIcon (":/eye_closed.png");
   eye_open_icon = QIcon (":/eye_open.png");
+  layer_icon = QIcon (":/layer.png");
+  folder_icon = QIcon (":/folder.png");
 }
 
 void layers_tree_model::update_model ()
@@ -145,12 +158,15 @@ Qt::ItemFlags layers_tree_model::flags (const QModelIndex &index) const
   auto flags = QAbstractItemModel::flags (index);
 
   // if (index.column () == (int) columnRole::VISIBILITY)
-  flags |= Qt::ItemIsDropEnabled;
+  if (m_layers_handler->get_layer_type (index, layer_type::FOLDER) == layer_type::FOLDER)
+    flags |= Qt::ItemIsDropEnabled;
 
-  switch (index.column ())
+  switch ((columnRole) index.column ())
   {
-    case 1:
+    case columnRole::TITLE:
       flags |= (Qt::ItemIsEditable | Qt::ItemIsDragEnabled);
+      break;
+    default:
       break;
   }
   return flags;
@@ -209,4 +225,16 @@ QModelIndex layers_tree_model::parent (const QModelIndex &index) const
     return createIndex (-1, -1, m_layers_handler->tree_root ());
   else
     return createIndex (node->node_number, 0, node->parent);
+}
+
+void layers_tree_model::index_clicked (const QModelIndex &index) const
+{
+  switch ((columnRole) index.column ())
+    {
+    case columnRole::VISIBILITY:
+      m_layers_handler->toggle_layer_visibility (index);
+      break;
+    default:
+      break;
+    }
 }

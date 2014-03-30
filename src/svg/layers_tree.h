@@ -2,6 +2,7 @@
 #define LAYERS_TREE_H
 
 class abstract_svg_item;
+enum class layer_type;
 
 struct layers_tree_node
 {
@@ -11,10 +12,11 @@ struct layers_tree_node
   int global_id; // global id of the item
   int node_number; // should be updated on node creation
   bool expanded; // GUI property, is corresponding view item expanded
+  layer_type type; // type
 
-  node () { global_id = -1; node_number = 0; parent = nullptr; expanded = true; }
-  node (int global_id_arg, int node_number_arg, node *parent_arg) : node () { global_id = global_id_arg; node_number = node_number_arg; parent = parent_arg; }
-  node (int global_id_arg) : node () { global_id = global_id_arg; }
+  node ();
+  node (int global_id_arg, int node_number_arg, node *parent_arg, layer_type type_arg) : node () { global_id = global_id_arg; node_number = node_number_arg; parent = parent_arg; type = type_arg; }
+  node (int global_id_arg, layer_type type_arg) : node () { global_id = global_id_arg; type = type_arg; }
 };
 
 class layers_tree
@@ -30,11 +32,11 @@ public:
 
   node *find_by_id (int global_id); // returns nullptr if item is not found
   bool add_item_with_check (abstract_svg_item *item); // function for pushing abstract_svg_item to back of their parent without exact knowledge if their parent item is valid layer
-  layers_tree_node *insert_node_after (layers_tree_node * target_node, int global_id); // here we're adding the node with knowledge of global_id and where to place it in general structure
+  layers_tree_node *insert_node_after (layers_tree_node * target_node, int global_id, layer_type type); // here we're adding the node with knowledge of global_id and where to place it in general structure
   layers_tree_node *insert_node_after (layers_tree_node * target_node, unique_ptr<layers_tree_node> node);
-  layers_tree_node *insert_node_before (layers_tree_node * target_node, int global_id);
+  layers_tree_node *insert_node_before (layers_tree_node * target_node, int global_id, layer_type type);
   layers_tree_node *insert_node_before (layers_tree_node * target_node, unique_ptr<layers_tree_node> node);
-  layers_tree_node *insert_node_as_child (layers_tree_node *parent_node, int global_id);
+  layers_tree_node *insert_node_as_child (layers_tree_node *parent_node, int global_id, layer_type type);
   layers_tree_node * insert_node_as_child (layers_tree_node *parent_node, unique_ptr<layers_tree_node> node);
   node *find_if (std::function <bool (const node *)> condition);  // returns nullptr if item is not found
   node *root () { return &m_root; }
@@ -51,7 +53,7 @@ private:
   node *find_if_recursive (layers_tree::node *parent, std::function <bool (const node *)> condition) const;
   void do_for_each_node_recursive (layers_tree::node *parent, std::function <void (layers_tree::node *)> action);
   void do_for_each_node_recursive (const layers_tree::node *parent, std::function<void (const layers_tree::node *)> action) const;
-  bool add_item_with_check_internal (node *target_node, int global_id);
+  bool add_item_with_check_internal (node *target_node, int global_id, layer_type type);
   };
 
 #endif // LAYERS_TREE_H

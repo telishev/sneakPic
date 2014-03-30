@@ -16,7 +16,7 @@ public:
   void set_clear_selection (bool clear) { m_clear_selection = clear; }
   void set_apply_style (bool apply_style) { m_apply_style = apply_style; }
 
-  void apply (abstract_svg_item *item);
+  bool apply (abstract_svg_item *item); // if apply is not successful please do not add any garbage to undo queue.
 };
 
 #endif // ADD_ITEM_OPERATION_H

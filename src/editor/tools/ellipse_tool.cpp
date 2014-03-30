@@ -79,6 +79,8 @@ void ellipse_tool::hide_preview ()
 void ellipse_tool::insert_item (const QPointF &pos )
 {
   auto *ellipse_item = m_painter->document ()->create_new_svg_item<svg_item_ellipse> ();
+  if (ellipse_item == nullptr)
+    return;
 
   QRectF rect = get_rect (pos);
   ellipse_item->get_attribute_for_change<svg_attribute_rx> ()->set_value (rect.width () / 2);

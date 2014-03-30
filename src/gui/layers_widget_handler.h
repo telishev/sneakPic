@@ -23,7 +23,7 @@ class layers_widget_handler : public QObject
   layers_handler *m_handler;
   QTreeView *m_layers_view;
   unique_ptr<layers_tree_model> m_layers_model;
-  QToolButton *m_add_layer_btn, *m_remove_layer_btn;
+  QToolButton *m_add_layer_btn, *m_remove_layer_btn, *m_add_folder_btn;
   unique_ptr<connection> change_active_layer_connection, change_opacity_connection, index_collapsed_connection, index_expanded_connection;
   QSlider *m_opacity_slider;
 

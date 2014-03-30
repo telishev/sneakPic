@@ -26,29 +26,56 @@ layers_handler::layers_handler (svg_document *document)
   update_layer_tree (); // from items
   m_closest_to_active_global_id = -1;
   if (layers_count () == 0)
-    add_new_layer ("Canvas");
+    add_new_layer (layer_type::LAYER, "Canvas");
 
   auto root = m_document->root ();
-  string attribute_name = svg_attribute_layer_name ().type_name ();
-  auto closest_layer = get_layer_item (m_layers_tree->root ()->children[0].get ()); // There should be at least "Canvas" layer
-  vector <pair <abstract_svg_item *, abstract_svg_item *> > move_child_to_layer;
+  rearrange_recursive (*root);
+  emit layers_changed ();
+}
 
-  for (auto && child : *root)
+void layers_handler::rearrange_recursive (abstract_svg_item &parent_item)
+{
+  vector <pair <abstract_svg_item *, abstract_svg_item *> > move_child_to_layer;
+  string layer_attribute_name = svg_attribute_layer_name ().type_name ();
+  auto parent_node = m_layers_tree->find_by_id (parent_item.undo_id ());
+  if (parent_node == nullptr)
+    return;
+
+  auto closest_layer_iterator = find_if (parent_node->children.begin (), parent_node->children.end (), [] (const unique_ptr<layers_tree_node> &node) { return node->type == layer_type::LAYER; });
+  abstract_svg_item *closest_layer_item = nullptr;
+  if (closest_layer_iterator != parent_node->children.end ())
+    closest_layer_item = get_layer_item ((*closest_layer_iterator).get ());
+
+  add_new_layer (layer_type::LAYER , QString (), &parent_item);
+
+  for (auto && child : parent_item)
     {
-      if (!child->has_attribute (attribute_name))
+      if (!child->has_attribute (layer_attribute_name))
         {
-          move_child_to_layer.push_back ({child, closest_layer});
+          if (child->get_computed_attribute<svg_attribute_layer_type> ()->value () != layer_type::FOLDER)
+            {
+              if (closest_layer_item == nullptr)
+                {
+                  add_new_layer (layer_type::LAYER, QString (), &parent_item);
+                  closest_layer_item = get_layer_item (parent_node->children.back ().get ());
+                }
+
+              move_child_to_layer.push_back ({child, closest_layer_item});
+            }
+          else
+            {
+              rearrange_recursive (*child);
+            }
         }
       else
-        closest_layer = child;
+        closest_layer_item = child;
     }
 
   for (auto && action : move_child_to_layer)
     {
-      root->make_orphan (action.first);
+      parent_item.make_orphan (action.first);
       action.second->adopt_orphan (action.first);
     }
-  emit layers_changed ();
 }
 
 void layers_handler::on_undo_redo_done ()
@@ -65,8 +92,11 @@ void layers_handler::add_layer_items_recursive (abstract_svg_item *item)
       if (!m_layers_tree->add_item_with_check (item))
         item->remove_attribute (item->get_computed_attribute <svg_attribute_layer_name> ()); // If layer cannot be added for some reasons then remove it's layer tag
     }
-  for (int i = item->children_count () - 1; i >= 0; i--)
-    add_layer_items_recursive (item->child (i));
+  if (item->get_computed_attribute<svg_attribute_layer_type> ()->value () == layer_type::FOLDER || item == m_document->root ())
+    {
+      for (int i = item->children_count () - 1; i >= 0; i--)
+        add_layer_items_recursive (item->child (i));
+    }
 }
 
 void layers_handler::update_layer_tree ()
@@ -83,14 +113,14 @@ void layers_handler::update_layer_tree ()
   emit layers_changed ();
 }
 
-void layers_handler::add_new_layer (QString name)
+void layers_handler::add_new_layer (layer_type layer_type_arg, QString name /*= QString ()*/, abstract_svg_item *override_parent /*= nullptr*/)
 {
   if (name.isNull ())
     {
-      QRegExp re ("^Layer (\\d+)$");
+      QRegExp re = (layer_type_arg == layer_type::LAYER ? QRegExp ("^Layer (\\d+)$") : QRegExp ("^Folder (\\d+)$"));
       set<int> numbers;
 
-      m_layers_tree->do_for_each_node ([&](layers_tree_node *l)
+      m_layers_tree->do_for_each_node ([&] (layers_tree_node * l)
       {
         bool ok;
 
@@ -112,25 +142,31 @@ void layers_handler::add_new_layer (QString name)
             }
           prev_num = x;
         }
-      name = QString ("Layer %1").arg (free_num);
+      name = (layer_type_arg == layer_type::LAYER ? QString ("Layer %1").arg (free_num) : QString ("Folder %1").arg (free_num));
     }
 
-  auto *layer_item = m_document->create_new_svg_item<svg_item_group> ();
+  auto *layer_item = m_document->create_new_svg_item<svg_item_group> (true); // ignoring check
   layer_item->get_attribute_for_change<svg_attribute_layer_name> ()->set_value (name);
   layer_item->get_attribute_for_change<svg_attribute_display> ()->set_value (display::INLINE); // Make sure that layer has visibility attribute in a moment of creation
-  m_document->root ()->push_back (layer_item);
+  layer_item->get_attribute_for_change<svg_attribute_layer_type> ()->set_value (layer_type_arg);
+  if (override_parent == nullptr)
+    {
+      auto active_layer_item = get_active_layer_item ();
+      auto parent_item = (active_layer_item != nullptr ? active_layer_item->parent () : m_document->root ());
+      parent_item->push_back (layer_item);
+      if (active_layer_item != nullptr)
+        parent_item->move_child (active_layer_item->child_index () + 1, layer_item);
 
-  auto active_layer_item = get_active_layer_item ();
-  if (active_layer_item != nullptr)
-    m_document->root ()->move_child (active_layer_item->child_index () + 1, layer_item);
+      m_active_layer_node = m_layers_tree->insert_node_before (m_active_layer_node, layer_item->undo_id (), layer_item->get_computed_attribute<svg_attribute_layer_type> ()->value ());
+      update_attribute_by_active_layer_node ();
+
+      emit layers_changed ();
+    }
   else
-    m_document->root ()->move_child (0, layer_item);
-
-  m_active_layer_node = m_layers_tree->insert_node_before (m_active_layer_node, layer_item->undo_id ());
-
-  update_attribute_by_active_layer_node ();
-
-  emit layers_changed ();
+    {
+      override_parent->push_back (layer_item);
+      m_active_layer_node = m_layers_tree->insert_node_as_child (m_layers_tree->find_by_id (override_parent->undo_id ()), layer_item->undo_id (), layer_item->get_computed_attribute<svg_attribute_layer_type> ()->value ());
+    }
 };
 
 void layers_handler::remove_active_layer ()
@@ -176,7 +212,7 @@ layers_tree_node *layers_handler::get_node_by_index (const QModelIndex &index) c
 
 abstract_svg_item * layers_handler::get_layer_item (const layers_tree_node *node) const
 {
-  return static_cast <abstract_svg_item *> (m_undo_handler->get_item (node->global_id));
+  return node != nullptr ? static_cast <abstract_svg_item *> (m_undo_handler->get_item (node->global_id)) : nullptr;
 }
 
 abstract_svg_item *layers_handler::get_active_layer_item () const
@@ -228,7 +264,7 @@ void layers_handler::update_active_layer_node_by_attribute ()
       return;
     }
 
-  auto item = std::find_if (item_container->begin (), item_container->end (), [&](abstract_svg_item *item){ return item->get_computed_attribute<svg_attribute_layer_name> ()->value () == active_layer_name; });
+  auto item = find_if (item_container->begin (), item_container->end (), [&](abstract_svg_item *item){ return item->get_computed_attribute<svg_attribute_layer_name> ()->value () == active_layer_name; });
   if (item == item_container->end ())
     {
       if (m_layers_tree->root ()->children.size () > 0)
@@ -249,7 +285,12 @@ void layers_handler::update_attribute_by_active_layer_node ()
 bool layers_handler::is_layer_visible (const QModelIndex &index)
 {
   return get_layer_item (index)->get_computed_attribute<svg_attribute_display> ()->value () != display::NONE;
-  return true;
+}
+
+layer_type layers_handler::get_layer_type (const QModelIndex &index, layer_type default_type)
+{
+  auto item = get_layer_item (index);
+  return item != nullptr ? item->get_computed_attribute<svg_attribute_layer_type> ()->value () : default_type;
 }
 
 void layers_handler::rename_layer (const QModelIndex &index, QString new_name)
@@ -264,7 +305,7 @@ void layers_handler::rename_layer (const QModelIndex &index, QString new_name)
 
 void layers_handler::move_layer_inside (layers_tree_node *from, layers_tree_node *to)
 {
-  if (to == nullptr || from == nullptr || from->parent == to)
+  if (to == nullptr || from == nullptr || from->parent == to || to->type == layer_type::LAYER)
     return;
 
   auto cur_parent = to->parent;
@@ -352,8 +393,14 @@ void layers_handler::set_active_layer_opacity (int value)
 
 void layers_handler::add_new_layer_slot ()
 {
-  add_new_layer ();
+  add_new_layer (layer_type::LAYER);
   m_document->apply_changes ("Add New Layer");
+}
+
+void layers_handler::add_new_folder_slot ()
+{
+  add_new_layer (layer_type::FOLDER);
+  m_document->apply_changes ("Add New Folder");
 }
 
 layers_tree_node *layers_handler::tree_root ()
