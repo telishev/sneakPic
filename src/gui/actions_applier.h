@@ -27,10 +27,10 @@ class actions_applier
   };
 
   typedef std::function<bool ()> action_type;
-  vector<action_type> m_actions;
+  vector<vector<action_type>> m_actions;
 
-  vector<mouse_shortcut_func_t> m_shortcuts;
-  vector<drag_shortcut_func_t> m_drag_shortcuts;
+  vector<vector<mouse_shortcut_func_t>> m_shortcuts;
+  vector<vector<drag_shortcut_func_t>> m_drag_shortcuts;
 
 public:
   actions_applier ();
