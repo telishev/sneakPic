@@ -11,7 +11,7 @@
 #include "svg/attributes/svg_attribute_nodetypes.h"
 
 
-anchor_handle_renderer::anchor_handle_renderer (QPointF pos, node_type_t node_type, bool is_highlighted)
+anchor_handle_renderer::anchor_handle_renderer (QPointF pos, handle_type node_type, bool is_highlighted)
 {
   m_node_type = node_type;
   m_pos = pos;
@@ -22,7 +22,7 @@ anchor_handle_renderer::anchor_handle_renderer (QPointF pos, node_type_t node_ty
 
 anchor_handle_renderer::anchor_handle_renderer ()
 {
-  m_node_type = node_type_t::SMOOTH;
+  m_node_type = handle_type::SQUARE;
   m_pos = QPointF ();
   m_is_highlighted = false;
   m_is_visible = false;
@@ -39,7 +39,7 @@ void anchor_handle_renderer::set_pos (QPointF pos)
   m_pos = pos;
 }
 
-void anchor_handle_renderer::set_node_type (node_type_t node_type)
+void anchor_handle_renderer::set_node_type (handle_type node_type)
 {
   m_node_type = node_type;
 }
@@ -77,7 +77,9 @@ void anchor_handle_renderer::draw (SkCanvas &canvas, const renderer_state &state
 
 void anchor_handle_renderer::draw_anchor (SkCanvas &canvas, const SkRect &rect, SkPaint &paint) const
 {
-  if (is_cusp_node ())
+  switch (m_node_type)
+  {
+    case handle_type::DIAMOND:
     {
       canvas.save ();
       canvas.translate (rect.centerX (), rect.centerY ());
@@ -87,14 +89,14 @@ void anchor_handle_renderer::draw_anchor (SkCanvas &canvas, const SkRect &rect, 
       paint.setAntiAlias (true);
       canvas.drawRect (moved_rect, paint);
       canvas.restore ();
+      break;
     }
-  else
-    canvas.drawRect (rect, paint);
-}
-
-bool anchor_handle_renderer::is_cusp_node () const
-{
-  return m_node_type == node_type_t::CUSP;
+    case handle_type::SQUARE:
+      canvas.drawRect (rect, paint);
+      break;
+    case handle_type::CIRCLE:
+      canvas.drawOval (rect, paint);
+  }
 }
 
 QRect anchor_handle_renderer::get_element_rect (QTransform transform) const

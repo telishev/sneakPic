@@ -40,7 +40,6 @@ public:
   virtual QPointF get_handle_center () const override;
 
 protected:
-  virtual void set_mouse_hovered (bool hovered) override;
   virtual bool start_drag (QPointF local_pos) override;
   virtual bool drag (QPointF local_pos) override;
   virtual bool end_drag (QPointF local_pos) override;

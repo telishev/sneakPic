@@ -29,15 +29,6 @@ path_anchor_handle::~path_anchor_handle ()
 {
 }
 
-void path_anchor_handle::set_mouse_hovered (bool hovered)
-{
-  if (m_is_highlighted == hovered)
-    return;
-
-  m_is_highlighted = hovered;
-  m_editor->update ();
-}
-
 bool path_anchor_handle::start_drag (QPointF local_pos)
 {
   m_edit_operation.reset (new path_edit_operation (m_item));
