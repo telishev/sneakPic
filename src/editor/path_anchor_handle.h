@@ -15,7 +15,7 @@ class path_handles_editor;
 class path_edit_operation;
 class SkCanvas;
 class SkPaint;
-class SkRect;
+struct SkRect;
 
 enum class node_type_t : char;
 

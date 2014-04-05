@@ -28,7 +28,9 @@ namespace geom
   QRect inner_rect (QRectF rect);
   QPoint nearest_point (QPointF point);
   double distance (QPointF first, QPointF second);
+  double distance2 (QPointF first, QPointF second);
   double norm (QPointF point);
+  double norm2 (QPointF point);
   QPointF normalized (QPointF point);
   QPointF direction (QPointF begin, QPointF end);
   double angle (QPointF point);
@@ -38,6 +40,9 @@ namespace geom
   double angle_between (QPointF begin, QPointF end);
   QPointF vector_from_angle (double angle, double norm);
   QTransform rect2rect (const QRectF &src, const QRectF &dst);
+  QPointF projection (QPointF start, QPointF end, QPointF point);
+  double projection_value (QPointF start, QPointF end, QPointF point);
+  QTransform triangle2triangle (const QPointF *source, const QPointF *dest);
 };
 
 #endif // GEOM_HELPERS_H

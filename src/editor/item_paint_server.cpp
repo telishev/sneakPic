@@ -196,3 +196,16 @@ void item_paint_server::set_current_server (const renderer_paint_server *server)
       }
     }
 }
+
+renderer_base_gradient_item * item_paint_server::get_gradient_for_change ()
+{
+  switch (m_current_type)
+    {
+    case renderer_paint_server_type::COLOR: return nullptr;
+    case renderer_paint_server_type::NONE: return nullptr;
+    case renderer_paint_server_type::LINEAR_GRADIENT: return m_linear_gradient.get ();
+    case renderer_paint_server_type::RADIAL_GRADIENT: return m_radial_gradient.get ();
+    }
+
+  return nullptr;
+}

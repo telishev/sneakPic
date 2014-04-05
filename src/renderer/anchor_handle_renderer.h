@@ -4,6 +4,7 @@
 #include "renderer/renderable_item.h"
 
 #include <QPointF>
+#include <QColor>
 
 enum class handle_type
 {
@@ -24,11 +25,18 @@ class anchor_handle_renderer : public renderable_item
   bool m_is_highlighted;
   bool m_is_visible;
   bool m_is_selected;
+  QColor m_highlighted_color;
+  QColor m_selected_color;
+  QColor m_color;
+
 public:
   anchor_handle_renderer ();
   anchor_handle_renderer (QPointF pos, handle_type node_type, bool is_highlighted);
   ~anchor_handle_renderer ();
 
+  void set_color (QColor color) {m_color = color;}
+  void set_selected_color (QColor color) {m_selected_color = color;}
+  void set_highlighted_color (QColor color) {m_highlighted_color = color;}
   void set_pos (QPointF pos);
   void set_node_type (handle_type node_type);
   void set_highlighted (bool is_highlighted);

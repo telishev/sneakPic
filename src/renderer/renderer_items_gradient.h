@@ -28,6 +28,7 @@ protected:
 public:
   renderer_base_gradient_item ();
 
+  vector<pair<double, QColor>> &stops () { return m_stops; }
   const vector<pair<double, QColor>> &stops () const { return m_stops; }
   spread_method spread () const { return m_spread; }
   gradient_units units () const { return m_units; }
@@ -68,6 +69,11 @@ public:
   double y1 () const { return m_y1; }
   double y2 () const { return m_y2; }
 
+  void set_x1 (double val) { m_x1 = val; }
+  void set_y1 (double val) { m_y1 = val; }
+  void set_x2 (double val) { m_x2 = val; }
+  void set_y2 (double val) { m_y2 = val; }
+
 private:
   virtual SkShader *create_shader (SkColor *colors, SkScalar *pos, int size, int mode) const override;
 };
@@ -94,6 +100,13 @@ public:
   double fx () const { return m_fx; }
   double fy () const { return m_fy; }
   double r () const { return m_r; }
+
+  void set_cx (double val) { m_cx = val; }
+  void set_cy (double val) { m_cy = val; }
+  void set_fx (double val) { m_fx = val; }
+  void set_fy (double val) { m_fy = val; }
+  void set_r (double val) { m_r = val; }
+
 private:
   virtual SkShader *create_shader (SkColor *colors, SkScalar *pos, int size, int mode) const override ;
 };

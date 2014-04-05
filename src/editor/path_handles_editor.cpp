@@ -262,6 +262,7 @@ bool path_handles_editor::delete_selected_handles ()
   }
 
   m_handles_selection->clear ();
+  update_handles ();
   m_painter->document ()->apply_changes ("Delete Handles");
   return true;
 }

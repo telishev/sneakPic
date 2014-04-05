@@ -66,6 +66,9 @@ element_handles *handles_editor::handles_for_item (const string &item) const
 
 void handles_editor::add_item (abstract_svg_item *item)
 {
+  if (!item)
+    return;
+
   element_handles *handle = create_handles_for_item (item);
   if (!handle)
     return;
@@ -97,7 +100,13 @@ bool handles_editor::drag_handle (QPointF pos)
   if (!m_cur_handle)
     return false;
 
-  return m_cur_handle->drag (get_local_pos (pos));
+  if (m_cur_handle->drag (get_local_pos (pos)))
+    {
+      m_painter->update ();
+      return true; 
+    }
+
+  return false;
 }
 
 bool handles_editor::end_drag (QPointF pos)
@@ -105,7 +114,13 @@ bool handles_editor::end_drag (QPointF pos)
   if (!m_cur_handle)
     return false;
 
-  return m_cur_handle->end_drag (get_local_pos (pos));
+  if (m_cur_handle->end_drag (get_local_pos (pos)))
+    {
+      m_painter->update ();
+      return true;
+    }
+
+  return false;
 }
 
 abstract_handle *handles_editor::get_handle_by_pos (QPointF screen_pos) const
@@ -149,7 +164,10 @@ bool handles_editor::highlight_handle (QPointF pos)
 {
   abstract_handle *cur_handle = get_handle_by_pos (pos);
   if (cur_handle != m_highlighted_handle && m_highlighted_handle)
-    m_highlighted_handle->set_mouse_hovered (false);
+    {
+      m_highlighted_handle->set_mouse_hovered (false);
+      m_painter->update ();
+    }
 
   m_highlighted_handle = cur_handle;
   if (!m_highlighted_handle)

@@ -12,6 +12,7 @@
 
 
 anchor_handle_renderer::anchor_handle_renderer (QPointF pos, handle_type node_type, bool is_highlighted)
+: anchor_handle_renderer ()
 {
   m_node_type = node_type;
   m_pos = pos;
@@ -26,6 +27,10 @@ anchor_handle_renderer::anchor_handle_renderer ()
   m_pos = QPointF ();
   m_is_highlighted = false;
   m_is_visible = false;
+  m_is_selected = false;
+  m_highlighted_color = QColor ("lightcoral");
+  m_selected_color = QColor ("blue");
+  m_color = QColor ("gray");
 }
 
 anchor_handle_renderer::~anchor_handle_renderer ()
@@ -96,6 +101,7 @@ void anchor_handle_renderer::draw_anchor (SkCanvas &canvas, const SkRect &rect, 
       break;
     case handle_type::CIRCLE:
       canvas.drawOval (rect, paint);
+      break;
   }
 }
 
@@ -110,11 +116,11 @@ QRect anchor_handle_renderer::get_element_rect (QTransform transform) const
 QColor anchor_handle_renderer::current_color () const
 {
   if (m_is_highlighted)
-    return QColor ("lightcoral");
+    return m_highlighted_color;
   else if (m_is_selected)
-    return QColor ("blue");
+    return m_selected_color;
   else
-    return QColor ("gray");
+    return m_color;
 }
 
 void anchor_handle_renderer::set_visible (bool visible)

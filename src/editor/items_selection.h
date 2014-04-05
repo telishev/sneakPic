@@ -3,9 +3,6 @@
 
 #include <set>
 #include <QObject>
-#ifdef _WINDOWS
-#include <xutility>
-#endif // _WINDOWS
 
 class abstract_svg_item;
 class svg_document;

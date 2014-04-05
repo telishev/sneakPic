@@ -8,11 +8,13 @@ class svg_painter;
 class rubberband_selection;
 class overlay_renderer;
 class path_handles_editor;
+class gradient_handles_editor;
 
 class path_editor_tool : public abstract_tool
 {
-  rubberband_selection    *m_rubberband;
-  path_handles_editor *m_path_editor;
+  unique_ptr<rubberband_selection>    m_rubberband;
+  unique_ptr<path_handles_editor>     m_path_editor;
+  unique_ptr<gradient_handles_editor> m_gradient_editor;
 
 public:
   path_editor_tool (svg_painter *painter);
@@ -21,6 +23,8 @@ public:
 private:
   virtual void configure () override;
   virtual void activate () override;
+
+  void update_handles ();
 
 };
 

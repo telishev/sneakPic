@@ -13,6 +13,7 @@ class renderer_painter_server_color;
 class renderer_linear_gradient;
 class renderer_radial_gradient;
 class renderer_painter_server_none;
+class renderer_base_gradient_item;
 
 class renderer_paint_server;
 
@@ -42,6 +43,8 @@ public:
   void set_current_type (renderer_paint_server_type type) { m_current_type = type; }
 
   const renderer_paint_server *server_for_type (renderer_paint_server_type type) const;
+
+  renderer_base_gradient_item *get_gradient_for_change ();
 
   void set_color (QColor color);
   QColor color () const;
