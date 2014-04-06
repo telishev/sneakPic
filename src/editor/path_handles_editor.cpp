@@ -130,6 +130,7 @@ private:
 path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
   : handles_editor (overlay, painter, applier)
 {
+  m_disable_deselect = false;
   m_handles_selection = new path_anchors_selection (painter->selection (), painter->document ());
   m_rubberband = new rubberband_selection (overlay, painter, applier, mouse_drag_shortcut_t::HANDLES_SELECTION);
 
@@ -150,6 +151,7 @@ path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter
   m_applier->add_shortcut (mouse_shortcut_t::SELECT_HANDLE, this, &path_handles_editor::select_handle);
   m_applier->add_shortcut (mouse_shortcut_t::CHANGE_HANDLE_TYPE, this, &path_handles_editor::change_handle);
   m_applier->register_action (gui_action_id::DELETE_HANDLES, this, &path_handles_editor::delete_selected_handles);
+  m_applier->register_action (gui_action_id::DESELECT_HANDLES, this, &path_handles_editor::deselect_handles);
 }
 
 path_handles_editor::~path_handles_editor ()
@@ -176,6 +178,7 @@ bool path_handles_editor::select_handle (const mouse_event_t &mevent)
   if (!contains_modifier (mevent.modifier (), SHIFT))
     m_handles_selection->clear ();
   m_handles_selection->add_anchor (control_point->item_name (), control_point->point_id ());
+  deselect_other ();
   update_handles ();
   update ();
   return true;
@@ -219,6 +222,7 @@ void path_handles_editor::select_by_rect (const QRectF &rect)
         }
     }
 
+  deselect_other ();
   update_handles ();
   update ();
 }
@@ -294,4 +298,22 @@ path_anchor_handle *path_handles_editor::get_path_anchor (const QPoint &pos) con
     return nullptr;
 
   return dynamic_cast<path_anchor_handle *> (handle);
+}
+
+bool path_handles_editor::deselect_handles ()
+{
+  if (m_disable_deselect || m_handles_selection->selected_anchors ().empty ())
+    return false;
+
+  m_handles_selection->clear ();
+  update_handles ();
+  m_painter->update ();
+  return true;
+}
+
+void path_handles_editor::deselect_other ()
+{
+  m_disable_deselect = true;
+  m_applier->apply_action (gui_action_id::DESELECT_HANDLES);
+  m_disable_deselect = false;
 }

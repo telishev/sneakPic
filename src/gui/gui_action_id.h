@@ -37,6 +37,7 @@ enum class gui_action_id
   LOWER_OBJECT,
   RAISE_OBJECT,
   SWITCH_FILL_STROKE,
+  DESELECT_HANDLES,
 
   INTERRUPT,
 

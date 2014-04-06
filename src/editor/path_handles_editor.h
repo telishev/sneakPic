@@ -13,6 +13,7 @@ class path_handles_editor : public handles_editor
 {
   path_anchors_selection *m_handles_selection;
   rubberband_selection *m_rubberband;
+  bool m_disable_deselect;
 public:
   path_handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier);
   virtual ~path_handles_editor ();
@@ -33,6 +34,8 @@ private:
   void select_by_rect (const QRectF &rect);
   bool delete_selected_handles ();
   path_anchor_handle *get_path_anchor (const QPoint &pos) const;
+  bool deselect_handles ();
+  void deselect_other ();
 };
 
 #endif // PATH_HANDLES_EDITOR_H

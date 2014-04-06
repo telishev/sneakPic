@@ -2,21 +2,28 @@
 
 #include <QTransform>
 
-#include "element_handles.h"
-#include "base_handle.h"
-#include "renderer/renderer_items_gradient.h"
+#include "common/debug_utils.h"
+
 #include "path/geom_helpers.h"
-#include "item_paint_server.h"
-#include "svg/items/svg_graphics_item.h"
-#include "style_controller.h"
+#include "path/svg_path_geom.h"
+
+#include "editor/element_handles.h"
+#include "editor/base_handle.h"
+#include "editor/item_paint_server.h"
+#include "editor/style_controller.h"
+
+#include "renderer/renderer_items_gradient.h"
 #include "renderer/svg_painter.h"
-#include "svg/svg_document.h"
 #include "renderer/anchor_handle_renderer.h"
+#include "renderer/path_preview_renderer.h"
+#include "renderer/qt2skia.h"
+
+#include "svg/items/svg_graphics_item.h"
+#include "svg/svg_document.h"
+
 #include "gui/shortcuts_config.h"
 #include "gui/actions_applier.h"
-#include "renderer/path_preview_renderer.h"
-#include "path/svg_path_geom.h"
-#include "renderer/qt2skia.h"
+#include "../gui/gui_action_id.h"
 
 class gradient_handles;
 
@@ -38,6 +45,8 @@ public:
     set_color (Qt::white);
     set_handle_type (get_handle_type ());
   }
+
+  std::pair<std::string, int> get_selection_id () const;
   
   virtual bool start_drag (QPointF local_pos) override
   {
@@ -195,7 +204,9 @@ public:
     if (m_server.current_type () == renderer_paint_server_type::LINEAR_GRADIENT)
       {
         for (size_t i = 0; i < gradient->stops ().size (); i++)
-          m_handles.push_back (new linear_gradient_handle (this, gradient, rect, (int)i));
+          {
+            m_handles.push_back (new linear_gradient_handle (this, gradient, rect, (int)i));
+          }
       }
     else if (m_server.current_type () == renderer_paint_server_type::RADIAL_GRADIENT)
       {
@@ -217,6 +228,8 @@ public:
       delete handle;
   }
 
+  abstract_svg_item *item () const { return m_item; }
+
   virtual vector<abstract_handle *> handles () override
   {
     return m_handles;
@@ -231,11 +244,22 @@ bool base_gradient_handle::end_drag (QPointF local_pos)
   return true;
 }
 
+std::pair<std::string, int> base_gradient_handle::get_selection_id () const
+{
+  auto &handles = m_handle->handles ();
+  auto it = std::find (handles.begin (), handles.end (), this);
+  DEBUG_ASSERT (it != handles.end ());
+
+  return std::make_pair (m_handle->item ()->name (), (int)(it - handles.begin ()));
+}
+
 
 gradient_handles_editor::gradient_handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
 : handles_editor (overlay, painter, applier)
 {
+  m_disable_deselect = false;
   m_applier->add_shortcut (mouse_shortcut_t::SELECT_HANDLE, this, &gradient_handles_editor::select_handle);
+  m_applier->register_action (gui_action_id::DESELECT_HANDLES, this, &gradient_handles_editor::deselect_handles);
 }
 
 gradient_handles_editor::~gradient_handles_editor ()
@@ -250,11 +274,57 @@ element_handles * gradient_handles_editor::create_handles_for_item (abstract_svg
 
 void gradient_handles_editor::update_handles_impl ()
 {
-
+  auto cur_selected = current_selection ();
+  if (cur_selected)
+    cur_selected->set_selected (true);
+  else
+    m_selected_handle = {};
 }
 
-bool gradient_handles_editor::select_handle (const mouse_event_t &/*mevent*/)
+bool gradient_handles_editor::select_handle (const QPointF &pos)
 {
-  return false;
+  auto gradient_handle = dynamic_cast<base_gradient_handle *> (get_handle_by_pos (pos));
+  if (!gradient_handle)
+    return false;
+
+  auto cur_selected = current_selection ();
+  if (cur_selected)
+    cur_selected->set_selected (false);
+
+  m_selected_handle = gradient_handle->get_selection_id ();
+  gradient_handle->set_selected (true);
+  m_disable_deselect = true;
+  m_applier->apply_action (gui_action_id::DESELECT_HANDLES);
+  m_disable_deselect = false;
+
+  m_painter->update ();
+  return true;
+}
+
+base_gradient_handle * gradient_handles_editor::current_selection () const
+{
+  gradient_handles *handles = dynamic_cast<gradient_handles *> (handles_for_item (m_selected_handle.first));
+  if (!handles)
+    return nullptr;
+
+  auto &handles_vector = handles->handles ();
+  if (m_selected_handle.second >= (int)handles_vector.size ())
+    return nullptr;
+
+  return dynamic_cast<base_gradient_handle *>(handles_vector[m_selected_handle.second]);
+}
+
+bool gradient_handles_editor::deselect_handles ()
+{
+  if (m_disable_deselect || m_selected_handle.first.empty ())
+    return false;
+
+  auto cur_selected = current_selection ();
+  if (cur_selected)
+    cur_selected->set_selected (false);
+  m_selected_handle = {};
+
+  m_painter->update ();
+  return true;
 }
 

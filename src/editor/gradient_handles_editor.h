@@ -3,11 +3,12 @@
 
 #include "editor/handles_editor.h"
 
-class mouse_event_t;
+class base_gradient_handle;
 
 class gradient_handles_editor : public handles_editor
 {
   std::pair<std::string, int> m_selected_handle;
+  bool m_disable_deselect;
 public:
   gradient_handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier);
   virtual ~gradient_handles_editor ();
@@ -19,7 +20,9 @@ protected:
   virtual void update_handles_impl () override;
 
 private:
-  bool select_handle (const mouse_event_t &mevent);
+  bool select_handle (const QPointF &pos);
+  bool deselect_handles ();
+  base_gradient_handle *current_selection () const;
 };
 
 #endif // GRADIENT_HANDLES_EDITOR_H
