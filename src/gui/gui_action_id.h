@@ -27,6 +27,7 @@ enum class gui_action_id
   TOOL_RECTANGLE,
   TOOL_ELLIPSE,
   TOOL_PEN,
+  TOOL_PENCIL,
 
   /// Other
   CANCEL_CURVE,

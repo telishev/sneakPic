@@ -56,6 +56,7 @@ void shortcuts_config::fill_drag_default ()
   set_mouse_drag_shortcut (m::CREATE_ELLIPSE       , b::BUTTON_LEFT  , k::ALL                      );
   set_mouse_drag_shortcut (m::DRAG_HANDLE          , b::BUTTON_LEFT  , k::ALL                      );
   set_mouse_drag_shortcut (m::PEN_ADD_SEGMENT_DRAG , b::BUTTON_LEFT  , k::ALL                      );
+  set_mouse_drag_shortcut (m::PENCIL               , b::BUTTON_LEFT  , k::ALL                      );
   set_mouse_drag_shortcut (m::COLOR_PICKER_DRAG    , b::BUTTON_RIGHT , k::ALL                      );
 }
 

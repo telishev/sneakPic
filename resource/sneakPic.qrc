@@ -16,6 +16,7 @@
         <file>linejoin_miter.png</file>
         <file>linejoin_round.png</file>
         <file>pen.png</file>
+        <file>pencil.png</file>
         <file>rectangle.png</file>
         <file>switch.png</file>
     </qresource>

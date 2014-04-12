@@ -27,6 +27,7 @@ enum class mouse_shortcut_t
 
 enum class mouse_drag_shortcut_t
 {
+  PENCIL,
   PEN_ADD_SEGMENT_DRAG,
   CREATE_RECTANGLE,
   CREATE_ELLIPSE,

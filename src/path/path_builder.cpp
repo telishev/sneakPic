@@ -207,4 +207,9 @@ void path_builder::set_curve_c (QPointF c)
   last_point.control_point (false) = c;
 }
 
+bool path_builder::empty ()
+{
+  return m_dst_path.get_geom ()->m_subpath.empty ();
+}
+
 

@@ -43,6 +43,7 @@ actions_info::actions_info ()
   add_action (A::TOOL_RECTANGLE, "Create Rectangles", QKeySequence (), QIcon (":/rectangle.png"));
   add_action (A::TOOL_ELLIPSE, "Create Ellipses", QKeySequence (), QIcon (":/ellipse.png"));
   add_action (A::TOOL_PEN, "Create Bezier Curves", QKeySequence (), QIcon (":/pen.png"));
+  add_action (A::TOOL_PENCIL, "Create Freehand Lines", QKeySequence (), QIcon (":/pencil.png"));
 
   /// Other
   add_action (A::CANCEL_CURVE, "Cancel Curve", QKeySequence (Qt::Key_Delete));

@@ -8,6 +8,7 @@
 #include "editor/tools/selector_tool.h"
 #include "editor/tools/rectangle_tool.h"
 #include "editor/tools/pen_tool.h"
+#include "editor/tools/pencil_tool.h"
 
 #include "gui/gui_action_id.h"
 #include "gui/gui_actions.h"
@@ -108,6 +109,7 @@ void tools_container::init_tools_info ()
   add_info<rectangle_tool> (gui_action_id::TOOL_RECTANGLE);
   add_info<ellipse_tool> (gui_action_id::TOOL_ELLIPSE);
   add_info<pen_tool> (gui_action_id::TOOL_PEN);
+  add_info<pencil_tool> (gui_action_id::TOOL_PENCIL);
 }
 
 bool tools_container::action_triggered (gui_action_id id)
