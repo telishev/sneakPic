@@ -206,3 +206,8 @@ void gui_document::add_color_model (gui_model *model)
 {
   m_color_model->add_model (model);
 }
+
+void gui_document::remove_color_model (gui_model *model)
+{
+  m_color_model->remove_model (model);
+}

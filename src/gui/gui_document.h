@@ -65,6 +65,7 @@ public:
   style_controller *get_style_controller () const { return m_style_controller; }
 
   void add_color_model (gui_model *model);
+  void remove_color_model (gui_model *model);
 
 private slots:
   void update_timeout ();

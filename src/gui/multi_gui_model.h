@@ -16,6 +16,7 @@ public:
   ~multi_gui_model ();
 
   void add_model (gui_model *model);
+  void remove_model (gui_model *model);
 
   virtual QVariant data (int role) const;
   virtual void set_model_data (const std::map<int, QVariant> &data_map);

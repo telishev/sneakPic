@@ -325,7 +325,7 @@ gradient_handles_editor::gradient_handles_editor (overlay_renderer *overlay, svg
 
 gradient_handles_editor::~gradient_handles_editor ()
 {
-
+  m_painter->get_gui_document ()->remove_color_model (m_color_model.get ());
 }
 
 element_handles * gradient_handles_editor::create_handles_for_item (abstract_svg_item *item)
