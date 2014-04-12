@@ -155,7 +155,7 @@ double base_gradient_handle::distance_to_line (QPointF pos, QTransform cur_trans
 inline static QColor mix_colors (QColor a, QColor b, double a_part)
 {
   double b_part = 1. - a_part;
-  QColor color = QColor::fromRgb (a.redF ()   * a_part + b.redF ()   * b_part,
+  QColor color = QColor::fromRgbF (a.redF ()   * a_part + b.redF ()   * b_part,
                                   a.greenF () * a_part + b.greenF () * b_part,
                                   a.blueF ()  * a_part + b.blueF ()  * b_part);
   color.setAlphaF (a.alphaF () * a_part + b.alphaF () * b_part);
