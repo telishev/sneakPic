@@ -20,6 +20,7 @@ enum class mouse_shortcut_t
   ADD_ITEM_TO_SELECTION,
   SELECT_ITEM,
   COLOR_PICKER_CLICK,
+  ADD_GRADIENT_STOP,
 
   COUNT,
 };
