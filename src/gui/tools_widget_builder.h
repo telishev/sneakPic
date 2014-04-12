@@ -11,7 +11,6 @@ class QWidget;
 class FlowLayout;
 
 enum class gui_action_id;
-enum class style_controller_role_t;
 
 class color_indicator;
 class gui_actions;
@@ -19,8 +18,6 @@ class dock_widget_builder;
 class fill_stroke_widget;
 class item_paint_style;
 class paint_server_type_switcher;
-
-template<typename T>
 class gui_model;
 
 class QVBoxLayout;
@@ -39,7 +36,7 @@ class tools_widget_builder : public QObject
   unique_ptr<paint_server_type_switcher> m_type_switcher;
 
 public:
-  tools_widget_builder (gui_actions *actions, dock_widget_builder *dock_widget_builder_arg, gui_model<style_controller_role_t> *model);
+  tools_widget_builder (gui_actions *actions, dock_widget_builder *dock_widget_builder_arg, gui_model *model);
   ~tools_widget_builder ();
 
   void update ();

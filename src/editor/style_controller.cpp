@@ -6,6 +6,7 @@
 
 #include "svg/svg_document.h"
 #include "gui/connection.h"
+#include "gui/multi_gui_model.h"
 
 Q_DECLARE_METATYPE (Qt::PenJoinStyle);
 Q_DECLARE_METATYPE (Qt::PenCapStyle);
@@ -57,7 +58,7 @@ item_paint_server * style_controller::active_server ()
   return m_is_selected_fill ? &m_styles[(int) m_current_style].fill () : &m_styles[(int) m_current_style].stroke ();
 }
 
-QVariant style_controller::data (style_controller_role_t role) const
+QVariant style_controller::data (int role) const
 {
   const item_paint_style *style = active_style ();
   const stroke_config &stroke_cfg = style->stroke_cfg ();
@@ -74,12 +75,13 @@ QVariant style_controller::data (style_controller_role_t role) const
     case style_controller_role_t::IS_SELECTED_FILL: return m_is_selected_fill;
     case style_controller_role_t::FILL_SERVER: return QVariant::fromValue (style->fill ());
     case style_controller_role_t::STROKE_SERVER: return QVariant::fromValue (style->stroke ());
+    case multi_gui_model_role::AVAILABLE: return true;
     }
 
   return QVariant ();
 }
 
-void style_controller::set_model_data (const std::map<style_controller_role_t, QVariant> &data_map)
+void style_controller::set_model_data (const std::map<int, QVariant> &data_map)
 {
   if (data_map.empty () || !m_painter)
     return;
@@ -88,7 +90,7 @@ void style_controller::set_model_data (const std::map<style_controller_role_t, Q
   item_paint_server *cur_server = active_server ();
   stroke_config &stroke_cfg = style.stroke_cfg ();
   bool need_apply = std::find_if (data_map.begin (), data_map.end (),
-                                  [] (const pair<style_controller_role_t, QVariant> &val)
+                                  [] (const pair<int, QVariant> &val)
                                        { return    val.first != style_controller_role_t::CURRENT_COLOR_TEMP
                                                 && val.first != style_controller_role_t::IS_SELECTED_FILL; }) != data_map.end ();
 
@@ -96,8 +98,8 @@ void style_controller::set_model_data (const std::map<style_controller_role_t, Q
   bool color_changed = false;
   bool fill_color_changed = false;
   bool stroke_color_changed = false;
-  std::set<style_controller_role_t> update_set = get_change_set (data_map);
-  std::set<style_controller_role_t> all_items = all_items_set ();
+  std::set<int> update_set = get_change_set (data_map);
+  std::set<int> all_items = all_items_set ();
 
   for (auto &&data_pair : data_map)
     {
@@ -146,7 +148,7 @@ void style_controller::send_items_changed ()
   emit data_changed (all_items_set ());
 }
 
-std::set<style_controller_role_t> style_controller::all_items_set () const
+std::set<int> style_controller::all_items_set () const
 {
   using g = style_controller_role_t;
   return {g::STROKE_WIDTH, g::STROKE_MITER, g::LINECAP, g::LINEJOIN, g::CURRENT_COLOR, g::CURRENT_COLOR_TEMP, g::FILL_SERVER, g::STROKE_SERVER};

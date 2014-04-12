@@ -19,6 +19,8 @@ class gui_actions;
 class actions_applier;
 class copy_paste_handler;
 class style_controller;
+class multi_gui_model;
+class gui_model;
 
 enum class gui_action_id;
 
@@ -39,9 +41,10 @@ class gui_document : public QObject
   actions_applier *m_actions_applier;
   unique_ptr<copy_paste_handler> m_copy_paste_handler;
   style_controller *m_style_controller;
+  multi_gui_model *m_color_model;
 
 public:
-  gui_document (settings_t *settings, gui_actions *actions, style_controller *controller);
+  gui_document (settings_t *settings, gui_actions *actions, style_controller *controller, multi_gui_model *color_model);
   ~gui_document ();
 
   svg_painter *create_painter (canvas_widget_t *widget);
@@ -58,6 +61,10 @@ public:
 
   const tools_container *get_tools_container () { return m_tools_container; }
   svg_document* doc () const { return m_doc; }
+
+  style_controller *get_style_controller () const { return m_style_controller; }
+
+  void add_color_model (gui_model *model);
 
 private slots:
   void update_timeout ();

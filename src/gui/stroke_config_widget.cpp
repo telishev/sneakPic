@@ -15,10 +15,10 @@
 Q_DECLARE_METATYPE (Qt::PenJoinStyle);
 Q_DECLARE_METATYPE (Qt::PenCapStyle);
 
-stroke_config_widget::stroke_config_widget (gui_model<style_controller_role_t> *model, QWidget *parent)
+stroke_config_widget::stroke_config_widget (gui_model *model, QWidget *parent)
   : QWidget (parent)
 {
-  m_view.reset (new gui_widget_view<style_controller_role_t> (model));
+  m_view.reset (new gui_widget_view (model));
   setObjectName ("Stroke");
   m_stroke_style_layout = qt_utils::create_common_vbox_layout (this);
   init_linejoin_controller ();

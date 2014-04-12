@@ -11,7 +11,6 @@
 #include "color_selectors/color_button.h"
 
 Q_DECLARE_METATYPE (item_paint_server);
-Q_DECLARE_METATYPE (painter_server_model_role);
 
 
 class color_button_widget : public gui_widget
@@ -36,23 +35,35 @@ public:
   virtual QVariant value () const { return m_tool_button->isChecked (); }
 };
 
-class painter_server_model : public gui_model<painter_server_model_role>, public gui_model_observer<style_controller_role_t>
+typedef std::pair <renderer_paint_server_type, bool> painter_server_model_role;
+
+static inline painter_server_model_role from_int (int role)
 {
-  gui_model<style_controller_role_t> *m_base_model;
+  return {(renderer_paint_server_type)(role / 2), (role % 2) != 0 };
+}
+
+static inline int to_int (painter_server_model_role role)
+{
+  return (int)role.first * 2 + (role.second == true);
+}
+
+class painter_server_model : public gui_model
+{
+  gui_model *m_base_model;
 public:
-  painter_server_model (gui_model<style_controller_role_t> *base_model)
+  painter_server_model (gui_model *base_model)
   {
     m_base_model = base_model;
-    m_base_model->add_observer (this);
+    CONNECT (m_base_model, &gui_model::data_changed, this, &painter_server_model::data_changed_slot);
   }
 
   ~painter_server_model ()
   {
-    m_base_model->remove_observer (this);
   }
 
-  virtual QVariant data (painter_server_model_role role) const override
+  virtual QVariant data (int int_role) const override
   {
+    painter_server_model_role role = from_int (int_role);
     if (role.second)
       return current_active () == role.first;
     else
@@ -63,16 +74,17 @@ public:
       }
   }
 
-  virtual void set_model_data (const std::map<painter_server_model_role, QVariant> &data_map) override
+  virtual void set_model_data (const std::map<int, QVariant> &data_map) override
   {
     auto changer = m_base_model->do_multi_change ();
     for (auto && data_pair : data_map)
       {
-        if (!data_pair.first.second || !data_pair.second.toBool ())
+        painter_server_model_role role = from_int (data_pair.first); 
+        if (!role.second || !data_pair.second.toBool ())
           continue;
 
         item_paint_server server = current_server ();
-        server.set_current_type (data_pair.first.first);
+        server.set_current_type (role.first);
         if (is_selected_fill ())
           changer->set_data (style_controller_role_t::FILL_SERVER, QVariant::fromValue (server));
         else
@@ -80,25 +92,26 @@ public:
       }
   }
 
-  virtual void data_changed_signal (const std::set<style_controller_role_t> &changes) override
+private slots:
+  void data_changed_slot (const std::set<int> &changes)
   {
     using s = style_controller_role_t;
-    std::set<style_controller_role_t> roles = {s::FILL_SERVER, s::STROKE_SERVER, s::IS_SELECTED_FILL};
-    if (std::find_if (changes.begin (), changes.end (), [&] (s val) {return roles.count (val) > 0;}) == changes.end ())
+    std::set<int> roles = {s::FILL_SERVER, s::STROKE_SERVER, s::IS_SELECTED_FILL};
+    if (std::find_if (changes.begin (), changes.end (), [&] (int val) {return roles.count (val) > 0;}) == changes.end ())
       return;
 
-    data_changed (all_roles ());
+    emit data_changed (all_roles ());
   }
 
 private:
-  std::set<painter_server_model_role> all_roles () const
+  std::set<int> all_roles () const
   {
     using p = renderer_paint_server_type;
-    std::set<painter_server_model_role> result;
+    std::set<int> result;
     for (auto val : {p::COLOR, p::LINEAR_GRADIENT, p::NONE, p::RADIAL_GRADIENT})
       {
-        result.insert ({val, true});
-        result.insert ({val, false});
+        result.insert (to_int ({val, true }));
+        result.insert (to_int ({val, false}));
       }
 
     return result;
@@ -119,7 +132,7 @@ private:
 
 };
 
-paint_server_type_switcher::paint_server_type_switcher (gui_model<style_controller_role_t> *model)
+paint_server_type_switcher::paint_server_type_switcher (gui_model *model)
 {
   m_base_model = model;
   put_in (m_toolbutton_model, m_base_model);
@@ -161,7 +174,7 @@ color_button *paint_server_type_switcher::create_button (renderer_paint_server_t
   color_button *button = new color_button;
   button->setCheckable (true);
   button->setToolTip (tooltip);
-  m_view->add_gui_widget ({role, false}, new color_button_widget (button));
-  m_view->add_gui_widget ({role, true}, new QToolButton_toggle_widget (button));
+  m_view->add_gui_widget (to_int ({role, false}), new color_button_widget (button));
+  m_view->add_gui_widget (to_int ({role, true }), new QToolButton_toggle_widget (button));
   return button;
 }

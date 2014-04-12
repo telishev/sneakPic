@@ -4,9 +4,12 @@
 #include "editor/handles_editor.h"
 
 class base_gradient_handle;
+class gradient_handles_color_model;
 
 class gradient_handles_editor : public handles_editor
 {
+  unique_ptr<gradient_handles_color_model> m_color_model;
+
   std::pair<std::string, int> m_selected_handle;
   bool m_disable_deselect;
 public:
@@ -15,6 +18,9 @@ public:
 
   std::pair<std::string, int> selected_handle () const { return m_selected_handle; }
 
+  void set_page_active (bool is_active);
+  base_gradient_handle *current_selection () const;
+
 protected:
   virtual element_handles *create_handles_for_item (abstract_svg_item *item) override;
   virtual void update_handles_impl () override;
@@ -22,7 +28,7 @@ protected:
 private:
   bool select_handle (const QPointF &pos);
   bool deselect_handles ();
-  base_gradient_handle *current_selection () const;
+  void set_selected_handle (std::pair<std::string, int> handle);
 };
 
 #endif // GRADIENT_HANDLES_EDITOR_H

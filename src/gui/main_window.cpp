@@ -228,7 +228,7 @@ void main_window::do_open_file (const QString filename)
   FREE (m_document);
   DO_ON_EXIT (update_window_title ());
 
-  m_document = new gui_document (m_settings.get (), m_actions, m_style_controller);
+  m_document = new gui_document (m_settings.get (), m_actions, m_style_controller, m_style_widget_handler->get_color_model ());
   setWindowTitle ("Loading...");
   if (!m_document->open_file (filename))
     {
@@ -288,7 +288,7 @@ bool main_window::create_new_document ()
 
   FREE (m_document);
   DO_ON_EXIT (update_window_title ());
-  m_document = new gui_document (m_settings.get (), m_actions, m_style_controller);
+  m_document = new gui_document (m_settings.get (), m_actions, m_style_controller, m_style_widget_handler->get_color_model ());
   if (!m_document->create_new_document ())
     return false;
 

@@ -42,10 +42,16 @@ void path_editor_tool::configure ()
 void path_editor_tool::activate ()
 {
   update_handles ();
+  m_gradient_editor->set_page_active (true);
 }
 
 void path_editor_tool::update_handles ()
 {
   m_path_editor->update_handles ();
   m_gradient_editor->update_handles ();
+}
+
+void path_editor_tool::deactivate ()
+{
+  m_gradient_editor->set_page_active (false);
 }

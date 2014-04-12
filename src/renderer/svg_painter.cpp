@@ -49,17 +49,18 @@
 #include "svg/svg_document.h"
 #include "svg/svg_utils.h"
 #include "svg/items/svg_graphics_item.h"
+#include "gui/gui_document.h"
 
 using namespace std::placeholders;
 
 svg_painter::svg_painter (canvas_widget_t *canvas_widget, rendered_items_cache *cache, events_queue *queue, svg_document *document,
-                          settings_t *settings, style_controller *controller)
+                          settings_t *settings, gui_document *gui_doc)
   : abstract_painter (canvas_widget)
 {
-  m_style_controller = controller;
   m_renderer_page = nullptr;
   m_current_tool = nullptr;
   m_document = nullptr;
+  m_gui_document = gui_doc;
   m_cache = cache;
   m_queue = queue;
   m_overlay = new overlay_renderer (m_cache);
@@ -631,5 +632,10 @@ bool svg_painter::process_mouse_event (const mouse_event_t &event, mouse_shortcu
 bool svg_painter::add_item_to_selection (const QPoint &pos)
 {
   return do_select_item (pos, false);
+}
+
+style_controller * svg_painter::get_style_controller () const
+{
+  return m_gui_document->get_style_controller ();
 }
 

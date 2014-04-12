@@ -23,6 +23,7 @@ public:
 private:
   virtual void configure () override;
   virtual void activate () override;
+  virtual void deactivate () override;
 
   void update_handles ();
 

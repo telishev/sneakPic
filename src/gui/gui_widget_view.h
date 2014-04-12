@@ -13,9 +13,10 @@ class connection;
 class QDoubleSpinBox;
 
 
-template<typename ROLE>
-class gui_widget_view : public gui_model_observer<ROLE> 
+class gui_widget_view : public QObject
 {
+  Q_OBJECT
+
   struct widget_description
   {
     unique_ptr<gui_widget> widget;
@@ -34,36 +35,33 @@ class gui_widget_view : public gui_model_observer<ROLE>
     widget_description (const widget_description &) = delete;
   };
 
-  QPointer <gui_model<ROLE> > m_model;
-  std::multimap<ROLE, widget_description> m_widgets;
+  gui_model *m_model;
+  std::multimap<int, widget_description> m_widgets;
 public:
-  gui_widget_view (gui_model<ROLE> *model)
+  gui_widget_view (gui_model *model)
   {
     m_model = model;
-    m_model->add_observer (this);
+    CONNECT (m_model, &gui_model::data_changed, this, &gui_widget_view::data_changed);
   }
-  ~gui_widget_view ()
-  {
-     if (m_model)
-       m_model->remove_observer (this);
-  }
+  ~gui_widget_view ()  {}
 
-  void add_gui_widget (ROLE role, gui_widget *widget)
+  void add_gui_widget (int role, gui_widget *widget)
   {
     auto widget_connect = CONNECT (widget, &gui_widget::data_changed, [&] () { widget_data_changed (role, widget); });
     m_widgets.insert ( std::make_pair (role, widget_description (unique_ptr<gui_widget> (widget), std::move (widget_connect))));
   }
 
   template<typename T>
-  void add_widget (ROLE role, T *widget) { add_gui_widget (role, create_gui_widget (widget)); }
+  void add_widget (int role, T *widget) { add_gui_widget (role, create_gui_widget (widget)); }
 
 private:
-  void widget_data_changed (ROLE role, gui_widget * widget)
+  void widget_data_changed (int role, gui_widget * widget)
   {
     m_model->set_data (role, widget->value ());
   }
 
-  virtual void data_changed_signal (const std::set<ROLE> &changes) override
+private slots: 
+  void data_changed (const std::set<int> &changes)
   {
     for (auto &&role : changes)
       {

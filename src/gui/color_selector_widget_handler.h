@@ -7,13 +7,10 @@ class QLayout;
 class QTabWidget;
 
 class color_selector;
-template<typename T>
 class gui_model;
-template<typename T>
 class gui_widget_view;
 class color_selector;
 
-enum class style_controller_role_t;
 enum class color_single_selector_type;
 
 #include <QWidget>
@@ -25,11 +22,11 @@ class color_selector_widget_handler : public QWidget
 
   QLayout *m_color_selector_layout;
   QTabWidget *m_tab_widget;
-  unique_ptr<gui_widget_view<style_controller_role_t>> m_view;
-  gui_model<style_controller_role_t> *m_model;
+  unique_ptr<gui_widget_view> m_view;
+  gui_model *m_model;
 
 public:
-  color_selector_widget_handler (gui_model<style_controller_role_t> *model);
+  color_selector_widget_handler (gui_model *model);
   ~color_selector_widget_handler ();
 private:
   void add_color_selectors ();

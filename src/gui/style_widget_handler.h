@@ -24,6 +24,7 @@ class settings_t;
 class style_controller;
 class tools_container;
 class stroke_config_widget;
+class multi_gui_model;
 enum class selected_style;
 
 const char *enum_to_string (selected_style value);
@@ -31,6 +32,8 @@ const char *enum_to_string (selected_style value);
 class style_widget_handler : public QObject
 {
   Q_OBJECT
+
+  unique_ptr<multi_gui_model> m_color_model;
 
   dock_widget_builder *m_dock_widget_builder;
   color_selector_widget_handler *m_color_selector;
@@ -45,6 +48,7 @@ public:
 
   void set_style_controller (style_controller *style_controller_arg);
   void set_tools_containter (const tools_container *tools_container_arg);
+  multi_gui_model *get_color_model () const { return m_color_model.get (); }
 
 private slots:
   void update_on_tool_changed ();

@@ -10,13 +10,8 @@ class color_indicator;
 class item_paint_server;
 class item_paint_style;
 
-template<typename T>
 class gui_widget_view;
-
-template<typename T>
 class gui_model;
-
-enum class style_controller_role_t;
 
 class fill_stroke_widget : public QWidget
 {
@@ -26,11 +21,11 @@ class fill_stroke_widget : public QWidget
   color_indicator *m_stroke;
   bool m_is_selected_fill;
 
-  unique_ptr<gui_widget_view<style_controller_role_t>> m_view;
-  gui_model<style_controller_role_t> *m_model;
+  unique_ptr<gui_widget_view> m_view;
+  gui_model *m_model;
 
 public:
-  fill_stroke_widget (gui_model<style_controller_role_t> *model, QWidget *parent = 0);
+  fill_stroke_widget (gui_model *model, QWidget *parent = 0);
   ~fill_stroke_widget ();
 
   bool is_selected_fill () const { return m_is_selected_fill; }

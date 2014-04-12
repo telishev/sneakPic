@@ -25,14 +25,17 @@
 #include "gui/gui_action_id.h"
 #include "gui/utils/qt_utils.h"
 #include "gui/stroke_config_widget.h"
-
+#include "multi_gui_model.h"
 
 style_widget_handler::style_widget_handler (dock_widget_builder *dock_widget_builder_arg, style_controller *style_controller_arg)
 {
   m_dock_widget_builder = dock_widget_builder_arg;
   m_style_controller = style_controller_arg;
-  m_color_selector = new color_selector_widget_handler (m_style_controller);
-  m_stroke_config = new stroke_config_widget (m_style_controller);
+  put_in (m_color_model);
+  m_color_model->add_model (m_style_controller);
+  m_color_selector = new color_selector_widget_handler (m_color_model.get ());
+  m_stroke_config = new stroke_config_widget (m_style_controller);  
+
 
   m_dock_widget_builder->add_widget (m_color_selector, Qt::RightDockWidgetArea, visibility_state::visible, Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
   m_dock_widget_builder->add_widget (m_stroke_config, Qt::RightDockWidgetArea, visibility_state::visible, Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);

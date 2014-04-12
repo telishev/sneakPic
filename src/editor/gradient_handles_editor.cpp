@@ -23,7 +23,9 @@
 
 #include "gui/shortcuts_config.h"
 #include "gui/actions_applier.h"
-#include "../gui/gui_action_id.h"
+#include "gui/gui_action_id.h"
+#include "gui/multi_gui_model.h"
+#include "../gui/gui_document.h"
 
 class gradient_handles;
 
@@ -46,6 +48,12 @@ public:
     set_handle_type (get_handle_type ());
   }
 
+  QColor current_color () const
+  {
+     return m_gradient->stops ()[m_stop_num].second;
+  }
+
+  void set_current_color (QColor color);
   std::pair<std::string, int> get_selection_id () const;
   
   virtual bool start_drag (QPointF local_pos) override
@@ -253,11 +261,64 @@ std::pair<std::string, int> base_gradient_handle::get_selection_id () const
   return std::make_pair (m_handle->item ()->name (), (int)(it - handles.begin ()));
 }
 
+void base_gradient_handle::set_current_color (QColor color)
+{
+  m_gradient->stops ()[m_stop_num].second = color;
+  m_handle->apply_changes ();
+}
+
+class gradient_handles_color_model : public gui_model
+{
+  gradient_handles_editor *m_handles_editor;
+  bool m_is_active = false;
+public:
+  gradient_handles_color_model (gradient_handles_editor *handles_editor)
+  {
+    m_handles_editor = handles_editor;
+  }
+
+  void set_is_active (bool active)
+  {
+    m_is_active = active;
+    emit_data_changed ();
+  }
+
+  virtual QVariant data (int role) const override
+  {
+    base_gradient_handle *current_selection = m_handles_editor->current_selection ();
+    switch (role)
+    {
+      case style_controller_role_t::CURRENT_COLOR_TEMP:
+      case style_controller_role_t::CURRENT_COLOR:
+        return current_selection ? current_selection->current_color () : QVariant ();
+      case multi_gui_model_role::AVAILABLE: return m_is_active && current_selection;
+    }
+
+    return {};
+  }
+
+  virtual void set_model_data (const std::map<int, QVariant> &data_map) override
+  {
+    base_gradient_handle *current_selection = m_handles_editor->current_selection ();
+    for (auto && data : data_map)
+      {
+        if (data.first != style_controller_role_t::CURRENT_COLOR || !current_selection)
+          continue;
+
+        current_selection->set_current_color (data.second.value<QColor> ());
+        emit_data_changed ();
+      }
+  }
+
+  void emit_data_changed () {emit data_changed ({style_controller_role_t::CURRENT_COLOR}); }
+};
 
 gradient_handles_editor::gradient_handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
 : handles_editor (overlay, painter, applier)
 {
   m_disable_deselect = false;
+  put_in (m_color_model, this);
+  m_painter->get_gui_document ()->add_color_model (m_color_model.get ());
   m_applier->add_shortcut (mouse_shortcut_t::SELECT_HANDLE, this, &gradient_handles_editor::select_handle);
   m_applier->register_action (gui_action_id::DESELECT_HANDLES, this, &gradient_handles_editor::deselect_handles);
 }
@@ -278,20 +339,20 @@ void gradient_handles_editor::update_handles_impl ()
   if (cur_selected)
     cur_selected->set_selected (true);
   else
-    m_selected_handle = {};
+    set_selected_handle ({});
 }
 
 bool gradient_handles_editor::select_handle (const QPointF &pos)
 {
   auto gradient_handle = dynamic_cast<base_gradient_handle *> (get_handle_by_pos (pos));
   if (!gradient_handle)
-    return false;
+    return deselect_handles ();
 
   auto cur_selected = current_selection ();
   if (cur_selected)
     cur_selected->set_selected (false);
 
-  m_selected_handle = gradient_handle->get_selection_id ();
+  set_selected_handle (gradient_handle->get_selection_id ());
   gradient_handle->set_selected (true);
   m_disable_deselect = true;
   m_applier->apply_action (gui_action_id::DESELECT_HANDLES);
@@ -322,9 +383,20 @@ bool gradient_handles_editor::deselect_handles ()
   auto cur_selected = current_selection ();
   if (cur_selected)
     cur_selected->set_selected (false);
-  m_selected_handle = {};
+  set_selected_handle ({});
 
   m_painter->update ();
   return true;
+}
+
+void gradient_handles_editor::set_page_active (bool is_active)
+{
+  m_color_model->set_is_active (is_active);
+}
+
+void gradient_handles_editor::set_selected_handle (std::pair<std::string, int> handle)
+{
+  m_selected_handle = handle;
+  m_color_model->emit_data_changed ();
 }
 

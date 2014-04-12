@@ -25,10 +25,12 @@
 #include "svg/svg_document.h"
 #include "editor/items_selection.h"
 #include "svg/undo/undo_handler.h"
+#include "multi_gui_model.h"
 
 
-gui_document::gui_document (settings_t *settings, gui_actions *actions, style_controller *controller)
+gui_document::gui_document (settings_t *settings, gui_actions *actions, style_controller *controller, multi_gui_model *color_model)
 {
+  m_color_model = color_model;
   m_style_controller = controller;
   m_actions = actions;
   m_painter = nullptr;
@@ -82,7 +84,7 @@ bool gui_document::save_file (const QString &filename)
 svg_painter *gui_document::create_painter (canvas_widget_t *widget)
 {
   FREE (m_painter);
-  m_painter = new svg_painter (widget, m_cache, m_queue, m_doc, m_settings, m_style_controller);
+  m_painter = new svg_painter (widget, m_cache, m_queue, m_doc, m_settings, this);
   m_copy_paste_handler.reset (new copy_paste_handler (m_painter));
   m_tools_container->update_tools (m_painter);
   m_painter->set_current_tool (m_tools_container->current_tool ());
@@ -198,4 +200,9 @@ void gui_document::update_actions ()
 void gui_document::items_changed ()
 {
   m_actions->actions_update_needed ();
+}
+
+void gui_document::add_color_model (gui_model *model)
+{
+  m_color_model->add_model (model);
 }

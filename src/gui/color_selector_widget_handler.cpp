@@ -6,6 +6,7 @@
 #include "gui/dock_widget_builder.h"
 #include "gui/connection.h"
 #include "gui/gui_widget_view.h"
+#include "gui/gui_model.h"
 
 #include "gui/utils/qt_utils.h"
 
@@ -13,13 +14,12 @@
 #include <QLayout>
 #include <QTabWidget>
 #include <QWidget>
-#include "gui_model.h"
 #include "editor/style_controller.h"
 
-color_selector_widget_handler::color_selector_widget_handler (gui_model<style_controller_role_t> *model)
+color_selector_widget_handler::color_selector_widget_handler (gui_model *model)
 {
   m_model = model;
-  m_view.reset (new gui_widget_view<style_controller_role_t> (m_model));
+  put_in (m_view, m_model);
   m_color_selector_layout = qt_utils::create_common_vbox_layout (this);
   setSizePolicy (QSizePolicy::Preferred, QSizePolicy::Maximum);
   m_tab_widget = new QTabWidget;

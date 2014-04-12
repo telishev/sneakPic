@@ -41,11 +41,11 @@ public:
   virtual QVariant value () const override { return m_fill_stroke->is_selected_fill (); }
 };
 
-fill_stroke_widget::fill_stroke_widget (gui_model<style_controller_role_t> *model, QWidget *parent)
+fill_stroke_widget::fill_stroke_widget (gui_model *model, QWidget *parent)
   : QWidget (parent)
 {
   m_model = model;
-  m_view.reset (new gui_widget_view<style_controller_role_t> (m_model));
+  m_view.reset (new gui_widget_view (m_model));
   m_fill = new color_indicator (false, this);
   m_stroke = new color_indicator (true, this);
   QToolButton *swap_fill_stroke_button = new QToolButton (this);
