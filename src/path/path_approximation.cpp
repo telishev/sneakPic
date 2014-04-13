@@ -371,8 +371,9 @@ void path_approximation::FitCubic (QPointF *d, int first, int last, QPointF tHat
 }
 
 
-void path_approximation::approximate (std::vector<QPointF> points, double possible_error /*= 4.0*/)
+void path_approximation::approximate (svg_path *path, std::vector<QPointF> points, double possible_error /*= 4.0*/)
 {
+  put_in (m_builder, *path);
   points.erase (std::unique (points.begin (), points.end ()), points.end ());
   QPointF	tHat1, tHat2;	/*  Unit tangent vectors at endpoints */
 
@@ -380,6 +381,7 @@ void path_approximation::approximate (std::vector<QPointF> points, double possib
   tHat2 = ComputeRightTangent (points.data (), (int)points.size () - 1);
 
   FitCubic (points.data (), 0, (int)points.size () - 1, tHat1, tHat2, possible_error);
+  m_builder.reset ();
 }
 
 void path_approximation::output_curve (const QPointF *data)
@@ -390,12 +392,26 @@ void path_approximation::output_curve (const QPointF *data)
   m_builder->curve_to (data[3], data[1], data[2], false);
 }
 
-path_approximation::path_approximation (svg_path &path)
+path_approximation::path_approximation ()
 {
-  put_in (m_builder, path);
+  
 }
 
 path_approximation::~path_approximation ()
 {
 
+}
+
+void path_approximation::fit_segment (std::vector<QPointF> points, QPointF output[4])
+{
+  int last = (int)points.size () - 1;
+  unique_ptr<double[]> u (ChordLengthParameterize (points.data (), 0, last));
+  QPointF tHat1 = ComputeLeftTangent (points.data (), 0);
+  QPointF tHat2 = ComputeRightTangent (points.data (), last);
+  GenerateBezier (points.data (), 0, last, u.get (), tHat1, tHat2, output);
+}
+
+QPointF path_approximation::bezier_value (QPointF bezier[4], double t) const
+{
+  return BezierII (1, bezier, t);
 }

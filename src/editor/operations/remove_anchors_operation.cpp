@@ -3,11 +3,12 @@
 #include "path/svg_path_geom.h"
 #include "path/svg_path.h"
 #include "svg/attributes/svg_attribute_nodetypes.h"
+#include "path/path_approximation.h"
 
 template<typename T, typename Func>
 typename vector<T>::iterator remove_iter_if (vector<T> &vec, Func functor)
 {
-  typename vector<T>::iterator result = vec.begin (), first = vec.begin (), last = vec.end ();
+  auto result = vec.begin (), first = vec.begin (), last = vec.end ();
 
   while (first != last)
     {
@@ -21,6 +22,25 @@ typename vector<T>::iterator remove_iter_if (vector<T> &vec, Func functor)
     }
 
   return result;
+}
+
+template<typename T, typename Func, typename Apply>
+void remove_iter_if_apply (vector<T> &vec, Func functor, Apply apply)
+{
+  auto prev_valid = vec.end ();
+  bool has_valid = false;
+
+  for (auto it = vec.begin (); it != vec.end (); ++it)
+    {
+      if (!(functor (it - vec.begin ())))
+        {
+          if (has_valid && it != prev_valid + 1)
+            apply (prev_valid - vec.begin (), it - vec.begin ());
+
+          has_valid = true;
+          prev_valid = it;
+        }
+    }
 }
 
 remove_anchors_operation::remove_anchors_operation (svg_path *path)
@@ -46,7 +66,7 @@ void remove_anchors_operation::remove_from_node_types (const set<svg_path_geom_i
   auto &node_type = *m_path->get_node_type ();
   for (auto &&it : anchors_to_delete)
     {
-      for (int i = 0; i < 2; i++)
+      for (int i : {0, 1})
         if (it.has_control_point (i == 0))
           node_type[it.neighbour (i == 0).point_index ()] = node_type_t::CUSP;
       points_to_remove.insert (it.point_index ());
@@ -77,16 +97,45 @@ void remove_anchors_operation::remove_from_line_types (const set<svg_path_geom_i
     [&] (size_t index) { return segment_to_remove.count (index) == 1; }), line_segments.end ());
 }
 
+static void approximate_for_deletion (std::vector<single_path_point> &elements, size_t first, size_t last)
+{
+  std::vector<QPointF> points;
+  path_approximation approximator;
+  for (size_t i = first; i < last; i++)
+    {
+      QPointF bezier[4];
+      bezier[0] = elements[i].point;
+      bezier[1] = elements[i].c2;
+      bezier[2] = elements[i + 1].c1;
+      bezier[3] = elements[i + 1].point;
+      if (i == first)
+        points.push_back (bezier[0]);
+
+      for (double t = 0.25; t <= 1.0; t += 0.25)
+        points.push_back (approximator.bezier_value (bezier, t));
+    }
+  QPointF approximation[4];
+  approximator.fit_segment (points, approximation);
+
+  elements[first].c2 = approximation[1];
+  elements[last].c1 = approximation[2];
+
+}
+
 void remove_anchors_operation::remove_from_geom (const set<svg_path_geom_iterator> &anchors_to_delete)
 {
+  using namespace std::placeholders;
   svg_path_geom &geom = *m_path->get_geom ();
   auto &subpath_vec = geom.subpath ();
   for (size_t i = 0; i < subpath_vec.size (); i++)
     {
       auto &subpath = subpath_vec[i];
       auto &elements = subpath.elements ();
-      elements.erase (remove_iter_if (elements,
-        [&] (size_t index) {return anchors_to_delete.count (svg_path_geom_iterator (geom, i, index)) == 1;}), elements.end ());
+      auto need_to_del = [&] (size_t index) {return anchors_to_delete.count (svg_path_geom_iterator (geom, i, index)) == 1;};
+      auto approximate = std::bind (approximate_for_deletion, std::ref (elements), _1, _2);
+
+      remove_iter_if_apply (elements, need_to_del, approximate);
+      elements.erase (remove_iter_if (elements, need_to_del), elements.end ());
     }
 
   subpath_vec.erase (std::remove_if (subpath_vec.begin (), subpath_vec.end (), 

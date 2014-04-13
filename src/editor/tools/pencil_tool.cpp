@@ -95,7 +95,7 @@ void pencil_tool::set_new_path (svg_path *path)
   for (auto && point : m_current_points)
     point = m_painter->cur_transform ().map (point);
 
-  path_approximation (*path).approximate (m_current_points);
+  path_approximation ().approximate (path, m_current_points);
   path->get_geom ()->apply_transform (m_painter->cur_transform ().inverted ());
 }
 
