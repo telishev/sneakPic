@@ -29,6 +29,9 @@ QPainterPath svg_item_clip_path::get_clip_path () const
       const abstract_svg_item *cur_child = child (i);
       if (cur_child->type () == svg_item_type::USE)
         {
+          if (cur_child->children_count () == 0)
+            continue;
+
           QPainterPath child_path = get_single_child_path (cur_child->child (0));
           const svg_attribute_transform *transform = cur_child->get_computed_attribute<svg_attribute_transform> ();
           child_path = transform->computed_transform ().map (child_path);
