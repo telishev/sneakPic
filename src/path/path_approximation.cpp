@@ -380,7 +380,7 @@ void path_approximation::approximate (svg_path *path, std::vector<QPointF> point
   tHat1 = ComputeLeftTangent (points.data (), 0);
   tHat2 = ComputeRightTangent (points.data (), (int)points.size () - 1);
 
-  FitCubic (points.data (), 0, (int)points.size () - 1, tHat1, tHat2, possible_error);
+  FitCubic (points.data (), 0, (int)points.size () - 1, tHat1, tHat2, possible_error * possible_error);
   m_builder.reset ();
 }
 

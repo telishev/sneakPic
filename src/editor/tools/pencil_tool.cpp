@@ -71,21 +71,21 @@ pencil_tool::~pencil_tool ()
 
 bool pencil_tool::draw_pencil_start (const QPoint &pos)
 {
-  m_current_points.push_back (snap_point (pos));
+  add_point (snap_point (pos));
   update ();
   return true;
 }
 
 bool pencil_tool::draw_pencil_move (const QPoint &pos)
 {
-  m_current_points.push_back (m_painter->get_local_pos (pos));
+  add_point (m_painter->get_local_pos (pos));
   update ();
   return true;
 }
 
 bool pencil_tool::draw_pencil_end (const QPoint &pos)
 {
-  m_current_points.push_back (snap_point (pos));
+  add_point (snap_point (pos));
   finish_path_add ();
   return true;
 }
@@ -95,7 +95,7 @@ void pencil_tool::set_new_path (svg_path *path)
   for (auto && point : m_current_points)
     point = m_painter->cur_transform ().map (point);
 
-  path_approximation ().approximate (path, m_current_points);
+  path_approximation ().approximate (path, m_current_points, 10);
   path->get_geom ()->apply_transform (m_painter->cur_transform ().inverted ());
 }
 
@@ -112,4 +112,26 @@ bool pencil_tool::edit_started () const
 void pencil_tool::finish_editing_impl ()
 {
   m_current_points.clear ();
+}
+
+void pencil_tool::add_point (QPointF local_pos)
+{
+  if (m_current_points.empty ())
+    {
+      m_current_points.push_back (local_pos);
+      return;
+    }
+
+  const double min_distance = 2.0;
+  const double max_distance = 20.0;
+  QPointF prev_point = m_current_points.back ();
+  double distance = geom::distance (prev_point, local_pos);
+  if (distance < min_distance)
+    return;
+
+  int points_count = (int) (ceil (distance / max_distance));
+  double increase = 1.0 / points_count;
+
+  for (int i = 1; i <= points_count; i++)
+    m_current_points.push_back (prev_point * (points_count - i) * increase + local_pos * i * increase);
 }

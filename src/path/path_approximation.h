@@ -12,7 +12,7 @@ public:
   path_approximation ();
   ~path_approximation ();
 
-  void approximate (svg_path *path, std::vector<QPointF> points, double possible_error = 4.0);
+  void approximate (svg_path *path, std::vector<QPointF> points, double possible_error = 8.0);
   void fit_segment (std::vector<QPointF> points, QPointF output[4]);
   QPointF bezier_value (QPointF bezier[4], double t) const;
 

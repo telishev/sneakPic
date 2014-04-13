@@ -22,6 +22,7 @@ private:
   virtual QString undo_description () const override;
   virtual bool edit_started () const override;
   virtual void finish_editing_impl () override;
+  void add_point (QPointF local_pos);
 
 };
 
