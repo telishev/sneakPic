@@ -28,6 +28,7 @@ actions_info::actions_info ()
   add_action (A::OPEN_RECENT, "Open Recent");
   add_action (A::SAVE, "Save", QKeySequence::Save);
   add_action (A::SAVE_AS, "Save As...", QKeySequence::SaveAs);
+  add_action (A::EXPORT_BITMAP, "Export Bitmap...", QKeySequence ("Ctrl+E"));
   add_action (A::UNDO, "Undo", QKeySequence::Undo);
   add_action (A::REDO, "Redo", QKeySequence::Redo);
   add_action (A::COPY, "Copy", QKeySequence::Copy);

@@ -86,6 +86,7 @@ private:
   void save_document (const QString& filename);
   bool closing_document_check ();
   bool options ();
-};
+  bool export_bitmap ();
+  };
 
 #endif // MAIN_WINDOW_H

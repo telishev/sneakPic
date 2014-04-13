@@ -13,9 +13,10 @@
 #include "renderer/abstract_renderer_item.h"
 #include "renderer/svg_renderer.h"
 #include "renderer/qt2skia.h"
+#include "renderer/renderer_config.h"
 #include "renderer/renderer_items_container.h"
 #include "renderer/renderer_state.h"
-#include "renderer/renderer_config.h"
+#include "renderer/render_utils.h"
 
 #include "svg/svg_document.h"
 #include "svg/svg_utils.h"
@@ -23,15 +24,7 @@
 #include "skia/skia_includes.h"
 
 
-void console_renderer::render_to_image (svg_document *doc, QString file_name, int width, int height)
-{
-  QRect rect = QRect (0, 0, width, height);
-  unique_ptr<renderer_items_container> container (doc->create_rendered_items (nullptr));
 
-  svg_renderer renderer (nullptr, nullptr);
-  unique_ptr<SkBitmap> bitmap (renderer.draw_to_bitmap (rect, QTransform (), container->root ()));
-  qt2skia::qimage (*bitmap).save (file_name);
-}
 
 int console_renderer::start_console_processing (cl_arguments *args)
 {
@@ -46,11 +39,11 @@ int console_renderer::start_console_processing (cl_arguments *args)
       printf ("Error: document can't be processed\n");
       return 1;
     }
-  
+
   svg_utils::get_doc_dimensions (doc, width, height);
 
   if (!png_output_file_name.isEmpty ())
-    render_to_image (doc, png_output_file_name, qRound (width), qRound (height));
+    render_utils::render_to_image (*doc, png_output_file_name, qRound (width), qRound (height));
 
   if (!svg_output_file_name.isEmpty ())
     doc->write_file (svg_output_file_name);

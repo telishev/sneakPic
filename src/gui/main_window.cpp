@@ -36,8 +36,9 @@
 
 #include "dock_widget_builder.h"
 #include "renderer/svg_painter.h"
-#include "actions_applier.h"
-#include "fill_stroke_widget.h"
+
+#include "svg/svg_utils.h"
+#include "renderer/render_utils.h"
 
 #define RECENT_FILES_NUMBER 10
 
@@ -76,6 +77,7 @@ main_window::main_window ()
   m_actions_applier->register_action (gui_action_id::SAVE, this, &main_window::save);
   m_actions_applier->register_action (gui_action_id::SAVE_AS, this, &main_window::save_as);
   m_actions_applier->register_action (gui_action_id::OPTIONS, this, &main_window::options);
+  m_actions_applier->register_action (gui_action_id::EXPORT_BITMAP, this, &main_window::export_bitmap);
   m_actions_applier->register_action (gui_action_id::QUIT, (QWidget *)this, &QWidget::close);
 
 
@@ -138,6 +140,28 @@ void main_window::update_recent_menu ()
     }
 }
 
+
+bool main_window::export_bitmap ()
+{
+  QString initial_file_name;
+  if (m_document->is_new_document ())
+    initial_file_name = get_last_file_open_dir ();
+  else
+    {
+      QFileInfo file_info = QFileInfo (m_document->get_filename ());
+      initial_file_name = file_info.absoluteDir ().path () + QDir::separator () + file_info.completeBaseName ();
+    }
+  QString filename = QFileDialog::getSaveFileName (this, "Choose Bitmap Name", initial_file_name , "Portable Network Graphics Images (*.png);;jPEG Images (*.jpeg *.jpg);;Bitmap Image Files(*.bmp)");
+  if (filename.isEmpty ())
+    return false;
+
+  double width, height;
+  if (!svg_utils::get_doc_dimensions (m_document->doc (), width, height))
+    return false;
+
+  render_utils::render_to_image (*m_document->doc (), filename, qRound (width), qRound (height));
+  return true;
+}
 
 bool main_window::options ()
 {
