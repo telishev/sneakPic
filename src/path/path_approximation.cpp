@@ -413,5 +413,5 @@ void path_approximation::fit_segment (std::vector<QPointF> points, QPointF outpu
 
 QPointF path_approximation::bezier_value (QPointF bezier[4], double t) const
 {
-  return BezierII (1, bezier, t);
+  return BezierII (3, bezier, t);
 }
