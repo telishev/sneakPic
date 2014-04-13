@@ -92,7 +92,7 @@ bool handles_editor::start_drag (QPointF pos)
   if (!m_cur_handle)
     return false;
 
-  return m_cur_handle->start_drag (get_local_pos (pos));
+  return m_cur_handle->start_drag (get_local_pos (pos), m_painter->cur_transform ());
 }
 
 bool handles_editor::drag_handle (QPointF pos)
@@ -100,7 +100,7 @@ bool handles_editor::drag_handle (QPointF pos)
   if (!m_cur_handle)
     return false;
 
-  if (m_cur_handle->drag (get_local_pos (pos)))
+  if (m_cur_handle->drag (get_local_pos (pos), m_painter->cur_transform ()))
     {
       m_painter->update ();
       return true; 
@@ -114,7 +114,7 @@ bool handles_editor::end_drag (QPointF pos)
   if (!m_cur_handle)
     return false;
 
-  if (m_cur_handle->end_drag (get_local_pos (pos)))
+  if (m_cur_handle->end_drag (get_local_pos (pos), m_painter->cur_transform ()))
     {
       m_painter->update ();
       return true;
@@ -128,11 +128,17 @@ abstract_handle *handles_editor::get_handle_by_pos (QPointF screen_pos) const
   const double max_distance = 10;
   double distance = max_distance;
   abstract_handle *handle = nullptr, *cur_handle = nullptr;
-  for (const auto & handle_pair : m_handles)
+  for (auto priority : {handle_priority::NORMAL, handle_priority::LOW})
     {
-      cur_handle = get_handle_by_element (screen_pos.toPoint (), handle_pair.second.get (), distance);
-      if (cur_handle)
-        handle = cur_handle;
+      if (handle)
+        break;
+
+      for (const auto & handle_pair : m_handles)
+        {
+          cur_handle = get_handle_by_element (screen_pos.toPoint (), handle_pair.second.get (), priority, distance);
+          if (cur_handle)
+            handle = cur_handle;
+        }
     }
 
   return handle;
@@ -143,12 +149,15 @@ QPointF handles_editor::get_local_pos (QPointF screen_pos) const
   return m_painter->get_local_pos (screen_pos);
 }
 
-abstract_handle *handles_editor::get_handle_by_element (QPoint screen_pos, element_handles *element, double &distance) const
+abstract_handle *handles_editor::get_handle_by_element (QPoint screen_pos, element_handles *element, handle_priority priority, double &distance) const
 {
   QTransform trans = m_painter->cur_transform ();
   abstract_handle *cur_handle = nullptr;
   for (const auto &handle : element->handles ())
     {
+      if (handle->priority () != priority)
+        continue;
+
       double cur_distance = handle->distance_to_mouse (screen_pos, trans);
       if (cur_distance <= distance)
         {

@@ -32,17 +32,17 @@ void base_handle::set_mouse_hovered (bool hovered)
   m_renderer.set_highlighted (hovered);
 }
 
-bool base_handle::start_drag (QPointF /*local_pos*/)
+bool base_handle::start_drag (QPointF /*local_pos*/, QTransform /*transform*/)
 {
   return false;
 }
 
-bool base_handle::drag (QPointF /*local_pos*/)
+bool base_handle::drag (QPointF /*local_pos*/, QTransform /*transform*/)
 {
   return false;
 }
 
-bool base_handle::end_drag (QPointF /*local_pos*/)
+bool base_handle::end_drag (QPointF /*local_pos*/, QTransform /*transform*/)
 {
   return false;
 }

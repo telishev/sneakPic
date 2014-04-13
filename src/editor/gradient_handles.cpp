@@ -75,10 +75,10 @@ QPointF base_gradient_handle::get_handle_center () const
 
 void base_gradient_handle::interrupt_drag ()
 {
-  drag (m_drag_start);
+  drag (m_drag_start, QTransform ());
 }
 
-bool base_gradient_handle::drag (QPointF local_pos)
+bool base_gradient_handle::drag (QPointF local_pos, QTransform /*transform*/)
 {
   QPointF gradient_pos = gradient_transform ().inverted ().map (local_pos);
   if (is_start ())
@@ -94,7 +94,7 @@ bool base_gradient_handle::drag (QPointF local_pos)
   return true;
 }
 
-bool base_gradient_handle::start_drag (QPointF local_pos)
+bool base_gradient_handle::start_drag (QPointF local_pos, QTransform /*transform*/)
 {
   m_drag_start = local_pos;
   return true;
@@ -115,9 +115,9 @@ base_gradient_handle::base_gradient_handle (gradient_handles *handle, renderer_b
   set_handle_type (get_handle_type ());
 }
 
-bool base_gradient_handle::end_drag (QPointF local_pos)
+bool base_gradient_handle::end_drag (QPointF local_pos, QTransform transform)
 {
-  drag (local_pos);
+  drag (local_pos, transform);
   m_handle->apply_changes ();
   return true;
 }

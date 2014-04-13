@@ -51,7 +51,7 @@ public:
     if (!path_data->is_empty ())
       {
         m_path = path_data->path ();
-        m_handles.push_back (new path_preview_handle (path_item));
+        m_handles.push_back (new path_preview_handle (m_editor, path_item));
 
         for (auto it = m_path->begin (); it != m_path->end (); ++it)
           add_controls (it);

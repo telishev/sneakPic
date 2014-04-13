@@ -154,6 +154,12 @@ void gui_document::tool_changed ()
 
 bool gui_document::action_triggered (gui_action_id id)
 {
+  if (id != gui_action_id::INTERRUPT)
+    {
+      if (action_triggered (gui_action_id::INTERRUPT))
+        return true;
+    }
+
   if (m_tools_container->action_triggered (id))
     return true;
 

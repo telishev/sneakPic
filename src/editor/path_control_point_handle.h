@@ -35,9 +35,9 @@ public:
 protected:
   virtual int distance_to_mouse (QPoint screen_pos, QTransform transform) const override;
   virtual void set_mouse_hovered (bool hovered) override;
-  virtual bool start_drag (QPointF local_pos) override;
-  virtual bool drag (QPointF local_pos) override;
-  virtual bool end_drag (QPointF local_pos) override;
+  virtual bool start_drag (QPointF local_pos, QTransform transform) override;
+  virtual bool drag (QPointF local_pos, QTransform transform) override;
+  virtual bool end_drag (QPointF local_pos, QTransform transform) override;
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
   virtual void interrupt_drag () override;
 

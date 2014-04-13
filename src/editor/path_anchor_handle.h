@@ -40,9 +40,9 @@ public:
   virtual QPointF get_handle_center () const override;
 
 protected:
-  virtual bool start_drag (QPointF local_pos) override;
-  virtual bool drag (QPointF local_pos) override;
-  virtual bool end_drag (QPointF local_pos) override;
+  virtual bool start_drag (QPointF local_pos, QTransform transform) override;
+  virtual bool drag (QPointF local_pos, QTransform transform) override;
+  virtual bool end_drag (QPointF local_pos, QTransform transform) override;
   virtual node_type_t node_type () const override;
   virtual QTransform get_path_transform () const;
   virtual void interrupt_drag () override;

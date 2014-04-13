@@ -29,7 +29,7 @@ path_anchor_handle::~path_anchor_handle ()
 {
 }
 
-bool path_anchor_handle::start_drag (QPointF local_pos)
+bool path_anchor_handle::start_drag (QPointF local_pos, QTransform /*transform*/)
 {
   m_edit_operation.reset (new path_edit_operation (m_item));
   m_drag_start = local_pos;
@@ -38,7 +38,7 @@ bool path_anchor_handle::start_drag (QPointF local_pos)
   return true;
 }
 
-bool path_anchor_handle::drag (QPointF local_pos)
+bool path_anchor_handle::drag (QPointF local_pos, QTransform /*transform*/)
 {
   m_drag_cur = local_pos;
   move_point ();
@@ -46,7 +46,7 @@ bool path_anchor_handle::drag (QPointF local_pos)
   return true;
 }
 
-bool path_anchor_handle::end_drag (QPointF local_pos)
+bool path_anchor_handle::end_drag (QPointF local_pos, QTransform /*transform*/)
 {
   m_drag_cur = local_pos;
   apply_drag ();

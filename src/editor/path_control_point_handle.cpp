@@ -55,14 +55,14 @@ void path_control_point_handle::set_mouse_hovered (bool hovered)
   m_editor->update ();
 }
 
-bool path_control_point_handle::start_drag (QPointF local_pos)
+bool path_control_point_handle::start_drag (QPointF local_pos, QTransform /*transform*/)
 {
   m_drag_start = local_pos;
   m_edit_operation.reset (new path_edit_operation (m_item));
   return true;
 }
 
-bool path_control_point_handle::drag (QPointF local_pos)
+bool path_control_point_handle::drag (QPointF local_pos, QTransform /*transform*/)
 {
   m_drag_cur = local_pos;
   move_point ();
@@ -70,7 +70,7 @@ bool path_control_point_handle::drag (QPointF local_pos)
   return true;
 }
 
-bool path_control_point_handle::end_drag (QPointF local_pos)
+bool path_control_point_handle::end_drag (QPointF local_pos, QTransform /*transform*/)
 {
   m_drag_cur = local_pos;
   apply_drag ();

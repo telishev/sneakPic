@@ -9,6 +9,8 @@ class element_handles;
 class abstract_svg_item;
 class abstract_handle;
 
+enum class handle_priority;
+
 class QPointF;
 class QPoint;
 
@@ -66,7 +68,7 @@ private:
   bool highlight_handle (QPointF pos);
 
   QPointF get_local_pos (QPointF screen_pos) const;
-  abstract_handle *get_handle_by_element (QPoint screen_pos, element_handles *element, double &distance) const;
+  abstract_handle *get_handle_by_element (QPoint screen_pos, element_handles *element, handle_priority priority, double &distance) const;
 };
 
 #endif // HANDLES_EDITOR_H
