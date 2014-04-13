@@ -1,7 +1,7 @@
 #ifndef GRADIENT_HANDLES_EDITOR_H
 #define GRADIENT_HANDLES_EDITOR_H
 
-#include "editor/handles_editor.h"
+#include "editor/selection_handles_editor.h"
 #include "element_handles.h"
 #include "item_paint_server.h"
 
@@ -25,7 +25,7 @@ public:
   void add_handle (QPointF pos, QTransform cur_transform);
 };
 
-class gradient_handles_editor : public handles_editor
+class gradient_handles_editor : public selection_handles_editor
 {
   unique_ptr<gradient_handles_color_model> m_color_model;
 

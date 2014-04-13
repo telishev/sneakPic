@@ -1,11 +1,7 @@
 #include "editor/handles_editor.h"
 
-#include "common/memory_deallocation.h"
-
 #include "editor/handles_renderer.h"
-#include "editor/items_selection.h"
 #include "editor/abstract_handle.h"
-#include "editor/element_handles.h"
 
 #include "svg/items/abstract_svg_item.h"
 
@@ -27,8 +23,8 @@ handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter,
   m_cur_handle = nullptr;
   m_highlighted_handle = nullptr;
 
-  m_renderer = new handles_renderer (this);
-  m_overlay->add_item (m_renderer, overlay_layer_type::TEMP);
+  put_in (m_renderer, this);
+  m_overlay->add_item (m_renderer.get (), overlay_layer_type::TEMP);
 
   m_applier->add_drag_shortcut (mouse_drag_shortcut_t::DRAG_HANDLE, this,
                                 &handles_editor::start_drag, &handles_editor::drag_handle, &handles_editor::end_drag);
@@ -40,50 +36,14 @@ handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter,
 
 handles_editor::~handles_editor ()
 {
-  FREE (m_renderer);
 }
 
 void handles_editor::update_handles ()
 {
-  clear_items ();
-  for (auto item : *m_painter->selection ())
-    add_item (item);
-
+  update_handles_impl ();
   m_cur_handle = nullptr;
   m_highlighted_handle = nullptr;
-  update_handles_impl ();
   highlight_handle (QCursor::pos ());
-}
-
-element_handles *handles_editor::handles_for_item (const string &item) const
-{
-  auto it = m_handles.find (item);
-  if (it == m_handles.end ())
-    return nullptr;
-
-  return it->second.get ();
-}
-
-void handles_editor::add_item (abstract_svg_item *item)
-{
-  if (!item)
-    return;
-
-  element_handles *handle = create_handles_for_item (item);
-  if (!handle)
-    return;
-
-  m_handles[item->name ()].reset (handle);
-}
-
-void handles_editor::remove_item (const string &item)
-{
-  m_handles.erase (item);
-}
-
-void handles_editor::clear_items ()
-{
-  m_handles.clear ();
 }
 
 bool handles_editor::start_drag (QPointF pos)
@@ -127,17 +87,26 @@ abstract_handle *handles_editor::get_handle_by_pos (QPointF screen_pos) const
 {
   const double max_distance = 10;
   double distance = max_distance;
-  abstract_handle *handle = nullptr, *cur_handle = nullptr;
+  abstract_handle *handle = nullptr;
+  auto handles = get_handles ();
+  QTransform trans = m_painter->cur_transform ();
+
   for (auto priority : {handle_priority::NORMAL, handle_priority::LOW})
     {
       if (handle)
         break;
 
-      for (const auto & handle_pair : m_handles)
+      for (auto cur_handle : handles)
         {
-          cur_handle = get_handle_by_element (screen_pos.toPoint (), handle_pair.second.get (), priority, distance);
-          if (cur_handle)
-            handle = cur_handle;
+          if (cur_handle->priority () != priority)
+            continue;
+
+          double cur_distance = cur_handle->distance_to_mouse (screen_pos.toPoint (), trans);
+          if (cur_distance <= distance)
+            {
+              distance = cur_distance;
+              handle = cur_handle;
+            }
         }
     }
 
@@ -147,26 +116,6 @@ abstract_handle *handles_editor::get_handle_by_pos (QPointF screen_pos) const
 QPointF handles_editor::get_local_pos (QPointF screen_pos) const
 {
   return m_painter->get_local_pos (screen_pos);
-}
-
-abstract_handle *handles_editor::get_handle_by_element (QPoint screen_pos, element_handles *element, handle_priority priority, double &distance) const
-{
-  QTransform trans = m_painter->cur_transform ();
-  abstract_handle *cur_handle = nullptr;
-  for (const auto &handle : element->handles ())
-    {
-      if (handle->priority () != priority)
-        continue;
-
-      double cur_distance = handle->distance_to_mouse (screen_pos, trans);
-      if (cur_distance <= distance)
-        {
-          distance = cur_distance;
-          cur_handle = handle;
-        }
-    }
-
-  return cur_handle;
 }
 
 bool handles_editor::highlight_handle (QPointF pos)
@@ -187,11 +136,6 @@ bool handles_editor::highlight_handle (QPointF pos)
   return true;
 }
 
-void handles_editor::set_handle_for_item (const char *name, element_handles *handles)
-{
-  m_handles[name].reset (handles);
-}
-
 bool handles_editor::interrupt_all ()
 {
   if (m_cur_handle)
@@ -205,3 +149,5 @@ void handles_editor::interrupt ()
 {
   m_applier->apply_action (gui_action_id::INTERRUPT);
 }
+
+

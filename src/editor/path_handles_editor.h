@@ -1,7 +1,7 @@
 #ifndef PATH_HANDLES_EDITOR_H
 #define PATH_HANDLES_EDITOR_H
 
-#include "editor/handles_editor.h"
+#include "editor/selection_handles_editor.h"
 
 class path_anchors_selection;
 class rubberband_selection;
@@ -9,7 +9,7 @@ class mouse_event_t;
 class QRectF;
 class path_anchor_handle;
 
-class path_handles_editor : public handles_editor
+class path_handles_editor : public selection_handles_editor
 {
   path_anchors_selection *m_handles_selection;
   rubberband_selection *m_rubberband;

@@ -13,7 +13,7 @@
 
 
 pen_handles::pen_handles (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
-  : handles_editor (overlay, painter, applier)
+  : selection_handles_editor (overlay, painter, applier)
 {
   m_new_path = 0;
 }
@@ -62,6 +62,7 @@ bool pen_handles::get_path_by_pos (QPointF screen_pos, svg_path_geom_iterator &i
 
 void pen_handles::update_handles_impl ()
 {
+  selection_handles_editor::update_handles_impl ();
   if (!m_new_path)
     return;
 

@@ -128,7 +128,7 @@ private:
 
 
 path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
-  : handles_editor (overlay, painter, applier)
+  : selection_handles_editor (overlay, painter, applier)
 {
   m_disable_deselect = false;
   m_handles_selection = new path_anchors_selection (painter->selection (), painter->document ());
@@ -202,6 +202,7 @@ void path_handles_editor::update ()
 
 void path_handles_editor::update_handles_impl ()
 {
+  selection_handles_editor::update_handles_impl ();
   m_handles_selection->update ();
 }
 

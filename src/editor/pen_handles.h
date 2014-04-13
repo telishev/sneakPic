@@ -1,13 +1,13 @@
 #ifndef PEN_HANDLES_H
 #define PEN_HANDLES_H
 
-#include "editor/handles_editor.h"
+#include "editor/selection_handles_editor.h"
 
 class svg_path_geom_iterator;
 class svg_item_path;
 class svg_path_geom;
 
-class pen_handles : public handles_editor
+class pen_handles : public selection_handles_editor
 {
   svg_path_geom *m_new_path;
 public:

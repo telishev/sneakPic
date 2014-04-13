@@ -76,7 +76,7 @@ public:
 };
 
 gradient_handles_editor::gradient_handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
-: handles_editor (overlay, painter, applier)
+: selection_handles_editor (overlay, painter, applier)
 {
   m_disable_deselect = false;
   put_in (m_color_model, this);
@@ -99,6 +99,7 @@ element_handles * gradient_handles_editor::create_handles_for_item (abstract_svg
 
 void gradient_handles_editor::update_handles_impl ()
 {
+  selection_handles_editor::update_handles_impl ();
   auto cur_selected = current_selection ();
   if (cur_selected)
     cur_selected->set_selected (true);
