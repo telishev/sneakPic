@@ -9,8 +9,8 @@ from "Graphics Gems", Academic Press, 1990
 /*  fit_cubic.c	*/									
 /*	Piecewise cubic fitting code	*/
 
-#include <stdio.h>
-#include <malloc.h>
+#include <array>
+
 #include <math.h>
 #include "geom_helpers.h"
 #include "path_builder.h"
@@ -45,7 +45,6 @@ static inline double B3 (double u)
     return (u * u * u);
 }
 
-#define MAXPOINTS	1000		/* The most points you can have */
 /*
  *  GenerateBezier :
  *  Use least-squares method to find Bezier control points for region.
@@ -54,7 +53,8 @@ static inline double B3 (double u)
 static void GenerateBezier (QPointF *d, int first, int last, double *uPrime, QPointF tHat1, QPointF tHat2, QPointF *bezCurve)
 {
     int 	i;
-    QPointF 	A[MAXPOINTS][2];	/* Precomputed rhs for eqn	*/
+    std::vector<std::array<QPointF, 2>> 	A;	/* Precomputed rhs for eqn	*/
+
     int 	nPts;			/* Number of pts in sub-curve */
     double 	C[2][2];			/* Matrix C		*/
     double 	X[2];			/* Matrix X			*/
@@ -65,7 +65,7 @@ static void GenerateBezier (QPointF *d, int first, int last, double *uPrime, QPo
     	   	alpha_r;
     QPointF 	tmp;			/* Utility variable		*/
     nPts = last - first + 1;
-
+    A.resize (nPts);
  
     /* Compute the A's	*/
     for (i = 0; i < nPts; i++) 
@@ -172,11 +172,7 @@ static QPointF ComputeRightTangent(QPointF *d, int end)
 
 static QPointF ComputeCenterTangent(QPointF *d, int center)
 {
-    QPointF	V1, V2, tHatCenter;
-
-    V1 = d[center-1] - d[center]  ;
-    V2 = d[center]   - d[center+1];
-    tHatCenter = V1 + V2;
+    QPointF tHatCenter = d[center-1] - d[center+1];
     tHatCenter  /= geom::norm (tHatCenter);
     return tHatCenter;
 }
@@ -276,17 +272,12 @@ static double NewtonRaphsonRootFind(BezierCurve Q, QPointF P, double u)
  *   a better parameterization.
  *
  */
-static double *Reparameterize (QPointF *d, int first, int last, double *u, BezierCurve bezCurve)
+static void Reparameterize (QPointF *d, int first, int last, double *u, BezierCurve bezCurve)
 {
-    int 	nPts = last-first+1;	
     int 	i;
-    double	*uPrime;		/*  New parameter values	*/
-
-    uPrime = (double *)malloc(nPts * sizeof(double));
     for (i = first; i <= last; i++)
-		  uPrime[i-first] = NewtonRaphsonRootFind(bezCurve, d[i], u[i-first]);
+		  u[i-first] = NewtonRaphsonRootFind (bezCurve, d[i], u[i-first]);
 
-    return (uPrime);
 }
 
 /*
@@ -299,7 +290,7 @@ static double *ChordLengthParameterize (QPointF *d, int first, int last)
     int		i;	
     double	*u;			/*  Parameterization		*/
 
-    u = (double *)malloc((unsigned)(last-first+1) * sizeof(double));
+    u = new double [(last-first+1)];
 
     u[0] = 0.0;
     for (i = first+1; i <= last; i++)
@@ -308,7 +299,7 @@ static double *ChordLengthParameterize (QPointF *d, int first, int last)
     for (i = first + 1; i <= last; i++)
 		  u[i-first] = u[i-first] / u[last-first];
 
-    return(u);
+    return u;
 }
 
 /*
@@ -318,8 +309,7 @@ static double *ChordLengthParameterize (QPointF *d, int first, int last)
 void path_approximation::FitCubic (QPointF *d, int first, int last, QPointF tHat1, QPointF tHat2, double error)
 {
     QPointF	bezCurve[4]; /*Control points of fitted Bezier curve*/
-    double	*u;		/*  Parameter values for point  */
-    double	*uPrime;	/*  Improved parameter values */
+    unique_ptr<double[]>	u;		/*  Parameter values for point  */
     double	maxError;	/*  Maximum fitting error	 */
     int		splitPoint;	/*  Point to split point set at	 */
     int		nPts;		/*  Number of points in subset  */
@@ -344,15 +334,14 @@ void path_approximation::FitCubic (QPointF *d, int first, int last, QPointF tHat
       }
 
     /*  Parameterize points, and attempt to fit curve */
-    u = ChordLengthParameterize(d, first, last);
-    GenerateBezier(d, first, last, u, tHat1, tHat2, bezCurve);
+    u.reset (ChordLengthParameterize(d, first, last));
+    GenerateBezier(d, first, last, u.get (), tHat1, tHat2, bezCurve);
 
     /*  Find max deviation of points to fitted curve */
-    maxError = ComputeMaxError(d, first, last, bezCurve, u, &splitPoint);
+    maxError = ComputeMaxError(d, first, last, bezCurve, u.get (), &splitPoint);
     if (maxError < error)
       {
 		    output_curve (bezCurve);
-		    free((void *)u);
 		    return;
       }
 
@@ -363,23 +352,18 @@ void path_approximation::FitCubic (QPointF *d, int first, int last, QPointF tHat
       {
 		    for (i = 0; i < maxIterations; i++)
           {
-	    	    uPrime = Reparameterize(d, first, last, u, bezCurve);
-	    	    GenerateBezier(d, first, last, uPrime, tHat1, tHat2, bezCurve);
-	    	    maxError = ComputeMaxError(d, first, last,
-				            bezCurve, uPrime, &splitPoint);
+	    	    Reparameterize(d, first, last, u.get (), bezCurve);
+	    	    GenerateBezier(d, first, last, u.get (), tHat1, tHat2, bezCurve);
+	    	    maxError = ComputeMaxError(d, first, last, bezCurve, u.get (), &splitPoint);
 	    	    if (maxError < error)
               {
 			          output_curve (bezCurve);
-			          free((void *)u);
 			          return;
 	            }
-	          free((void *)u);
-	          u = uPrime;
 	        }
       }
 
     /* Fitting failed -- split at max error point and fit recursively */
-    free((void *)u);
     tHatCenter = ComputeCenterTangent(d, splitPoint);
     FitCubic(d, first, splitPoint, tHat1, tHatCenter, error);
     tHatCenter = -tHatCenter;
