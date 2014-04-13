@@ -96,8 +96,10 @@ static inline double cubed (double x) { return x * x * x; }
 
 void path_preview_handle::drag_point (QPointF local_pos)
 {
-  QPointF pos = m_item->full_transform ().map (local_pos);
-  QPointF init_pos = m_item->full_transform ().map (m_prev_drag);
+  QTransform full_trans = m_item->full_transform ();
+  QTransform full_inv = full_trans.inverted ();
+  QPointF pos = full_inv.map (local_pos);
+  QPointF init_pos = full_inv.map (m_prev_drag);
   m_prev_drag = local_pos;
   // Magic Bezier Drag Equations follow!
   // "weight" describes how the influence of the drag should be distributed
@@ -112,8 +114,8 @@ void path_preview_handle::drag_point (QPointF local_pos)
   QPointF offset0 = ((1-weight) / (3*t*(1-t)*(1-t))) * delta;
   QPointF offset1 = (weight/(3*t*t*(1-t))) * delta;
   svg_path *path = m_edit_operation->get_svg_path ();
-  path->move_control_point (m_drag_it->control_point (false) + offset0, *m_drag_it, false);
-  path->move_control_point (m_drag_it->right ().control_point (true) + offset1, m_drag_it->right (), true);
+  path->move_control_point (full_trans.map (m_drag_it->control_point (false) + offset0), *m_drag_it, false);
+  path->move_control_point (full_trans.map (m_drag_it->right ().control_point (true) + offset1), m_drag_it->right (), true);
 }
 
 void path_preview_handle::interrupt_drag ()
