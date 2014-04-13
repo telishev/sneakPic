@@ -393,6 +393,7 @@ void svg_painter::create_overlay_containers ()
 void svg_painter::items_changed ()
 {
   set_configure_needed (configure_type::ITEMS_CHANGED);
+  configure ();
   canvas_widget ()->update ();
 }
 
