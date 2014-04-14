@@ -40,8 +40,12 @@ win32:*msvc*{
   DEFINES += "_VARIADIC_MAX=10"
 }
 
-*g++* {
+*g++* | *clang* {
   QMAKE_CXXFLAGS += -std=c++11 -Wall -Wextra -Wcast-align -Wunused -Wformat=2 -Wcast-qual -Woverloaded-virtual -Wnon-virtual-dtor
+  Debug {
+    QMAKE_CXXFLAGS *= -fsanitize=address
+    QMAKE_LFLAGS   *= -fsanitize=address
+    }
 }
 
 Release {

@@ -20,8 +20,9 @@ public:
   virtual bool write (QString &data, bool from_css = false) const override;
 };
 
-class svg_attribute_font_family : public svg_base_attribute_string { SVG_ATTRIBUTE };
-class svg_attribute_layer_name : public svg_base_attribute_string { SVG_ATTRIBUTE };
-class svg_attribute_active_layer : public svg_base_attribute_string { SVG_ATTRIBUTE };
+
+class svg_attribute_font_family : public svg_base_attribute_string { SVG_ATTRIBUTE public: svg_attribute_font_family () {};};
+class svg_attribute_layer_name : public svg_base_attribute_string { SVG_ATTRIBUTE public: svg_attribute_layer_name () {};};
+class svg_attribute_active_layer : public svg_base_attribute_string { SVG_ATTRIBUTE public: svg_attribute_active_layer () {};};
 
 #endif // SVG_ATTRIBUTES_STRING_H
