@@ -74,8 +74,6 @@ bool path_control_point_handle::end_drag (QPointF local_pos, QTransform /*transf
 {
   m_drag_cur = local_pos;
   apply_drag ();
-  m_drag_cur = m_drag_start = QPointF ();
-  m_editor->update ();
   return true;
 }
 
@@ -115,6 +113,7 @@ void path_control_point_handle::apply_drag ()
 {
   move_point ();
   m_editor->begin_changes ();
+  m_drag_cur = m_drag_start = QPointF ();
   m_edit_operation.reset ();
   m_editor->end_changes ("Drag Handle");
 }
