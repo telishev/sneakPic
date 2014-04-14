@@ -109,7 +109,7 @@ void layers_widget_handler::index_clicked (const QModelIndex &index)
   m_layers_view->viewport ()->update ();
 }
 
-void layers_widget_handler::update_expanded_state (QModelIndex &index)
+void layers_widget_handler::update_expanded_state (const QModelIndex &index)
 {
   auto node = static_cast <layers_tree_node *> (index.internalPointer ());
   if (node && node->expanded)

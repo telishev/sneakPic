@@ -14,9 +14,9 @@ struct layers_tree_node
   bool expanded; // GUI property, is corresponding view item expanded
   layer_type type; // type
 
-  node ();
-  node (int global_id_arg, int node_number_arg, node *parent_arg, layer_type type_arg) : node () { global_id = global_id_arg; node_number = node_number_arg; parent = parent_arg; type = type_arg; }
-  node (int global_id_arg, layer_type type_arg) : node () { global_id = global_id_arg; type = type_arg; }
+  layers_tree_node ();
+  layers_tree_node (int global_id_arg, int node_number_arg, node *parent_arg, layer_type type_arg) : layers_tree_node () { global_id = global_id_arg; node_number = node_number_arg; parent = parent_arg; type = type_arg; }
+  layers_tree_node (int global_id_arg, layer_type type_arg) : layers_tree_node () { global_id = global_id_arg; type = type_arg; }
 };
 
 class layers_tree

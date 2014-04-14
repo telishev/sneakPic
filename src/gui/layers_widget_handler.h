@@ -35,7 +35,7 @@ public:
   void change_opacity ();
 
 private:
-  void update_expanded_state (QModelIndex &index);
+  void update_expanded_state (const QModelIndex &index);
 
 private slots:
   void resize_to_contents ();

@@ -124,7 +124,7 @@ bool base_gradient_handle::end_drag (QPointF local_pos, QTransform transform)
 
 std::pair<std::string, int> base_gradient_handle::get_selection_id () const
 {
-  auto &handles = m_handle->handles ();
+  auto handles = m_handle->handles ();
   auto it = std::find (handles.begin (), handles.end (), this);
   DEBUG_ASSERT (it != handles.end ());
 

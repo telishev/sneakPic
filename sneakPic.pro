@@ -1,7 +1,7 @@
 DISTFILES += sneakPic.pro skia.pri
 TARGET = sneakPic
 TEMPLATE = app
-QT += core widgets svg xml opengl
+QT += core widgets xml opengl
 
 isEmpty ($$PROJ_DIR) {
   PROJ_DIR = $$PWD

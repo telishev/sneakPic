@@ -133,7 +133,7 @@ base_gradient_handle * gradient_handles_editor::current_selection () const
   if (!handles)
     return nullptr;
 
-  auto &handles_vector = handles->handles ();
+  auto handles_vector = handles->handles ();
   if (m_selected_handle.second >= (int)handles_vector.size ())
     return nullptr;
 
