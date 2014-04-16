@@ -23,6 +23,7 @@ class abstract_state_diff_t
 public:
   virtual ~abstract_state_diff_t () = 0;
   virtual abstract_state_t *apply_diff (const abstract_state_t *state, diff_direction_t direction) = 0;
+  virtual bool need_recreate_item () const = 0;
 };
 
 class undoable

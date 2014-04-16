@@ -27,6 +27,12 @@ public:
 
   void load (QSettings *settings);
   void save (QSettings *settings);
+
+  void create_from_item (abstract_svg_item *item);
+  void apply_to_item (abstract_svg_item *item) const;
+
+  void create_from_selection (items_selection *selection);
+  void apply_to_selection (items_selection *selection) const;
 };
 
 

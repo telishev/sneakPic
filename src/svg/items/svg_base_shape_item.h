@@ -17,13 +17,13 @@ public:
   virtual ~svg_base_shape_item () override;
 
   QPainterPath get_path_for_clipping () const;
+  virtual QPainterPath get_path () const = 0;
 
 protected:
   virtual QPainterPath get_boundaries () const override;
   virtual renderer_graphics_item *create_renderer_graphics_item () const override;
   renderable_item *create_outline_renderer () const override;
 
-  virtual QPainterPath get_path () const = 0;
   
   void set_item_style (renderer_base_shape_item *item) const;
   bool get_stroke (QPainterPath &dst) const;

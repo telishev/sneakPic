@@ -15,6 +15,7 @@
 #include "path/path_builder.h"
 #include "path/svg_path.h"
 #include "svg/attributes/svg_attribute_nodetypes.h"
+#include "path/qt_path_conversion.h"
 
 
 
@@ -250,29 +251,7 @@ bool svg_attribute_path_data::read_arc (const char *&data, path_builder &builder
 
 QPainterPath svg_attribute_path_data::create_painter_path () const
 {
-  QPainterPath path;
-  for (const auto &subpath : m_path->subpath ())
-    {
-      auto elements = subpath.elements ();
-      path.moveTo (elements.front ().point);
-      for (size_t i = 0; i < elements.size (); i++)
-        {
-          size_t next_element = i + 1;
-          if (next_element == elements.size ())
-            {
-              if (!subpath.is_closed ())
-                continue;
-              else
-                next_element = 0;
-            }
-
-          path.cubicTo (elements[i].c2, elements[next_element].c1, elements[next_element].point);
-        }
-
-      if (subpath.is_closed ())
-        path.closeSubpath ();
-    }
-  return path;
+  return qt_path_conversion ().create_qpath (m_path);
 }
 
 

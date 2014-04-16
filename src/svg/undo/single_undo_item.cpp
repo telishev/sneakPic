@@ -61,6 +61,16 @@ void single_undo_item::apply (diff_direction_t direction)
       undoable *item = m_items_container->get_item (id);
       unique_ptr<abstract_state_t> cur_state (item ? item->create_state () : nullptr);
       unique_ptr<abstract_state_t> new_state (diff->apply_diff (cur_state.get (), direction));
+      if (diff->need_recreate_item () || !new_state)
+        {
+          if (item)
+            {
+              item->load_from_state (nullptr);
+              m_items_container->remove_item (item->undo_id ());
+              item = nullptr;
+            }
+        }
+
       if (new_state)
         {
           if (!item)
@@ -71,14 +81,6 @@ void single_undo_item::apply (diff_direction_t direction)
             }
 
           item->load_from_state (new_state.get ());
-        }
-      else
-        {
-          if (item)
-            {
-              item->load_from_state (nullptr);
-              m_items_container->remove_item (item->undo_id ());
-            }
         }
     }
 }

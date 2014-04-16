@@ -21,6 +21,7 @@ class copy_paste_handler;
 class style_controller;
 class multi_gui_model;
 class gui_model;
+class path_operations_handler;
 
 enum class gui_action_id;
 
@@ -42,6 +43,8 @@ class gui_document : public QObject
   unique_ptr<copy_paste_handler> m_copy_paste_handler;
   style_controller *m_style_controller;
   multi_gui_model *m_color_model;
+
+  unique_ptr<path_operations_handler> m_path_handler;
 
 public:
   gui_document (settings_t *settings, gui_actions *actions, style_controller *controller, multi_gui_model *color_model);

@@ -143,11 +143,13 @@ svg_graphics_item *items_edit_handler_t::get_graphics_item (const string &item_n
 void items_edit_handler_t::set_item_changed (const string &item)
 {
   set_children_changed (item);
+  m_removed_items.erase (item);
 }
 
 void items_edit_handler_t::set_item_layout_changed (const string &item)
 {
   m_layout_changed_items.insert (item);
+  m_removed_items.erase (item);
 }
 
 void items_edit_handler_t::set_item_removed (const string &item)

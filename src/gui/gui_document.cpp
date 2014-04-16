@@ -26,6 +26,7 @@
 #include "editor/items_selection.h"
 #include "svg/undo/undo_handler.h"
 #include "multi_gui_model.h"
+#include "path_operations_handler.h"
 
 
 gui_document::gui_document (settings_t *settings, gui_actions *actions, style_controller *controller, multi_gui_model *color_model)
@@ -39,6 +40,7 @@ gui_document::gui_document (settings_t *settings, gui_actions *actions, style_co
   m_cache = new rendered_items_cache;
   m_queue = new events_queue;
   m_tools_container = new tools_container (m_actions);
+
   m_renderer_thread = new renderer_thread (new svg_renderer (m_cache, m_queue), m_queue);
   m_renderer_thread->start ();
 
@@ -85,7 +87,8 @@ svg_painter *gui_document::create_painter (canvas_widget_t *widget)
 {
   FREE (m_painter);
   m_painter = new svg_painter (widget, m_cache, m_queue, m_doc, m_settings, this);
-  m_copy_paste_handler.reset (new copy_paste_handler (m_painter));
+  put_in (m_copy_paste_handler, m_painter);
+  put_in (m_path_handler, m_painter, m_actions_applier);
   m_tools_container->update_tools (m_painter);
   m_painter->set_current_tool (m_tools_container->current_tool ());
   widget->set_painter (m_painter);

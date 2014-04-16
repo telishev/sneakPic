@@ -169,6 +169,8 @@ public:
   void make_orphan (abstract_svg_item *child);  // WARNING: These function does not generate proper undo, so you'd better use it in the stage before undo has any sense.
   void adopt_orphan (abstract_svg_item *child); // --- / ---
 
+  void replace_item (abstract_svg_item *item);
+
 protected:
   virtual bool process_item_after_read () { return true; }
 

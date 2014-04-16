@@ -34,9 +34,7 @@ void style_controller::set_painter (svg_painter *painter)
 void style_controller::selection_or_items_changed ()
 {
   item_paint_style &style = m_styles[(int) m_current_style];
-  style.fill ().create_from_selection (m_painter->selection (), true);
-  style.stroke ().create_from_selection (m_painter->selection (), false);
-  style.stroke_cfg ().create_from_selection (m_painter->selection ());
+  style.create_from_selection (m_painter->selection ());
   send_items_changed ();
 }
 

@@ -43,7 +43,6 @@ void path_builder::close_subpath ()
     {
       front_elem.c1 = back_elem.c1;
       elements.pop_back ();
-      m_dst_path.get_is_line_segment ()->pop_back ();
       m_dst_path.get_node_type ()->pop_back ();
     }
 

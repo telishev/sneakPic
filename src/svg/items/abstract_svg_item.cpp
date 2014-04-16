@@ -44,7 +44,13 @@ public:
 
   virtual abstract_state_diff_t *create_diff (const abstract_state_t *first, const abstract_state_t *second) override
   {
-    return new simple_state_diff<svg_item_state> (first, second);
+    auto first_state = static_cast<const svg_item_state *> (first);
+    auto second_state = static_cast<const svg_item_state *> (second);
+    bool recreate = false;
+    if (first_state && second)
+      recreate = first_state->m_type != second_state->m_type;
+
+    return new simple_state_diff<svg_item_state> (first, second, recreate);
   }
 
   svg_item_state *clone () const
@@ -629,6 +635,20 @@ abstract_svg_item::iterator abstract_svg_item::begin ()
 abstract_svg_item::iterator abstract_svg_item::end ()
 {
   return abstract_svg_item::iterator (m_children.end (), m_document->get_undo_handler ());
+}
+
+void abstract_svg_item::replace_item (abstract_svg_item *item)
+{
+  set_undo_id (item->undo_id ());
+  m_parent = item->m_parent;
+  undo_handler *handler = document ()->get_undo_handler ();
+  std::string name = item->name ();
+  item->prepare_to_remove ();
+  handler->remove_item (item);
+  m_document->get_undo_handler ()->add_item (this);
+  handler->register_item (this);
+  get_attribute_for_change<svg_attribute_id> ()->set_id (name);
+  register_item_name ();
 }
 
 abstract_svg_item *abstract_svg_item::iterator::operator* ()

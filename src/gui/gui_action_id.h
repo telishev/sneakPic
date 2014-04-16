@@ -20,6 +20,7 @@ enum class gui_action_id
   PASTE_IN_PLACE,
   CUT,
   OPTIONS,
+  OBJECT_TO_PATH,
 
 
   //// Tools
