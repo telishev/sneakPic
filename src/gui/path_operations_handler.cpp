@@ -5,6 +5,7 @@
 #include "renderer/svg_painter.h"
 #include "editor/items_selection.h"
 #include "editor/operations/object_to_path_operation.h"
+#include "editor/operations/stroke_to_path_operation.h"
 #include "svg/svg_document.h"
 
 
@@ -15,6 +16,7 @@ path_operations_handler::path_operations_handler (svg_painter *painter, actions_
   m_painter = painter;
   m_actions_applier = applier;
   m_actions_applier->register_action (gui_action_id::OBJECT_TO_PATH, this, &path_operations_handler::objects_to_path);
+  m_actions_applier->register_action (gui_action_id::STROKE_TO_PATH, this, &path_operations_handler::strokes_to_path);
 }
 
 path_operations_handler::~path_operations_handler ()
@@ -48,4 +50,12 @@ bool path_operations_handler::apply_for_selection (std::function<bool (abstract_
 
   m_painter->document ()->apply_changes (undo_name);
   return true;
+}
+
+bool path_operations_handler::strokes_to_path ()
+{
+  return apply_for_selection ([&] (abstract_svg_item *item) {
+    stroke_to_path_operation ().apply (item);
+    return true;
+  }, "Stroke to Path");
 }

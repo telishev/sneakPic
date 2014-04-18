@@ -17,11 +17,14 @@
 #include "path/qt_path_conversion.h"
 
 
-void object_to_path_operation::apply (abstract_svg_item *item)
+svg_item_path *object_to_path_operation::apply (abstract_svg_item *item)
 {
   svg_base_shape_item *graph_item = dynamic_cast<svg_base_shape_item *> (item);
-  if (!graph_item || graph_item->type () == svg_item_type::PATH)
-    return;
+  if (!graph_item)
+    return nullptr;
+
+  if (graph_item->type () == svg_item_type::PATH)
+    return static_cast<svg_item_path *> (item);
   
   item_paint_style style;
   style.create_from_item (item);
@@ -34,5 +37,6 @@ void object_to_path_operation::apply (abstract_svg_item *item)
   style.apply_to_item (path);
   path_edit_operation op (path);
   qt_path_conversion ().create_from_qpath (painter_path, *op.get_svg_path ());
+  return path;
 }
 

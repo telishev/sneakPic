@@ -21,6 +21,7 @@ enum class gui_action_id
   CUT,
   OPTIONS,
   OBJECT_TO_PATH,
+  STROKE_TO_PATH,
 
 
   //// Tools

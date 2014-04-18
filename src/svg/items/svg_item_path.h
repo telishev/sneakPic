@@ -14,10 +14,10 @@ public:
   virtual ~svg_item_path () override;
 
   const svg_path_geom *get_svg_path () const;
+  virtual QPainterPath get_path () const override;
 
   virtual bool process_item_after_read () override;
 protected:
-  virtual QPainterPath get_path () const override;
 };
 
 

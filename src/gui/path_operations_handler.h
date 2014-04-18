@@ -17,6 +17,7 @@ public:
 private:
   bool objects_to_path ();
   bool apply_for_selection (std::function<bool (abstract_svg_item *)> func, QString undo_name);
+  bool strokes_to_path ();
 };
 
 #endif // PATH_OPERATIONS_HANDLER_H

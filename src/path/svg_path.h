@@ -25,8 +25,8 @@ public:
   void move_anchor (QPointF dst, svg_path_geom_iterator it);
   void move_control_point (QPointF dst, svg_path_geom_iterator it, bool is_left);
 
+  void clear ();
   void copy_from (svg_path &src);
-
   void reverse_subpath (int subpath_index);
 };
 

@@ -68,5 +68,6 @@ void menu_builder::create_edit_menu (QMenu *menu)
 void menu_builder::create_path_menu (QMenu *menu)
 {
   add_action (menu, gui_action_id::OBJECT_TO_PATH);
+  add_action (menu, gui_action_id::STROKE_TO_PATH);
 }
 

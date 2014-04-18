@@ -38,6 +38,7 @@ actions_info::actions_info ()
   add_action (A::OPTIONS, "Options...", QKeySequence ());
   add_action (A::QUIT, "Exit", QKeySequence ("Alt+F4"));
   add_action (A::OBJECT_TO_PATH, "Object to Path", QKeySequence ("Ctrl+Shift+C"));
+  add_action (A::STROKE_TO_PATH, "Stroke to Path", QKeySequence ("Ctrl+Alt+C"));
 
   /// Tools
   add_action (A::TOOL_SELECTOR, "Select Objects", QKeySequence (), QIcon (":/cursor.png"));

@@ -91,6 +91,13 @@ void svg_path::copy_from (svg_path &src)
   m_transform = src.m_transform;
 }
 
+void svg_path::clear ()
+{
+  m_geom->clear ();
+  m_is_line_segment->clear ();
+  m_node_type->clear ();
+}
+
 unique_svg_path::unique_svg_path ()
 {
   m_geom.reset (new svg_path_geom);

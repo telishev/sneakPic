@@ -35,6 +35,7 @@ QPainterPath qt_path_conversion::create_qpath (svg_path_geom *geom)
 
 void qt_path_conversion::create_from_qpath (QPainterPath qpath, svg_path &result)
 {
+  result.clear ();
   path_builder builder (result);
   int count = qpath.elementCount ();
   for (int i = 0; i < count; i++)
