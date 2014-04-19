@@ -22,6 +22,9 @@ enum class gui_action_id
   OPTIONS,
   OBJECT_TO_PATH,
   STROKE_TO_PATH,
+  UNITE_PATH,
+  INTERSECT_PATH,
+  SUBPTRACT_PATH,
 
 
   //// Tools
