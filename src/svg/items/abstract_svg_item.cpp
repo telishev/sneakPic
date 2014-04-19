@@ -18,6 +18,7 @@
 #include "svg/changed_items_container.h"
 #include "svg/undo/undo_handler.h"
 #include "svg/simple_item_observer.h"
+#include "svg/attributes/svg_attribute_factory.h"
 
 class svg_item_state : public abstract_state_t
 {
@@ -653,6 +654,12 @@ void abstract_svg_item::replace_item (abstract_svg_item *item)
   handler->register_item (this);
   get_attribute_for_change<svg_attribute_id> ()->set_id (name);
   register_item_name ();
+}
+
+const  abstract_attribute * abstract_svg_item::get_computed_attribute_by_type (svg_attribute_type type) const
+{
+  unique_ptr<abstract_attribute> tmp_attr (svg_attribute_factory::get ()->create_attribute (undo_id (), type));
+  return  get_computed_attribute (tmp_attr->type_name (), tmp_attr->inherit_type (), tmp_attr->type ());
 }
 
 abstract_svg_item *abstract_svg_item::iterator::operator* ()

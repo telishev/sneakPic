@@ -16,6 +16,7 @@ public:
 
 private:
   bool clone_object ();
+  bool duplicate ();
   bool apply_for_selection (std::function<bool (abstract_svg_item *)> func, QString undo_name);
 };
 

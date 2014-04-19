@@ -116,13 +116,22 @@ abstract_renderer_item *svg_item_use::create_renderer_item_impl () const
 
 void svg_item_use::unlink ()
 {
-  /// TODO:implement unlink
+  unlink_item (child (0));
 }
 
 
 bool svg_item_use::can_be_selected () const 
 {
   return true;
+}
+
+void svg_item_use::unlink_item (abstract_svg_item *item)
+{
+  if (!item)
+    return;
+
+  for (int i = 0; i < children_count (); i++)
+    unlink_item (child (i));
 }
 
 

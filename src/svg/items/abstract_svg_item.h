@@ -87,6 +87,8 @@ public:
     return std::move (attribute_pointer<T> (static_cast<T *>(attribute), this));
   }
 
+  const abstract_attribute *get_computed_attribute_by_type (svg_attribute_type type) const;
+
   /// returns attribute with respect to styling and css
   template <typename T>
   const T *get_computed_attribute (const T *default_val = static_cast<const T *> (T::static_default_value ())) const

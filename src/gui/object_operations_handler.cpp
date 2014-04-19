@@ -6,6 +6,7 @@
 #include "svg/svg_document.h"
 #include "editor/items_selection.h"
 #include "editor/operations/clone_item_operation.h"
+#include "editor/operations/duplicate_item_operation.h"
 
 
 
@@ -15,6 +16,7 @@ object_operations_handler::object_operations_handler (svg_painter *painter, acti
   m_painter = painter;
   m_actions_applier = applier;
   m_actions_applier->register_action (gui_action_id::CLONE, this, &object_operations_handler::clone_object);
+  m_actions_applier->register_action (gui_action_id::DUPLICATE_ITEM, this, &object_operations_handler::duplicate);
 }
 
 object_operations_handler::~object_operations_handler ()
@@ -28,6 +30,14 @@ bool object_operations_handler::clone_object ()
     [&] (abstract_svg_item *item) {
       return clone_item_operation (m_painter).apply (item) != nullptr;
   }, "Clone");
+}
+
+bool object_operations_handler::duplicate ()
+{
+  return apply_for_selection (
+    [&] (abstract_svg_item *item) {
+      return duplicate_item_operation (m_painter).apply (item) != nullptr;
+  }, "Duplicate");
 }
 
 bool object_operations_handler::apply_for_selection (std::function<bool (abstract_svg_item *)> func, QString undo_name)
