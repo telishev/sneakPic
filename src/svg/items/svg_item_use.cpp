@@ -12,10 +12,12 @@
 #include "svg/items/svg_items_container.h"
 
 #include "renderer/renderer_item_group.h"
+#include "svg_item_type.h"
 
 class use_item_watcher : public simple_item_observer<use_item_watcher>
 {
   QTransform m_transform_before;
+  unique_ptr<attribute_pointer<svg_attribute_transform>> m_transform;
 public:
   use_item_watcher (svg_items_container *container, const string &parent)
     : simple_item_observer (container, parent) {}
@@ -25,8 +27,8 @@ public:
     if (!attribute || attribute->type () != svg_attribute_type::TRANSFORM)
       return;
 
-    const svg_attribute_transform *atribute_transform = static_cast<const svg_attribute_transform *> (attribute);
-    m_transform_before = atribute_transform->computed_transform ();
+    put_in (m_transform, parent ()->get_attribute_for_change<svg_attribute_transform> ());
+    m_transform_before = full_chain_transform ();
   }
 
   virtual void attribute_change_end (const string &/*sender*/, const abstract_attribute *attribute) override
@@ -34,14 +36,30 @@ public:
     if (!attribute || attribute->type () != svg_attribute_type::TRANSFORM)
       return;
 
-    const svg_attribute_transform *atribute_transform = static_cast<const svg_attribute_transform *> (attribute);
-    base_item()->base_transform_changed (m_transform_before, atribute_transform->computed_transform ());
-    m_transform_before = atribute_transform->computed_transform ();
+    QTransform transform = full_chain_transform ();
+    QTransform base_transform_change = m_transform_before.inverted () * transform;
+    (*m_transform)->set_transform ((*m_transform)->computed_transform () * base_transform_change.inverted ());
+    m_transform.reset ();
+    m_transform_before = transform;
   }
 
   virtual void item_removed (const string &/*sender*/) override
   {
     base_item ()->unlink ();
+  }
+
+  QTransform full_chain_transform () const
+  {
+    const abstract_svg_item *cur_item = base_item ();
+    QTransform transfrom;
+    while (cur_item->type () == svg_item_type::USE)
+      {
+        transfrom = transfrom * cur_item->get_computed_attribute<svg_attribute_transform> ()->computed_transform () ;
+        cur_item = cur_item->child (0)->get_original_item ();
+      }
+
+    transfrom = cur_item->get_computed_attribute<svg_attribute_transform> ()->computed_transform () * transfrom;
+    return transfrom;
   }
 
 private:
@@ -69,10 +87,14 @@ bool svg_item_use::process_item_after_read ()
 bool svg_item_use::update_children_tree ()
 {
   auto href = get_computed_attribute<svg_attribute_xlink_href> ();
-  auto x = get_computed_attribute<svg_attribute_x> ();
-  auto y = get_computed_attribute<svg_attribute_y> ();
-  auto transform = get_attribute_for_change<svg_attribute_transform> ();
-  transform->set_additional_transform (QTransform::fromTranslate (x->value (), y->value ()));
+  {
+    auto x = get_attribute_for_change<svg_attribute_x> ();
+    auto y = get_attribute_for_change<svg_attribute_y> ();
+    auto transform = get_attribute_for_change<svg_attribute_transform> ();
+    transform->set_additional_transform (QTransform::fromTranslate (x->value (), y->value ()));
+    x->set_value (0);
+    y->set_value (0);
+  }
 
   abstract_svg_item *item_ref = document ()->item_container ()->get_item (href->get_fragment_name ());
   if (item_ref)
@@ -97,12 +119,6 @@ void svg_item_use::unlink ()
   /// TODO:implement unlink
 }
 
-void svg_item_use::base_transform_changed (const QTransform &before, const QTransform &after)
-{
-  auto transform_attr = get_attribute_for_change<svg_attribute_transform> ();
-  QTransform base_transform_change = before.inverted () * after;
-  transform_attr->set_transform (transform_attr->computed_transform () * base_transform_change.inverted ());
-}
 
 bool svg_item_use::can_be_selected () const 
 {
