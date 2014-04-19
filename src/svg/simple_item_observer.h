@@ -22,7 +22,7 @@ public:
 
   virtual undoable *create_new_item () override
   {
-    undoable *item = new simple_item_observer<T> (m_container, m_parent);
+    undoable *item = new T (m_container, m_parent);
     return item;
   }
 

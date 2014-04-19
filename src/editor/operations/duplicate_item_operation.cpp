@@ -6,15 +6,15 @@
 #include "add_item_operation.h"
 #include "svg/undo/undo_handler.h"
 
-duplicate_item_operation::duplicate_item_operation (svg_painter *painter /*= nullptr*/, bool duplicate_clones /*= false*/)
+duplicate_item_operation::duplicate_item_operation (svg_painter *painter, bool add_item)
 {
-  m_painter=  painter;
-  m_duplicate_clones = duplicate_clones;
+  m_painter =  painter;
+  m_add_item = add_item;
 }
 
 abstract_svg_item * duplicate_item_operation::apply (abstract_svg_item *item)
 {
-  if (!m_duplicate_clones && item->is_cloned ())
+  if (item->is_cloned ())
     return nullptr;
 
   svg_document *document = item->document ();
@@ -23,7 +23,6 @@ abstract_svg_item * duplicate_item_operation::apply (abstract_svg_item *item)
     return nullptr;
 
   document->get_undo_handler ()->add_item (copy);
-  copy->update_name ();
 
   for (int i = 0; i < (int)svg_attribute_type::COUNT; i++)
     {
@@ -38,7 +37,9 @@ abstract_svg_item * duplicate_item_operation::apply (abstract_svg_item *item)
       copy->add_attribute (attribute->clone ());
     }
 
-  if (m_painter)
+  copy->update_name ();
+
+  if (m_add_item)
     {
       add_item_operation add_op (m_painter, false);
       add_op.set_apply_style (false);
@@ -47,12 +48,11 @@ abstract_svg_item * duplicate_item_operation::apply (abstract_svg_item *item)
 
   for (int i = 0; i < item->children_count (); i++)
     {
-      auto copy_child = duplicate_item_operation (nullptr, m_duplicate_clones).apply (item->child (i));
+      auto copy_child = duplicate_item_operation (nullptr, false).apply (item->child (i));
       if (copy_child)
         copy->push_back (copy_child);
     }
 
   copy->process_after_read ();
-
   return copy;
 }

@@ -645,6 +645,7 @@ abstract_svg_item::iterator abstract_svg_item::end ()
 void abstract_svg_item::replace_item (abstract_svg_item *item)
 {
   set_undo_id (item->undo_id ());
+  m_children = item->m_children;
   m_parent = item->m_parent;
   undo_handler *handler = document ()->get_undo_handler ();
   std::string name = item->name ();

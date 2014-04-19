@@ -7,9 +7,9 @@ class abstract_svg_item;
 class duplicate_item_operation
 {
   svg_painter *m_painter;
-  bool m_duplicate_clones;
+  bool m_add_item;
 public:
-  duplicate_item_operation (svg_painter *painter = nullptr, bool duplicate_clones = false);
+  duplicate_item_operation (svg_painter *painter, bool add_item = true);
 
   abstract_svg_item *apply (abstract_svg_item *item);
 };
