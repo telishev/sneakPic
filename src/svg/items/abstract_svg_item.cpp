@@ -86,6 +86,8 @@ public:
   virtual void attribute_change_start (const string &/*parent*/, const abstract_attribute *computed_attribute) override
   {
     const abstract_attribute *attribute = parent ()->get_computed_attribute (computed_attribute->type_name (), computed_attribute->inherit_type (), computed_attribute->type ());
+    if (!attribute)
+      attribute = computed_attribute->default_value ();
     parent ()->register_item_change (); /// surely not the best way to force item update on undo
     parent ()->signal_attribute_change_start (attribute);
   }
@@ -93,6 +95,8 @@ public:
   virtual void attribute_change_end (const string &/*parent*/, const abstract_attribute *computed_attribute) override
   {
     const abstract_attribute *attribute = parent ()->get_computed_attribute (computed_attribute->type_name (), computed_attribute->inherit_type (), computed_attribute->type ());
+    if (!attribute)
+      attribute = computed_attribute->default_value ();
     parent ()->signal_attribute_change_end (attribute);
   }
 };

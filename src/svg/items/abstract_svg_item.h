@@ -83,13 +83,13 @@ public:
   attribute_pointer<T> get_attribute_for_change ()
   {
     signal_attribute_change_start (get_computed_attribute<T> ());
-    abstract_attribute *attribute = get_attribute_for_change (T::static_type_name (), T::static_inherit_type (), T::static_type (), T::default_value ());
+    abstract_attribute *attribute = get_attribute_for_change (T::static_type_name (), T::static_inherit_type (), T::static_type (), T::static_default_value ());
     return std::move (attribute_pointer<T> (static_cast<T *>(attribute), this));
   }
 
   /// returns attribute with respect to styling and css
   template <typename T>
-  const T *get_computed_attribute (const T *default_val = static_cast<const T *> (T::default_value ())) const
+  const T *get_computed_attribute (const T *default_val = static_cast<const T *> (T::static_default_value ())) const
   {
     const abstract_attribute *attribute = get_computed_attribute (T::static_type_name (), T::static_inherit_type (), T::static_type ());
     /// if not found, return default value
@@ -170,6 +170,7 @@ public:
   void adopt_orphan (abstract_svg_item *child); // --- / ---
 
   void replace_item (abstract_svg_item *item);
+  const abstract_svg_item *get_original_item () const;
 
 protected:
   virtual bool process_item_after_read () { return true; }
@@ -181,7 +182,6 @@ private:
   void add_to_container ();
   void remove_from_container ();
   const abstract_attribute *get_computed_attribute (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type) const;
-  const abstract_svg_item *get_original_item () const;
   void create_id_by_attr ();
   abstract_attribute *get_attribute_for_change (const char *data, svg_inherit_type inherit_type, svg_attribute_type attr_type, const abstract_attribute *default_val);
   abstract_attribute *get_attribute (const char *data, bool get_clone_attributes) const;

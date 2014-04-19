@@ -42,6 +42,9 @@ actions_info::actions_info ()
   add_action (A::UNITE_PATH, "Union", QKeySequence ("Ctrl+Alt+U"));
   add_action (A::INTERSECT_PATH, "Intersection", QKeySequence ("Ctrl+Alt+I"));
   add_action (A::SUBPTRACT_PATH, "Difference", QKeySequence ("Ctrl+Alt+D"));
+  add_action (A::CLONE, "Clone", QKeySequence ("Alt+D"));
+  add_action (A::UNLINK_CLONE, "Unlink Clone", QKeySequence ("Ctrl+Alt+D"));
+  add_action (A::DUPLICATE_ITEM, "Duplicate", QKeySequence ("Ctrl+D"));
 
   /// Tools
   add_action (A::TOOL_SELECTOR, "Select Objects", QKeySequence (), QIcon (":/cursor.png"));

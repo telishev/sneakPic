@@ -2,14 +2,18 @@
 
 #include "gui_action_id.h"
 #include "actions_applier.h"
+
 #include "renderer/svg_painter.h"
+
 #include "editor/items_selection.h"
 #include "editor/operations/object_to_path_operation.h"
 #include "editor/operations/stroke_to_path_operation.h"
 #include "editor/operations/path_bool_operation.h"
+
 #include "svg/svg_document.h"
 #include "svg/items/items_comparison.h"
-#include "../svg/items/svg_base_shape_item.h"
+#include "svg/items/svg_base_shape_item.h"
+#include "svg/items/svg_item_path.h"
 
 
 
@@ -94,13 +98,19 @@ bool path_operations_handler::path_bool_op (path_bool_operation_type op_type, QS
     return true;
 
   std::sort (items.begin (), items.end (), items_comparison_z_order ());
+  m_painter->selection ()->clear ();
 
   abstract_svg_item *dst = items.front ();
   {
     path_bool_operation op (dst, op_type);
+    if (!op.dst_path ())
+      return true;
+
     for (auto &&src : items)
       if (src != dst)
         op.apply (src);
+
+    m_painter->selection ()->add_item (op.dst_path ());
   }
 
   m_painter->document ()->apply_changes (undo_name);

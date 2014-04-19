@@ -54,8 +54,9 @@
   const char *CLASS::type_name () const { return static_type_name (); }                            \
   svg_inherit_type CLASS::inherit_type () const { return static_inherit_type (); }                 \
   svg_inherit_type CLASS::static_inherit_type () { return svg_inherit_type::INHERIT_TYPE; }        \
-  const abstract_attribute *CLASS::default_value ()                                                \
+  const abstract_attribute *CLASS::static_default_value ()                                         \
  { static const CLASS def_value; return &def_value; }                                              \
+  const abstract_attribute *CLASS::default_value () const { return static_default_value (); }       \
 
   DECLARE_SVG_ATTRIBUTES
 #undef DECLARE_ATTRIBUTE

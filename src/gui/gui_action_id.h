@@ -25,6 +25,9 @@ enum class gui_action_id
   UNITE_PATH,
   INTERSECT_PATH,
   SUBPTRACT_PATH,
+  CLONE,
+  UNLINK_CLONE,
+  DUPLICATE_ITEM,
 
 
   //// Tools

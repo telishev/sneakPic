@@ -26,6 +26,7 @@ public:
   ~path_bool_operation ();
 
   void apply (abstract_svg_item *other);
+  svg_item_path *dst_path () const { return m_dst_path; }
 };
 
 #endif // PATH_BOOL_OPERATION_H

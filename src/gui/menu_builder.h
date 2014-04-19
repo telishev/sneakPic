@@ -28,6 +28,7 @@ private:
   void create_view_menu( QMenu *menu);
   void create_options_menu (QMenu *menu);
   void create_path_menu (QMenu *menu);
+  void create_object_menu (QMenu *menu);
 };
 
 #endif // MENU_BUILDER_H

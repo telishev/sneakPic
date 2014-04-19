@@ -18,7 +18,8 @@ public:                                                         \
   virtual const char *type_name () const override;              \
   virtual svg_inherit_type inherit_type () const override;      \
   static svg_inherit_type static_inherit_type ();               \
-  static const abstract_attribute *default_value ();            \
+  static const abstract_attribute *static_default_value ();     \
+  virtual const abstract_attribute *default_value () const override;\
 private:                                                        \
 
 class items_edit_handler_t;
@@ -49,6 +50,7 @@ public:
 
   virtual svg_attribute_type type () const = 0;
   virtual svg_inherit_type inherit_type () const = 0;
+  virtual const abstract_attribute *default_value () const = 0;
 
   virtual abstract_attribute *clone () const;
 
