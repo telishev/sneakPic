@@ -9,6 +9,7 @@
 items_selection::items_selection (svg_items_container *container)
 {
   m_container = container;
+  m_bbox_invalid = true;
 }
 
 items_selection::~items_selection ()
@@ -24,12 +25,14 @@ void items_selection::add_item (const abstract_svg_item *item)
 void items_selection::add_item (const string &item_name)
 {
   m_selection.insert (item_name);
+  m_bbox_invalid = true;
   emit selection_changed ();
 }
 
 void items_selection::remove_item (const string &item_name)
 {
   m_selection.erase (item_name);
+  m_bbox_invalid = true;
   emit selection_changed ();
 }
 
@@ -71,16 +74,6 @@ bool items_selection::contains (const string &name) const
   return m_selection.find (name) != m_selection.end ();
 }
 
-items_selection::selection_iterator items_selection::begin ()
-{
-  return items_selection::selection_iterator (m_container, m_selection.begin ());
-}
-
-items_selection::selection_iterator items_selection::end ()
-{
-  return items_selection::selection_iterator (m_container, m_selection.end ());
-}
-
 int items_selection::count () const
 {
   return (int) m_selection.size ();
@@ -107,30 +100,31 @@ abstract_svg_item * items_selection::single_item () const
   return m_container->get_item (*m_selection.begin ());
 }
 
-abstract_svg_item *items_selection::selection_iterator::operator* ()
+abstract_svg_item *items_selection::iterator::operator* ()
 {
   return m_container->get_item (*m_it);
 }
 
-items_selection::selection_iterator::selection_iterator (svg_items_container *container, set_type::iterator it)
+abstract_svg_item * items_selection::const_iterator::operator* ()
 {
-  m_container = container;
-  m_it = it;
+  return m_container->get_item (*m_it);
 }
 
-bool items_selection::selection_iterator::operator!= (const selection_iterator &other) const
+QRectF items_selection::get_bbox () const
 {
-  return (this->m_it != other.m_it);
-}
+/*
+  if (!m_bbox_invalid)
+    return m_bbox;
+*/
 
-bool items_selection::selection_iterator::operator== (const selection_iterator &other) const
-{
-  return (this->m_it == other.m_it);
-}
+  m_bbox = QRectF ();
+  for (auto && item : *this)
+    {
+      auto graphics_item = item->to_graphics_item ();
+      if (graphics_item != nullptr)
+        m_bbox = m_bbox.united (graphics_item->bbox ());
+    }
+  m_bbox_invalid = false;
+  return m_bbox;
 
-
-items_selection::selection_iterator &items_selection::selection_iterator::operator++ ()
-{
-  this->m_it++;
-  return *this;
 }

@@ -24,7 +24,7 @@ public:
 
   void set_current_color (QColor color);
   std::pair<std::string, int> get_selection_id () const;
-  
+
   virtual bool start_drag (QPointF local_pos, QTransform transform) override;
   virtual bool drag (QPointF local_pos, QTransform transform) override;
   virtual bool end_drag (QPointF local_pos, QTransform transform) override;

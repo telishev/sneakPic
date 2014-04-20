@@ -19,6 +19,7 @@ class gui_actions;
 class layers_handler;
 class layers_widget_handler;
 class menu_builder;
+class tool_properties_widget;
 class style_controller;
 class style_widget_handler;
 class tools_widget_builder;
@@ -49,6 +50,7 @@ class main_window : public QMainWindow
   style_widget_handler *m_style_widget_handler;
   unique_ptr <layers_widget_handler> m_layers_widget_handler;
   unique_ptr <layers_handler> m_layers_handler;
+  unique_ptr <tool_properties_widget> m_tool_properties_widget;
 
   std::deque <QString> m_recent_files;
   style_controller *m_style_controller;

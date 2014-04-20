@@ -16,6 +16,9 @@
 #include "editor/style_controller.h"
 
 #include "gui/actions_applier.h"
+#include "gui/fill_stroke_widget.h"
+#include "gui/tool_properties_widget.h"
+#include "gui/actions_applier.h"
 #include "gui/settings.h"
 #include "gui/gui_document.h"
 #include "gui/gui_actions.h"
@@ -27,6 +30,7 @@
 #include "gui/menu_builder.h"
 #include "gui/connection.h"
 #include "gui/options_dialog.h"
+#include "gui/dock_widget_builder.h"
 
 #include "common/common_utils.h"
 #include "common/memory_deallocation.h"
@@ -34,7 +38,6 @@
 #include "svg/svg_document.h"
 #include "svg/undo/undo_handler.h"
 
-#include "dock_widget_builder.h"
 #include "renderer/svg_painter.h"
 
 #include "svg/svg_utils.h"
@@ -59,6 +62,7 @@ main_window::main_window ()
   m_last_saved_position = 0;
   m_recent_files_signal_mapper.reset (new QSignalMapper ());
   m_options_dialog.reset (new options_dialog (m_settings.get ()));
+  m_tool_properties_widget.reset (new tool_properties_widget (m_dock_widget_builder));
   CONNECT (m_recent_files_signal_mapper.get (), (void (QSignalMapper::*) (const QString&)) &QSignalMapper::mapped, this, &main_window::do_open_file);
 
   m_menu_builder = new menu_builder (menuBar (), m_actions, createPopupMenu ());
@@ -80,6 +84,8 @@ main_window::main_window ()
   m_actions_applier->register_action (gui_action_id::EXPORT_BITMAP, this, &main_window::export_bitmap);
   m_actions_applier->register_action (gui_action_id::QUIT, (QWidget *)this, &QWidget::close);
 
+  setCorner (Qt::TopLeftCorner, Qt::LeftDockWidgetArea);
+  setCorner (Qt::TopRightCorner, Qt::RightDockWidgetArea);
 
   QTimer::singleShot (10, this, SLOT (create_new_document ()));
 }

@@ -11,6 +11,7 @@ enum class handle_type
   SQUARE,
   DIAMOND,
   CIRCLE,
+  DOUBLE_HEADED_ARROW,
 };
 
 class QTransform;
@@ -19,12 +20,13 @@ class SkPaint;
 
 class anchor_handle_renderer : public renderable_item
 {
-  static const int anchor_size_px = 7;
+  int m_anchor_size_px = 7;
   QPointF m_pos;
   handle_type m_node_type;
+  float m_rotation_angle; // applied only to non symetrical figures
   bool m_is_highlighted;
-  bool m_is_visible;
-  bool m_is_selected;
+  bool m_is_visible = false;
+  bool m_is_selected = false;
   QColor m_highlighted_color;
   QColor m_selected_color;
   QColor m_color;
@@ -39,12 +41,14 @@ public:
   void set_highlighted_color (QColor color) {m_highlighted_color = color;}
   void set_pos (QPointF pos);
   void set_node_type (handle_type node_type);
+  void set_rotation (float angle);
   void set_highlighted (bool is_highlighted);
   void set_visible (bool visible);
   void set_is_selected (bool is_selected);
+  void set_anchor_size (int px) { m_anchor_size_px = px;};
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
 
-  static int get_anchor_size_px () { return anchor_size_px; }
+  int get_anchor_size_px () { return m_anchor_size_px; }
 private:
   void draw_anchor (SkCanvas &canvas, const SkRect &rect, SkPaint &paint) const;
   QRect get_element_rect (QTransform transform) const;

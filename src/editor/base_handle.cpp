@@ -17,7 +17,7 @@ base_handle::~base_handle ()
 
 }
 
-int base_handle::distance_to_mouse (QPoint screen_pos, QTransform transform) const 
+int base_handle::distance_to_mouse (QPoint screen_pos, QTransform transform) const
 {
   QPoint center = geom::nearest_point (transform.map (get_handle_center ()));
   QRect element_rect = get_element_rect (transform);
@@ -47,10 +47,14 @@ bool base_handle::end_drag (QPointF /*local_pos*/, QTransform /*transform*/)
   return false;
 }
 
-void base_handle::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const 
+void base_handle::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
 {
+  if (!is_visible ())
+    return;
   m_renderer.set_pos (get_handle_center ());
   m_renderer.set_node_type (get_handle_type ());
+  m_renderer.set_anchor_size (get_handle_size ());
+  m_renderer.set_rotation (handle_rotation ());
   m_renderer.draw (canvas, state, config);
 }
 
@@ -61,7 +65,7 @@ handle_type base_handle::get_handle_type () const
 
 QRect base_handle::get_element_rect (QTransform transform) const
 {
-  int mouse_size_px = anchor_handle_renderer::get_anchor_size_px ();
+  int mouse_size_px = m_renderer.get_anchor_size_px ();
   QPoint center = geom::nearest_point (transform.map (get_handle_center ()));
   QRect rect (0, 0, mouse_size_px, mouse_size_px);
   rect.moveCenter (center);
@@ -91,4 +95,14 @@ void base_handle::set_selected_color (QColor color)
 void base_handle::set_highlighted_color (QColor color)
 {
   m_renderer.set_highlighted_color (color);
+}
+
+float base_handle::handle_rotation () const
+{
+  return 0.0f;
+}
+
+int base_handle::get_handle_size () const
+{
+  return 7;
 }

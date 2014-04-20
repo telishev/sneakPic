@@ -14,6 +14,7 @@ public:
 
   QTransform transform () const { return m_transform; }
   void set_transform (const QTransform &transform) { m_transform = transform; }
+  void append_transform (const QTransform &transform) { m_transform = transform * m_transform; }
 
 private:
   bool get_transfrom_data (const char *data, vector<double> &dest) const;

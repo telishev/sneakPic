@@ -18,7 +18,6 @@ anchor_handle_renderer::anchor_handle_renderer (QPointF pos, handle_type node_ty
   m_pos = pos;
   m_is_highlighted = is_highlighted;
   m_is_visible = true;
-  m_is_selected = false;
 }
 
 anchor_handle_renderer::anchor_handle_renderer ()
@@ -26,8 +25,6 @@ anchor_handle_renderer::anchor_handle_renderer ()
   m_node_type = handle_type::SQUARE;
   m_pos = QPointF ();
   m_is_highlighted = false;
-  m_is_visible = false;
-  m_is_selected = false;
   m_highlighted_color = QColor ("lightcoral");
   m_selected_color = QColor ("blue");
   m_color = QColor ("gray");
@@ -55,7 +52,7 @@ void anchor_handle_renderer::set_highlighted (bool is_highlighted)
   m_is_highlighted = is_highlighted;
 }
 
-void anchor_handle_renderer::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config * /*config*/) const 
+void anchor_handle_renderer::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config * /*config*/) const
 {
   if (!m_is_visible)
     return;
@@ -102,13 +99,40 @@ void anchor_handle_renderer::draw_anchor (SkCanvas &canvas, const SkRect &rect, 
     case handle_type::CIRCLE:
       canvas.drawOval (rect, paint);
       break;
+    case handle_type::DOUBLE_HEADED_ARROW:
+      // TODO: use some svg or stuff to draw something like that
+      SkPath path;
+      const float arrow_height = 0.3f;
+      const float arrow_width = 0.5f;
+      float height = rect.height ();
+      float width = rect.width ();
+      path.moveTo (rect.centerX () - 0.5f * arrow_width * width, rect.fTop + arrow_height * height);
+      path.lineTo (rect.centerX () - 0.5f * arrow_width * width, rect.fBottom - arrow_height * height);
+      path.lineTo (rect.fLeft, rect.fBottom - arrow_height * height);
+      path.lineTo (rect.fLeft + width * 0.5, rect.fBottom);
+      path.lineTo (rect.fRight, rect.fBottom - arrow_height * height);
+      path.lineTo (rect.centerX () + 0.5f * arrow_width * width, rect.fBottom - arrow_height * height);
+      path.lineTo (rect.centerX () + 0.5f * arrow_width * width, rect.fTop + arrow_height * height);
+      path.lineTo (rect.fRight, rect.fTop + arrow_height * height);
+      path.lineTo (rect.fLeft + width * 0.5, rect.fTop);
+      path.lineTo (rect.fLeft, rect.fTop + arrow_height * height);
+      path.lineTo (rect.fLeft + 0.5f * arrow_width, rect.fTop + arrow_height * height);
+      SkMatrix rotation;
+      rotation.setIdentity ();
+      rotation.postTranslate (-rect.centerX (), -rect.centerY ());
+      rotation.postRotate (m_rotation_angle);
+      rotation.postTranslate (rect.centerX (), rect.centerY ());
+      path.transform (rotation);
+      paint.setAntiAlias (true);
+      canvas.drawPath (path, paint);
+      break;
   }
 }
 
 QRect anchor_handle_renderer::get_element_rect (QTransform transform) const
 {
   QPoint center = geom::nearest_point (transform.map (m_pos));
-  QRect rect (0, 0, anchor_size_px, anchor_size_px);
+  QRect rect (0, 0, m_anchor_size_px, m_anchor_size_px);
   rect.moveCenter (center);
   return rect;
 }
@@ -131,4 +155,9 @@ void anchor_handle_renderer::set_visible (bool visible)
 void anchor_handle_renderer::set_is_selected (bool is_selected)
 {
   m_is_selected = is_selected;
+}
+
+void anchor_handle_renderer::set_rotation (float angle)
+{
+  m_rotation_angle = angle;
 }

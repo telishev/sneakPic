@@ -166,9 +166,9 @@ void base_gradient_handle::add_handle (QPointF local_pos)
 {
   double value = geom::projection_value (start_point_local (), end_point_local (), local_pos);
   auto &stops = m_gradient->stops ();
-  auto it = std::lower_bound (stops.begin (), stops.end (), value, 
+  auto it = std::lower_bound (stops.begin (), stops.end (), value,
                               [] (const std::pair<double, QColor> &lhs, double rhs) { return lhs.first < rhs; });
-  
+
   if (it == stops.begin ())
     ++it;
   else if (it == stops.end ())

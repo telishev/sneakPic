@@ -57,13 +57,13 @@ bool handles_editor::start_drag (QPointF pos)
 
 bool handles_editor::drag_handle (QPointF pos)
 {
-  if (!m_cur_handle)
+  if (m_cur_handle == nullptr)
     return false;
 
   if (m_cur_handle->drag (get_local_pos (pos), m_painter->cur_transform ()))
     {
       m_painter->update ();
-      return true; 
+      return true;
     }
 
   return false;
@@ -71,7 +71,7 @@ bool handles_editor::drag_handle (QPointF pos)
 
 bool handles_editor::end_drag (QPointF pos)
 {
-  if (!m_cur_handle)
+  if (m_cur_handle == nullptr)
     return false;
 
   if (m_cur_handle->end_drag (get_local_pos (pos), m_painter->cur_transform ()))

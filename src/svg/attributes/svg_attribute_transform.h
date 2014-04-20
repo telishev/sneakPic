@@ -23,6 +23,7 @@ public:
   void set_additional_transform (const QTransform &additional_transform);
 
   void set_transform (const QTransform &transform);
+  void append_transform (const QTransform &transform);
 };
 
 

@@ -23,7 +23,7 @@ bool svg_attribute_transform::read (const char *data, bool /*from_css*/)
   return m_transform.read (data);
 }
 
-bool svg_attribute_transform::write (QString &data, bool /*to_css*/) const 
+bool svg_attribute_transform::write (QString &data, bool /*to_css*/) const
 {
   return m_transform.write (data);
 }
@@ -42,4 +42,9 @@ void svg_attribute_transform::set_transform (const QTransform &transform)
 {
   m_transform.set_transform (transform);
   m_additional_transform = QTransform ();
+}
+
+void svg_attribute_transform::append_transform (const QTransform &transform)
+{
+  m_transform.append_transform (transform);
 }

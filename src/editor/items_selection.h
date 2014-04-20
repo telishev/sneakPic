@@ -16,20 +16,39 @@ class items_selection : public QObject
   typedef set<string> set_type;
   set_type m_selection;
   svg_items_container *m_container;
+  mutable bool m_bbox_invalid; // for caching in get_bbox
+  mutable QRectF m_bbox;       // ditto
 public:
-  class selection_iterator : public std::iterator<std::forward_iterator_tag, abstract_svg_item *>
+  class iterator : public std::iterator<std::forward_iterator_tag, abstract_svg_item *>
   {
     set_type::iterator m_it;
     svg_items_container *m_container;
 
   private:
-    selection_iterator (svg_items_container *container, set_type::iterator it);
+    iterator (svg_items_container *container, set_type::iterator it) { m_container = container; m_it = it; }
 
   public:
     abstract_svg_item *operator* ();
-    bool operator != (const selection_iterator &) const;
-    bool operator == (const selection_iterator &) const;
-    selection_iterator &operator++();
+    bool operator != (const iterator &other) const {return (this->m_it != other.m_it);}
+    bool operator == (const iterator &other) const {return (this->m_it == other.m_it);}
+    iterator &operator++() {this->m_it++; return *this;}
+
+    friend class items_selection;
+  };
+
+  class const_iterator : public std::iterator<std::forward_iterator_tag, abstract_svg_item *>
+  {
+    set_type::const_iterator m_it;
+    const svg_items_container *m_container;
+
+  private:
+    const_iterator (const svg_items_container *container, set_type::const_iterator it) { m_container = container; m_it = it; }
+
+  public:
+    abstract_svg_item *operator* ();
+    bool operator != (const const_iterator &other) const {return (this->m_it != other.m_it);}
+    bool operator == (const const_iterator &other) const {return (this->m_it == other.m_it);}
+    const_iterator &operator++() {this->m_it++; return *this;}
 
     friend class items_selection;
   };
@@ -53,10 +72,14 @@ public:
 
   void clear ();
 
+  QRectF get_bbox () const;
+
   void add_items_for_rect (const QRectF &rect, const abstract_svg_item *root);
 
-  selection_iterator begin ();
-  selection_iterator end ();
+  iterator begin () { return iterator (m_container, m_selection.begin ()); }
+  iterator end () { return iterator (m_container, m_selection.end ()); }
+  const_iterator begin () const { return const_iterator (m_container, m_selection.begin ()); }
+  const_iterator end () const { return const_iterator (m_container, m_selection.end ()) ;}
 
   void remove_unavailable_items ();
 
@@ -65,6 +88,6 @@ public:
 
 signals:
   void selection_changed ();
-};
+  };
 
 #endif // ITEMS_SELECTION_H

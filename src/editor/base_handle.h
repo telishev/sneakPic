@@ -31,8 +31,11 @@ public:
   virtual void interrupt_drag () override {};
   virtual void draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const override;
   virtual handle_type get_handle_type () const;
+  virtual int get_handle_size () const;
+  virtual float handle_rotation () const;
   virtual QRect get_element_rect (QTransform transform) const;
   virtual QPointF get_handle_center () const = 0;
+  virtual bool is_visible () const { return true; };
 };
 
 #endif // BASE_HANDLE_H

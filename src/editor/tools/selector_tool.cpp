@@ -4,6 +4,7 @@
 
 #include "editor/items_selection.h"
 #include "editor/items_move_handler.h"
+#include "editor/transform_handles_editor.h"
 
 #include "gui/actions_applier.h"
 #include "gui/settings.h"
@@ -23,6 +24,7 @@ selector_tool::selector_tool (svg_painter *painter)
 {
   m_rubberband = new items_rubberband_selector (m_overlay, m_painter, m_actions_applier);
   m_move_handler = new items_move_handler (m_painter->item_container (), m_overlay, m_painter->selection (), m_painter->document ());
+  put_in (m_transform_handles_editor, m_overlay, m_painter, m_actions_applier);
 
   m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::DRAG_OBJECTS, this,
     &selector_tool::start_moving_object, &selector_tool::move_object, &selector_tool::end_moving_object);
@@ -65,6 +67,29 @@ bool selector_tool::move_object (const QPoint &pos)
 bool selector_tool::end_moving_object (const QPoint &)
 {
   m_move_handler->end_move ();
+  update_handles ();
   m_painter->redraw ();
   return true;
+}
+
+void selector_tool::activate ()
+{
+  update_handles ();
+}
+
+void selector_tool::update_handles ()
+{
+  m_transform_handles_editor->update_handles ();
+}
+
+void selector_tool::deactivate ()
+{
+}
+
+void selector_tool::configure ()
+{
+  if (m_painter->get_configure_needed (configure_type::SELECTION_CHANGED))
+    {
+      update_handles ();
+    }
 }
