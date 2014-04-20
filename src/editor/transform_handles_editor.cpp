@@ -167,8 +167,8 @@ bool transform_handle::drag (QPointF local_pos, QTransform /*transform*/)
 bool transform_handle::end_drag (QPointF local_pos, QTransform transform)
 {
   drag (local_pos, transform);
-  m_editor.finalize_transform ();
   m_editor.set_drag_started (false);
+  m_editor.finalize_transform ();
   return true;
 }
 
