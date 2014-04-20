@@ -76,6 +76,12 @@ void transform_handles_editor::finalize_transform ()
   m_painter->document ()->apply_changes ("Transform");
 }
 
+void transform_handles_editor::interrupt ()
+{
+  m_contour_renderer->set_visible (false);
+  m_drag_started = false;
+}
+
 void transform_handles_editor::set_drag_started (bool value)
 {
   m_drag_started = value;
@@ -215,4 +221,5 @@ bool transform_handle::is_visible () const
 
 void transform_handle::interrupt_drag ()
 {
+  m_editor.interrupt ();
 }

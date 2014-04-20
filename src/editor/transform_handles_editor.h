@@ -68,6 +68,7 @@ public:
   void finalize_transform ();
   bool drag_started () { return m_drag_started; }
   void set_drag_started (bool value);
+  void interrupt ();
 
 protected:
   virtual vector<abstract_handle *> get_handles () const;
