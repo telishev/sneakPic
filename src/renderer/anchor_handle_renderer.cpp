@@ -102,7 +102,7 @@ void anchor_handle_renderer::draw_anchor (SkCanvas &canvas, const SkRect &rect, 
     case handle_type::DOUBLE_HEADED_ARROW:
       // TODO: use some svg or stuff to draw something like that
       SkPath path;
-      const float arrow_height = 0.3f;
+      const float arrow_height = 0.35f;
       const float arrow_width = 0.5f;
       float height = rect.height ();
       float width = rect.width ();

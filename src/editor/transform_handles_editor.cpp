@@ -36,7 +36,7 @@ void transform_handles_editor::update_handles_impl ()
 
   m_contour_renderer->set_visible (false);
   QRectF bbox = selection.get_bbox ();
-  for (int i = 0; i < 4; i++)
+  for (int i = 0; i < (int) stretch_type::COUNT; i++)
     m_handles.emplace_back (new transform_handle (static_cast <stretch_type> (i), bbox, *this));
 }
 
@@ -94,6 +94,16 @@ QPointF transform_handle::get_handle_center () const
       return {m_bbox.center ().x (), m_drag_started ? m_cur_pos.y () : m_bbox.top () - get_handle_size () * 0.5f};
     case BOTTOM:
       return {m_bbox.center ().x (), m_drag_started ? m_cur_pos.y () : m_bbox.bottom () + get_handle_size () * 0.5f};
+    case TOPLEFT:
+      return {m_drag_started ? m_cur_pos.x () : m_bbox.left () - get_handle_size () * 0.5f, m_drag_started ? m_cur_pos.y () : m_bbox.top () - get_handle_size () * 0.5f};
+    case TOPRIGHT:
+      return {m_drag_started ? m_cur_pos.x () : m_bbox.right () + get_handle_size () * 0.5f, m_drag_started ? m_cur_pos.y () : m_bbox.top () - get_handle_size () * 0.5f};
+    case BOTTOMLEFT:
+      return {m_drag_started ? m_cur_pos.x () : m_bbox.left () - get_handle_size () * 0.5f, m_drag_started ? m_cur_pos.y () : m_bbox.bottom () + get_handle_size () * 0.5f};
+    case BOTTOMRIGHT:
+      return {m_drag_started ? m_cur_pos.x () : m_bbox.right () + get_handle_size () * 0.5f, m_drag_started ? m_cur_pos.y () : m_bbox.bottom () + get_handle_size () * 0.5f};
+    case COUNT:
+      return {};
     }
   return m_bbox.center ();
 }
@@ -124,6 +134,14 @@ float transform_handle::handle_rotation () const
     case TOP:
     case BOTTOM:
       return 0.0f;
+    case TOPLEFT:
+    case BOTTOMRIGHT:
+      return 135.0f;
+    case BOTTOMLEFT:
+    case TOPRIGHT:
+      return 45.0f;
+    case COUNT:
+      return {};
     }
    return 0.0f;
 }
@@ -159,6 +177,24 @@ bool transform_handle::drag (QPointF local_pos, QTransform /*transform*/)
     case BOTTOM:
       rect.setBottom (m_cur_pos.y () - get_handle_size () * 0.5f);
       break;
+    case BOTTOMLEFT:
+      rect.setBottom (m_cur_pos.y () - get_handle_size () * 0.5f);
+      rect.setLeft (m_cur_pos.x () + get_handle_size () * 0.5f);
+      break;
+    case BOTTOMRIGHT:
+      rect.setBottom (m_cur_pos.y () - get_handle_size () * 0.5f);
+      rect.setRight (m_cur_pos.x () - get_handle_size () * 0.5f);
+      break;
+    case TOPLEFT:
+      rect.setTop (m_cur_pos.y () + get_handle_size () * 0.5f);
+      rect.setLeft (m_cur_pos.x () + get_handle_size () * 0.5f);
+      break;
+    case TOPRIGHT:
+      rect.setTop (m_cur_pos.y () + get_handle_size () * 0.5f);
+      rect.setRight (m_cur_pos.x () - get_handle_size () * 0.5f);
+      break;
+    case COUNT:
+      return {};
     }
   m_editor.update_transform (geom::rect2rect (m_bbox, rect));
   return true;
@@ -174,7 +210,7 @@ bool transform_handle::end_drag (QPointF local_pos, QTransform transform)
 
 bool transform_handle::is_visible () const
 {
-  return (m_editor.drag_started () == m_drag_started);
+  return !m_editor.drag_started ();
 }
 
 void transform_handle::interrupt_drag ()

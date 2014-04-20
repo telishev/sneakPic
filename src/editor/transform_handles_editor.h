@@ -15,7 +15,13 @@ enum stretch_type
   LEFT,
   RIGHT,
   TOP,
-  BOTTOM
+  BOTTOM,
+  TOPLEFT,
+  TOPRIGHT,
+  BOTTOMLEFT,
+  BOTTOMRIGHT,
+
+  COUNT,
 };
 
 class transform_handle : public base_handle
