@@ -698,6 +698,15 @@ void abstract_svg_item::erase_created_observers ()
     }
 }
 
+void abstract_svg_item::rename (std::string new_name)
+{
+  svg_items_container *container = document ()->item_container ();
+  if (container->get_item (name ()))
+    container->remove_item (this);
+  m_own_id = new_name;
+  container->add_item (this);
+}
+
 abstract_svg_item *abstract_svg_item::iterator::operator* ()
 {
   return static_cast<abstract_svg_item *> (m_undo_handler->get_item (*m_it));

@@ -174,6 +174,7 @@ public:
 
   void replace_item (abstract_svg_item *item, bool copy_clones = true);
   abstract_svg_item *get_original_item () const;
+  void rename (std::string new_name);
 
 protected:
   virtual bool process_item_after_read () { return true; }

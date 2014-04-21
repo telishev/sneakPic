@@ -142,12 +142,14 @@ abstract_renderer_item *svg_item_use::create_renderer_item_impl () const
 void svg_item_use::unlink ()
 {
   erase_created_observers ();
+  std::string my_name = name ();
   QTransform transform = get_computed_attribute<svg_attribute_transform> ()->computed_transform ();
   unlink_item (child (0));
   auto first_child  = child (0);
   make_orphan (first_child);
   parent ()->adopt_orphan (first_child);
   parent ()->remove_child (this);
+  first_child->rename (my_name);
   apply_transforms (first_child, transform);
 }
 
