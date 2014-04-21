@@ -139,7 +139,12 @@ bool svg_base_shape_item::get_stroke (QPainterPath &dst) const
   stroker.setJoinStyle (stroke_linejoin->get_stroke_linejoin ());
   stroker.setMiterLimit (stroke_miterlimit->get_stroke_miterlimit ());
   stroker.setWidth (stroke_width->get_stroke_width ());
-  dst = stroker.createStroke (path);
+
+  auto fill = get_computed_attribute<svg_attribute_fill> ();
+  if (fill->need_to_render (document ()->item_container ()))
+    dst = stroker.createStroke (path).united (dst);
+  else
+    dst = stroker.createStroke (path);
   return true;
 }
 

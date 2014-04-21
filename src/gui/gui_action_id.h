@@ -28,6 +28,7 @@ enum class gui_action_id
   CLONE,
   UNLINK_CLONE,
   DUPLICATE_ITEM,
+  CLIP_OBJECTS,
 
 
   //// Tools

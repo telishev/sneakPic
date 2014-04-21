@@ -19,6 +19,7 @@ public:
   virtual bool write (QString &data, bool to_css = false) const override;
 
   const svg_item_clip_path *clip_path (const svg_items_container *container) const;
+  void set_clip_path (svg_item_clip_path *item);
 };
 
 #endif // SVG_ATTRIBUTE_CLIP_PATH_H

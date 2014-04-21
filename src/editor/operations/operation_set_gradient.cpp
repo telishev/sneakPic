@@ -20,6 +20,7 @@
 #include "svg/attributes/svg_attribute_offset.h"
 #include "svg/attributes/svg_attributes_length_type.h"
 #include "svg/items/abstract_svg_item.h"
+#include "operation_get_defs_item.h"
 
 
 
@@ -43,8 +44,7 @@ void operation_set_gradient::apply (svg_document *document, svg_paint_server *pa
       else
         cur_gradient = document->create_new_svg_item<svg_item_radial_gradient> ();
 
-      /// TODO: add to defs
-      document->root ()->push_back (cur_gradient);
+      operation_get_defs_item (document).apply ()->push_back (cur_gradient);
     }
 
   paint_server->set_to_iri (QString::fromStdString (cur_gradient->name ()));

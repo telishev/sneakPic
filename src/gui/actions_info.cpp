@@ -45,6 +45,7 @@ actions_info::actions_info ()
   add_action (A::CLONE, "Clone", QKeySequence ("Alt+D"));
   add_action (A::UNLINK_CLONE, "Unlink Clone", QKeySequence ("Ctrl+Alt+D"));
   add_action (A::DUPLICATE_ITEM, "Duplicate", QKeySequence ("Ctrl+D"));
+  add_action (A::CLIP_OBJECTS, "Set Clip", QKeySequence ("Ctrl+L"));
 
   /// Tools
   add_action (A::TOOL_SELECTOR, "Select Objects", QKeySequence (), QIcon (":/cursor.png"));

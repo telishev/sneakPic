@@ -19,6 +19,7 @@ private:
   bool duplicate ();
   bool unlink ();
   bool apply_for_selection (std::function<bool (abstract_svg_item *)> func, QString undo_name);
+  bool clip ();
 };
 
 #endif // OBJECT_OPERATIONS_HANDLER_H
