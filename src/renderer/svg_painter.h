@@ -80,6 +80,7 @@ signals:
   void zoom_description_changed (const QString &description);
   void color_picked (const QColor &color);
   void selection_changed_signal ();
+  void switch_transform_handles_request ();
 
 private slots:
   void items_changed ();

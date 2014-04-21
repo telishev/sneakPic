@@ -36,8 +36,19 @@ void transform_handles_editor::update_handles_impl ()
 
   m_contour_renderer->set_visible (false);
   QRectF bbox = selection.get_bbox ();
-  for (int i = 0; i < (int) stretch_type::COUNT; i++)
-    m_handles.emplace_back (new transform_handle (static_cast <stretch_type> (i), bbox, *this));
+  switch (m_cur_handles_type)
+    {
+    case handles_type::STRETCH:
+      for (int i = 0; i < (int) transform_type::SKEW_ROTATE_FIRST; i++)
+        m_handles.emplace_back (new transform_handle (static_cast <transform_type> (i), bbox, *this));
+      break;
+    case handles_type::SKEW_ROTATE:
+      for (int i = (int)  SKEW_ROTATE_FIRST; i < (int) transform_type::COUNT; i++)
+        m_handles.emplace_back (new transform_handle (static_cast <transform_type> (i), bbox, *this));
+      break;
+    case handles_type::COUNT:
+      break;
+    }
 }
 
 transform_handles_editor::transform_handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier) : handles_editor (overlay, painter, applier)
@@ -87,34 +98,49 @@ void transform_handles_editor::set_drag_started (bool value)
   m_drag_started = value;
 }
 
+void transform_handles_editor::switch_handles_type ()
+{
+  m_cur_handles_type = (handles_type) (((int) m_cur_handles_type + 1) % (int) handles_type::COUNT);
+  update_handles ();
+  m_painter->update ();
+}
+
 
 QPointF transform_handle::get_handle_center () const
 {
   switch (m_type)
     {
-    case LEFT:
-      return {m_drag_started ? m_cur_pos.x () : m_bbox.left () - get_handle_size () * 0.5f, m_bbox.center ().y ()};
-    case RIGHT:
-      return {m_drag_started ? m_cur_pos.x () : m_bbox.right () + get_handle_size () * 0.5f, m_bbox.center ().y ()};
-    case TOP:
-      return {m_bbox.center ().x (), m_drag_started ? m_cur_pos.y () : m_bbox.top () - get_handle_size () * 0.5f};
-    case BOTTOM:
-      return {m_bbox.center ().x (), m_drag_started ? m_cur_pos.y () : m_bbox.bottom () + get_handle_size () * 0.5f};
-    case TOPLEFT:
-      return {m_drag_started ? m_cur_pos.x () : m_bbox.left () - get_handle_size () * 0.5f, m_drag_started ? m_cur_pos.y () : m_bbox.top () - get_handle_size () * 0.5f};
-    case TOPRIGHT:
-      return {m_drag_started ? m_cur_pos.x () : m_bbox.right () + get_handle_size () * 0.5f, m_drag_started ? m_cur_pos.y () : m_bbox.top () - get_handle_size () * 0.5f};
-    case BOTTOMLEFT:
-      return {m_drag_started ? m_cur_pos.x () : m_bbox.left () - get_handle_size () * 0.5f, m_drag_started ? m_cur_pos.y () : m_bbox.bottom () + get_handle_size () * 0.5f};
-    case BOTTOMRIGHT:
-      return {m_drag_started ? m_cur_pos.x () : m_bbox.right () + get_handle_size () * 0.5f, m_drag_started ? m_cur_pos.y () : m_bbox.bottom () + get_handle_size () * 0.5f};
+    case STRETCH_LEFT:
+    case SKEW_LEFT:
+      return {m_bbox.left () - get_handle_size () * 0.5f, m_bbox.center ().y ()};
+    case STRETCH_RIGHT:
+    case SKEW_RIGHT:
+      return {m_bbox.right () + get_handle_size () * 0.5f, m_bbox.center ().y ()};
+    case SKEW_TOP:
+    case STRETCH_TOP:
+      return {m_bbox.center ().x (), m_bbox.top () - get_handle_size () * 0.5f};
+    case STRETCH_BOTTOM:
+    case SKEW_BOTTOM:
+      return {m_bbox.center ().x (), m_bbox.bottom () + get_handle_size () * 0.5f};
+    case STRETCH_TOPLEFT:
+    case ROTATE_TOPLEFT:
+      return {m_bbox.left () - get_handle_size () * 0.5f, m_bbox.top () - get_handle_size () * 0.5f};
+    case STRETCH_TOPRIGHT:
+    case ROTATE_TOPRIGHT:
+      return { m_bbox.right () + get_handle_size () * 0.5f, m_bbox.top () - get_handle_size () * 0.5f};
+    case STRETCH_BOTTOMLEFT:
+    case ROTATE_BOTTOMLEFT:
+      return {m_bbox.left () - get_handle_size () * 0.5f, m_bbox.bottom () + get_handle_size () * 0.5f};
+    case STRETCH_BOTTOMRIGHT:
+    case ROTATE_BOTTOMRIGHT:
+      return {m_bbox.right () + get_handle_size () * 0.5f, m_bbox.bottom () + get_handle_size () * 0.5f};
     case COUNT:
       return {};
     }
   return m_bbox.center ();
 }
 
-transform_handle::transform_handle (stretch_type type, const QRectF &bbox, transform_handles_editor &editor) : m_editor (editor)
+transform_handle::transform_handle (transform_type type, const QRectF &bbox, transform_handles_editor &editor) : m_editor (editor)
 {
   m_bbox = bbox;
   m_type = type;
@@ -127,25 +153,60 @@ transform_handle::~transform_handle ()
 
 handle_type transform_handle::get_handle_type () const
 {
-  return handle_type::DOUBLE_HEADED_ARROW;
+switch (m_type)
+  {
+    case STRETCH_LEFT:
+    case STRETCH_RIGHT:
+    case STRETCH_TOP:
+    case STRETCH_BOTTOM:
+    case STRETCH_TOPLEFT:
+    case STRETCH_TOPRIGHT:
+    case STRETCH_BOTTOMLEFT:
+    case STRETCH_BOTTOMRIGHT:
+    case SKEW_LEFT:
+    case SKEW_RIGHT:
+    case SKEW_BOTTOM:
+    case SKEW_TOP:
+      return handle_type::DOUBLE_HEADED_ARROW;
+    case ROTATE_TOPLEFT:
+    case ROTATE_TOPRIGHT:
+    case ROTATE_BOTTOMLEFT:
+    case ROTATE_BOTTOMRIGHT:
+      return handle_type::CIRCLE;
+    case COUNT:
+      break;
+  }
+  return handle_type::CIRCLE;
 }
 
 float transform_handle::handle_rotation () const
 {
   switch (m_type)
     {
-    case LEFT:
-    case RIGHT:
+    case STRETCH_LEFT:
+    case STRETCH_RIGHT:
+    case SKEW_BOTTOM:
+    case SKEW_TOP:
       return 90.0f;
-    case TOP:
-    case BOTTOM:
+    case STRETCH_TOP:
+    case STRETCH_BOTTOM:
+    case SKEW_LEFT:
+    case SKEW_RIGHT:
       return 0.0f;
-    case TOPLEFT:
-    case BOTTOMRIGHT:
+    case STRETCH_TOPLEFT:
+    case STRETCH_BOTTOMRIGHT:
       return 135.0f;
-    case BOTTOMLEFT:
-    case TOPRIGHT:
+    case STRETCH_BOTTOMLEFT:
+    case STRETCH_TOPRIGHT:
       return 45.0f;
+    case ROTATE_TOPLEFT:
+      return 0.0f;
+    case ROTATE_TOPRIGHT:
+      return 90.0f;
+    case ROTATE_BOTTOMRIGHT:
+      return 180.0f;
+    case ROTATE_BOTTOMLEFT:
+      return 270.0f;
     case COUNT:
       return {};
     }
@@ -169,40 +230,79 @@ bool transform_handle::drag (QPointF local_pos, QTransform /*transform*/)
 {
   m_cur_pos = local_pos;
   QRectF rect = m_bbox;
-  switch (m_type)
+  if (m_type < SKEW_ROTATE_FIRST)
     {
-    case LEFT:
-      rect.setLeft (m_cur_pos.x () + get_handle_size () * 0.5f);
-      break;
-    case RIGHT:
-      rect.setRight (m_cur_pos.x () - get_handle_size () * 0.5f);
-      break;
-    case TOP:
-      rect.setTop (m_cur_pos.y () + get_handle_size () * 0.5f);
-      break;
-    case BOTTOM:
-      rect.setBottom (m_cur_pos.y () - get_handle_size () * 0.5f);
-      break;
-    case BOTTOMLEFT:
-      rect.setBottom (m_cur_pos.y () - get_handle_size () * 0.5f);
-      rect.setLeft (m_cur_pos.x () + get_handle_size () * 0.5f);
-      break;
-    case BOTTOMRIGHT:
-      rect.setBottom (m_cur_pos.y () - get_handle_size () * 0.5f);
-      rect.setRight (m_cur_pos.x () - get_handle_size () * 0.5f);
-      break;
-    case TOPLEFT:
-      rect.setTop (m_cur_pos.y () + get_handle_size () * 0.5f);
-      rect.setLeft (m_cur_pos.x () + get_handle_size () * 0.5f);
-      break;
-    case TOPRIGHT:
-      rect.setTop (m_cur_pos.y () + get_handle_size () * 0.5f);
-      rect.setRight (m_cur_pos.x () - get_handle_size () * 0.5f);
-      break;
-    case COUNT:
-      return {};
+      switch (m_type)
+        {
+        case STRETCH_LEFT:
+          rect.setLeft (m_cur_pos.x () + get_handle_size () * 0.5f);
+          break;
+        case STRETCH_RIGHT:
+          rect.setRight (m_cur_pos.x () - get_handle_size () * 0.5f);
+          break;
+        case STRETCH_TOP:
+          rect.setTop (m_cur_pos.y () + get_handle_size () * 0.5f);
+          break;
+        case STRETCH_BOTTOM:
+          rect.setBottom (m_cur_pos.y () - get_handle_size () * 0.5f);
+          break;
+        case STRETCH_BOTTOMLEFT:
+          rect.setBottom (m_cur_pos.y () - get_handle_size () * 0.5f);
+          rect.setLeft (m_cur_pos.x () + get_handle_size () * 0.5f);
+          break;
+        case STRETCH_BOTTOMRIGHT:
+          rect.setBottom (m_cur_pos.y () - get_handle_size () * 0.5f);
+          rect.setRight (m_cur_pos.x () - get_handle_size () * 0.5f);
+          break;
+        case STRETCH_TOPLEFT:
+          rect.setTop (m_cur_pos.y () + get_handle_size () * 0.5f);
+          rect.setLeft (m_cur_pos.x () + get_handle_size () * 0.5f);
+          break;
+        case STRETCH_TOPRIGHT:
+          rect.setTop (m_cur_pos.y () + get_handle_size () * 0.5f);
+          rect.setRight (m_cur_pos.x () - get_handle_size () * 0.5f);
+          break;
+        default:
+          return true;
+        }
+      m_editor.update_transform (geom::rect2rect (m_bbox, rect));
     }
-  m_editor.update_transform (geom::rect2rect (m_bbox, rect));
+  else
+    {
+      QTransform m_transform;
+      m_transform.translate (m_bbox.center ().x (), m_bbox.center ().y ());
+      switch (m_type)
+        {
+        case SKEW_LEFT:
+          m_transform.shear (0.0, (m_bbox.center ().y () - m_cur_pos.y ()) / (0.5 * m_bbox.width ()));
+          break;
+        case SKEW_RIGHT:
+          m_transform.shear (0.0, (m_cur_pos.y () - m_bbox.center ().y ()) / (0.5 * m_bbox.width ()));
+          break;
+        case SKEW_BOTTOM:
+          m_transform.shear ((m_cur_pos.x () - m_bbox.center ().x ()) / (0.5 * m_bbox.height ()), 0.0);
+          break;
+        case SKEW_TOP:
+          m_transform.shear ((m_bbox.center ().x () - m_cur_pos.x ()) / (0.5 * m_bbox.height ()), 0.0);
+          break;
+        case ROTATE_TOPLEFT:
+          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - m_bbox.center (), m_bbox.topLeft () - m_bbox.center ())));
+          break;
+        case ROTATE_TOPRIGHT:
+          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - m_bbox.center (), m_bbox.topRight () - m_bbox.center ())));
+          break;
+        case ROTATE_BOTTOMLEFT:
+          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - m_bbox.center (), m_bbox.bottomLeft () - m_bbox.center ())));
+          break;
+        case ROTATE_BOTTOMRIGHT:
+          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - m_bbox.center (), m_bbox.bottomRight () - m_bbox.center ())));
+          break;
+        default:
+          return true;
+        }
+      m_transform.translate (-m_bbox.center ().x (), -m_bbox.center ().y ());
+      m_editor.update_transform (m_transform);
+    }
   return true;
 }
 

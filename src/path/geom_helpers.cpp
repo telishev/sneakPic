@@ -79,6 +79,16 @@ double geom::angle_between (QPointF begin, QPointF end)
   return atan2 (cross (end, begin), dot (end, begin));
 }
 
+double geom::diagonal_length (QRectF rect)
+{
+  return sqrt (rect.width () * rect.width () + rect.height () * rect.height ());
+}
+
+double geom::rad2deg (double rad)
+{
+  return rad * 180.0 / M_PI;
+}
+
 QTransform geom::rect2rect (const QRectF &src, const QRectF &dst)
 {
   double m11 = dst.width () / src.width ();
@@ -94,7 +104,7 @@ double geom::projection_value (QPointF v, QPointF w, QPointF p)
   double l2 = distance2 (v, w);  // i.e. |w-v|^2 -  avoid a sqrt
   if (l2 < MINIMAL_FOR_COMPARISON) return 0.0;   // v == w case
   // Consider the line extending the segment, parameterized as v + t (w - v).
-  // We find projection of point p onto the line. 
+  // We find projection of point p onto the line.
   // It falls where t = [(p-v) . (w-v)] / |w-v|^2
   double t = dot (p - v, w - v) / l2;
   if (t < 0.0) return 0.0;       // Beyond the 'v' end of the segment

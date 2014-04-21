@@ -29,6 +29,8 @@ private:
 
   void update_handles ();
   virtual void configure ();
-  };
+private slots:
+  void change_handles_type ();
+};
 
 #endif // SELECTOR_TOOL_H

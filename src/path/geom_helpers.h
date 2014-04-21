@@ -14,7 +14,7 @@ namespace geom
   inline bool are_line (QPointF points[3])
   {
 
-    return are_equal (points[0].x () * points[1].y () + points[1].x () * points[2].y () + points[2].x () * points[0].y (), 
+    return are_equal (points[0].x () * points[1].y () + points[1].x () * points[2].y () + points[2].x () * points[0].y (),
                       points[0].x () * points[2].y () + points[1].x () * points[0].y () + points[2].x () * points[1].y ());
   }
 
@@ -24,7 +24,7 @@ namespace geom
     return are_line (points);
   }
 
-  
+
   QRect inner_rect (QRectF rect);
   QPoint nearest_point (QPointF point);
   double distance (QPointF first, QPointF second);
@@ -43,6 +43,8 @@ namespace geom
   QPointF projection (QPointF start, QPointF end, QPointF point);
   double projection_value (QPointF start, QPointF end, QPointF point);
   QTransform triangle2triangle (const QPointF *source, const QPointF *dest);
-};
+  double rad2deg (double rad);
+  double diagonal_length (QRectF rect);
+  };
 
 #endif // GEOM_HELPERS_H

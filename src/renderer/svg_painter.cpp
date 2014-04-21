@@ -50,6 +50,7 @@
 #include "svg/svg_utils.h"
 #include "svg/items/svg_graphics_item.h"
 #include "gui/gui_document.h"
+#include "editor/tools/tools_container.h"
 
 using namespace std::placeholders;
 
@@ -322,12 +323,24 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
 
 bool svg_painter::do_select_item (const QPoint &pos, bool clear_selection)
 {
-  if (clear_selection)
-    m_selection->clear ();
   abstract_svg_item *item = get_current_item (pos);
 
-  if (item)
-    m_selection->add_item (item);
+  if (item != nullptr && m_selection->contains (item->name ()) && clear_selection && m_gui_document->get_tools_container ()->current_tool_id () == gui_action_id::TOOL_SELECTOR)
+    {
+      emit switch_transform_handles_request ();
+      return true;
+    }
+
+  if (clear_selection)
+    m_selection->clear ();
+
+  if (item != nullptr)
+    {
+      if (m_selection->contains (item->name ()) && !clear_selection)
+        m_selection->remove_item (item);
+      else
+        m_selection->add_item (item);
+    }
 
   canvas_widget ()->update ();
   return true;

@@ -15,6 +15,7 @@
 
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_items_container.h"
+#include "gui/connection.h"
 
 
 
@@ -25,10 +26,16 @@ selector_tool::selector_tool (svg_painter *painter)
   m_rubberband = new items_rubberband_selector (m_overlay, m_painter, m_actions_applier);
   m_move_handler = new items_move_handler (m_painter->item_container (), m_overlay, m_painter->selection (), m_painter->document ());
   put_in (m_transform_handles_editor, m_overlay, m_painter, m_actions_applier);
+  CONNECT (m_painter, &svg_painter::switch_transform_handles_request, this, &selector_tool::change_handles_type);
 
   m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::DRAG_OBJECTS, this,
     &selector_tool::start_moving_object, &selector_tool::move_object, &selector_tool::end_moving_object);
 
+}
+
+void  selector_tool::change_handles_type ()
+{
+  m_transform_handles_editor->switch_handles_type ();
 }
 
 selector_tool::~selector_tool ()
@@ -90,6 +97,8 @@ void selector_tool::configure ()
 {
   if (m_painter->get_configure_needed (configure_type::SELECTION_CHANGED))
     {
+      if (m_painter->selection ()->empty ())
+        m_transform_handles_editor->reset_handles_type ();
       update_handles ();
     }
 }
