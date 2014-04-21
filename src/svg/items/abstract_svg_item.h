@@ -121,6 +121,7 @@ public:
 
   void observe_item (abstract_svg_item *item_to_observe, svg_item_observer *observer);
   void erase_created_observer (svg_item_observer *observer);
+  void erase_created_observers ();
 
   vector<const abstract_attribute *> attributes_list () const;
   abstract_svg_item *sibling (int index) const;
@@ -171,8 +172,8 @@ public:
   void make_orphan (abstract_svg_item *child);  // WARNING: These function does not generate proper undo, so you'd better use it in the stage before undo has any sense.
   void adopt_orphan (abstract_svg_item *child); // --- / ---
 
-  void replace_item (abstract_svg_item *item);
-  const abstract_svg_item *get_original_item () const;
+  void replace_item (abstract_svg_item *item, bool copy_clones = true);
+  abstract_svg_item *get_original_item () const;
 
 protected:
   virtual bool process_item_after_read () { return true; }

@@ -22,8 +22,8 @@ public:
 protected:
   virtual bool process_item_after_read () override;
   virtual bool can_be_selected () const override;
-  void unlink_item (abstract_svg_item *item, QTransform transform);
-
+  void unlink_item (abstract_svg_item *item);
+  void apply_transforms (abstract_svg_item *item, QTransform transform);
 };
 
 

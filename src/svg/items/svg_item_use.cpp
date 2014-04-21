@@ -16,6 +16,7 @@
 #include "svg_item_factory.h"
 #include "svg/attributes/svg_attribute_id.h"
 #include "svg/undo/undo_handler.h"
+#include "editor/operations/transform_item_operation.h"
 
 class use_item_watcher : public simple_item_observer<use_item_watcher>
 {
@@ -41,7 +42,8 @@ public:
 
     QTransform transform = full_chain_transform ();
     QTransform base_transform_change = m_transform_before.inverted () * transform;
-    (*m_transform)->set_transform ((*m_transform)->computed_transform () * base_transform_change.inverted ());
+    QTransform new_tr = transform_item_operation (parent ()->document ()).get_new_transform (base_transform_change.inverted (), parent ());
+    (*m_transform)->set_transform (new_tr);
     m_transform.reset ();
     m_transform_before = transform;
   }
@@ -139,11 +141,14 @@ abstract_renderer_item *svg_item_use::create_renderer_item_impl () const
 
 void svg_item_use::unlink ()
 {
-  unlink_item (child (0), get_computed_attribute<svg_attribute_transform> ()->computed_transform ());
+  erase_created_observers ();
+  QTransform transform = get_computed_attribute<svg_attribute_transform> ()->computed_transform ();
+  unlink_item (child (0));
   auto first_child  = child (0);
   make_orphan (first_child);
   parent ()->adopt_orphan (first_child);
   parent ()->remove_child (this);
+  apply_transforms (first_child, transform);
 }
 
 
@@ -152,10 +157,13 @@ bool svg_item_use::can_be_selected () const
   return true;
 }
 
-void svg_item_use::unlink_item (abstract_svg_item *item, QTransform transform)
+void svg_item_use::unlink_item (abstract_svg_item *item)
 {
-  for (auto && child : *item)
-    unlink_item (child, transform);
+  if (item->type () != svg_item_type::USE)
+    {
+      for (auto && child : *item)
+        unlink_item (child);
+    }
 
   abstract_svg_item *copy = document ()->item_factory ()->create_item (item->type_name (), item->namespace_uri (), item->namespace_name ());
   std::vector<abstract_attribute *> attributes;
@@ -172,12 +180,19 @@ void svg_item_use::unlink_item (abstract_svg_item *item, QTransform transform)
       attributes.push_back (attribute->clone ());
     }
 
-  copy->replace_item (item);
+  copy->replace_item (item, false);
   for (auto &&attribute : attributes)
     copy->add_attribute (attribute);
 
-  auto trans_attr = copy->get_attribute_for_change<svg_attribute_transform> ();
-  trans_attr->set_transform (transform  *trans_attr->computed_transform ());
+  if (copy->type () == svg_item_type::USE)
+    static_cast<svg_item_use *> (copy)->unlink ();
 }
 
+void svg_item_use::apply_transforms (abstract_svg_item *item, QTransform transform)
+{
+  for (auto && child : *item)
+    apply_transforms (child, transform);
+
+  transform_item_operation (document ()).apply_transform (transform, item);
+}
 

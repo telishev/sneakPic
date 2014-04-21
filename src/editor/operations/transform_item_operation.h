@@ -13,6 +13,7 @@ public:
   ~transform_item_operation ();
 
   void apply_transform (const QTransform &transform, abstract_svg_item *item);
+  QTransform get_new_transform (const QTransform &transform, abstract_svg_item *item);
 
 };
 

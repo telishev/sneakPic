@@ -49,3 +49,8 @@ void svg_item_observer::layout_changed (const string &sender)
 {
   FIX_UNUSED (sender);
 }
+
+void svg_item_observer::item_replaced (const string &sender)
+{
+  FIX_UNUSED (sender);
+}

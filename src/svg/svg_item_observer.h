@@ -20,6 +20,7 @@ public:
   virtual void attribute_change_end (const string &parent, const abstract_attribute *computed_attribute);
   virtual void item_removed (const string &item);
   virtual void layout_changed (const string &sender);
+  virtual void item_replaced (const string &sender);
 };
 
 
