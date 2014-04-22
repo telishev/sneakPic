@@ -50,11 +50,15 @@ bool object_operations_handler::duplicate ()
 
 bool object_operations_handler::unlink ()
 {
+  items_selection *selection = m_painter->selection ();
   return apply_for_selection (
     [&] (abstract_svg_item *item) {
       if (item->type () != svg_item_type::USE)
-        return false;
-      static_cast<svg_item_use *> (item)->unlink ();
+        {
+          selection->add_item (item);
+          return false;
+        }
+      selection->add_item (static_cast<svg_item_use *> (item)->unlink ());
       return true;
   }, "Unlink");
 }

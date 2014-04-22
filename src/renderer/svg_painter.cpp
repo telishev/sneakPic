@@ -51,6 +51,7 @@
 #include "svg/items/svg_graphics_item.h"
 #include "gui/gui_document.h"
 #include "editor/tools/tools_container.h"
+#include "svg/undo/undo_handler.h"
 
 using namespace std::placeholders;
 
@@ -622,13 +623,23 @@ bool svg_painter::remove_items_in_selection ()
   if (m_selection->count () == 0)
     return true;
 
+  std::vector<int> selected_id;
+
   for (auto item : *m_selection)
     {
-      if (!item || !item->parent ())
+      if (!item)
         continue;
 
-      item->parent ()->remove_child (item);
+      selected_id.push_back (item->undo_id ());
     }
+
+  for (int id : selected_id)
+    {
+      abstract_svg_item *item = dynamic_cast<abstract_svg_item *> (m_document->get_undo_handler ()->get_item (id));
+      if (item && item->parent ())
+        item->parent ()->remove_child (item);
+    }
+
   m_selection->clear ();
   document ()->apply_changes ("Remove");
   return true;

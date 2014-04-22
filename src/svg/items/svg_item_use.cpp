@@ -139,7 +139,7 @@ abstract_renderer_item *svg_item_use::create_renderer_item_impl () const
   return renderer_item;
 }
 
-void svg_item_use::unlink ()
+abstract_svg_item * svg_item_use::unlink ()
 {
   erase_created_observers ();
   std::string my_name = name ();
@@ -149,8 +149,8 @@ void svg_item_use::unlink ()
   make_orphan (first_child);
   parent ()->adopt_orphan (first_child);
   parent ()->remove_child (this);
-  first_child->rename (my_name);
   apply_transforms (first_child, transform);
+  return first_child;
 }
 
 

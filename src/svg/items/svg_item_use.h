@@ -17,7 +17,7 @@ public:
   bool update_children_tree ();
   virtual abstract_renderer_item *create_renderer_item_impl () const override;
 
-  void unlink ();
+  abstract_svg_item *unlink ();
 
 protected:
   virtual bool process_item_after_read () override;
