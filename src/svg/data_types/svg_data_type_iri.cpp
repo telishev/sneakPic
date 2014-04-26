@@ -91,18 +91,15 @@ bool svg_data_type_iri::read (const QString &data_arg)
       {
         case data_type::image_jpeg:
         case data_type::image_jpg:
-          m_image_data.reset (new QImage ());
-          m_image_data->load (&buffer, "jpg");
+          m_image_data.load (&buffer, "jpg");
           break;
         case data_type::image_png:
-          m_image_data.reset (new QImage ());
-          m_image_data->load (&buffer, "png");
+          m_image_data.load (&buffer, "png");
           break;
         case data_type::unsupported:
           return false;
       }
-      if (m_image_data)
-        *m_image_data = m_image_data->convertToFormat (QImage::Format_ARGB32_Premultiplied);
+        m_image_data = m_image_data.convertToFormat (QImage::Format_ARGB32_Premultiplied);
       return true;
     }
   else // try to treat as a link
@@ -147,19 +144,15 @@ data_type svg_data_type_iri::get_data_type () const
   return m_data_type;
 }
 
-QImage *svg_data_type_iri::get_image_data (const QString &svg_name) const
+QImage svg_data_type_iri::get_image_data (const QString &svg_name) const
 {
   load_linked_image (svg_name);
-
-  if (!m_image_data)
-    return nullptr;
-
-  return m_image_data.get ();
+  return m_image_data;
 }
 
 void svg_data_type_iri::create_from_image (const QImage &image)
 {
-  m_image_data.reset (new QImage (image));
+  m_image_data = image;
   m_data_type = data_type::image_png;
   m_iri_type = iri_type::media_data;
   QBuffer buffer;
@@ -171,7 +164,7 @@ void svg_data_type_iri::create_from_image (const QImage &image)
 
 void svg_data_type_iri::load_linked_image (const QString &svg_name) const
 {
-  if (m_image_data || link_to_resource.isEmpty ())
+  if (link_to_resource.isEmpty ())
     return;
 
   QFileInfo file (QFileInfo (svg_name).absoluteDir (), link_to_resource);
@@ -180,33 +173,35 @@ void svg_data_type_iri::load_linked_image (const QString &svg_name) const
 
   if (file.suffix () == "jpg" || file.suffix () == "jpeg")
     {
-      m_image_data.reset (new QImage ());
-      if (m_image_data->load (file.absoluteFilePath (), "jpeg"))
+      if (m_image_data.load (file.absoluteFilePath (), "jpeg"))
         m_data_type = data_type::image_jpeg;
       else
         {
-          m_image_data.release ();
+          m_image_data = {};
           return;
         }
     }
   else if (file.suffix () == "png")
     {
-      m_image_data.reset (new QImage ());
-      if (m_image_data->load (file.absoluteFilePath (), "png"))
+      if (m_image_data.load (file.absoluteFilePath (), "png"))
         m_data_type = data_type::image_png;
       else
         {
-          m_image_data.release ();
+          m_image_data = {};
           return;
         }
     }
 
-  if (m_image_data)
-    *m_image_data = m_image_data->convertToFormat (QImage::Format_ARGB32_Premultiplied);
+    m_image_data = m_image_data.convertToFormat (QImage::Format_ARGB32_Premultiplied);
 }
 
 void svg_data_type_iri::create_from_element (QString name)
 {
   m_element_id = name;
   m_iri_type = iri_type::document_fragment;
+}
+
+void svg_data_type_iri::set_to_invalid ()
+{
+  m_data_type = data_type::unsupported;
 }

@@ -26,6 +26,11 @@ public:
   use_item_watcher (svg_items_container *container, const string &parent)
     : simple_item_observer (container, parent) {}
 
+  use_item_watcher (const use_item_watcher &rhs) : simple_item_observer (rhs)
+  {
+
+  }
+
   virtual void attribute_change_start (const string &/*sender*/, const abstract_attribute *attribute) override
   {
     if (!attribute || attribute->type () != svg_attribute_type::TRANSFORM)

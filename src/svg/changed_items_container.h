@@ -10,6 +10,7 @@ class event_items_changed;
 class svg_items_container;
 class svg_graphics_item;
 class undo_handler;
+class abstract_svg_item;
 
 class items_edit_handler_t : public QObject, public svg_item_observer
 {
@@ -32,6 +33,7 @@ public:
   virtual void attribute_change_end (const string &sender, const abstract_attribute *computed_attribute) override;
   virtual void item_removed (const string &item) override;
   virtual void layout_changed (const string &sender) override;
+  virtual void item_changed (const string &sender, item_change_type type) override;
 
   virtual abstract_state_t *create_state () override;
   virtual void load_from_state (const abstract_state_t *state) override;
@@ -43,6 +45,9 @@ public:
   void set_item_removed (const string &item);
 
   undo_handler *get_undo_handler () const { return m_undo_handler; }
+
+  abstract_svg_item *get_item (const std::string &name) const;
+  svg_items_container *get_container () const { return m_container; }
 
 signals:
   void child_added_signal (const string &parent, const string &child_name, int insert_pos);

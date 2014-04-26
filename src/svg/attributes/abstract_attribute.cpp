@@ -102,7 +102,7 @@ void abstract_attribute::load_from_state (const abstract_state_t *state)
   const attribute_state *attr_state = static_cast<const attribute_state *> (state);
   m_edit_handler = attr_state->edit_handler ();
   DEBUG_ASSERT (read (attr_state->saved_data ()));
-  set_item (attr_state->item_id ());
+  m_item_id = attr_state->item_id ();
   abstract_svg_item *parent_item = item ();
   if (parent_item)
     m_edit_handler->set_item_changed (parent_item->name ());
@@ -117,4 +117,17 @@ void abstract_attribute::register_change ()
 {
   auto handler = m_edit_handler->get_undo_handler ();
   handler->register_item (this);
+}
+
+abstract_svg_item * abstract_attribute::get_item (const std::string &name) const
+{
+  if (!m_edit_handler)
+    return nullptr;
+
+  return m_edit_handler->get_item (name);
+}
+
+svg_items_container * abstract_attribute::get_container () const
+{
+  return m_edit_handler ? m_edit_handler->get_container () : nullptr;
 }

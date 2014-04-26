@@ -33,6 +33,7 @@ bool svg_attribute_clip_path::read (const char *char_data, bool /*from_css*/)
   if (!m_iri.read (url))
     return false;
 
+  update_observers ();
   return true;
 }
 
@@ -59,4 +60,5 @@ const svg_item_clip_path *svg_attribute_clip_path::clip_path (const svg_items_co
 void svg_attribute_clip_path::set_clip_path (svg_item_clip_path *item)
 {
   m_iri.create_from_element (QString::fromStdString (item->name ()));
+  update_observers ();
 }

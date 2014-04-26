@@ -21,7 +21,13 @@ svg_item_use *clone_item_operation::apply (abstract_svg_item *item)
 
   QString base_name = QString::fromStdString (item->name ());
   auto new_item = item->document ()->create_new_svg_item<svg_item_use> ();
-  new_item->get_attribute_for_change<svg_attribute_xlink_href> ()->iri ()->create_from_element (base_name);
+  {
+    auto href = new_item->get_attribute_for_change<svg_attribute_xlink_href> ();
+    svg_data_type_iri iri = href->iri ();
+    iri.create_from_element (base_name);
+    href->set_iri (iri);
+  }
+  
   new_item->update_children_tree ();
   add_item_operation add_op (m_painter, false);
   add_op.set_apply_style (false);

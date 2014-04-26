@@ -33,7 +33,7 @@ enum class data_format
 class svg_data_type_iri
 {
   QString m_element_id;
-  mutable unique_ptr<QImage> m_image_data;
+  mutable QImage m_image_data;
   mutable data_type m_data_type;
   iri_type m_iri_type;
   QByteArray raw_data;
@@ -50,9 +50,12 @@ public:
   data_type get_data_type () const;
 
   string get_fragment_name () const;
-  QImage *get_image_data (const QString &svg_name) const;
+  QImage get_image_data (const QString &svg_name) const;
   void create_from_image (const QImage &image);
   void create_from_element (QString name);
+  void set_to_invalid ();
+
+  bool is_valid () const { return m_iri_type == iri_type::unsupported; }
 
 private:
   void load_linked_image (const QString &svg_name) const;

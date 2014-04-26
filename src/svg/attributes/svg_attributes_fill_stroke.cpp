@@ -61,6 +61,8 @@ bool svg_paint_server::read (const char *char_data, bool /*from_css*/)
       if (!m_color.isValid ())
         return false;
     }
+
+  update_observers ();
   return true;
 }
 
@@ -124,10 +126,13 @@ bool svg_paint_server::need_to_render (const svg_items_container *container) con
 void svg_paint_server::set_to_none ()
 {
   m_server_type = paint_server_type::NONE;
+  m_iri.set_to_invalid ();
+  remove_observers ();
 }
 
 void svg_paint_server::set_to_iri (QString name)
 {
   m_server_type = paint_server_type::IRI;
   m_iri.create_from_element (name);
+  update_observers ();
 }

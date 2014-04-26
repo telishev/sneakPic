@@ -7,6 +7,13 @@
 
 class abstract_attribute;
 
+enum class item_change_type
+{
+  MYSELF,
+  PARENT,
+  CHILD,
+};
+
 class svg_item_observer : public undoable
 {
 public:
@@ -21,6 +28,7 @@ public:
   virtual void item_removed (const string &item);
   virtual void layout_changed (const string &sender);
   virtual void item_replaced (const string &sender);
+  virtual void item_changed (const string &sender, item_change_type type);
 };
 
 

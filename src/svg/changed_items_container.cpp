@@ -24,7 +24,6 @@ items_edit_handler_t::~items_edit_handler_t ()
 
 void items_edit_handler_t::child_added (const string &parent, const string &child_name, int insert_pos)
 {
-  m_changed_items.insert (child_name);
   m_layout_changed_items.insert (parent);
   emit child_added_signal (parent, child_name, insert_pos);
 }
@@ -44,7 +43,6 @@ void items_edit_handler_t::child_moved (const string &parent, const string &chil
 
 void items_edit_handler_t::attribute_change_start (const string &parent, const abstract_attribute *computed_attribute)
 {
-  set_children_changed (parent);
   emit attribute_change_start_signal (parent, computed_attribute);
 }
 
@@ -56,12 +54,10 @@ void items_edit_handler_t::attribute_change_end (const string &parent, const abs
 void items_edit_handler_t::item_removed (const string &parent)
 {
   emit item_removed_signal (parent);
-  /// handled in child_removed
 }
 
 void items_edit_handler_t::layout_changed (const string &sender)
 {
-  set_children_changed (sender);
   m_layout_changed_items.insert (sender);
 }
 
@@ -167,4 +163,17 @@ void items_edit_handler_t::set_children_changed (const string &parent_name)
   for (int i = 0; i < item->children_count (); i++)
     if (item->child (i))
       set_children_changed (item->child (i)->name ());
+}
+
+void items_edit_handler_t::item_changed (const string &sender, item_change_type type)
+{
+  if (type == item_change_type::CHILD)
+    return;
+
+  m_changed_items.insert (sender);
+}
+
+abstract_svg_item * items_edit_handler_t::get_item (const std::string &name) const
+{
+  return m_container->get_item (name);
 }

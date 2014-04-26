@@ -31,8 +31,8 @@ svg_item_image::~svg_item_image ()
 renderer_graphics_item *svg_item_image::create_renderer_graphics_item () const
 {
   const svg_attribute_xlink_href *xlink_href = get_computed_attribute<svg_attribute_xlink_href> ();
-  QImage *image = xlink_href->get_image_data (document ()->get_filename ());
-  if (!image)
+  QImage image = xlink_href->get_image_data (document ()->get_filename ());
+  if (image.isNull ())
     return 0;
 
   renderer_item_image *render_item = new renderer_item_image (name ());
@@ -43,14 +43,14 @@ renderer_graphics_item *svg_item_image::create_renderer_graphics_item () const
   const auto *preserve_aspect_ratio = get_computed_attribute<svg_attribute_preserve_aspect_ratio> ();
 
   QRectF viewport_rect (x->value (), y->value (), width->value (), height->value ());
-  QRectF src_rect (0.0, 0.0, image->width (), image->height ());
+  QRectF src_rect (0.0, 0.0, image.width (), image.height ());
   QRectF dest_rect = viewport_rect;
   if (preserve_aspect_ratio)
     dest_rect = preserve_aspect_ratio->get_desired_rect (src_rect, viewport_rect);
 
   render_item->set_src_rect (src_rect);
   render_item->set_dest_rect (dest_rect);
-  render_item->set_image_data (*image);
+  render_item->set_image_data (image);
   return render_item;
 }
 

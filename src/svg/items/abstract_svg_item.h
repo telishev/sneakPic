@@ -34,6 +34,7 @@ enum class svg_item_type;
 enum class svg_inherit_type;
 enum class overlay_item_type;
 enum class svg_attribute_type;
+enum class item_change_type;
 
 class abstract_svg_item : public undoable
 {
@@ -175,6 +176,9 @@ public:
   void replace_item (abstract_svg_item *item, bool copy_clones = true);
   abstract_svg_item *get_original_item () const;
   void rename (std::string new_name);
+
+  void signal_item_changed (item_change_type type, bool update_children);
+  const vector<int> *get_created_observers () const { return m_created_observers; }
 
 protected:
   virtual bool process_item_after_read () { return true; }

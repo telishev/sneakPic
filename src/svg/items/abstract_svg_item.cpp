@@ -447,11 +447,13 @@ abstract_attribute *abstract_svg_item::get_attribute_for_change (const char *dat
 void abstract_svg_item::signal_child_inserted (const string &child, int position)
 {
   send_to_listeners ([&] (svg_item_observer * observer) { observer->child_added (name (), child, position); });
+  signal_item_changed (item_change_type::MYSELF, false);
 }
 
 void abstract_svg_item::signal_child_removed (const string &child_name, int pos)
 {
   send_to_listeners ([&] (svg_item_observer * observer) { observer->child_removed (name (), child_name, pos); });
+  signal_item_changed (item_change_type::MYSELF, false);
 }
 
 void abstract_svg_item::signal_item_removed ()
@@ -462,6 +464,7 @@ void abstract_svg_item::signal_item_removed ()
 void abstract_svg_item::signal_child_moved (const string &child_name, int old_pos, int new_pos)
 {
   send_to_listeners ([&] (svg_item_observer * observer) { observer->child_moved (name (), child_name, old_pos, new_pos); });
+  signal_item_changed (item_change_type::MYSELF, false);
 }
 
 void abstract_svg_item::signal_attribute_change_start (const abstract_attribute *attribute)
@@ -472,13 +475,29 @@ void abstract_svg_item::signal_attribute_change_start (const abstract_attribute 
 void abstract_svg_item::signal_attribute_change_end (const abstract_attribute *attribute)
 {
   send_to_listeners ([&] (svg_item_observer * observer) { observer->attribute_change_end (name (), attribute); });
+  signal_item_changed (item_change_type::MYSELF, true);
 }
 
 void abstract_svg_item::signal_layout_changed ()
 {
   send_to_listeners ([&] (svg_item_observer * observer) { observer->layout_changed (name ()); });
+  signal_item_changed (item_change_type::MYSELF, false);
 }
 
+void abstract_svg_item::signal_item_changed (item_change_type type, bool update_children)
+{
+  send_to_listeners ([&] (svg_item_observer * observer) { observer->item_changed (name (), type); });
+  if (type != item_change_type::PARENT)
+    {
+      if (parent ())
+        parent ()->signal_item_changed (item_change_type::CHILD, false);
+    }
+  if (type != item_change_type::CHILD && update_children)
+    {
+      for (auto &&child : *this)
+        child->signal_item_changed (item_change_type::PARENT, true);
+    }
+}
 
 abstract_state_t *abstract_svg_item::create_state ()
 {
@@ -537,6 +556,7 @@ void abstract_svg_item::load_from_state (const abstract_state_t *abstract_state)
   add_to_container ();
   changed_items->set_item_changed (name ());
   changed_items->set_item_layout_changed (name ());
+  signal_item_changed (item_change_type::MYSELF, false);
 }
 
 void abstract_svg_item::observe_item (abstract_svg_item *item_to_observe, svg_item_observer *observer)

@@ -14,16 +14,13 @@ class simple_item_observer;
 template<typename T>
 class simple_observer_state_t : public abstract_state_t
 {
-  svg_items_container *m_container;
-  string m_parent;
+  T m_state;
 public:
-  simple_observer_state_t (svg_items_container *container, const string &parent)
-    : m_container (container), m_parent (parent) {}
+  simple_observer_state_t (const T &value) : m_state (value) {}
 
   virtual undoable *create_new_item () override
   {
-    undoable *item = new T (m_container, m_parent);
-    return item;
+    return new T (m_state);
   }
 
   virtual abstract_state_diff_t *create_diff (const abstract_state_t *first, const abstract_state_t *second) override
@@ -33,7 +30,7 @@ public:
 
   simple_observer_state_t *clone () const
   {
-    return new simple_observer_state_t (m_container, m_parent);
+    return new simple_observer_state_t (m_state);
   }
 };
 
@@ -45,11 +42,10 @@ class simple_item_observer : public svg_item_observer
 public:
   simple_item_observer (svg_items_container *container, const string &parent)
     : m_container (container), m_parent (parent) {}
-  ~simple_item_observer () {}
 
   virtual abstract_state_t *create_state () override
   {
-    return new simple_observer_state_t<T> (m_container, m_parent);
+    return new simple_observer_state_t<T> (*static_cast<T *> (this));
   }
 
   virtual void load_from_state (const abstract_state_t * /*state*/) override {}

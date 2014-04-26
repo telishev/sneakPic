@@ -3,8 +3,7 @@
 
 #include <QColor>
 
-#include "svg/attributes/abstract_attribute.h"
-#include "svg/data_types/svg_data_type_iri.h"
+#include "svg_iri_attributes.h"
 
 class abstract_svg_item;
 class svg_items_container;
@@ -18,10 +17,9 @@ enum class paint_server_type
   IRI,
 };
 
-class svg_paint_server : public abstract_attribute
+class svg_paint_server : public svg_iri_attribute
 {
 protected:
-  svg_data_type_iri m_iri;
   QColor m_color;
   paint_server_type m_server_type;
 
@@ -37,9 +35,6 @@ public:
   void set_to_iri (QString name);
   paint_server_type server_type () const { return m_server_type; };
   QColor color () const { return m_color; };
-
-  const svg_data_type_iri &iri () const { return m_iri; }
-  svg_data_type_iri &iri () { return m_iri; }
 
   renderer_paint_server *create_paint_server (const svg_items_container *container) const;
 

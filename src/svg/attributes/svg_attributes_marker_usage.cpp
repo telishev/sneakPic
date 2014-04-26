@@ -13,24 +13,21 @@
 
 bool svg_base_attribute_marker_usage::read (const char *data, bool /*from_css*/ /*= false*/)
 {
-  FREE (m_element);
   if (strcmp (data, "none") == 0)
-    {
-      m_element = nullptr;
-      return true;
-    }
-  
-  m_element = new svg_data_type_iri;
-  m_element->read (QString (data));
-  if (m_element->get_type () != iri_type::document_fragment)
-    FREE (m_element);
+    return true;
+
+  m_iri.read (QString (data));
+  if (m_iri.get_type () != iri_type::document_fragment)
+    m_iri.set_to_invalid ();
+
+  update_observers ();
   return true;
 }
 
 bool svg_base_attribute_marker_usage::write (QString &data, bool /*from_css*/ /*= false*/) const 
 {
-  if (m_element)
-    m_element->write (data);
+  if (m_iri.is_valid ())
+    m_iri.write (data);
   else
     data = "none";
   return true;
@@ -38,7 +35,7 @@ bool svg_base_attribute_marker_usage::write (QString &data, bool /*from_css*/ /*
 
 string svg_base_attribute_marker_usage::fragment_name () const
 {
-  return m_element ? m_element->get_fragment_name () : string ();
+  return m_iri.get_fragment_name ();
 }
 
 bool svg_attribute_marker_start::is_point_applicable (int number, const QPainterPath &/*path*/) const 

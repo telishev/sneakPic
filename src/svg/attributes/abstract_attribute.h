@@ -24,6 +24,7 @@ private:                                                        \
 
 class items_edit_handler_t;
 class abstract_svg_item;
+class svg_items_container;
 
 class QString;
 
@@ -67,6 +68,10 @@ public:
   virtual void load_from_state (const abstract_state_t *state) override;
 
   void register_change ();
+protected:
+  svg_items_container *get_container () const;
+  items_edit_handler_t *get_edit_handler () const { return m_edit_handler; }
+  abstract_svg_item *get_item (const std::string &name) const;
 };
 
 #endif // ABSTRACT_ATTRIBUTE_H

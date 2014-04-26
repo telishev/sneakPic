@@ -35,7 +35,7 @@ void dependent_items_gatherer::add_item (abstract_svg_item *item, bool add_to_ad
 void dependent_items_gatherer::check_href (abstract_svg_item * item)
 {
   auto href = item->get_computed_attribute<svg_attribute_xlink_href> ();
-  check_iri (*href->iri ());
+  check_iri (href->iri ());
 }
 
 void dependent_items_gatherer::check_fill (abstract_svg_item * item)
