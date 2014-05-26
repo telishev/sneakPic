@@ -8,7 +8,7 @@ n_icons_before=$(( $n_icons_before - 4 ))  # cut off header and footer
 mv $QRC_NAME $QRC_NAME.bkp
 echo '<RCC>' >> $QRC_NAME
 echo '    <qresource prefix="/">' >> $QRC_NAME
-find . -regex '\(.*\.\(png\|xpm\)\)' -printf '        <file>%p</file>\n' | sed '/\/source\//d' | sed 's/<file>.\//<file>/' | sort >> $QRC_NAME
+find . -regex '\(.*\.\(png\|svg\|xpm\)\)' -printf '        <file>%p</file>\n' | sed '/\/source\//d' | sed 's/<file>.\//<file>/' | sort >> $QRC_NAME
 echo '    </qresource>' >> $QRC_NAME
 echo '</RCC>' >> $QRC_NAME
 

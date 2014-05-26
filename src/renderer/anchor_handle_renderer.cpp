@@ -5,10 +5,13 @@
 #include "skia/skia_includes.h"
 
 #include "renderer/qt2skia.h"
+#include "renderer/path_storage.h"
 #include "renderer/renderer_state.h"
 
 #include "path/svg_path_geom.h"
+
 #include "svg/attributes/svg_attribute_nodetypes.h"
+#include "path/geom_helpers.h"
 
 
 anchor_handle_renderer::anchor_handle_renderer (QPointF pos, handle_type node_type, bool is_highlighted)
@@ -28,6 +31,8 @@ anchor_handle_renderer::anchor_handle_renderer ()
   m_highlighted_color = QColor ("lightcoral");
   m_selected_color = QColor ("blue");
   m_color = QColor ("gray");
+  m_paths.emplace (handle_type::DOUBLE_HEADED_ARROW, make_unique<QPainterPath> (path_storage::ref ().path (path_id::DOUBLE_HEADED_ARROW)));
+  m_paths.emplace (handle_type::ROTATE_ARROW, make_unique<QPainterPath> (path_storage::ref ().path (path_id::ROTATE_ARROW)));
 }
 
 anchor_handle_renderer::~anchor_handle_renderer ()
@@ -100,29 +105,13 @@ void anchor_handle_renderer::draw_anchor (SkCanvas &canvas, const SkRect &rect, 
       canvas.drawOval (rect, paint);
       break;
     case handle_type::DOUBLE_HEADED_ARROW:
-      // TODO: use some svg or stuff to draw something like that
-      SkPath path;
-      const float arrow_height = 0.35f;
-      const float arrow_width = 0.5f;
-      float height = rect.height ();
-      float width = rect.width ();
-      path.moveTo (rect.centerX () - 0.5f * arrow_width * width, rect.fTop + arrow_height * height);
-      path.lineTo (rect.centerX () - 0.5f * arrow_width * width, rect.fBottom - arrow_height * height);
-      path.lineTo (rect.fLeft, rect.fBottom - arrow_height * height);
-      path.lineTo (rect.fLeft + width * 0.5, rect.fBottom);
-      path.lineTo (rect.fRight, rect.fBottom - arrow_height * height);
-      path.lineTo (rect.centerX () + 0.5f * arrow_width * width, rect.fBottom - arrow_height * height);
-      path.lineTo (rect.centerX () + 0.5f * arrow_width * width, rect.fTop + arrow_height * height);
-      path.lineTo (rect.fRight, rect.fTop + arrow_height * height);
-      path.lineTo (rect.fLeft + width * 0.5, rect.fTop);
-      path.lineTo (rect.fLeft, rect.fTop + arrow_height * height);
-      path.lineTo (rect.fLeft + 0.5f * arrow_width, rect.fTop + arrow_height * height);
-      SkMatrix rotation;
-      rotation.setIdentity ();
-      rotation.postTranslate (-rect.centerX (), -rect.centerY ());
-      rotation.postRotate (m_rotation_angle);
-      rotation.postTranslate (rect.centerX (), rect.centerY ());
-      path.transform (rotation);
+    case handle_type::ROTATE_ARROW:
+      SkPath path = qt2skia::path (*m_paths.at (m_node_type));
+      SkMatrix trans;
+      trans.setIdentity ();
+      trans.postRotate (m_rotation_angle, 32, 32); // TODO: change all these to use info from path_storage (bounding box and center (possibly should be made 0))
+      trans.postConcat (qt2skia::matrix (geom::rect2rect (QRectF (0, 0, 64, 64), qt2skia::rect (rect))));
+      path.transform (trans);
       paint.setAntiAlias (true);
       canvas.drawPath (path, paint);
       break;

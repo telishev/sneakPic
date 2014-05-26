@@ -12,24 +12,27 @@ enum class handle_type
   DIAMOND,
   CIRCLE,
   DOUBLE_HEADED_ARROW,
+  ROTATE_ARROW,
 };
 
 class QTransform;
 struct SkRect;
 class SkPaint;
+class QPainterPath;
 
 class anchor_handle_renderer : public renderable_item
 {
   int m_anchor_size_px = 7;
   QPointF m_pos;
   handle_type m_node_type;
-  float m_rotation_angle; // applied only to non symetrical figures
+  float m_rotation_angle; // applied only to non symmetrical figures
   bool m_is_highlighted;
   bool m_is_visible = false;
   bool m_is_selected = false;
   QColor m_highlighted_color;
   QColor m_selected_color;
   QColor m_color;
+  map<handle_type, unique_ptr<QPainterPath>> m_paths;
 
 public:
   anchor_handle_renderer ();

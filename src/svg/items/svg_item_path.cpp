@@ -30,7 +30,7 @@ bool svg_item_path::process_item_after_read ()
   return true;
 }
 
-QPainterPath svg_item_path::get_path () const 
+QPainterPath svg_item_path::get_path () const
 {
   const svg_attribute_path_data *path_data = get_computed_attribute<svg_attribute_path_data> ();
 

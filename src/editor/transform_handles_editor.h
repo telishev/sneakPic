@@ -93,9 +93,12 @@ public:
   void reset_handles_type () { m_cur_handles_type = handles_type::STRETCH; }
 
 protected:
+  const svg_painter &painter () { return *m_painter; };
   virtual vector<abstract_handle *> get_handles () const;
   virtual void update_handles_impl ();
 private:
+
+  friend transform_handle;
 };
 
 #endif // TRANSFORM_HANDLES_EDITOR_H

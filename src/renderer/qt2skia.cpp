@@ -138,6 +138,11 @@ SkRect rect (const QRectF &rect)
   return SkRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());
 }
 
+QRectF rect (const SkRect &rect)
+{
+  return QRectF (QPointF (rect.fLeft, rect.fTop), QPointF (rect.fRight, rect.fBottom));
+}
+
 SkIRect Irect (const QRect &rect)
 {
   return SkIRect::MakeXYWH (rect.x (), rect.y (), rect.width (), rect.height ());

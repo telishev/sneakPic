@@ -105,35 +105,36 @@ void transform_handles_editor::switch_handles_type ()
   m_painter->update ();
 }
 
-
 QPointF transform_handle::get_handle_center () const
 {
+  double x_shift = get_handle_size () * 0.5 / m_editor.painter ().cur_transform ().m11 ();
+  double y_shift = get_handle_size () * 0.5 / m_editor.painter ().cur_transform ().m22 ();
   switch (m_type)
     {
     case STRETCH_LEFT:
     case SKEW_LEFT:
-      return {m_bbox.left () - get_handle_size () * 0.5f, m_bbox.center ().y ()};
+      return {m_bbox.left () - x_shift, m_bbox.center ().y ()};
     case STRETCH_RIGHT:
     case SKEW_RIGHT:
-      return {m_bbox.right () + get_handle_size () * 0.5f, m_bbox.center ().y ()};
+      return {m_bbox.right () + x_shift, m_bbox.center ().y ()};
     case SKEW_TOP:
     case STRETCH_TOP:
-      return {m_bbox.center ().x (), m_bbox.top () - get_handle_size () * 0.5f};
+      return {m_bbox.center ().x (), m_bbox.top () - y_shift};
     case STRETCH_BOTTOM:
     case SKEW_BOTTOM:
-      return {m_bbox.center ().x (), m_bbox.bottom () + get_handle_size () * 0.5f};
+      return {m_bbox.center ().x (), m_bbox.bottom () + y_shift};
     case STRETCH_TOPLEFT:
     case ROTATE_TOPLEFT:
-      return {m_bbox.left () - get_handle_size () * 0.5f, m_bbox.top () - get_handle_size () * 0.5f};
+      return {m_bbox.left () - x_shift, m_bbox.top () - y_shift};
     case STRETCH_TOPRIGHT:
     case ROTATE_TOPRIGHT:
-      return { m_bbox.right () + get_handle_size () * 0.5f, m_bbox.top () - get_handle_size () * 0.5f};
+      return { m_bbox.right () + x_shift, m_bbox.top () - y_shift};
     case STRETCH_BOTTOMLEFT:
     case ROTATE_BOTTOMLEFT:
-      return {m_bbox.left () - get_handle_size () * 0.5f, m_bbox.bottom () + get_handle_size () * 0.5f};
+      return {m_bbox.left () - x_shift, m_bbox.bottom () + y_shift};
     case STRETCH_BOTTOMRIGHT:
     case ROTATE_BOTTOMRIGHT:
-      return {m_bbox.right () + get_handle_size () * 0.5f, m_bbox.bottom () + get_handle_size () * 0.5f};
+      return {m_bbox.right () + x_shift, m_bbox.bottom () + y_shift};
     case COUNT:
       return {};
     }
@@ -172,7 +173,7 @@ switch (m_type)
     case ROTATE_TOPRIGHT:
     case ROTATE_BOTTOMLEFT:
     case ROTATE_BOTTOMRIGHT:
-      return handle_type::CIRCLE;
+      return handle_type::ROTATE_ARROW;
     case COUNT:
       break;
   }
@@ -200,13 +201,13 @@ float transform_handle::handle_rotation () const
     case STRETCH_TOPRIGHT:
       return 45.0f;
     case ROTATE_TOPLEFT:
-      return 0.0f;
-    case ROTATE_TOPRIGHT:
       return 90.0f;
-    case ROTATE_BOTTOMRIGHT:
+    case ROTATE_TOPRIGHT:
       return 180.0f;
-    case ROTATE_BOTTOMLEFT:
+    case ROTATE_BOTTOMRIGHT:
       return 270.0f;
+    case ROTATE_BOTTOMLEFT:
+      return 0.0f;
     case COUNT:
       return {};
     }
@@ -215,7 +216,7 @@ float transform_handle::handle_rotation () const
 
 int transform_handle::get_handle_size () const
 {
-  return 12;
+  return 14;
 }
 
 bool transform_handle::start_drag (QPointF local_pos, QTransform /*transform*/)

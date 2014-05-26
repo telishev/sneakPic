@@ -31,6 +31,7 @@ namespace qt2skia
   SkColor color (const QColor &color);
   QImage qimage (const SkBitmap &img);
   SkBitmap image (const QImage &image_arg);
+  QRectF rect (const SkRect &rect);
   SkRect rect (const QRect &rect);
   SkRect rect (const QRectF &rect);
   SkIRect Irect (const QRect &rect);
