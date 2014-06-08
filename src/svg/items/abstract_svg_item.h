@@ -28,6 +28,7 @@ class svg_graphics_item;
 class abstract_attribute_pointer;
 class svg_item_observer;
 class undo_handler;
+class svg_base_graphics_item;
 
 enum class svg_namespaces_t;
 enum class svg_item_type;
@@ -117,6 +118,8 @@ public:
 
   virtual const svg_graphics_item *to_graphics_item () const { return nullptr; }
   virtual svg_graphics_item *to_graphics_item () { return nullptr; }
+  virtual svg_base_graphics_item *to_base_graphics_item () { return nullptr; }
+  virtual const svg_base_graphics_item *to_base_graphics_item () const { return nullptr; }
 
   bool is_character_data () const;
 

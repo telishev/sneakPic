@@ -18,13 +18,18 @@ public:
   virtual void update_bbox_impl () override;
   virtual bool can_be_selected () const override { return true; }
   virtual renderable_item * create_outline_renderer() const;
+  QPainterPath get_transformed_boundaries () const;
 
 protected:
-  virtual QPainterPath get_boundaries () const = 0; // In this function path around item should be returned (even if it's raster image for example)
   virtual renderer_graphics_item *create_renderer_graphics_item () const = 0;
 
 private:
   void set_item_style (renderer_graphics_item *item) const;
-};
+  virtual QPainterPath get_boundaries () const = 0; // In this function path around item should be returned (even if it's raster image for example)
+
+  virtual svg_base_graphics_item * to_base_graphics_item () override { return this; }
+  virtual const svg_base_graphics_item *to_base_graphics_item () const override { return this; }
+
+  };
 
 #endif // SVG_BASE_GRAPHICS_ITEM_H

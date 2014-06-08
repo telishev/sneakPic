@@ -9,7 +9,7 @@
 #include "svg/attributes/svg_attribute_transform.h"
 
 #include "svg/items/abstract_svg_item.h"
-#include "svg/items/svg_graphics_item.h"
+#include "svg/items/svg_base_graphics_item.h"
 
 #include <QRectF>
 #include <QTransform>
@@ -65,10 +65,17 @@ transform_handles_editor::~transform_handles_editor ()
 void transform_handles_editor::update_transform (const QTransform &transform)
 {
   items_selection &selection = *m_painter->selection ();
-  QRectF bbox = selection.get_bbox ();
   QPainterPath path;
+  for (auto &&selection_item : selection)
+    {
+      auto &&gr_item = selection_item->to_base_graphics_item ();
+      if (gr_item != nullptr)
+        path.addPath (gr_item->get_transformed_boundaries ());
+    }
+
+  path.addRect (selection.get_bbox ());
+
   *m_transform = transform;
-  path.addRect (bbox);
   path = m_transform->map (path);
 
   m_contour_renderer->set_painter_path (path);

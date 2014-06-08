@@ -66,9 +66,13 @@ void svg_base_graphics_item::update_bbox_impl ()
 
 renderable_item * svg_base_graphics_item::create_outline_renderer () const
 {
-  QPainterPath path = get_boundaries ();
-  path = full_transform ().map (path);
+  QPainterPath path = get_transformed_boundaries ();
   renderer_overlay_path *overlay_item = new renderer_overlay_path;
   overlay_item->set_painter_path (path);
   return overlay_item;
+}
+
+QPainterPath svg_base_graphics_item::get_transformed_boundaries () const
+{
+  return full_transform ().map (get_boundaries ());
 }
