@@ -147,3 +147,13 @@ QTransform geom::triangle2triangle (const QPointF *source, const QPointF *dest)
   return QTransform (a1, a4, a2, a5, a3, a6);
 }
 
+QRectF geom::rect_from_2_points (QPointF point1, QPointF point2)
+{
+  return QRectF (QPointF (std::min (point1.x (), point2.x ()), std::min (point1.y (), point2.y ())),
+                 QPointF (std::max (point1.x (), point2.x ()), std::max (point1.y (), point2.y ())));
+}
+
+void geom::translate_by_qpoint (QTransform &transform, QPointF point)
+{
+  transform.translate (point.x (), point.y ());
+}

@@ -45,6 +45,8 @@ namespace geom
   QTransform triangle2triangle (const QPointF *source, const QPointF *dest);
   double rad2deg (double rad);
   double diagonal_length (QRectF rect);
+  QRectF rect_from_2_points (QPointF point1, QPointF point2);
+  void translate_by_qpoint (QTransform &transform, QPointF point);
   };
 
 #endif // GEOM_HELPERS_H

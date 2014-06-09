@@ -322,7 +322,7 @@ bool transform_handle::drag (QPointF local_pos, QTransform /*transform*/, keyboa
       else
         center = m_bbox.center ();
 
-      qt_utils::translate_by_qpoint (m_transform, center);
+      geom::translate_by_qpoint (m_transform, center);
 
       switch (m_type)
         {
@@ -353,7 +353,7 @@ bool transform_handle::drag (QPointF local_pos, QTransform /*transform*/, keyboa
         default:
           return true;
         }
-      qt_utils::translate_by_qpoint (m_transform, -center);
+      geom::translate_by_qpoint (m_transform, -center);
       m_editor.update_transform (m_transform);
     }
   return true;
