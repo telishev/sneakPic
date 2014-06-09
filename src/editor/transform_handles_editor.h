@@ -65,8 +65,8 @@ public:
   virtual int get_handle_size () const;
 
   virtual bool start_drag (QPointF local_pos, QTransform transform) override;
-  virtual bool drag (QPointF local_pos, QTransform transform) override;
-  virtual bool end_drag (QPointF local_pos, QTransform transform) override;
+  virtual bool drag (QPointF local_pos, QTransform transform, keyboard_modifier modifier) override;
+  virtual bool end_drag (QPointF local_pos, QTransform transform, keyboard_modifier modifier) override;
 
   virtual void interrupt_drag () override;
 

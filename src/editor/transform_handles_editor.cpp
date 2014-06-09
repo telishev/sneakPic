@@ -16,6 +16,7 @@
 #include "path/geom_helpers.h"
 #include "svg/svg_document.h"
 #include "operations/transform_item_operation.h"
+#include "gui/utils/qt_utils.h"
 
 vector<abstract_handle *> transform_handles_editor::get_handles () const
 {
@@ -234,7 +235,7 @@ bool transform_handle::start_drag (QPointF local_pos, QTransform /*transform*/)
   return true;
 }
 
-bool transform_handle::drag (QPointF local_pos, QTransform /*transform*/)
+bool transform_handle::drag (QPointF local_pos, QTransform /*transform*/, keyboard_modifier modifier)
 {
   m_cur_pos = local_pos;
   QRectF rect = m_bbox;
@@ -273,50 +274,94 @@ bool transform_handle::drag (QPointF local_pos, QTransform /*transform*/)
         default:
           return true;
         }
+
+      if (modifier == keyboard_modifier::SHIFT)
+        {
+          rect = QRectF (QPointF (rect.left () + m_bbox.right () - rect.right (), rect.top () + m_bbox.bottom () - rect.bottom ()),
+                         QPointF (rect.right () + m_bbox.left () - rect.left (), rect.bottom () + m_bbox.top () - rect.top ()));
+        }
+
       m_editor.update_transform (geom::rect2rect (m_bbox, rect));
     }
   else
     {
       QTransform m_transform;
-      m_transform.translate (m_bbox.center ().x (), m_bbox.center ().y ());
+      QPointF center;
+      if (modifier == keyboard_modifier::SHIFT)
+        {
+          switch (m_type)
+            {
+            case SKEW_LEFT:
+              center = QPointF (m_bbox.right (), m_bbox.center ().y ());
+              break;
+            case SKEW_RIGHT:
+              center = QPointF (m_bbox.left (), m_bbox.center ().y ());
+              break;
+            case SKEW_BOTTOM:
+              center = QPointF (m_bbox.center ().x (), m_bbox.top ());
+              break;
+            case SKEW_TOP:
+              center = QPointF (m_bbox.center ().x (), m_bbox.bottom ());
+              break;
+            case ROTATE_TOPLEFT:
+              center = m_bbox.bottomRight ();
+              break;
+            case ROTATE_TOPRIGHT:
+              center = m_bbox.bottomLeft ();
+              break;
+            case ROTATE_BOTTOMLEFT:
+              center = m_bbox.topRight ();
+              break;
+            case ROTATE_BOTTOMRIGHT:
+              center = m_bbox.topLeft ();
+              break;
+            default:
+              return true;
+            }
+        }
+      else
+        center = m_bbox.center ();
+
+      qt_utils::translate_by_qpoint (m_transform, center);
+
       switch (m_type)
         {
         case SKEW_LEFT:
-          m_transform.shear (0.0, (m_bbox.center ().y () - m_cur_pos.y ()) / (0.5 * m_bbox.width ()));
+          m_transform.shear (0.0, (center.y () - m_cur_pos.y ()) / (center.x () - rect.left ()));
           break;
         case SKEW_RIGHT:
-          m_transform.shear (0.0, (m_cur_pos.y () - m_bbox.center ().y ()) / (0.5 * m_bbox.width ()));
+          m_transform.shear (0.0, (m_cur_pos.y () - center.y ()) / (rect.right () - center.x ()));
           break;
         case SKEW_BOTTOM:
-          m_transform.shear ((m_cur_pos.x () - m_bbox.center ().x ()) / (0.5 * m_bbox.height ()), 0.0);
+          m_transform.shear ((m_cur_pos.x () - center.x ()) / (rect.bottom () - center.y ()), 0.0);
           break;
         case SKEW_TOP:
-          m_transform.shear ((m_bbox.center ().x () - m_cur_pos.x ()) / (0.5 * m_bbox.height ()), 0.0);
+          m_transform.shear ((center.x () - m_cur_pos.x ()) / (center.y () - rect.top ()), 0.0);
           break;
         case ROTATE_TOPLEFT:
-          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - m_bbox.center (), m_bbox.topLeft () - m_bbox.center ())));
+          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - center, m_bbox.topLeft () - center)));
           break;
         case ROTATE_TOPRIGHT:
-          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - m_bbox.center (), m_bbox.topRight () - m_bbox.center ())));
+          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - center, m_bbox.topRight () - center)));
           break;
         case ROTATE_BOTTOMLEFT:
-          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - m_bbox.center (), m_bbox.bottomLeft () - m_bbox.center ())));
+          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - center, m_bbox.bottomLeft () - center)));
           break;
         case ROTATE_BOTTOMRIGHT:
-          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - m_bbox.center (), m_bbox.bottomRight () - m_bbox.center ())));
+          m_transform.rotate (geom::rad2deg (geom::angle_between (m_cur_pos - center, m_bbox.bottomRight () - center)));
           break;
         default:
           return true;
         }
-      m_transform.translate (-m_bbox.center ().x (), -m_bbox.center ().y ());
+      qt_utils::translate_by_qpoint (m_transform, -center);
       m_editor.update_transform (m_transform);
     }
   return true;
 }
 
-bool transform_handle::end_drag (QPointF local_pos, QTransform transform)
+bool transform_handle::end_drag (QPointF local_pos, QTransform transform, keyboard_modifier modifier)
 {
-  drag (local_pos, transform);
+  drag (local_pos, transform, modifier);
   m_editor.set_drag_started (false);
   m_editor.finalize_transform ();
   return true;

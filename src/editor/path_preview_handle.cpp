@@ -27,7 +27,7 @@ path_preview_handle::~path_preview_handle ()
 
 }
 
-int path_preview_handle::distance_to_mouse (QPoint screen_pos, QTransform transform) const 
+int path_preview_handle::distance_to_mouse (QPoint screen_pos, QTransform transform) const
 {
   double max_distance = 20;
   QRectF bbox = transform.mapRect (m_item->bbox ()).adjusted (-max_distance, -max_distance, max_distance, max_distance);
@@ -64,13 +64,13 @@ bool path_preview_handle::start_drag (QPointF local_pos, QTransform transform)
   return true;
 }
 
-bool path_preview_handle::drag (QPointF local_pos, QTransform /*transform*/)
+bool path_preview_handle::drag (QPointF local_pos, QTransform /*transform*/, keyboard_modifier /*modifier*/)
 {
   drag_point (local_pos);
   return true;
 }
 
-bool path_preview_handle::end_drag (QPointF local_pos, QTransform /*transform*/)
+bool path_preview_handle::end_drag (QPointF local_pos, QTransform /*transform*/, keyboard_modifier /*modifier*/)
 {
   drag_point (local_pos);
   m_editor->begin_changes ();
@@ -81,7 +81,7 @@ bool path_preview_handle::end_drag (QPointF local_pos, QTransform /*transform*/)
   return true;
 }
 
-void path_preview_handle::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const 
+void path_preview_handle::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
 {
   QTransform transform = m_item->full_transform ();
   auto path_data = m_item->get_computed_attribute<svg_attribute_path_data> ();

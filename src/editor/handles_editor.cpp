@@ -13,8 +13,6 @@
 #include "gui/actions_applier.h"
 #include "gui/gui_action_id.h"
 
-
-
 handles_editor::handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
 {
   m_overlay = overlay;
@@ -46,21 +44,21 @@ void handles_editor::update_handles ()
   highlight_handle (QCursor::pos ());
 }
 
-bool handles_editor::start_drag (QPointF pos)
+bool handles_editor::start_drag (const mouse_event_t &event)
 {
-  m_cur_handle = get_handle_by_pos (pos);
+  m_cur_handle = get_handle_by_pos (event.pos ());
   if (!m_cur_handle)
     return false;
 
-  return m_cur_handle->start_drag (get_local_pos (pos), m_painter->cur_transform ());
+  return m_cur_handle->start_drag (get_local_pos (event.pos ()), m_painter->cur_transform ());
 }
 
-bool handles_editor::drag_handle (QPointF pos)
+bool handles_editor::drag_handle (const mouse_event_t &event)
 {
   if (m_cur_handle == nullptr)
     return false;
 
-  if (m_cur_handle->drag (get_local_pos (pos), m_painter->cur_transform ()))
+  if (m_cur_handle->drag (get_local_pos (event.pos ()), m_painter->cur_transform (), event.modifier ()))
     {
       m_painter->update ();
       return true;
@@ -69,12 +67,12 @@ bool handles_editor::drag_handle (QPointF pos)
   return false;
 }
 
-bool handles_editor::end_drag (QPointF pos)
+bool handles_editor::end_drag (const mouse_event_t &event)
 {
   if (m_cur_handle == nullptr)
     return false;
 
-  if (m_cur_handle->end_drag (get_local_pos (pos), m_painter->cur_transform ()))
+  if (m_cur_handle->end_drag (get_local_pos (event.pos ()), m_painter->cur_transform (), event.modifier ()))
     {
       m_painter->update ();
       return true;

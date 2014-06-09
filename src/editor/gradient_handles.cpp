@@ -9,6 +9,7 @@
 #include "common/debug_utils.h"
 #include "gradient_handles_editor.h"
 #include "svg/items/abstract_svg_item.h"
+#include "gui/mouse_shortcut.h"
 
 
 
@@ -75,10 +76,10 @@ QPointF base_gradient_handle::get_handle_center () const
 
 void base_gradient_handle::interrupt_drag ()
 {
-  drag (m_drag_start, QTransform ());
+  drag (m_drag_start, QTransform (), keyboard_modifier::NONE);
 }
 
-bool base_gradient_handle::drag (QPointF local_pos, QTransform /*transform*/)
+bool base_gradient_handle::drag (QPointF local_pos, QTransform /*transform*/, keyboard_modifier /*modifier*/)
 {
   QPointF gradient_pos = gradient_transform ().inverted ().map (local_pos);
   if (is_start ())
@@ -115,9 +116,9 @@ base_gradient_handle::base_gradient_handle (gradient_handles *handle, renderer_b
   set_handle_type (get_handle_type ());
 }
 
-bool base_gradient_handle::end_drag (QPointF local_pos, QTransform transform)
+bool base_gradient_handle::end_drag (QPointF local_pos, QTransform transform, keyboard_modifier /*modifier*/)
 {
-  drag (local_pos, transform);
+  drag (local_pos, transform, keyboard_modifier::NONE);
   m_handle->apply_changes ();
   return true;
 }

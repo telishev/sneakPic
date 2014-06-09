@@ -40,7 +40,7 @@ path_control_point_handle::~path_control_point_handle ()
 
 }
 
-int path_control_point_handle::distance_to_mouse (QPoint screen_pos, QTransform transform) const 
+int path_control_point_handle::distance_to_mouse (QPoint screen_pos, QTransform transform) const
 {
   QPoint center = geom::nearest_point (transform.map (get_handle_center ()));
   return geom::distance (center, screen_pos);
@@ -62,7 +62,7 @@ bool path_control_point_handle::start_drag (QPointF local_pos, QTransform /*tran
   return true;
 }
 
-bool path_control_point_handle::drag (QPointF local_pos, QTransform /*transform*/)
+bool path_control_point_handle::drag (QPointF local_pos, QTransform /*transform*/, keyboard_modifier /*modifier*/)
 {
   m_drag_cur = local_pos;
   move_point ();
@@ -70,7 +70,7 @@ bool path_control_point_handle::drag (QPointF local_pos, QTransform /*transform*
   return true;
 }
 
-bool path_control_point_handle::end_drag (QPointF local_pos, QTransform /*transform*/)
+bool path_control_point_handle::end_drag (QPointF local_pos, QTransform /*transform*/, keyboard_modifier /*modifier*/)
 {
   m_drag_cur = local_pos;
   apply_drag ();
@@ -87,7 +87,7 @@ void path_control_point_handle::interrupt_drag ()
 }
 
 
-void path_control_point_handle::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const 
+void path_control_point_handle::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
 {
   path_control_point_renderer (get_anchor_center (), get_handle_center (), m_is_highlighted).draw (canvas, state, config);
 }

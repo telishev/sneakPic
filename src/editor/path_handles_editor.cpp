@@ -141,7 +141,7 @@ path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter
 
   m_rubberband->set_end_func ([=] (const mouse_event_t &m_event)
     {
-      if (m_event.modifier () != SHIFT)
+      if (m_event.modifier () != keyboard_modifier::SHIFT)
         m_handles_selection->clear ();
 
       select_by_rect (m_rubberband->selection_rect ());
@@ -175,7 +175,7 @@ bool path_handles_editor::select_handle (const mouse_event_t &mevent)
   if (!control_point)
     return false;
 
-  if (!contains_modifier (mevent.modifier (), SHIFT))
+  if (!contains_modifier (mevent.modifier (), keyboard_modifier::SHIFT))
     m_handles_selection->clear ();
   m_handles_selection->add_anchor (control_point->item_name (), control_point->point_id ());
   deselect_other ();

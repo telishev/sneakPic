@@ -29,7 +29,7 @@ inline bool is_mouse_event_type_drag (mouse_event_type type)
     }
 }
 
-enum keyboard_modifier
+enum class keyboard_modifier
 {
   NO_MODIFIERS = 0x1,
   CTRL = 0x2,

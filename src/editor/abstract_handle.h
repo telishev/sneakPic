@@ -7,6 +7,8 @@ class QPointF;
 class QPoint;
 class QTransform;
 
+enum class keyboard_modifier;
+
 enum class handle_priority
 {
   NORMAL,
@@ -25,8 +27,8 @@ public:
   virtual void set_mouse_hovered (bool hovered) = 0;
 
   virtual bool start_drag (QPointF local_pos, QTransform transform) = 0;
-  virtual bool drag (QPointF local_pos, QTransform transform) = 0;
-  virtual bool end_drag (QPointF local_pos, QTransform transform) = 0;
+  virtual bool drag (QPointF local_pos, QTransform transform, keyboard_modifier modifier) = 0;
+  virtual bool end_drag (QPointF local_pos, QTransform transform, keyboard_modifier modifier) = 0;
   virtual void interrupt_drag () = 0;
   virtual handle_priority priority () const { return handle_priority::NORMAL; }
 

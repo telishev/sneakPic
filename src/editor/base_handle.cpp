@@ -37,12 +37,12 @@ bool base_handle::start_drag (QPointF /*local_pos*/, QTransform /*transform*/)
   return false;
 }
 
-bool base_handle::drag (QPointF /*local_pos*/, QTransform /*transform*/)
+bool base_handle::drag (QPointF /*local_pos*/, QTransform /*transform*/, keyboard_modifier /*modifier*/)
 {
   return false;
 }
 
-bool base_handle::end_drag (QPointF /*local_pos*/, QTransform /*transform*/)
+bool base_handle::end_drag (QPointF /*local_pos*/, QTransform /*transform*/, keyboard_modifier /*modifier*/)
 {
   return false;
 }

@@ -36,19 +36,19 @@ bool mouse_shortcut::is_applicable (const mouse_event_t &m_event, bool ignore_mo
 
 bool contains_modifier (keyboard_modifier pressed, keyboard_modifier buttons)
 {
-  if (buttons == NO_MODIFIERS)
+  if (buttons == keyboard_modifier::NO_MODIFIERS)
     return true;
 
   switch (pressed)
     {
-    case NO_MODIFIERS: return false;
-    case CTRL: return buttons == CTRL;
-    case ALT: return buttons == ALT;
-    case SHIFT: return buttons == SHIFT;
-    case CTRL_SHIFT: return buttons == SHIFT ||  buttons == CTRL ||  buttons == CTRL_SHIFT;
-    case CTRL_ALT: return buttons == ALT ||  buttons == CTRL ||  buttons == CTRL_ALT;
-    case SHIFT_ALT: return buttons == SHIFT ||  buttons == ALT ||  buttons == SHIFT_ALT;
-    case CTRL_ALT_SHIFT: return true;
+    case keyboard_modifier::NO_MODIFIERS: return false;
+    case keyboard_modifier::CTRL: return buttons == keyboard_modifier::CTRL;
+    case keyboard_modifier::ALT: return buttons == keyboard_modifier::ALT;
+    case keyboard_modifier::SHIFT: return buttons == keyboard_modifier::SHIFT;
+    case keyboard_modifier::CTRL_SHIFT: return buttons == keyboard_modifier::SHIFT ||  buttons == keyboard_modifier::CTRL ||  buttons == keyboard_modifier::CTRL_SHIFT;
+    case keyboard_modifier::CTRL_ALT: return buttons == keyboard_modifier::ALT ||  buttons == keyboard_modifier::CTRL ||  buttons == keyboard_modifier::CTRL_ALT;
+    case keyboard_modifier::SHIFT_ALT: return buttons == keyboard_modifier::SHIFT ||  buttons == keyboard_modifier::ALT ||  buttons == keyboard_modifier::SHIFT_ALT;
+    case keyboard_modifier::CTRL_ALT_SHIFT: return true;
     default: break;
     }
 

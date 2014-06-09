@@ -8,6 +8,7 @@ class handles_renderer;
 class element_handles;
 class abstract_svg_item;
 class abstract_handle;
+class mouse_event_t;
 
 class QPointF;
 class QPoint;
@@ -45,9 +46,9 @@ private:
   void remove_item (const string &item);
   void clear_items ();
 
-  bool start_drag (QPointF pos);
-  bool drag_handle (QPointF pos);
-  bool end_drag (QPointF pos);
+  bool start_drag (const mouse_event_t &event);
+  bool drag_handle (const mouse_event_t &event);
+  bool end_drag (const mouse_event_t &event);
 
   bool interrupt_all ();
 

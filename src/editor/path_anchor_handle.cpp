@@ -38,7 +38,7 @@ bool path_anchor_handle::start_drag (QPointF local_pos, QTransform /*transform*/
   return true;
 }
 
-bool path_anchor_handle::drag (QPointF local_pos, QTransform /*transform*/)
+bool path_anchor_handle::drag (QPointF local_pos, QTransform /*transform*/, keyboard_modifier /*modifier*/)
 {
   m_drag_cur = local_pos;
   move_point ();
@@ -46,7 +46,7 @@ bool path_anchor_handle::drag (QPointF local_pos, QTransform /*transform*/)
   return true;
 }
 
-bool path_anchor_handle::end_drag (QPointF local_pos, QTransform /*transform*/)
+bool path_anchor_handle::end_drag (QPointF local_pos, QTransform /*transform*/, keyboard_modifier /*modifier*/)
 {
   m_drag_cur = local_pos;
   apply_drag ();

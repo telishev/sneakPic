@@ -28,6 +28,8 @@ namespace qt_utils
   QDialogButtonBox *create_standard_button_box (QDialog *dialog);
   QVBoxLayout *create_common_vbox_layout (QWidget *widget);
   QHBoxLayout *create_common_hbox_layout (QWidget *widget);
+  QRectF rect_from_2_points (QPointF point1, QPointF point2);
+  void translate_by_qpoint (QTransform &transform, QPointF point);
 }
 #endif // QT_UTILS_H
 
