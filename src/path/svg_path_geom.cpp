@@ -139,9 +139,16 @@ bool svg_path_geom_iterator::operator!= (const svg_path_geom_iterator &rhs) cons
   return !(*this == rhs);
 }
 
-svg_path_geom_iterator svg_path_geom_iterator::neighbour (bool is_left) const
+svg_path_geom_iterator svg_path_geom_iterator::neighbour (cp_type type) const
 {
-  return is_left ? left () : right ();
+  switch (type)
+    {
+    case cp_type::LEFT:
+      return left ();
+    case cp_type::RIGHT:
+      return right ();
+    }
+  return {};
 }
 
 svg_path_geom_iterator svg_path_geom_iterator::left () const
@@ -172,19 +179,19 @@ const QPointF & svg_path_geom_iterator::anchor_point () const
   return m_subpath_iterator.anchor_point ();
 }
 
-QPointF & svg_path_geom_iterator::control_point (bool is_left)
+QPointF & svg_path_geom_iterator::control_point (cp_type type)
 {
-  return m_subpath_iterator.control_point (is_left);
+  return m_subpath_iterator.control_point (type);
 }
 
-const QPointF & svg_path_geom_iterator::control_point (bool is_left) const
+const QPointF & svg_path_geom_iterator::control_point (cp_type type) const
 {
-  return m_subpath_iterator.control_point (is_left);
+  return m_subpath_iterator.control_point (type);
 }
 
-bool svg_path_geom_iterator::has_control_point (bool is_left) const
+bool svg_path_geom_iterator::has_control_point (cp_type type) const
 {
-  return m_subpath_iterator.has_control_point (is_left);
+  return m_subpath_iterator.has_control_point (type);
 }
 
 size_t svg_path_geom_iterator::point_index () const
@@ -196,19 +203,19 @@ size_t svg_path_geom_iterator::point_index () const
   return index + m_subpath_iterator.point_num ();
 }
 
-int svg_path_geom_iterator::segment_index (bool is_left) const
+int svg_path_geom_iterator::segment_index (cp_type type) const
 {
   const single_subpath &subpath = m_path->m_subpath[m_subpath_index];
   size_t subpath_point = m_subpath_iterator.point_num ();
-  if (   (is_left  && !subpath.is_closed () && subpath_point == 0)
-      || (!is_left && subpath_point >= subpath.total_segments ()))
+  if (   (type == cp_type::LEFT  && !subpath.is_closed () && subpath_point == 0)
+      || (type == cp_type::RIGHT && subpath_point >= subpath.total_segments ()))
     return -1;
 
   size_t index = 0;
   for (size_t subpath_index = 0; subpath_index < m_subpath_index; subpath_index++)
     index += m_path->m_subpath[subpath_index].total_segments ();
 
-  if (is_left)
+  if (type == cp_type::LEFT)
     {
       if (subpath_point == 0)
         return (int)(index + subpath.total_segments () - 1);
@@ -219,18 +226,24 @@ int svg_path_geom_iterator::segment_index (bool is_left) const
   return (int)(index + subpath_point);
 }
 
-single_path_segment svg_path_geom_iterator::segment (bool is_left) const
+single_path_segment svg_path_geom_iterator::segment (cp_type type) const
 {
   svg_path_geom_iterator left_it = *this, right_it = *this;
-  if (is_left)
-    left_it = left_it.left ();
-  else
-    right_it = right_it.right ();
+
+  switch (type)
+    {
+    case cp_type::LEFT:
+      left_it = left_it.left ();
+      break;
+    case cp_type::RIGHT:
+      right_it = right_it.right ();
+      break;
+    }
 
   if (!left_it.is_valid () || !right_it.is_valid ())
     return single_path_segment ();
 
-  return single_path_segment (left_it.anchor_point (), right_it.anchor_point (), left_it.control_point (false), right_it.control_point (true));
+  return single_path_segment (left_it.anchor_point (), right_it.anchor_point (), left_it.control_point (cp_type::RIGHT), right_it.control_point (cp_type::LEFT));
 }
 
 single_subpath & svg_path_geom_iterator::subpath ()

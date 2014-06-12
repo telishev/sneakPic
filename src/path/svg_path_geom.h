@@ -6,6 +6,24 @@
 class QTransform;
 class svg_path_geom_iterator;
 
+enum class cp_type : char // control point type
+{
+  RIGHT,
+  LEFT,
+};
+
+inline cp_type opposite (cp_type type)
+{
+  switch (type)
+    {
+    case cp_type::LEFT:
+      return cp_type::RIGHT;
+    case cp_type::RIGHT:
+      return cp_type::LEFT;
+    }
+  return cp_type::LEFT;
+}
+
 class svg_path_geom
 {
   vector<single_subpath> m_subpath;
@@ -56,25 +74,34 @@ public:
 
   bool is_valid () const { return m_path != 0; }
 
-  svg_path_geom_iterator neighbour (bool is_left) const;
+  svg_path_geom_iterator neighbour (cp_type type) const;
   svg_path_geom_iterator left () const;
   svg_path_geom_iterator right () const;
 
   const QPointF &anchor_point () const;
   QPointF &anchor_point ();
 
-  const QPointF &control_point (bool is_left) const;
-  QPointF &control_point (bool is_left);
-  bool has_control_point (bool is_left) const;
+  const QPointF &control_point (cp_type type) const;
+  QPointF &control_point (cp_type type);
+  bool has_control_point (cp_type type) const;
 
   size_t point_index () const;
-  int segment_index (bool is_left) const;
-  single_path_segment segment (bool is_left) const;
+  int segment_index (cp_type type) const;
+  single_path_segment segment (cp_type type) const;
 
   single_subpath &subpath ();
   size_t get_subpath_index () const;
   size_t get_subpath_point () const;
 };
 
+namespace std
+{
+  inline svg_path_geom_iterator next (svg_path_geom_iterator it)
+  {
+    auto it_next = it;
+    ++it_next;
+    return it_next;
+  }
+}
 
 #endif // SVG_PATH_GEOM_H

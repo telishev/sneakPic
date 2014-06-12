@@ -67,8 +67,8 @@ void remove_anchors_operation::remove_from_node_types (const set<svg_path_geom_i
   for (auto &&it : anchors_to_delete)
     {
       for (int i : {0, 1})
-        if (it.has_control_point (i == 0))
-          node_type[it.neighbour (i == 0).point_index ()] = node_type_t::CUSP;
+        if (it.has_control_point (i == 0 ? cp_type::LEFT : cp_type::RIGHT))
+          node_type[it.neighbour (i == 0 ? cp_type::LEFT : cp_type::RIGHT).point_index ()] = node_type_t::CUSP;
       points_to_remove.insert (it.point_index ());
     }
 
@@ -84,13 +84,13 @@ void remove_anchors_operation::remove_from_line_types (const set<svg_path_geom_i
   for (auto it = anchors_to_delete.begin (); it != anchors_to_delete.end (); ++it)
     {
       for (int i = 0; i < 2; i++)
-        if (it->has_control_point (i == 0))
-          line_segments[it->segment_index (i == 0)] = false;
+        if (it->has_control_point (i == 0 ? cp_type::LEFT : cp_type::RIGHT))
+          line_segments[it->segment_index (i == 0 ? cp_type::LEFT : cp_type::RIGHT)] = false;
 
-      if (!it->has_control_point (false))
-        segment_to_remove.insert (it->segment_index (true));
+      if (!it->has_control_point (cp_type::RIGHT))
+        segment_to_remove.insert (it->segment_index (cp_type::LEFT));
       else
-        segment_to_remove.insert (it->segment_index (false));
+        segment_to_remove.insert (it->segment_index (cp_type::RIGHT));
     }
 
   line_segments.erase (remove_iter_if (line_segments,
@@ -138,6 +138,6 @@ void remove_anchors_operation::remove_from_geom (const set<svg_path_geom_iterato
       elements.erase (remove_iter_if (elements, need_to_del), elements.end ());
     }
 
-  subpath_vec.erase (std::remove_if (subpath_vec.begin (), subpath_vec.end (), 
+  subpath_vec.erase (std::remove_if (subpath_vec.begin (), subpath_vec.end (),
     [] (const single_subpath &subpath) { return subpath.total_points () == 0; }), subpath_vec.end ());
 }

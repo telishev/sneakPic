@@ -3,6 +3,7 @@
 
 class svg_path;
 class svg_path_geom_iterator;
+enum class cp_type : char;
 
 class line_type_change_operation
 {
@@ -11,7 +12,7 @@ public:
   line_type_change_operation (svg_path *path);
   ~line_type_change_operation ();
 
-  void apply (svg_path_geom_iterator it, bool is_left, bool is_line);
+  void apply (svg_path_geom_iterator it, cp_type type, bool is_line);
 };
 
 

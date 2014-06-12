@@ -6,6 +6,7 @@
 class svg_path_geom;
 enum class node_type_t : char;
 class svg_path_geom_iterator;
+enum class cp_type : char;
 
 class svg_path
 {
@@ -23,7 +24,7 @@ public:
   QTransform transform () const { return m_transform; }
 
   void move_anchor (QPointF dst, svg_path_geom_iterator it);
-  void move_control_point (QPointF dst, svg_path_geom_iterator it, bool is_left);
+  void move_control_point (QPointF dst, svg_path_geom_iterator it, cp_type type);
 
   void clear ();
   void copy_from (svg_path &src);

@@ -433,10 +433,10 @@ double path_nearest_point::get_nearest_point (QPointF screen_pos, QTransform tra
 
   for (svg_path_geom_iterator it = path->begin (); it != path->end (); ++it)
     {
-      if (it.segment_index (false) < 0)
+      if (it.segment_index (cp_type::RIGHT) < 0)
         continue;
 
-      auto segment = it.segment (false);
+      auto segment = it.segment (cp_type::RIGHT);
       QPointF bezier[4];
       bezier[0] = segment.start;
       bezier[1] = segment.c1;

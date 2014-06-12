@@ -109,17 +109,17 @@ private:
     if (!has_controls (it))
       return;
 
-    add_control (it, false);
-    add_control (it, true);
+    add_control (it, cp_type::RIGHT);
+    add_control (it, cp_type::LEFT);
   }
 
-  void add_control (svg_path_geom_iterator it, bool is_left)
+  void add_control (svg_path_geom_iterator it, cp_type type)
   {
-    if (it.has_control_point (is_left))
+    if (it.has_control_point (type))
       {
-        int segment_id = it.segment_index (is_left);
+        int segment_id = it.segment_index (type);
         if (segment_id >= 0 && !m_line_types->is_line_segment (segment_id))
-          m_handles.push_back (new path_control_point_handle (m_editor, m_path_item, it, is_left));
+          m_handles.push_back (new path_control_point_handle (m_editor, m_path_item, it, type));
       }
   }
 

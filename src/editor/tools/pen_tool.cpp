@@ -85,7 +85,7 @@ bool pen_tool::update_auxiliary_pen_preview (const QPoint &pos)
       path_builder builder (*m_auxiliary_path->path ());
       builder.move_to (cur_path->last_point ().anchor_point (), false);
       if (cur_path->total_points () > 0)
-        builder.set_prev_curve_c (cur_path->last_point ().control_point (true));
+        builder.set_prev_curve_c (cur_path->last_point ().control_point (cp_type::LEFT));
       builder.curve_to_short (local_pos, local_pos, false);
        m_painter->update ();
       return true;
@@ -196,14 +196,14 @@ void pen_tool::update_cp_renderers ()
 {
 
   auto last_point = m_current_path->path ()->get_geom ()->last_point ();
-  if (last_point.has_control_point (true))
+  if (last_point.has_control_point (cp_type::LEFT))
     {
       m_left_cp_renderer->set_visible (true);
       m_left_cp_renderer->set_anchor (last_point.anchor_point ());
-      m_left_cp_renderer->set_control_point (last_point.control_point (true));
+      m_left_cp_renderer->set_control_point (last_point.control_point (cp_type::LEFT));
       m_right_cp_renderer->set_visible (true);
       m_right_cp_renderer->set_anchor (last_point.anchor_point ());
-      m_right_cp_renderer->set_control_point (last_point.control_point (false));
+      m_right_cp_renderer->set_control_point (last_point.control_point (cp_type::RIGHT));
     }
   else
     {

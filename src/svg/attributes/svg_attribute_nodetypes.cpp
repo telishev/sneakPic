@@ -31,7 +31,7 @@ bool svg_attribute_nodetypes::read (const char *data, bool /*from_css*/)
   return true;
 }
 
-bool svg_attribute_nodetypes::write (QString &data, bool /*to_css*/) const 
+bool svg_attribute_nodetypes::write (QString &data, bool /*to_css*/) const
 {
   for (size_t i = 0; i < m_node_type.size (); i++)
     data += node_type_to_char (m_node_type[i]);
@@ -74,12 +74,12 @@ void svg_attribute_nodetypes::create_from_path (const svg_path_geom *path, bool 
 
   for (auto it = path->begin (); it != path->end (); ++it, cur_point++)
     {
-      if (   !it.has_control_point (false)
-          || !it.has_control_point (true))
+      if (   !it.has_control_point (cp_type::LEFT)
+          || !it.has_control_point (cp_type::RIGHT))
         continue;
 
-      QPointF left_cp = it.control_point (true);
-      QPointF right_cp = it.control_point (false);
+      QPointF left_cp = it.control_point (cp_type::LEFT);
+      QPointF right_cp = it.control_point (cp_type::RIGHT);
       QPointF anchor = it.anchor_point ();
 
       if (!geom::are_line (anchor, left_cp, right_cp))

@@ -27,7 +27,7 @@ bool svg_attribute_linetypes::read (const char *data, bool /*from_css*/)
   return true;
 }
 
-bool svg_attribute_linetypes::write (QString &data, bool /*to_css*/) const 
+bool svg_attribute_linetypes::write (QString &data, bool /*to_css*/) const
 {
   for (size_t i = 0; i < m_is_line_segment.size (); i++)
     data += m_is_line_segment[i] ? 'l' : 'c';
@@ -44,10 +44,10 @@ void svg_attribute_linetypes::create_from_path (const svg_path_geom *path, bool 
 
   for (auto it = path->begin (); it != path->end (); ++it)
     {
-      int segment_index = it.segment_index (false);
+      int segment_index = it.segment_index (cp_type::RIGHT);
       if (segment_index < 0)
         continue;
 
-      m_is_line_segment[segment_index] = it.segment (false).is_line ();
+      m_is_line_segment[segment_index] = it.segment (cp_type::RIGHT).is_line ();
     }
 }

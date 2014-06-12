@@ -11,7 +11,7 @@ merge_path_operation::merge_path_operation ()
 
 merge_path_operation::~merge_path_operation ()
 {
-   
+
 }
 
 void merge_path_operation::apply (svg_path *path_dest, svg_path_geom_iterator dest, svg_path *path_src, svg_path_geom_iterator src)
@@ -33,7 +33,7 @@ void merge_path_operation::merge_inside (svg_path *path, svg_path_geom_iterator 
       if (elements.size () > 1 && front_elem.point == back_elem.point)
         {
           front_elem.c1 = back_elem.c1;
-          
+
           svg_path_geom_iterator last_segment_point (*path->get_geom (), dest.get_subpath_index (), dest.subpath ().last_point ());
           size_t point_index = last_segment_point.point_index ();
           path->get_node_type ()->erase (path->get_node_type ()->begin () + point_index);
@@ -64,8 +64,8 @@ void merge_path_operation::merge_inside (svg_path *path, svg_path_geom_iterator 
           if (src.get_subpath_point () == 0)
             path->reverse_subpath ((int)src.get_subpath_index ());
 
-          slide (line_begin + src_begin_it.segment_index (false), line_begin + src_begin_it.segment_index (false) + src.subpath ().total_segments (),
-                 line_begin + dst_begin_it.segment_index (false));
+          slide (line_begin + src_begin_it.segment_index (cp_type::RIGHT), line_begin + src_begin_it.segment_index (cp_type::RIGHT) + src.subpath ().total_segments (),
+                 line_begin + dst_begin_it.segment_index (cp_type::RIGHT));
           slide (node_type_begin + src_begin_it.point_index (), node_type_begin + src_begin_it.point_index () + src.subpath ().total_points (),
                  node_type_begin + dst_begin_it.point_index ());
 
@@ -78,9 +78,9 @@ void merge_path_operation::merge_inside (svg_path *path, svg_path_geom_iterator 
           /// reverse src if necessary
           if (src.get_subpath_point () != 0)
             path->reverse_subpath ((int)src.get_subpath_index ());
-      
-          slide (line_begin + src_begin_it.segment_index (false), line_begin + src_begin_it.segment_index (false) + src.subpath ().total_segments (),
-                 line_begin + dst_begin_it.segment_index (false) + dest.subpath ().total_segments ());
+
+          slide (line_begin + src_begin_it.segment_index (cp_type::RIGHT), line_begin + src_begin_it.segment_index (cp_type::RIGHT) + src.subpath ().total_segments (),
+                 line_begin + dst_begin_it.segment_index (cp_type::RIGHT) + dest.subpath ().total_segments ());
 
           slide (node_type_begin + src_begin_it.point_index (), node_type_begin + src_begin_it.point_index () + src.subpath ().total_points (),
                  node_type_begin + dst_begin_it.point_index () + dest.subpath ().total_points ());

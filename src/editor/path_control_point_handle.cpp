@@ -26,9 +26,9 @@
 
 
 path_control_point_handle::path_control_point_handle (path_handles_editor *editor, svg_item_path *item, svg_path_geom_iterator path_it,
-                                                      bool is_left_handle)
+                                                      cp_type handle_type)
 {
-  m_left_handle = is_left_handle;
+  m_handle_type = handle_type;
   m_item = item;
   m_path_it = path_it;
   m_editor = editor;
@@ -98,7 +98,7 @@ QPointF path_control_point_handle::get_handle_center () const
     return m_drag_cur;
 
   QTransform transform = m_item->full_transform ();
-  QPointF point = m_path_it.control_point (m_left_handle);
+  QPointF point = m_path_it.control_point (m_handle_type);
   return transform.map (point);
 }
 
@@ -120,7 +120,7 @@ void path_control_point_handle::apply_drag ()
 
 void path_control_point_handle::move_point ()
 {
-  m_edit_operation->get_svg_path ()->move_control_point (m_drag_cur, m_path_it, m_left_handle);
+  m_edit_operation->get_svg_path ()->move_control_point (m_drag_cur, m_path_it, m_handle_type);
 }
 
 const svg_path_geom * path_control_point_handle::get_path () const

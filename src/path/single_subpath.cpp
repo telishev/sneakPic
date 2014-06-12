@@ -1,4 +1,5 @@
 #include "path/single_subpath.h"
+#include "svg_path_geom.h"
 
 single_subpath::single_subpath ()
 {
@@ -91,9 +92,16 @@ bool subpath_iterator::operator!= (const subpath_iterator &rhs) const
   return !(*this == rhs);
 }
 
-subpath_iterator subpath_iterator::neighbour (bool is_left) const
+subpath_iterator subpath_iterator::neighbour (cp_type type) const
 {
-  return is_left ? left () : right ();
+  switch (type)
+    {
+    case cp_type::RIGHT:
+      return right ();
+    case cp_type::LEFT:
+      return left ();
+    }
+  return {};
 }
 
 subpath_iterator subpath_iterator::left () const
@@ -126,25 +134,36 @@ const QPointF & subpath_iterator::anchor_point () const
   return const_cast<subpath_iterator *>(this)->anchor_point ();
 }
 
-QPointF &subpath_iterator::control_point (bool is_left)
+QPointF &subpath_iterator::control_point (cp_type type)
 {
   single_path_point &element = m_subpath->m_elements[m_point_num];
-  return is_left ? element.c1 : element.c2;
+  switch (type)
+    {
+    case cp_type::LEFT:
+      return element.c1;
+    case cp_type::RIGHT:
+      return element.c2;
+    }
+  return element.c1;
 }
 
-const QPointF & subpath_iterator::control_point (bool is_left) const
+const QPointF & subpath_iterator::control_point (cp_type type) const
 {
-  return const_cast<subpath_iterator *>(this)->control_point (is_left);
+  return const_cast<subpath_iterator *>(this)->control_point (type);
 }
 
-bool subpath_iterator::has_control_point (bool is_left) const
+bool subpath_iterator::has_control_point (cp_type type) const
 {
   if (m_subpath->is_closed ())
     return true;
 
-  if (is_left)
-    return m_point_num != 0;
-  else
-    return m_point_num != m_subpath->total_points () - 1;
+  switch (type)
+    {
+    case cp_type::LEFT:
+      return m_point_num != 0;
+    case cp_type::RIGHT:
+      return m_point_num != m_subpath->total_points () - 1;
+    }
+  return {};
 }
 

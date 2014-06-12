@@ -7,6 +7,7 @@
 
 class QTransform;
 class subpath_iterator;
+enum class cp_type : char;
 
 
 class single_subpath
@@ -57,16 +58,16 @@ public:
   bool is_valid () const { return m_subpath != 0;}
   size_t point_num () const { return m_point_num; }
 
-  subpath_iterator neighbour (bool is_left) const;
+  subpath_iterator neighbour (cp_type type) const;
   subpath_iterator left () const;
   subpath_iterator right () const;
 
   const QPointF &anchor_point () const;
   QPointF &anchor_point ();
 
-  const QPointF &control_point (bool is_left) const;
-  QPointF &control_point (bool is_left);
-  bool has_control_point (bool is_left) const;
+  const QPointF &control_point (cp_type type) const;
+  QPointF &control_point (cp_type type);
+  bool has_control_point (cp_type type) const;
 };
 
 

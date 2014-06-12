@@ -104,7 +104,7 @@ void path_builder::quad_to (QPointF dst, QPointF c, bool relative, bool symmetri
   QPointF c1 = (m_cur_position + 2 * c) / 3;
   QPointF c2 = (dst + 2 * c) / 3;
   curve_to (dst, c1, c2, false, symmetrical);
-  set_prev_quad_c (c); 
+  set_prev_quad_c (c);
 }
 
 void path_builder::quad_to_short (QPointF dst, bool relative)
@@ -202,8 +202,8 @@ void path_builder::set_curve_c (QPointF c)
   m_prev_is_curve = true;
   m_prev_curve_c = 2 * m_cur_position - c;
   svg_path_geom_iterator last_point = m_dst_path.get_geom ()->last_point ();
-  last_point.control_point (true) = m_prev_curve_c;
-  last_point.control_point (false) = c;
+  last_point.control_point (cp_type::LEFT) = m_prev_curve_c;
+  last_point.control_point (cp_type::RIGHT) = c;
 }
 
 bool path_builder::empty ()

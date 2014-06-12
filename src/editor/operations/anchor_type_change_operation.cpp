@@ -26,7 +26,7 @@ void anchor_type_change_operation::apply (svg_path_geom_iterator it, node_type_t
   if (node_type_array[point_index] == node_type)
     return;
 
-  if (!it.has_control_point (true) || !it.has_control_point (false))
+  if (!it.has_control_point (cp_type::LEFT) || !it.has_control_point (cp_type::RIGHT))
     return;
 
   node_type_array[point_index] = node_type;
@@ -41,23 +41,23 @@ void anchor_type_change_operation::apply (svg_path_geom_iterator it, node_type_t
 
 void anchor_type_change_operation::smooth_node (svg_path_geom_iterator it, bool symmetrize)
 {
-  line_type_change_operation (m_path).apply (it, true, false);
-  line_type_change_operation (m_path).apply (it, false, false);
+  line_type_change_operation (m_path).apply (it, cp_type::LEFT, false);
+  line_type_change_operation (m_path).apply (it, cp_type::RIGHT, false);
 
-  QPointF left = it.control_point (true) - it.anchor_point ();
-  QPointF right = it.control_point (false) - it.anchor_point ();
+  QPointF left = it.control_point (cp_type::LEFT) - it.anchor_point ();
+  QPointF right = it.control_point (cp_type::RIGHT) - it.anchor_point ();
 
   double angle_between = geom::angle_between (left, -right);
   double angle_left = geom::angle (left);
   double left_length = geom::norm (left);
   double right_length = geom::norm (right);
-  
+
   double result_angle = angle_left - angle_between * left_length / (left_length + right_length);
   if (symmetrize)
     left_length = right_length = (right_length + left_length) / 2;
 
-  it.control_point (true) = it.anchor_point () +  geom::vector_from_angle (result_angle, left_length);
-  it.control_point (false) = it.anchor_point () - geom::vector_from_angle (result_angle, right_length);
+  it.control_point (cp_type::LEFT) = it.anchor_point () +  geom::vector_from_angle (result_angle, left_length);
+  it.control_point (cp_type::RIGHT) = it.anchor_point () - geom::vector_from_angle (result_angle, right_length);
 }
 
 

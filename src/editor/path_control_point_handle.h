@@ -23,7 +23,7 @@ class path_control_point_handle : public abstract_handle
   svg_item_path *m_item;
   path_handles_editor *m_editor;
   svg_path_geom_iterator m_path_it;
-  bool m_left_handle;
+  cp_type m_handle_type;
 
   QPointF m_drag_start;
   QPointF m_drag_cur;
@@ -31,7 +31,7 @@ class path_control_point_handle : public abstract_handle
   unique_ptr<path_edit_operation> m_edit_operation;
 
 public:
-  path_control_point_handle (path_handles_editor *editor, svg_item_path *item, svg_path_geom_iterator path_it, bool is_left_handle);
+  path_control_point_handle (path_handles_editor *editor, svg_item_path *item, svg_path_geom_iterator path_it, cp_type handle_type);
   virtual ~path_control_point_handle ();
 
 protected:

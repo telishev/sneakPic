@@ -22,46 +22,47 @@ void svg_path::move_anchor (QPointF dst, svg_path_geom_iterator it)
   QPointF diff = anchor_dst - it.anchor_point ();
   it.anchor_point () = anchor_dst;
   for (int i = 0; i < 2; i++)
-    it.control_point (i == 0) += diff;
+    it.control_point (i == 0 ? cp_type::LEFT : cp_type::RIGHT) += diff;
 
   /// check if left or right element is line and change control points correspondingly
   for (int i = 0; i < 2; i++)
     {
       bool left_segment = (i == 0);
-      int element_id = it.segment_index (i == 0);
+      cp_type type = left_segment ? cp_type::LEFT : cp_type::RIGHT;
+      int element_id = it.segment_index (i == 0 ? cp_type::LEFT : cp_type::RIGHT);
       if (   element_id < 0
           || !(*m_is_line_segment)[element_id])
         continue;
 
-      it.control_point (left_segment) = anchor_dst;
-      auto neighbour = it.neighbour (left_segment);
-      neighbour.control_point (!left_segment) = neighbour.anchor_point ();
+      it.control_point (type) = anchor_dst;
+      auto neighbour = it.neighbour (type);
+      neighbour.control_point (opposite (type)) = neighbour.anchor_point ();
     }
-  
+
 }
 
-void svg_path::move_control_point (QPointF dst, svg_path_geom_iterator it, bool is_left)
+void svg_path::move_control_point (QPointF dst, svg_path_geom_iterator it, cp_type type)
 {
   QTransform transform = m_transform.inverted ();
   QPointF control_point = transform.map (dst);
-  it.control_point (is_left) = control_point;
+  it.control_point (type) = control_point;
 
-  node_type_t type = (*m_node_type)[it.point_index ()];
-  switch (type)
+  node_type_t node_type = (*m_node_type)[it.point_index ()];
+  switch (node_type)
     {
     case node_type_t::SYMMETRIC:
       {
         QPointF anchor = it.anchor_point ();
-        it.control_point (!is_left) = 2 * anchor - control_point;
+        it.control_point (opposite (type)) = 2 * anchor - control_point;
         break;
       }
     case node_type_t::SMOOTH:
       {
         QPointF anchor = it.anchor_point ();
-        QPointF another_cp = it.control_point (!is_left);
+        QPointF another_cp = it.control_point (opposite (type));
         double length = geom::distance (another_cp, anchor);
         QPointF new_cp = anchor + length * geom::direction (control_point, anchor);
-        it.control_point (!is_left) = new_cp;
+        it.control_point (opposite (type)) = new_cp;
         break;
       }
 
@@ -78,7 +79,7 @@ void svg_path::reverse_subpath (int subpath_index)
   subpath.reverse ();
   auto first_it = m_geom->subpath_begin (subpath_index);
 
-  int segment_first = first_it.segment_index (false);
+  int segment_first = first_it.segment_index (cp_type::RIGHT);
   std::reverse (m_is_line_segment->begin () + segment_first, m_is_line_segment->begin () + segment_first + subpath.total_segments ());
   std::reverse (m_node_type->begin () + first_it.point_index (), m_node_type->begin () + first_it.point_index () + subpath.total_points ());
 }

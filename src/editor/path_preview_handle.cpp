@@ -114,8 +114,8 @@ void path_preview_handle::drag_point (QPointF local_pos)
   QPointF offset0 = ((1-weight) / (3*t*(1-t)*(1-t))) * delta;
   QPointF offset1 = (weight/(3*t*t*(1-t))) * delta;
   svg_path *path = m_edit_operation->get_svg_path ();
-  path->move_control_point (full_trans.map (m_drag_it->control_point (false) + offset0), *m_drag_it, false);
-  path->move_control_point (full_trans.map (m_drag_it->right ().control_point (true) + offset1), m_drag_it->right (), true);
+  path->move_control_point (full_trans.map (m_drag_it->control_point (cp_type::RIGHT) + offset0), *m_drag_it, cp_type::RIGHT);
+  path->move_control_point (full_trans.map (m_drag_it->right ().control_point (cp_type::LEFT) + offset1), m_drag_it->right (), cp_type::LEFT);
 }
 
 void path_preview_handle::interrupt_drag ()
