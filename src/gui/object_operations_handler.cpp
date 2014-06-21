@@ -13,6 +13,8 @@
 #include "svg/items/items_comparison.h"
 #include "svg/items/svg_base_shape_item.h"
 #include "editor/operations/clip_operation.h"
+#include "editor/operations/group_objects_operation.h"
+#include "../editor/operations/ungroup_operation.h"
 
 
 
@@ -25,6 +27,8 @@ object_operations_handler::object_operations_handler (svg_painter *painter, acti
   m_actions_applier->register_action (gui_action_id::DUPLICATE_ITEM, this, &object_operations_handler::duplicate);
   m_actions_applier->register_action (gui_action_id::UNLINK_CLONE, this, &object_operations_handler::unlink);
   m_actions_applier->register_action (gui_action_id::CLIP_OBJECTS, this, &object_operations_handler::clip);
+  m_actions_applier->register_action (gui_action_id::GROUP, this, &object_operations_handler::group);
+  m_actions_applier->register_action (gui_action_id::UNGROUP, this, &object_operations_handler::ungroup);
 }
 
 object_operations_handler::~object_operations_handler ()
@@ -87,12 +91,7 @@ bool object_operations_handler::apply_for_selection (std::function<bool (abstrac
 
 bool object_operations_handler::clip ()
 {
-  items_selection *selection = m_painter->selection ();
-  if (selection->empty ())
-    return false;
-
-  std::vector<abstract_svg_item *> items (selection->begin (), selection->end ());
-  std::sort (items.begin (), items.end (), items_comparison_z_order ());
+  std::vector<abstract_svg_item *> items  = items_in_selection ();
   auto clip_item_it = std::find_if (items.begin (), items.end (), [] (abstract_svg_item *item) 
     { return dynamic_cast<svg_base_shape_item *> (item) != nullptr || item->type () == svg_item_type::USE;});
   if (clip_item_it == items.end ())
@@ -104,4 +103,32 @@ bool object_operations_handler::clip ()
   clip_operation ().apply (clip_item, items);
   m_painter->document ()->apply_changes ("Set Clip");
   return true;
+}
+
+bool object_operations_handler::group ()
+{
+  std::vector<abstract_svg_item *> items  = items_in_selection ();
+  group_objects_operation (m_painter).apply (items);
+  m_painter->document ()->apply_changes ("Group");
+  return true;
+}
+
+bool object_operations_handler::ungroup ()
+{
+  return apply_for_selection (
+    [&] (abstract_svg_item *item) {
+      ungroup_operation (m_painter).apply (item);
+      return true;
+  }, "Ungroup");
+}
+
+std::vector<abstract_svg_item *> object_operations_handler::items_in_selection () const
+{
+  items_selection *selection = m_painter->selection ();
+  if (selection->empty ())
+    return {};
+
+  std::vector<abstract_svg_item *> items (selection->begin (), selection->end ());
+  std::sort (items.begin (), items.end (), items_comparison_z_order ());
+  return items;
 }

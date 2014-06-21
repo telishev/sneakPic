@@ -83,6 +83,10 @@ void menu_builder::create_object_menu (QMenu *menu)
   add_action (menu, gui_action_id::UNLINK_CLONE);
   menu->addSeparator ();
   add_action (menu, gui_action_id::CLIP_OBJECTS);
+
+  menu->addSeparator ();
+  add_action (menu, gui_action_id::GROUP);
+  add_action (menu, gui_action_id::UNGROUP);
 }
 
 

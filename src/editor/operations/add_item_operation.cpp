@@ -13,7 +13,6 @@ add_item_operation::add_item_operation (svg_painter *painter, bool clear_selecti
 {
   m_painter = painter;
   m_clear_selection = clear_selection;
-  m_apply_style = true;
 }
 
 add_item_operation::~add_item_operation ()
@@ -30,15 +29,16 @@ bool add_item_operation::apply (abstract_svg_item *item)
     item->to_graphics_item ()->update_bbox ();
 
   auto active_layer_item = m_painter->document ()->get_layers_handler ()->get_active_layer_item ();
-  if (active_layer_item->get_computed_attribute<svg_attribute_layer_type> ()->value () == layer_type::LAYER)
-    {
-      m_painter->document ()->get_layers_handler ()->get_active_layer_item ()->push_back (item);
-      items_selection *selection = m_painter->selection ();
-      if (m_clear_selection)
-        selection->clear ();
-      selection->add_item (item);
-      return true;
-    }
+  if (m_insert_item && active_layer_item->get_computed_attribute<svg_attribute_layer_type> ()->value () != layer_type::LAYER)
+    return false;
 
-  return false;
+  if (m_insert_item)
+    active_layer_item->push_back (item);
+
+  items_selection *selection = m_painter->selection ();
+  if (m_clear_selection)
+    selection->clear ();
+
+  selection->add_item (item);
+  return true;
 }

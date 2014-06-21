@@ -174,7 +174,7 @@ public:
   const_iterator end () const;
 
   void make_orphan (abstract_svg_item *child);  // WARNING: These function does not generate proper undo, so you'd better use it in the stage before undo has any sense.
-  void adopt_orphan (abstract_svg_item *child); // --- / ---
+  void adopt_orphan (abstract_svg_item *child, int index = -1); // --- / ---
 
   void replace_item (abstract_svg_item *item, bool copy_clones = true);
   abstract_svg_item *get_original_item () const;

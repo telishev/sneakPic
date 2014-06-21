@@ -20,6 +20,9 @@ private:
   bool unlink ();
   bool apply_for_selection (std::function<bool (abstract_svg_item *)> func, QString undo_name);
   bool clip ();
+  bool group ();
+  bool ungroup ();
+  std::vector<abstract_svg_item *> items_in_selection () const;
 };
 
 #endif // OBJECT_OPERATIONS_HANDLER_H

@@ -407,13 +407,16 @@ void abstract_svg_item::make_orphan (abstract_svg_item *child)
   m_children.erase (std::remove (m_children.begin (), m_children.end (), child->undo_id ()), m_children.end ());
 }
 
-void abstract_svg_item::adopt_orphan (abstract_svg_item *child)
+void abstract_svg_item::adopt_orphan (abstract_svg_item *child, int index)
 {
   register_item_change ();
   child->register_item_change ();
   signal_layout_changed ();
   child->m_parent = undo_id ();
-  m_children.push_back (child->undo_id ());
+  if (index < 0)
+    index = (int)m_children.size ();
+
+  m_children.insert (m_children.begin () + index, child->undo_id ());
 }
 
 void abstract_svg_item::move_child (int position, abstract_svg_item *child)
