@@ -52,6 +52,7 @@
 #include "gui/gui_document.h"
 #include "editor/tools/tools_container.h"
 #include "svg/undo/undo_handler.h"
+#include "editor/selection_helpers.h"
 
 using namespace std::placeholders;
 
@@ -322,40 +323,17 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
   return *std::max_element (items.begin (), items.end (), items_comparison_z_order ());
 }
 
-bool svg_painter::do_select_item (const QPoint &pos, bool clear_selection)
+bool svg_painter::select_item (const mouse_event_t &event)
 {
-  abstract_svg_item *item = get_current_item (pos);
-
-  if (item != nullptr && m_selection->contains (item->name ()) && clear_selection && m_gui_document->get_tools_container ()->current_tool_id () == gui_action_id::TOOL_SELECTOR)
-    {
-      emit switch_transform_handles_request ();
-      return true;
-    }
-
-  if (clear_selection)
-    m_selection->clear ();
-
-  if (item != nullptr)
-    {
-      if (m_selection->contains (item->name ()) && !clear_selection)
-        m_selection->remove_item (item);
-      else
-        m_selection->add_item (item);
-    }
-
+  bool add_to_selection = contains_modifier (event.modifier (), keyboard_modifier::SHIFT);
+  selection_helpers (m_selection).select (get_current_item (event.pos ()), add_to_selection);
   canvas_widget ()->update ();
   return true;
-}
-
-bool svg_painter::select_item (const QPoint &pos)
-{
-  return do_select_item (pos, true);
 }
 
 void svg_painter::create_mouse_shortcuts ()
 {
   m_actions_applier->add_shortcut (mouse_shortcut_t::SELECT_ITEM, this, &svg_painter::select_item);
-  m_actions_applier->add_shortcut (mouse_shortcut_t::ADD_ITEM_TO_SELECTION, this, &svg_painter::add_item_to_selection);
   m_actions_applier->add_shortcut (mouse_shortcut_t::FIND_CURRENT_OBJECT, this, &svg_painter::find_current_object);
 
   m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::PAN, this,
@@ -652,11 +630,6 @@ bool svg_painter::process_mouse_event (const mouse_event_t &event, mouse_shortcu
       return true;
 
   return m_actions_applier->apply_action (event, action);
-}
-
-bool svg_painter::add_item_to_selection (const QPoint &pos)
-{
-  return do_select_item (pos, false);
 }
 
 style_controller * svg_painter::get_style_controller () const

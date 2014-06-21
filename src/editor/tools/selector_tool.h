@@ -9,6 +9,9 @@ class rubberband_selection;
 class items_move_handler;
 class overlay_renderer;
 class transform_handles_editor;
+class mouse_event_t;
+class QPoint;
+class abstract_svg_item;
 
 class selector_tool : public abstract_tool
 {
@@ -29,8 +32,9 @@ private:
 
   void update_handles ();
   virtual void configure ();
-private slots:
   void change_handles_type ();
+  bool select_object (const mouse_event_t &event);
+  abstract_svg_item *get_item_or_group_for_pos (const QPoint &pos) const;
 };
 
 #endif // SELECTOR_TOOL_H

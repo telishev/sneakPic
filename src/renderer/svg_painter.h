@@ -80,7 +80,6 @@ signals:
   void zoom_description_changed (const QString &description);
   void color_picked (const QColor &color);
   void selection_changed_signal ();
-  void switch_transform_handles_request ();
 
 private slots:
   void items_changed ();
@@ -101,9 +100,7 @@ private:
   void reset_transform ();
   void send_changes (bool interrrupt_rendering);
   void update_drawing (QTransform transform);
-  bool do_select_item (const QPoint &pos, bool clear_selection);
-  bool select_item (const QPoint &pos);
-  bool add_item_to_selection (const QPoint &pos);
+  bool select_item (const mouse_event_t &event);
 
   void create_mouse_shortcuts ();
   bool start_pan (const QPoint &pos);
