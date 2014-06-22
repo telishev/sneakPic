@@ -92,8 +92,6 @@ void path_preview_handle::draw (SkCanvas &canvas, const renderer_state &state, c
   return renderer.draw (canvas, state, config);
 }
 
-static inline double cubed (double x) { return x * x * x; }
-
 void path_preview_handle::drag_point (QPointF local_pos)
 {
   QTransform full_trans = m_item->full_transform ();

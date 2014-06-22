@@ -28,6 +28,8 @@ public:
   path_preview_handle (path_handles_editor *editor, svg_item_path *item);
   virtual ~path_preview_handle ();
 
+  svg_item_path *get_path_item () const { return m_item; }
+
 protected:
   virtual int distance_to_mouse (QPoint screen_pos, QTransform transform) const override;
   virtual void set_mouse_hovered (bool hovered) override;

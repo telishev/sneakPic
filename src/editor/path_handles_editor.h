@@ -36,6 +36,7 @@ private:
   path_anchor_handle *get_path_anchor (const QPoint &pos) const;
   bool deselect_handles ();
   void deselect_other ();
+  bool add_anchor_point (const QPoint &pos);
 };
 
 #endif // PATH_HANDLES_EDITOR_H

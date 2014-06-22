@@ -29,6 +29,8 @@
 #include "path/svg_path.h"
 #include "operations/remove_anchors_operation.h"
 #include "svg/items/svg_items_container.h"
+#include "path/path_nearest_point.h"
+#include "operations/add_anchor_operation.h"
 
 class path_elements_handles : public element_handles
 {
@@ -150,6 +152,7 @@ path_handles_editor::path_handles_editor (overlay_renderer *overlay, svg_painter
 
   m_applier->add_shortcut (mouse_shortcut_t::SELECT_HANDLE, this, &path_handles_editor::select_handle);
   m_applier->add_shortcut (mouse_shortcut_t::CHANGE_HANDLE_TYPE, this, &path_handles_editor::change_handle);
+  m_applier->add_shortcut (mouse_shortcut_t::ADD_PATH_POINT, this, &path_handles_editor::add_anchor_point);
   m_applier->register_action (gui_action_id::DELETE_HANDLES, this, &path_handles_editor::delete_selected_handles);
   m_applier->register_action (gui_action_id::DESELECT_HANDLES, this, &path_handles_editor::deselect_handles);
 }
@@ -317,4 +320,31 @@ void path_handles_editor::deselect_other ()
   m_disable_deselect = true;
   m_applier->apply_action (gui_action_id::DESELECT_HANDLES);
   m_disable_deselect = false;
+}
+
+bool path_handles_editor::add_anchor_point (const QPoint &pos)
+{
+  abstract_handle *handle = get_handle_by_pos (pos);
+  if (!handle)
+    return false;
+
+  path_preview_handle *preview = dynamic_cast<path_preview_handle *> (handle);
+  if (!preview)
+    return false;
+
+  {
+    path_nearest_point nearest_calc;
+    path_edit_operation edit_op (preview->get_path_item ());
+    QTransform transform (m_painter->cur_transform ());
+    double point_t = 0.0;
+    svg_path_geom_iterator it;
+
+    nearest_calc.get_nearest_point (pos, preview->get_path_item ()->full_transform () * transform,
+                                    edit_op.get_svg_path ()->get_geom (), &point_t, &it);
+
+    add_anchor_operation (edit_op.get_svg_path ()).apply (it, point_t);
+  }
+  m_painter->document ()->apply_changes ("Add Anchor");
+  m_painter->update ();
+  return true;
 }
