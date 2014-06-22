@@ -64,7 +64,7 @@ public:
     base_gradient_handle *current_selection = m_handles_editor->current_selection ();
     for (auto && data : data_map)
       {
-        if (data.first != style_controller_role_t::CURRENT_COLOR || !current_selection)
+        if (data.first != (int)style_controller_role_t::CURRENT_COLOR || !current_selection)
           continue;
 
         current_selection->set_current_color (data.second.value<QColor> ());
@@ -72,7 +72,7 @@ public:
       }
   }
 
-  void emit_data_changed () {emit data_changed ({style_controller_role_t::CURRENT_COLOR}); }
+  void emit_data_changed () {emit data_changed ({(int)style_controller_role_t::CURRENT_COLOR}); }
 };
 
 gradient_handles_editor::gradient_handles_editor (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)

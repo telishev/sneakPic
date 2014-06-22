@@ -9,6 +9,7 @@
 #include <QColor>
 
 #include "skia/skia_includes.h"
+#include "common/range_algorithm.h"
 
 
 abstract_renderer_item::abstract_renderer_item (const string &name)
@@ -30,7 +31,7 @@ void abstract_renderer_item::push_back_child (const string &child)
 
 void abstract_renderer_item::erase_child (const string &child)
 {
-  m_children.erase (std::remove (m_children.begin (), m_children.end (), child), m_children.end ());
+  range::erase (m_children, child);
 }
 
 bool abstract_renderer_item::configure_painter_for_selection (SkPaint &paint) const

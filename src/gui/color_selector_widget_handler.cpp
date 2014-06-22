@@ -171,6 +171,6 @@ void color_selector_widget_handler::create_cmyk_widget ()
 
 void color_selector_widget_handler::register_color_selector (color_selector *selector)
 {
-  m_view->add_gui_widget (style_controller_role_t::CURRENT_COLOR_TEMP, new color_selector_gui_widget (selector, true));
-  m_view->add_gui_widget (style_controller_role_t::CURRENT_COLOR, new color_selector_gui_widget (selector, false));
+  m_view->add_gui_widget ((int)style_controller_role_t::CURRENT_COLOR_TEMP, new color_selector_gui_widget (selector, true));
+  m_view->add_gui_widget ((int)style_controller_role_t::CURRENT_COLOR, new color_selector_gui_widget (selector, false));
 }

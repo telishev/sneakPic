@@ -10,6 +10,7 @@
 #include "gradient_handles_editor.h"
 #include "svg/items/abstract_svg_item.h"
 #include "gui/mouse_shortcut.h"
+#include "common/range_algorithm.h"
 
 
 
@@ -126,7 +127,7 @@ bool base_gradient_handle::end_drag (QPointF local_pos, QTransform transform, ke
 std::pair<std::string, int> base_gradient_handle::get_selection_id () const
 {
   auto handles = m_handle->handles ();
-  auto it = std::find (handles.begin (), handles.end (), this);
+  auto it = range::find (handles, this);
   DEBUG_ASSERT (it != handles.end ());
 
   return std::make_pair (m_handle->item ()->name (), (int)(it - handles.begin ()));

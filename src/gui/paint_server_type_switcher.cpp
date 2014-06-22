@@ -86,9 +86,9 @@ public:
         item_paint_server server = current_server ();
         server.set_current_type (role.first);
         if (is_selected_fill ())
-          changer->set_data (style_controller_role_t::FILL_SERVER, QVariant::fromValue (server));
+          changer->set_data ((int)style_controller_role_t::FILL_SERVER, QVariant::fromValue (server));
         else
-          changer->set_data (style_controller_role_t::STROKE_SERVER, QVariant::fromValue (server));
+          changer->set_data ((int)style_controller_role_t::STROKE_SERVER, QVariant::fromValue (server));
       }
   }
 
@@ -96,7 +96,7 @@ private slots:
   void data_changed_slot (const std::set<int> &changes)
   {
     using s = style_controller_role_t;
-    std::set<int> roles = {s::FILL_SERVER, s::STROKE_SERVER, s::IS_SELECTED_FILL};
+    std::set<int> roles = {(int)s::FILL_SERVER, (int)s::STROKE_SERVER, (int)s::IS_SELECTED_FILL};
     if (std::find_if (changes.begin (), changes.end (), [&] (int val) {return roles.count (val) > 0;}) == changes.end ())
       return;
 
@@ -117,11 +117,12 @@ private:
     return result;
   }
 
-  bool is_selected_fill () const { return m_base_model->data (style_controller_role_t::IS_SELECTED_FILL).toBool (); }
+  bool is_selected_fill () const { return m_base_model->data ((int)style_controller_role_t::IS_SELECTED_FILL).toBool (); }
 
   item_paint_server current_server () const 
   {
-    QVariant data = is_selected_fill () ? m_base_model->data (style_controller_role_t::FILL_SERVER) : m_base_model->data (style_controller_role_t::STROKE_SERVER) ;
+    QVariant data = is_selected_fill () ? m_base_model->data ((int)style_controller_role_t::FILL_SERVER)
+                                        : m_base_model->data ((int)style_controller_role_t::STROKE_SERVER) ;
     return data.value<item_paint_server> ();
   }
 

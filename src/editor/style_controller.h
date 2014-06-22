@@ -12,7 +12,7 @@ class item_paint_style;
 class svg_painter;
 class item_paint_server;
 
-enum style_controller_role_t : int
+enum class style_controller_role_t
 {
   /// stroke_config
   STROKE_WIDTH, /// double

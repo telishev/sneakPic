@@ -4,6 +4,7 @@
 #include "path/svg_path.h"
 #include "svg/attributes/svg_attribute_nodetypes.h"
 #include "path/path_approximation.h"
+#include "common/range_algorithm.h"
 
 template<typename T, typename Func>
 typename vector<T>::iterator remove_iter_if (vector<T> &vec, Func functor)
@@ -138,6 +139,5 @@ void remove_anchors_operation::remove_from_geom (const set<svg_path_geom_iterato
       elements.erase (remove_iter_if (elements, need_to_del), elements.end ());
     }
 
-  subpath_vec.erase (std::remove_if (subpath_vec.begin (), subpath_vec.end (),
-    [] (const single_subpath &subpath) { return subpath.total_points () == 0; }), subpath_vec.end ());
+  range::erase_if (subpath_vec, [] (const single_subpath &subpath) { return subpath.total_points () == 0; });
 }

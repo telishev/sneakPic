@@ -19,27 +19,36 @@
 #include <unordered_map>
 #include <string.h>
 
-template <typename T>
-int enum_values_count_template (decltype (enum_values_count (T ())))
-{
-  return enum_values_count (T ());
-}
+template<typename T>
+static inline
+int enum_values_count (T , decltype(T::COUNT) = T{}) { return (int)T::COUNT; }
 
-template <typename T>
-int enum_values_count_template (...)
-{
-  return -1;
-}
+static inline
+int enum_values_count (...) { return -1; }
 
 template <typename E>
-class enum_helper
+class enum_helper_count
+{
+  int count;
+public:
+  enum_helper_count () { count = enum_values_count (E ()); }
+  int get_count () { return count; }
+  static enum_helper_count self;
+};
+
+template <typename E>
+enum_helper_count<E> enum_helper_count<E>::self;
+
+template <typename E>
+class enum_helper_string
 {
   std::unordered_map<string, E> enum_map;
   int count;
 public:
-  enum_helper ()
+
+  enum_helper_string ()
   {
-    count = enum_values_count_template<E> (0);
+    count = enum_values_count (E ());
     int i = 0;
     while ((count < 0) || (i < count))
       {
@@ -69,22 +78,34 @@ public:
       return (E) count;
   }
 
-  static enum_helper self;
+  static enum_helper_string self;
 };
 
 template <typename E>
-enum_helper<E> enum_helper<E>::self;
+enum_helper_string<E> enum_helper_string<E>::self;
+
+template<typename E>
+enum_helper_string<E> &get_enum_helper (E, decltype (enum_to_string (E ())) = nullptr)
+{
+  return enum_helper_string<E>::self;
+}
+
+template<typename E>
+enum_helper_count<E> &get_enum_helper (E, ...)
+{
+  return enum_helper_count<E>::self;
+}
 
 template <typename E>
 static E string_to_enum (const char *string)
 {
-  return enum_helper<E>::self.get_enum_value (string);
+  return get_enum_helper (E (), nullptr).get_enum_value (string);
 }
 
 template <typename E>
 static int enum_count ()
 {
-  return enum_helper<E>::self.get_count ();
+  return get_enum_helper (E (), nullptr).get_count ();
 }
 
 template <typename E>
@@ -96,7 +117,7 @@ static E process_string_fixed_length_to_enum (const char *&string, int length)
   string_in_question[length] = '\0';
   const char *trimmed_string_in_question = string_in_question;
 
-  E res = enum_helper<E>::self.get_enum_value (trimmed_string_in_question);
+  E res = get_enum_helper (E (), nullptr).get_enum_value (trimmed_string_in_question);
   FREE_ARRAY (string_in_question);
   string += length;
   return res;

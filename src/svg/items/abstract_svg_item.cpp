@@ -19,6 +19,7 @@
 #include "svg/undo/undo_handler.h"
 #include "svg/simple_item_observer.h"
 #include "svg/attributes/svg_attribute_factory.h"
+#include "common/range_algorithm.h"
 
 class svg_item_state : public abstract_state_t
 {
@@ -385,7 +386,7 @@ void abstract_svg_item::remove_child (abstract_svg_item *child)
   register_item_change ();
   signal_child_removed (child->name (), child->child_index ());
   child->signal_item_removed ();
-  m_children.erase (std::remove (m_children.begin (), m_children.end (), child->undo_id ()), m_children.end ());
+  range::erase (m_children, child->undo_id ());
   child->prepare_to_remove ();
   m_document->get_undo_handler ()->remove_item (child->undo_id ());
 }
@@ -404,7 +405,7 @@ void abstract_svg_item::make_orphan (abstract_svg_item *child)
   child->register_item_change ();
   signal_layout_changed ();
   child->m_parent = 0;
-  m_children.erase (std::remove (m_children.begin (), m_children.end (), child->undo_id ()), m_children.end ());
+  range::erase (m_children, child->undo_id ());
 }
 
 void abstract_svg_item::adopt_orphan (abstract_svg_item *child, int index)

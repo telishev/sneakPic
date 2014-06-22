@@ -2,6 +2,7 @@
 
 #include "svg_path_geom.h"
 #include "svg/attributes/svg_attribute_nodetypes.h"
+#include "common/enum_range.h"
 
 svg_path::svg_path (svg_path_geom *geom, vector<bool> *is_line_segment, vector<node_type_t> *node_type, QTransform transform)
 {
@@ -21,15 +22,13 @@ void svg_path::move_anchor (QPointF dst, svg_path_geom_iterator it)
   QPointF anchor_dst = transform.map (dst);
   QPointF diff = anchor_dst - it.anchor_point ();
   it.anchor_point () = anchor_dst;
-  for (int i = 0; i < 2; i++)
-    it.control_point (i == 0 ? cp_type::LEFT : cp_type::RIGHT) += diff;
+  for (cp_type type : enum_range<cp_type> ())
+    it.control_point (type) += diff;
 
   /// check if left or right element is line and change control points correspondingly
-  for (int i = 0; i < 2; i++)
+  for (cp_type type : enum_range<cp_type> ())
     {
-      bool left_segment = (i == 0);
-      cp_type type = left_segment ? cp_type::LEFT : cp_type::RIGHT;
-      int element_id = it.segment_index (i == 0 ? cp_type::LEFT : cp_type::RIGHT);
+      int element_id = it.segment_index (type);
       if (   element_id < 0
           || !(*m_is_line_segment)[element_id])
         continue;

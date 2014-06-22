@@ -1,6 +1,7 @@
 #include "multi_gui_model.h"
 
 #include "connection.h"
+#include "common/range_algorithm.h"
 
 multi_gui_model::multi_gui_model ()
 {
@@ -51,5 +52,5 @@ bool multi_gui_model::is_available (gui_model *model) const
 
 void multi_gui_model::remove_model (gui_model *model)
 {
-  m_models.erase (std::remove (m_models.begin (), m_models.end (), model), m_models.end ());
+  range::erase (m_models, model);
 }

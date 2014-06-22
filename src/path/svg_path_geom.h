@@ -12,6 +12,8 @@ enum class cp_type : char // control point type
   LEFT,
 };
 
+static inline int enum_values_count (cp_type) { return (int)cp_type::LEFT + 1; }
+
 inline cp_type opposite (cp_type type)
 {
   switch (type)

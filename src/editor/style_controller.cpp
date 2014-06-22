@@ -89,8 +89,8 @@ void style_controller::set_model_data (const std::map<int, QVariant> &data_map)
   stroke_config &stroke_cfg = style.stroke_cfg ();
   bool need_apply = std::find_if (data_map.begin (), data_map.end (),
                                   [] (const pair<int, QVariant> &val)
-                                       { return    val.first != style_controller_role_t::CURRENT_COLOR_TEMP
-                                                && val.first != style_controller_role_t::IS_SELECTED_FILL; }) != data_map.end ();
+                                       { return    val.first != (int)style_controller_role_t::CURRENT_COLOR_TEMP
+                                                && val.first != (int)style_controller_role_t::IS_SELECTED_FILL; }) != data_map.end ();
 
   bool stroke_changed = false;
   bool color_changed = false;
@@ -102,7 +102,7 @@ void style_controller::set_model_data (const std::map<int, QVariant> &data_map)
   for (auto &&data_pair : data_map)
     {
       QVariant value = data_pair.second;
-      switch (data_pair.first)
+      switch ((style_controller_role_t)data_pair.first)
         {
         case style_controller_role_t::STROKE_WIDTH: stroke_cfg.set_width (value.toDouble ()); stroke_changed = true; break;
         case style_controller_role_t::STROKE_MITER: stroke_cfg.set_miterlimit (value.toDouble ()); stroke_changed = true; break;
@@ -113,6 +113,7 @@ void style_controller::set_model_data (const std::map<int, QVariant> &data_map)
         case style_controller_role_t::IS_SELECTED_FILL: m_is_selected_fill = value.toBool (); update_set.insert (all_items.begin (), all_items.end ()); break;
         case style_controller_role_t::FILL_SERVER: style.fill () = value.value<item_paint_server> (); color_changed = true; fill_color_changed = true; break;
         case style_controller_role_t::STROKE_SERVER: style.stroke () = value.value<item_paint_server> (); color_changed = true; stroke_color_changed = true; break;
+        case style_controller_role_t::COUNT: break;
         }
     }
 
@@ -128,10 +129,10 @@ void style_controller::set_model_data (const std::map<int, QVariant> &data_map)
       if (stroke_color_changed)
         style.stroke ().apply_to_selection (selection, false);
 
-      update_set.insert (style_controller_role_t::CURRENT_COLOR);
-      update_set.insert (style_controller_role_t::CURRENT_COLOR_TEMP);
-      update_set.insert (style_controller_role_t::FILL_SERVER);
-      update_set.insert (style_controller_role_t::STROKE_SERVER);
+      update_set.insert ((int)style_controller_role_t::CURRENT_COLOR);
+      update_set.insert ((int)style_controller_role_t::CURRENT_COLOR_TEMP);
+      update_set.insert ((int)style_controller_role_t::FILL_SERVER);
+      update_set.insert ((int)style_controller_role_t::STROKE_SERVER);
     }
 
   if (need_apply)
@@ -149,7 +150,8 @@ void style_controller::send_items_changed ()
 std::set<int> style_controller::all_items_set () const
 {
   using g = style_controller_role_t;
-  return {g::STROKE_WIDTH, g::STROKE_MITER, g::LINECAP, g::LINEJOIN, g::CURRENT_COLOR, g::CURRENT_COLOR_TEMP, g::FILL_SERVER, g::STROKE_SERVER};
+  return {(int)g::STROKE_WIDTH, (int)g::STROKE_MITER, (int)g::LINECAP, (int)g::LINEJOIN, (int)g::CURRENT_COLOR,
+          (int)g::CURRENT_COLOR_TEMP, (int)g::FILL_SERVER, (int)g::STROKE_SERVER};
 }
 
 void style_controller::set_current_style (selected_style /*style*/)
