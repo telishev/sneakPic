@@ -28,6 +28,7 @@
 #include "multi_gui_model.h"
 #include "path_operations_handler.h"
 #include "object_operations_handler.h"
+#include "svg/items/abstract_svg_item.h"
 
 
 gui_document::gui_document (settings_t *settings, gui_actions *actions, style_controller *controller, multi_gui_model *color_model)
@@ -141,16 +142,23 @@ bool gui_document::copy ()
   return true;
 }
 
-
 bool gui_document::cut ()
 {
-  if (m_painter->selection ()->empty ())
+  items_selection *selection = m_painter->selection ();
+  if (selection->empty ())
     return false;
 
   m_copy_paste_handler->copy ();
-  return m_painter->remove_items_in_selection ();
-}
+  for (auto item : *selection)
+    {
+      if (item && item->parent ())
+        item->parent ()->remove_child (item);
+    }
 
+  selection->clear ();
+  m_doc->apply_changes ("Cut");
+  return true;
+}
 
 void gui_document::tool_changed ()
 {

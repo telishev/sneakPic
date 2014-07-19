@@ -25,9 +25,9 @@ class svg_document;
 class svg_items_container;
 class style_controller;
 class gui_document;
+class selection_actions;
 
 enum class gui_action_id;
-enum class z_direction;
 
 class svg_painter : public abstract_painter
 {
@@ -54,6 +54,7 @@ class svg_painter : public abstract_painter
 
   QPointF m_color_picker_pos;
   unique_ptr<renderer_overlay_path> m_color_picker_area_preview;
+  unique_ptr<selection_actions> m_selection_actions;
 
 public:
   svg_painter (canvas_widget_t *canvas_widget, rendered_items_cache *cache, events_queue *queue, svg_document *document, settings_t *settings, gui_document *gui_doc);
@@ -68,6 +69,7 @@ public:
   QTransform cur_transform () const { return m_cur_transform; }
   style_controller *get_style_controller () const;
   gui_document *get_gui_document () const { return m_gui_document; }
+  actions_applier *get_actions_applier () const { return m_actions_applier; }
 
   abstract_svg_item *get_current_item (const QPoint &pos);
   QPointF get_local_pos (const QPointF &mouse_pos) const;
@@ -75,7 +77,6 @@ public:
 
   void redraw ();
   bool action_triggered (gui_action_id id);
-  bool remove_items_in_selection ();
 signals:
   void zoom_description_changed (const QString &description);
   void color_picked (const QColor &color);
@@ -100,9 +101,7 @@ private:
   void reset_transform ();
   void send_changes (bool interrrupt_rendering);
   void update_drawing (QTransform transform);
-  bool select_item (const mouse_event_t &event);
 
-  void create_mouse_shortcuts ();
   bool start_pan (const QPoint &pos);
   bool pan_picture (const QPoint &pos);
   bool end_pan (const QPoint &/*pos*/) { return true; }
@@ -114,9 +113,6 @@ private:
   bool pick_color_drag (const QPoint &pos);
   bool pick_color_end (const QPoint &pos);
   bool pick_color_click (const QPoint &pos);
-  bool raise_object ();
-  bool lower_object ();
-  void move_selected_items_by_z (z_direction direction);
 };
 
 #endif // SVG_PAINTER_H

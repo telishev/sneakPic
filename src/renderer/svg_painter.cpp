@@ -52,7 +52,7 @@
 #include "gui/gui_document.h"
 #include "editor/tools/tools_container.h"
 #include "svg/undo/undo_handler.h"
-#include "editor/selection_helpers.h"
+#include "editor/selection_actions.h"
 
 using namespace std::placeholders;
 
@@ -72,17 +72,19 @@ svg_painter::svg_painter (canvas_widget_t *canvas_widget, rendered_items_cache *
   m_actions_applier = new actions_applier;
   m_mouse_handler = new mouse_shortcuts_handler (m_settings->shortcuts_cfg (),
                                                  std::bind (&svg_painter::process_mouse_event, this, _1, _2));
+
+  put_in (m_selection_actions, this);
+
   update_status_bar_widgets ();
   set_document (document);
 
   CONNECT (m_selection, &items_selection::selection_changed, this, &svg_painter::selection_changed);
 
-  create_mouse_shortcuts ();
-  m_actions_applier->register_action (gui_action_id::DELETE_ITEMS, this, &svg_painter::remove_items_in_selection);
+  
+  m_actions_applier->add_shortcut (mouse_shortcut_t::FIND_CURRENT_OBJECT, this, &svg_painter::find_current_object);
+  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::PAN, this, &svg_painter::start_pan, &svg_painter::pan_picture, &svg_painter::end_pan);
   m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::COLOR_PICKER_DRAG, this, &svg_painter::pick_color_start, &svg_painter::pick_color_drag, &svg_painter::pick_color_end);
   m_actions_applier->add_shortcut (mouse_shortcut_t::COLOR_PICKER_CLICK, this, &svg_painter::pick_color_click);
-  m_actions_applier->register_action (gui_action_id::RAISE_OBJECT, this, &svg_painter::raise_object);
-  m_actions_applier->register_action (gui_action_id::LOWER_OBJECT, this, &svg_painter::lower_object);
   m_color_picker_area_preview.reset (new renderer_overlay_path ());
   m_color_picker_area_preview->set_color (Qt::white);
   m_color_picker_area_preview->set_xfer_mode (SkXfermode::Mode::kDifference_Mode);
@@ -323,23 +325,6 @@ abstract_svg_item *svg_painter::get_current_item (const QPoint &pos)
   return *std::max_element (items.begin (), items.end (), items_comparison_z_order ());
 }
 
-bool svg_painter::select_item (const mouse_event_t &event)
-{
-  bool add_to_selection = contains_modifier (event.modifier (), keyboard_modifier::SHIFT);
-  selection_helpers (m_selection).select (get_current_item (event.pos ()), add_to_selection);
-  canvas_widget ()->update ();
-  return true;
-}
-
-void svg_painter::create_mouse_shortcuts ()
-{
-  m_actions_applier->add_shortcut (mouse_shortcut_t::SELECT_ITEM, this, &svg_painter::select_item);
-  m_actions_applier->add_shortcut (mouse_shortcut_t::FIND_CURRENT_OBJECT, this, &svg_painter::find_current_object);
-
-  m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::PAN, this,
-    &svg_painter::start_pan, &svg_painter::pan_picture, &svg_painter::end_pan);
-}
-
 bool svg_painter::start_pan (const QPoint &pos)
 {
   m_last_transform = m_cur_transform;
@@ -372,7 +357,6 @@ bool svg_painter::find_current_object (const QPoint &pos)
 
   return false;
 }
-
 
 void svg_painter::create_overlay_containers ()
 {
@@ -471,156 +455,6 @@ bool svg_painter::action_triggered (gui_action_id id)
       return true;
 
   return m_actions_applier->apply_action (id);
-}
-
-enum class z_direction {
-  UP,
-  DOWN,
-};
-
-void svg_painter::move_selected_items_by_z (z_direction direction)
-{
-  if (m_selection->count () == 0)
-    return;
-
-  // copy selection
-  vector<svg_graphics_item *> selection_graphic_items;
-  for (auto item : *m_selection)
-    {
-      auto graphics_item = item->to_graphics_item ();
-      selection_graphic_items.push_back (graphics_item);
-    }
-
-  if (selection_graphic_items.size () == 0)
-    return;
-
-  abstract_svg_item *parent_item = selection_graphic_items[0]->parent ();
-
-  if (!parent_item)
-    return;
-
-  for (auto && item : selection_graphic_items)
-    {
-      if (item->parent () != parent_item)
-        return; // if parents are different - do nothing
-    }
-
-  // otherwise - sort by depth according to direction
-  sort (selection_graphic_items.begin (), selection_graphic_items.end (), [&] (abstract_svg_item * itemA, abstract_svg_item * itemB)
-  {
-    bool less = (itemA->child_index () < itemB->child_index ());
-    return (direction == z_direction::DOWN) ? !less : less;
-  });
-  // for example for down direction we are checking top-most item first:
-
-  int limit_index = 0;
-
-  // for each element finding element that lies between them and previous in the list which is appropriate for moving (intersects bounding box of our item)
-  for (auto it = selection_graphic_items.begin (); it != selection_graphic_items.end (); ++it)
-    {
-      if (it + 1 == selection_graphic_items.end ())
-        {
-          switch (direction)
-            {
-            case z_direction::UP:
-              limit_index = (int) parent_item->children_count ();
-              break;
-            case z_direction::DOWN:
-              limit_index = -1;
-              break;
-            }
-        }
-      else
-        limit_index = (* (it + 1))->child_index ();
-
-      auto has_intersection = [&] (int index) {
-                                                 svg_graphics_item *graphics_item = parent_item->child (index)->to_graphics_item ();
-                                                 return graphics_item ? graphics_item->bbox ().intersects ((*it)->bbox ()) : false;
-                                              };
-      int found_index = -1;
-      switch (direction)
-        {
-        case z_direction::UP:
-          {
-            for (int i = (*it)->child_index () + 1; i < limit_index; i++)
-            {
-              if (has_intersection (i))
-              {
-                found_index = i;
-                break;
-              }
-            }
-          }
-          break;
-        case z_direction::DOWN:
-          {
-            for (int i = (*it)->child_index () - 1; i > limit_index; i--)
-            {
-
-              if (has_intersection (i))
-              {
-                found_index = i;
-                break;
-              }
-            }
-          }
-          break;
-        }
-      if (found_index != -1)
-        {
-          switch (direction)
-            {
-            case z_direction::UP:
-              parent_item->move_child (found_index + 1, *it);
-              break;
-            case z_direction::DOWN:
-              parent_item->move_child (found_index, *it);
-              break;
-            }
-
-        }
-    }
-}
-
-bool svg_painter::lower_object ()
-{
-  move_selected_items_by_z (z_direction::DOWN);
-  document ()->apply_changes ("Lower");
-  return true;
-}
-
-bool svg_painter::raise_object ()
-{
-  move_selected_items_by_z (z_direction::UP);
-  document ()->apply_changes ("Raise");
-  return true;
-}
-
-bool svg_painter::remove_items_in_selection ()
-{
-  if (m_selection->count () == 0)
-    return true;
-
-  std::vector<int> selected_id;
-
-  for (auto item : *m_selection)
-    {
-      if (!item)
-        continue;
-
-      selected_id.push_back (item->undo_id ());
-    }
-
-  for (int id : selected_id)
-    {
-      abstract_svg_item *item = dynamic_cast<abstract_svg_item *> (m_document->get_undo_handler ()->get_item (id));
-      if (item && item->parent ())
-        item->parent ()->remove_child (item);
-    }
-
-  m_selection->clear ();
-  document ()->apply_changes ("Remove");
-  return true;
 }
 
 bool svg_painter::process_mouse_event (const mouse_event_t &event, mouse_shortcut_enum_union action)
