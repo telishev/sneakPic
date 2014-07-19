@@ -16,6 +16,10 @@
 #include "editor/items_selection.h"
 
 #include "editor/operations/raise_lower_objects_operation.h"
+#include "operations/get_items_for_point_operation.h"
+#include "item_helpers.h"
+#include "common/range_algorithm.h"
+#include "svg/items/items_comparison.h"
 
 
 selection_actions::selection_actions (svg_painter *painter)
@@ -27,6 +31,7 @@ selection_actions::selection_actions (svg_painter *painter)
   applier->register_action (gui_action_id::DELETE_ITEMS, this, &selection_actions::remove_items_in_selection);
   applier->register_action (gui_action_id::RAISE_OBJECT, this, &selection_actions::raise_object);
   applier->register_action (gui_action_id::LOWER_OBJECT, this, &selection_actions::lower_object);
+  applier->add_shortcut (mouse_shortcut_t::SELECT_PREV_ITEM, this, &selection_actions::select_prev_item);
 
 }
 
@@ -38,7 +43,12 @@ selection_actions::~selection_actions ()
 bool selection_actions::select_item (const mouse_event_t &event)
 {
   bool add_to_selection = contains_modifier (event.modifier (), keyboard_modifier::SHIFT);
-  selection_helpers (m_painter->selection ()).select (m_painter->get_current_item (event.pos ()), add_to_selection);
+  abstract_svg_item *item = m_painter->get_current_item (event.pos ());
+  selection_type_t selection_type = m_painter->current_selection_type ();
+  const abstract_svg_item *selectable_item = item_helpers (m_painter->document ()).get_selectable_item_or_group (item, selection_type);
+  if (!selection_helpers (m_painter->selection ()).select (selectable_item, add_to_selection))
+    return false;
+
   m_painter->canvas_widget ()->update ();
   return true;
 }
@@ -76,5 +86,23 @@ bool selection_actions::remove_items_in_selection ()
   selection->clear ();
   m_painter->document ()->apply_changes ("Remove");
   return true;
+}
+
+bool selection_actions::select_prev_item (const mouse_event_t &event)
+{
+  bool add_to_selection = contains_modifier (event.modifier (), keyboard_modifier::SHIFT);
+  
+  get_items_for_point_operation op (m_painter->document (), m_painter->current_selection_type ());
+  QPointF local_pos = m_painter->get_local_pos (event.pos ());
+  const abstract_svg_item *new_item = op.get_prev_item_for_point (get_lowest_selected_item (), local_pos);
+
+  selection_helpers (m_painter->selection ()).select (new_item, add_to_selection);
+  m_painter->canvas_widget ()->update ();
+  return true;
+}
+
+const abstract_svg_item * selection_actions::get_lowest_selected_item () const
+{
+  return *range::min_element (*m_painter->selection (), items_comparison_z_order ());
 }
 

@@ -53,6 +53,7 @@
 #include "editor/tools/tools_container.h"
 #include "svg/undo/undo_handler.h"
 #include "editor/selection_actions.h"
+#include "editor/item_helpers.h"
 
 using namespace std::placeholders;
 
@@ -469,5 +470,13 @@ bool svg_painter::process_mouse_event (const mouse_event_t &event, mouse_shortcu
 style_controller * svg_painter::get_style_controller () const
 {
   return m_gui_document->get_style_controller ();
+}
+
+selection_type_t svg_painter::current_selection_type () const
+{
+  if (!m_current_tool)
+    return selection_type_t::SELECT_ONLY_ITEMS;
+
+  return m_current_tool->selection_type ();
 }
 

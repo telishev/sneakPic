@@ -48,31 +48,6 @@ void items_selection::clear ()
   emit selection_changed ();
 }
 
-void items_selection::add_items_for_rect (const QRectF &rect, const abstract_svg_item *root)
-{
-  const svg_graphics_item *graphics_item = root->to_graphics_item ();
-  if (!graphics_item)
-    return;
-
-  if (graphics_item->get_computed_attribute<svg_attribute_locked> ()->is_locked ())
-    return;
-
-  if (graphics_item->can_be_selected ())
-    {
-      if (!rect.contains (graphics_item->bbox ()))
-        return;
-
-      add_item (root);
-      return;
-    }
-
-  if (!graphics_item->bbox ().intersects (rect))
-    return;
-
-  for (int i = 0; i < root->children_count (); i++)
-    add_items_for_rect (rect, root->child (i));
-}
-
 bool items_selection::contains (const string &name) const
 {
   return m_selection.find (name) != m_selection.end ();
@@ -116,11 +91,6 @@ abstract_svg_item * items_selection::const_iterator::operator* ()
 
 QRectF items_selection::get_bbox () const
 {
-/*
-  if (!m_bbox_invalid)
-    return m_bbox;
-*/
-
   m_bbox = QRectF ();
   for (auto && item : *this)
     {

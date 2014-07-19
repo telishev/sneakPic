@@ -32,7 +32,8 @@ selector_tool::selector_tool (svg_painter *painter)
   m_actions_applier->add_drag_shortcut (mouse_drag_shortcut_t::DRAG_OBJECTS, this,
     &selector_tool::start_moving_object, &selector_tool::move_object, &selector_tool::end_moving_object);
 
-  m_actions_applier->add_shortcut (mouse_shortcut_t::SELECT_ITEM_OR_GROUP, this, &selector_tool::select_object);
+  m_actions_applier->add_shortcut (mouse_shortcut_t::SWITCH_SELECTOR_HANDLES_TYPE, this, &selector_tool::switch_handle_type);
+  
 }
 
 void  selector_tool::change_handles_type ()
@@ -48,7 +49,7 @@ selector_tool::~selector_tool ()
 
 bool selector_tool::start_moving_object (const QPoint &pos)
 {
-  abstract_svg_item *current_item = get_item_or_group_for_pos (pos);
+  const abstract_svg_item *current_item = get_item_or_group_for_pos (pos);
   if (!current_item)
     return false;
 
@@ -105,25 +106,26 @@ void selector_tool::configure ()
     }
 }
 
-bool selector_tool::select_object (const mouse_event_t &event)
+bool selector_tool::switch_handle_type (const QPoint &pos)
 {
-  abstract_svg_item *item = get_item_or_group_for_pos (event.pos ());
-  bool add_to_selection = contains_modifier (event.modifier (), keyboard_modifier::SHIFT);
+  const abstract_svg_item *item = get_item_or_group_for_pos (pos);
   items_selection *selection = m_painter->selection ();
 
-  if (item && selection->contains (item->name ()) && !add_to_selection)
+  if (item && selection->contains (item->name ()))
     {
       m_transform_handles_editor->switch_handles_type ();
       return true;
     }
 
-  selection_helpers (selection).select (item, add_to_selection);
-
-  m_painter->redraw ();
-  return true;
+  return false;
 }
 
-abstract_svg_item * selector_tool::get_item_or_group_for_pos (const QPoint &pos) const
+selection_type_t selector_tool::selection_type () const
 {
-  return item_helpers (m_painter->document ()).get_selectable_item_or_group (m_painter->get_current_item (pos));
+  return selection_type_t::SELECT_ITEMS_AND_GROUPS;
+}
+
+const abstract_svg_item * selector_tool::get_item_or_group_for_pos (const QPoint &pos) const
+{
+  return item_helpers (m_painter->document ()).get_selectable_item_or_group (m_painter->get_current_item (pos), selection_type ());
 }

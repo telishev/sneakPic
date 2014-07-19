@@ -13,26 +13,34 @@ item_helpers::item_helpers (svg_document *document)
   m_document = document;
 }
 
-abstract_svg_item *item_helpers::get_selectable_item_or_group (abstract_svg_item *item) const
+const abstract_svg_item *item_helpers::get_selectable_item_or_group (const abstract_svg_item *item, selection_type_t type) const
 {
   if (!item)
     return nullptr;
 
-  layers_handler *handler = m_document->get_layers_handler ();
-  abstract_svg_item *current_layer = handler->get_active_layer_item (), *parent = item->parent ();
-  while (parent && parent->parent () && !get_item_is_layer (parent) && parent != current_layer)
-    {
-      item = parent;
-      parent = item->parent ();
-    }
+  while (!is_item_selectable (item, type))
+    item = item->parent ();
 
   return item;
 }
 
-bool item_helpers::get_item_is_layer (abstract_svg_item *item) const
+bool item_helpers::get_item_is_layer (const abstract_svg_item *item) const
 {
   if (item->type () != svg_item_type::G)
     return false;
 
   return item->has_attribute (svg_attribute_layer_name::static_type_name ());
+}
+
+bool item_helpers::is_item_selectable (const abstract_svg_item *item, selection_type_t type) const
+{
+  if (type == selection_type_t::SELECT_ONLY_ITEMS)
+    return item->to_base_graphics_item () != nullptr;
+
+  layers_handler *handler = m_document->get_layers_handler ();
+  const abstract_svg_item *current_layer = handler->get_active_layer_item (), *parent = item->parent ();
+  if (parent && parent->parent () && !get_item_is_layer (parent) && parent != current_layer)
+    return false;
+
+  return true;
 }

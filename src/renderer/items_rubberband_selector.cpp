@@ -8,6 +8,7 @@
 #include "gui/shortcuts_config.h"
 
 #include "svg/items/svg_items_container.h"
+#include "editor/operations/get_items_for_rect.h"
 
 items_rubberband_selector::items_rubberband_selector (overlay_renderer *overlay, svg_painter *painter, actions_applier *applier)
   : rubberband_selection (overlay, painter, applier, mouse_drag_shortcut_t::RUBBERBAND_SELECTION)
@@ -26,7 +27,8 @@ bool items_rubberband_selector::end_selection_func (const mouse_event_t &m_event
   if (m_event.modifier () != keyboard_modifier::SHIFT)
     selection->clear ();
 
-  selection->add_items_for_rect (selection_rect (), painter ()->item_container ()->get_root ());
+  for (auto item : get_items_for_rect_operation (painter ()->document ()).apply (selection_rect ()))
+    selection->add_item (item);
   return true;
 }
 

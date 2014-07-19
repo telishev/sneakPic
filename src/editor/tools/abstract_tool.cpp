@@ -11,6 +11,7 @@
 #include "renderer/overlay_renderer.h"
 #include "svg/svg_document.h"
 #include "svg/layers_handler.h"
+#include "editor/item_helpers.h"
 
 
 
@@ -71,5 +72,10 @@ void abstract_tool::interrupt_action ()
 bool abstract_tool::can_add_items () const
 {
   return !m_painter->document ()->get_layers_handler ()->get_active_layer_is_locked ();
+}
+
+selection_type_t abstract_tool::selection_type () const
+{
+  return selection_type_t::SELECT_ONLY_ITEMS;
 }
 

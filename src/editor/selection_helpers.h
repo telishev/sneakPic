@@ -10,7 +10,7 @@ class selection_helpers
 public:
   selection_helpers (items_selection *selection);
 
-  void select (abstract_svg_item *item, bool add_object);
+  bool select (const abstract_svg_item *item, bool add_object);
 
 };
 

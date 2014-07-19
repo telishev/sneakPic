@@ -23,6 +23,9 @@ public:
   selector_tool (svg_painter *painter);
   ~selector_tool ();
 
+protected:
+  virtual selection_type_t selection_type () const override;
+
 private:
   bool start_moving_object (const QPoint &pos);
   bool move_object (const QPoint &pos);
@@ -33,8 +36,8 @@ private:
   void update_handles ();
   virtual void configure ();
   void change_handles_type ();
-  bool select_object (const mouse_event_t &event);
-  abstract_svg_item *get_item_or_group_for_pos (const QPoint &pos) const;
+  bool switch_handle_type (const QPoint &pos);
+  const abstract_svg_item * get_item_or_group_for_pos (const QPoint &pos) const;
 };
 
 #endif // SELECTOR_TOOL_H

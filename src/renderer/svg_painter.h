@@ -28,6 +28,7 @@ class gui_document;
 class selection_actions;
 
 enum class gui_action_id;
+enum class selection_type_t;
 
 class svg_painter : public abstract_painter
 {
@@ -77,6 +78,8 @@ public:
 
   void redraw ();
   bool action_triggered (gui_action_id id);
+
+  selection_type_t current_selection_type () const;
 signals:
   void zoom_description_changed (const QString &description);
   void color_picked (const QColor &color);

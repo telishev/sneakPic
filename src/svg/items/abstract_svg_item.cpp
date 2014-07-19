@@ -674,6 +674,17 @@ abstract_svg_item::iterator abstract_svg_item::end ()
   return abstract_svg_item::iterator (m_children.end (), m_document->get_undo_handler ());
 }
 
+abstract_svg_item::const_iterator abstract_svg_item::begin () const
+{
+  return abstract_svg_item::const_iterator (m_children.begin (), m_document->get_undo_handler ());
+}
+
+abstract_svg_item::const_iterator abstract_svg_item::end () const
+{
+  return abstract_svg_item::const_iterator (m_children.end (), m_document->get_undo_handler ());
+}
+
+
 void abstract_svg_item::replace_item (abstract_svg_item *item, bool copy_clones)
 {
   set_undo_id (item->undo_id ());
@@ -736,4 +747,8 @@ abstract_svg_item *abstract_svg_item::iterator::operator* ()
   return static_cast<abstract_svg_item *> (m_undo_handler->get_item (*m_it));
 }
 
+const abstract_svg_item *abstract_svg_item::const_iterator::operator* ()
+{
+  return static_cast<const abstract_svg_item *> (m_undo_handler->get_item (*m_it));
+}
 

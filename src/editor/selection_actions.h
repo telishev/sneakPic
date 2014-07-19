@@ -3,6 +3,7 @@
 
 class svg_painter;
 class mouse_event_t;
+class abstract_svg_item;
 
 class selection_actions
 {
@@ -16,6 +17,8 @@ private:
   bool lower_object ();
   bool raise_object ();
   bool remove_items_in_selection ();
+  bool select_prev_item (const mouse_event_t &event);
+  const abstract_svg_item *get_lowest_selected_item () const;
 };
 
 #endif // SELECTION_ACTIONS_H

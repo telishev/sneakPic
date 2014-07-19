@@ -24,8 +24,8 @@ protected:
   virtual renderer_graphics_item *create_renderer_graphics_item () const = 0;
 
 private:
-  void set_item_style (renderer_graphics_item *item) const;
   virtual QPainterPath get_boundaries () const = 0; // In this function path around item should be returned (even if it's raster image for example)
+  void set_item_style (renderer_graphics_item *item) const;
 
   virtual svg_base_graphics_item * to_base_graphics_item () override { return this; }
   virtual const svg_base_graphics_item *to_base_graphics_item () const override { return this; }

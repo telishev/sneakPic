@@ -74,8 +74,6 @@ public:
 
   QRectF get_bbox () const;
 
-  void add_items_for_rect (const QRectF &rect, const abstract_svg_item *root);
-
   iterator begin () { return iterator (m_container, m_selection.begin ()); }
   iterator end () { return iterator (m_container, m_selection.end ()); }
   const_iterator begin () const { return const_iterator (m_container, m_selection.begin ()); }

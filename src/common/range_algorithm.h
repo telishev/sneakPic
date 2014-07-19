@@ -352,13 +352,13 @@ auto min_element (Range &&range, Compare comp) -> decltype (range.begin ())
 }
 
 template <typename Range>
-auto max_elemen (Range &&range) -> decltype (range.begin ())
+auto max_element (Range &&range) -> decltype (range.begin ())
 {
   return std::min_element (range.begin (), range.end ());
 }
 
 template <typename Range, typename Compare>
-auto max_elemen (Range &&range, Compare comp) -> decltype (range.begin ())
+auto max_element (Range &&range, Compare comp) -> decltype (range.begin ())
 {
   return std::min_element (range.begin (), range.end (), comp);
 }

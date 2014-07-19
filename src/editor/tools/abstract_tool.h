@@ -14,6 +14,7 @@ class svg_painter;
 class mouse_shortcut_enum_union;
 
 enum class gui_action_id;
+enum class selection_type_t;
 
 class abstract_tool : public QObject
 {
@@ -37,6 +38,8 @@ public:
 
   virtual bool mouse_event (const mouse_event_t &m_event, mouse_shortcut_enum_union action);
   virtual bool action_triggered (gui_action_id id);
+
+  virtual selection_type_t selection_type () const;
 protected:
   bool can_add_items () const ;
 };

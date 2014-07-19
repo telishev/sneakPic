@@ -160,7 +160,7 @@ public:
     const_iterator () {  }
 
   public:
-    abstract_svg_item *operator* ();
+    const abstract_svg_item *operator* ();
     bool operator != (const const_iterator &other) const { return m_it != other.m_it; };
     bool operator == (const const_iterator &other) const { return m_it == other.m_it; };
     const_iterator &operator++() { ++this->m_it; return *this; };
