@@ -30,12 +30,15 @@ public:
   int layers_count();
   layers_tree_node *active_layer_node ();
   abstract_svg_item *get_active_layer_item () const;
-  bool is_layer_visible(const QModelIndex &index );
+  bool is_layer_visible (const QModelIndex &index ) const;
+  bool is_layer_locked (const QModelIndex &index ) const;
   void toggle_layer_visibility (const QModelIndex &layer_index);
+  void toggle_layer_is_locked (const QModelIndex &layer_index);
   void rename_layer(const QModelIndex &index, QString new_name);
   void move_layer (layers_tree_node *from, layers_tree_node *to, bool before_first_one = false); // if after_last_one is true then to is parent of item where we should move
   void move_layer_inside (layers_tree_node *from, layers_tree_node *to);
   int get_active_layer_opacity ();
+  bool get_active_layer_is_locked () const;
   void set_active_layer_opacity (int value);
   int get_layer_opacity (const QModelIndex &index);
   int get_layer_opacity (const layers_tree_node *node);

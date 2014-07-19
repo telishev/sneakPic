@@ -33,8 +33,15 @@ static inline QRect bounding_rect (const QRectF &rect)
 
 void renderer_item_group::draw (SkCanvas &canvas, const renderer_state &state, const renderer_config *config) const
 {
-  if ((config && config->is_interrupted ()) || m_display == display::NONE)
-    return;
+  if (config)
+    {
+      if (config->is_interrupted () || m_display == display::NONE)
+        return;
+
+      if (config->render_for_selection () && m_is_locked)
+        return;
+    }
+
 
   QRectF transformed_rect = state.transform ().mapRect (bounding_box_impl ());
   QRect result_rect = state.rect ().intersected (bounding_rect (transformed_rect));

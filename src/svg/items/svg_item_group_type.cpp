@@ -8,6 +8,7 @@
 #include "svg/attributes/svg_attribute_transform.h"
 #include "svg/attributes/svg_attribute_clip_path.h"
 #include "svg/attributes/svg_attributes_enum.h"
+#include "svg/attributes/svg_attribute_locked.h"
 
 #include "svg/items/svg_item_clip_path.h"
 #include "svg/items/svg_graphics_item.h"
@@ -29,6 +30,7 @@ void svg_item_group_type::update_group_item (renderer_item_group *renderer_item)
   renderer_item->set_opacity (opacity->computed_opacity ());
   renderer_item->set_display (display->value ());
   renderer_item->set_transform (full_transform ());
+  renderer_item->set_locked (get_computed_attribute<svg_attribute_locked> ()->is_locked ());
   if (clip_path)
     renderer_item->set_clip_path (clip_path->get_clip_path ());
 

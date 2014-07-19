@@ -9,6 +9,8 @@
 
 #include "renderer/svg_painter.h"
 #include "renderer/overlay_renderer.h"
+#include "svg/svg_document.h"
+#include "svg/layers_handler.h"
 
 
 
@@ -64,5 +66,10 @@ void abstract_tool::update ()
 void abstract_tool::interrupt_action ()
 {
   m_actions_applier->apply_action (gui_action_id::INTERRUPT);
+}
+
+bool abstract_tool::can_add_items () const
+{
+  return !m_painter->document ()->get_layers_handler ()->get_active_layer_is_locked ();
 }
 

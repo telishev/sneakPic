@@ -5,6 +5,7 @@
 #include "svg/items/abstract_svg_item.h"
 #include "svg/items/svg_graphics_item.h"
 #include "svg/items/svg_items_container.h"
+#include "svg/attributes/svg_attribute_locked.h"
 
 items_selection::items_selection (svg_items_container *container)
 {
@@ -51,6 +52,9 @@ void items_selection::add_items_for_rect (const QRectF &rect, const abstract_svg
 {
   const svg_graphics_item *graphics_item = root->to_graphics_item ();
   if (!graphics_item)
+    return;
+
+  if (graphics_item->get_computed_attribute<svg_attribute_locked> ()->is_locked ())
     return;
 
   if (graphics_item->can_be_selected ())

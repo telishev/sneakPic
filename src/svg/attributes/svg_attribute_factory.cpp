@@ -37,6 +37,7 @@
 #include "svg/attributes/svg_attributes_marker_usage.h"
 #include "svg/attributes/svg_attribute_nodetypes.h"
 #include "svg/attributes/svg_attribute_linetypes.h"
+#include "svg/attributes/svg_attribute_locked.h"
 
 #include <QString>
 #include <memory>

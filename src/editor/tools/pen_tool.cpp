@@ -96,6 +96,9 @@ bool pen_tool::update_auxiliary_pen_preview (const QPoint &pos)
 
 bool pen_tool::add_segment_simple (const QPoint &pos)
 {
+  if (!can_add_items ())
+    return false;
+
   add_new_point (pos, true);
   if (m_path_snap_end)
     finish_path_add ();
@@ -107,6 +110,9 @@ bool pen_tool::add_segment_simple (const QPoint &pos)
 
 bool pen_tool::add_segment_start (const QPoint &pos)
 {
+  if (!can_add_items ())
+    return false;
+
   add_new_point (pos, false);
   update ();
   m_auxiliary_preview_renderer->set_path (nullptr);

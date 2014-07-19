@@ -71,6 +71,9 @@ pencil_tool::~pencil_tool ()
 
 bool pencil_tool::draw_pencil_start (const QPoint &pos)
 {
+  if (!can_add_items ())
+    return false;
+
   add_point (snap_point (pos));
   update ();
   return true;

@@ -15,6 +15,7 @@
 #include "svg/layers_tree.h"
 
 #include <QMetaObject>
+#include "attributes/svg_attribute_locked.h"
 
 layers_handler::layers_handler (svg_document *document)
 {
@@ -240,6 +241,20 @@ void layers_handler::toggle_layer_visibility (const QModelIndex &layer_index)
   m_document->apply_changes ("Toggle Layer Visibility");
 }
 
+void layers_handler::toggle_layer_is_locked (const QModelIndex &layer_index)
+{
+  auto item = get_layer_item (layer_index);
+  bool is_locked;
+
+  {
+    auto attr = item->get_attribute_for_change<svg_attribute_locked> ();
+    attr->set_locked (!attr->is_locked ());
+    is_locked = attr->is_locked ();
+  }
+
+  m_document->apply_changes (is_locked ? "Lock Layer " : "Unlock Layer");
+}
+
 void layers_handler::set_active_layer (const QModelIndex &new_index)
 {
   m_active_layer_node = reinterpret_cast <layers_tree_node *> (new_index.internalPointer ());
@@ -282,9 +297,14 @@ void layers_handler::update_attribute_by_active_layer_node ()
   attr->set_value (get_active_layer_item ()->get_computed_attribute<svg_attribute_layer_name> ()->value ());
 }
 
-bool layers_handler::is_layer_visible (const QModelIndex &index)
+bool layers_handler::is_layer_visible (const QModelIndex &index) const
 {
   return get_layer_item (index)->get_computed_attribute<svg_attribute_display> ()->value () != display::NONE;
+}
+
+bool layers_handler::is_layer_locked (const QModelIndex &index) const
+{
+  return get_layer_item (index)->get_computed_attribute<svg_attribute_locked> ()->is_locked ();
 }
 
 layer_type layers_handler::get_layer_type (const QModelIndex &index, layer_type default_type)
@@ -371,6 +391,12 @@ int layers_handler::get_layer_opacity (const layers_tree_node *node)
 {
   auto item = get_layer_item (node);
   return (int) (item->get_computed_attribute<svg_attribute_opacity> ()->value () * 100.0);
+}
+
+bool layers_handler::get_active_layer_is_locked () const
+{
+  auto item = get_layer_item (m_active_layer_node);
+  return item->get_computed_attribute<svg_attribute_locked> ()->is_locked ();
 }
 
 int layers_handler::get_layer_opacity (const QModelIndex &index)

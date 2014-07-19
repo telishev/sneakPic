@@ -5,6 +5,7 @@
         <file>add_layer.png</file>
         <file>cursor.png</file>
         <file>ellipse.png</file>
+        <file>empty.png</file>
         <file>eye_closed.png</file>
         <file>eye_open.png</file>
         <file>folder.png</file>
@@ -15,11 +16,12 @@
         <file>linejoin_bevel.png</file>
         <file>linejoin_miter.png</file>
         <file>linejoin_round.png</file>
+        <file>lock.png</file>
         <file>paths/double_headed_arrow.svg</file>
         <file>paths/rotate_arrow.svg</file>
         <file>pen.png</file>
         <file>pencil.png</file>
-        <file>switch.png</file>
         <file>rectangle.png</file>
+        <file>switch.png</file>
     </qresource>
 </RCC>

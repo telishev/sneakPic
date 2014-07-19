@@ -17,6 +17,7 @@ enum class columnRole
 {
   TYPE = 0,
   VISIBILITY,
+  LOCK,
   TITLE,
   OPACITY,
 
@@ -54,6 +55,15 @@ QVariant layers_tree_model::data (const QModelIndex &index, int role /*= Qt::Dis
           return m_layers_handler->is_layer_visible (index) ? eye_open_icon : eye_closed_icon;
         }
       return QVariant ();
+    case columnRole::LOCK:
+      switch (role)
+        {
+        case Qt::DisplayRole:
+          return "";
+        case Qt::DecorationRole:
+          return m_layers_handler->is_layer_locked (index) ? lock_icon : empty_icon;
+        }
+      return QVariant ();
     case columnRole::TYPE:
       switch (role)
         {
@@ -76,6 +86,8 @@ layers_tree_model::layers_tree_model ()
   eye_open_icon = QIcon (":/eye_open.png");
   layer_icon = QIcon (":/layer.png");
   folder_icon = QIcon (":/folder.png");
+  lock_icon = QIcon (":/lock.png");
+  empty_icon = QIcon (":/empty.png");
 }
 
 void layers_tree_model::update_model ()
@@ -233,6 +245,9 @@ void layers_tree_model::index_clicked (const QModelIndex &index) const
     {
     case columnRole::VISIBILITY:
       m_layers_handler->toggle_layer_visibility (index);
+      break;
+    case columnRole::LOCK:
+      m_layers_handler->toggle_layer_is_locked (index);
       break;
     default:
       break;

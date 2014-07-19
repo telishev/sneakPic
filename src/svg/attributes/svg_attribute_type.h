@@ -75,6 +75,7 @@ DECLARE_ATTRIBUTE(LINETYPES            , "linetypes"          , SNEAKPIC   , svg
 DECLARE_ATTRIBUTE(LAYER_NAME           , "layer-name"         , SNEAKPIC   , svg_attribute_layer_name           , NONE         )   \
 DECLARE_ATTRIBUTE(ACTIVE_LAYER         , "active-layer"       , SNEAKPIC   , svg_attribute_active_layer         , NONE         )   \
 DECLARE_ATTRIBUTE(LAYER_TYPE           , "layer-type"         , SNEAKPIC   , svg_attribute_layer_type           , NONE         )   \
+DECLARE_ATTRIBUTE(LOCKED               , "locked"             , SNEAKPIC   , svg_attribute_locked               , STYLE        )   \
 
 enum class svg_attribute_type
 {
@@ -146,6 +147,7 @@ enum class svg_attribute_type
   LAYER_NAME,
   ACTIVE_LAYER,
   LAYER_TYPE,
+  LOCKED,
 
   COUNT,
 };

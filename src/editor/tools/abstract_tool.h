@@ -37,6 +37,8 @@ public:
 
   virtual bool mouse_event (const mouse_event_t &m_event, mouse_shortcut_enum_union action);
   virtual bool action_triggered (gui_action_id id);
+protected:
+  bool can_add_items () const ;
 };
 
 #endif // ABSTRACT_TOOL_H

@@ -36,6 +36,8 @@ rectangle_tool::~rectangle_tool ()
 
 bool rectangle_tool::start_rectangle_positioning (const QPoint &pos)
 {
+  if (!can_add_items ())
+    return false;
   m_initial_pos = m_painter->get_local_pos (QPointF (pos));
   return true;
 }
